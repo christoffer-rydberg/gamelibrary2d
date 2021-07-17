@@ -3,15 +3,14 @@ package com.gamelibrary2d.tools.particlegenerator.panels;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.renderers.TextRenderer;
+import com.gamelibrary2d.components.widgets.Label;
 import com.gamelibrary2d.resources.Font;
+import com.gamelibrary2d.resources.HorizontalTextAlignment;
+import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.resources.Fonts;
 import com.gamelibrary2d.tools.particlegenerator.widgets.Button;
 import com.gamelibrary2d.tools.particlegenerator.widgets.ToggleButton;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
-import com.gamelibrary2d.components.widgets.Label;
 
 public class EmitterPanel extends AbstractPanel<GameObject> {
     private final ToggleButton emitSequentialButton;
@@ -19,29 +18,23 @@ public class EmitterPanel extends AbstractPanel<GameObject> {
     public EmitterPanel(ParticleSystemModel particleSystem) {
         Font font = Fonts.getMenuFont();
 
-        Label emitButtonConent = new Label();
-        emitButtonConent.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.TOP);
-        emitButtonConent.setTextRenderer(new TextRenderer(font));
-        emitButtonConent.setColor(Color.SOFT_BLUE);
-        emitButtonConent.setText("Emit");
+        Label emitButtonContent = new Label(font, "Emit");
+        emitButtonContent.setColor(Color.SOFT_BLUE);
+        emitButtonContent.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.TOP);
 
-        Button<Label> emitButton = new Button<>(emitButtonConent, particleSystem::emit);
-        emitButton.setBounds(emitButtonConent.calculateBounds());
+        Button<Label> emitButton = new Button<>(emitButtonContent, particleSystem::emit);
+        emitButton.setBounds(emitButtonContent.calculateBounds());
         emitButton.setPosition(0, 0);
 
-        emitSequentialButton = new ToggleButton();
+        emitSequentialButton = new ToggleButton(font, "Emit Sequential");
         Label emitSequentialContent = emitSequentialButton.getContent();
-        emitSequentialContent.setText("Emit Sequential");
-        emitSequentialContent.setTextRenderer(new TextRenderer(font));
         emitSequentialContent.setColor(Color.SOFT_BLUE);
         emitSequentialContent.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.TOP);
 
         emitSequentialButton.setBounds(emitSequentialContent.calculateBounds());
         emitSequentialButton.setPosition(0, -50);
 
-        Label emitAllContext = new Label();
-        emitAllContext.setText("Emit All");
-        emitAllContext.setTextRenderer(new TextRenderer(font));
+        Label emitAllContext = new Label(font, "Emit All");
         emitAllContext.setColor(Color.SOFT_BLUE);
         emitAllContext.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.TOP);
 

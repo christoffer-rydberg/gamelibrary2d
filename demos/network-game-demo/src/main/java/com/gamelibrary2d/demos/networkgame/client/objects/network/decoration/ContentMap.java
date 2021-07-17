@@ -6,7 +6,7 @@ import com.gamelibrary2d.demos.networkgame.client.objects.network.ClientObject;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.Quad;
 import com.gamelibrary2d.resources.Surface;
@@ -21,7 +21,7 @@ public class ContentMap {
         Map<Byte, Renderable> renderers = new HashMap<>();
         Surface surface = Quad.create(bounds, disposer);
         for (Byte key : textures.getKeys(primaryType)) {
-            Renderer renderer = new SurfaceRenderer<>(surface, textures.getTexture(primaryType, key));
+            ContentRenderer renderer = new SurfaceRenderer<>(surface, textures.getTexture(primaryType, key));
             renderers.put(key, renderer);
         }
 

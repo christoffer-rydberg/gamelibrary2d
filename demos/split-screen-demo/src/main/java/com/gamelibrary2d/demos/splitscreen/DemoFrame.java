@@ -5,27 +5,23 @@ import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomGenerator;
 import com.gamelibrary2d.common.random.RandomInstance;
-import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.framework.Keyboard;
-import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.glUtil.PositionBuffer;
 import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.KeyAware;
+import com.gamelibrary2d.components.frames.AbstractFrame;
+import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.components.objects.DefaultGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
+import com.gamelibrary2d.framework.Keyboard;
+import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.glUtil.PositionBuffer;
 import com.gamelibrary2d.renderers.QuadsRenderer;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.DefaultTexture;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.Surface;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.resources.*;
 import com.gamelibrary2d.splitscreen.*;
-import com.gamelibrary2d.resources.QuadShape;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,8 +48,8 @@ class DemoFrame extends AbstractFrame implements KeyAware {
 
     private SpaceCraft createSpaceCraft(Quad quad, Texture texture) {
         RandomGenerator random = RandomInstance.get();
-        Renderer renderer = new SurfaceRenderer<>(quad, texture);
-        renderer.getParameters().setColor(
+        ContentRenderer renderer = new SurfaceRenderer<>(quad, texture);
+        renderer.setColor(
                 random.nextFloat() * 0.5f + 0.5f,
                 random.nextFloat() * 0.5f + 0.5f,
                 random.nextFloat() * 0.5f + 0.5f);
@@ -80,7 +76,7 @@ class DemoFrame extends AbstractFrame implements KeyAware {
         PositionBuffer starPositions = PositionBuffer.create(positions, this);
         QuadsRenderer starsRenderer = new QuadsRenderer(Rectangle.create(8f, 8f));
         starsRenderer.setShape(QuadShape.RADIAL_GRADIENT);
-        starsRenderer.getParameters().setColor(Color.LIGHT_YELLOW);
+        starsRenderer.setColor(Color.LIGHT_YELLOW);
 
         return a -> starsRenderer.render(a, starPositions, 0, starPositions.getCapacity());
     }
@@ -124,8 +120,8 @@ class DemoFrame extends AbstractFrame implements KeyAware {
 
     private DefaultGameObject createBackgroundColor() {
         Surface quad = Quad.create(GAME_BOUNDS, this);
-        Renderer renderer = new SurfaceRenderer<>(quad);
-        renderer.getParameters().setColor(
+        ContentRenderer renderer = new SurfaceRenderer<>(quad);
+        renderer.setColor(
                 BACKGROUND_COLOR.getR(),
                 BACKGROUND_COLOR.getG(),
                 BACKGROUND_COLOR.getB(),

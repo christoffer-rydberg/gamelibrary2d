@@ -3,17 +3,16 @@ package com.gamelibrary2d.tools.particlegenerator.widgets;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.functional.Action;
-import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.glUtil.ModelMatrix;
 import com.gamelibrary2d.components.denotations.Bounded;
-import com.gamelibrary2d.renderers.LineRenderer;
-import com.gamelibrary2d.renderers.TextRenderer;
-import com.gamelibrary2d.resources.Font;
-import com.gamelibrary2d.tools.particlegenerator.properties.BooleanProperty;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.components.widgets.AbstractWidget;
 import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.glUtil.ModelMatrix;
+import com.gamelibrary2d.renderers.LineRenderer;
+import com.gamelibrary2d.resources.Font;
+import com.gamelibrary2d.resources.HorizontalTextAlignment;
+import com.gamelibrary2d.resources.VerticalTextAlignment;
+import com.gamelibrary2d.tools.particlegenerator.properties.BooleanProperty;
 
 public class Checkbox extends AbstractWidget {
     private final BooleanProperty checked;
@@ -81,13 +80,13 @@ public class Checkbox extends AbstractWidget {
         CheckboxRenderer(Box box, LineRenderer renderer, Font font) {
             this.box = box;
             this.renderer = renderer;
-            label = new Label(new TextRenderer(font));
+            label = new Label(font);
             label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.CENTER);
         }
 
         public void check() {
             label.setText("V");
-            label.getTextRenderer().getParameters().setColor(Color.GREEN);
+            label.setColor(Color.GREEN);
         }
 
         public void uncheck() {

@@ -8,18 +8,18 @@ import com.gamelibrary2d.common.functional.Func;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.components.denotations.PointerAware;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.DynamicQuad;
+import com.gamelibrary2d.resources.MutableQuad;
 import com.gamelibrary2d.resources.Quad;
 
 public class QuadTool implements Renderable, PointerAware {
     private final EventPublisher<Quad> onCreated = new DefaultEventPublisher<>();
     private final Func<Rectangle, Quad> quadFactory;
-    private final SurfaceRenderer<DynamicQuad> inProgressRenderer;
+    private final SurfaceRenderer<MutableQuad> inProgressRenderer;
     private final int drawButton;
 
     private QuadInProgress inProgress;
 
-    public QuadTool(int drawButton, DynamicQuad quadInProgress, Func<Rectangle, Quad> quadFactory) {
+    public QuadTool(int drawButton, MutableQuad quadInProgress, Func<Rectangle, Quad> quadFactory) {
         this.drawButton = drawButton;
         this.inProgressRenderer = new SurfaceRenderer<>(quadInProgress);
         this.quadFactory = quadFactory;

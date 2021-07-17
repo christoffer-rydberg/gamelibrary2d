@@ -1,70 +1,34 @@
 package com.gamelibrary2d.renderers;
 
-import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.glUtil.OpenGLUtils;
 import com.gamelibrary2d.glUtil.ShaderProgram;
-import com.gamelibrary2d.resources.BlendMode;
+import com.gamelibrary2d.glUtil.ShaderParameter;
 
-public abstract class AbstractRenderer implements Renderer {
-    private final ShaderParameters parameters;
-    private BlendMode blendMode;
-    private ShaderProgram shaderProgram;
+public class AbstractRenderer implements Renderer {
+    private final float[] shaderParameters;
 
     protected AbstractRenderer() {
-        parameters = new ShaderParameters();
-        blendMode = BlendMode.TRANSPARENT;
-        shaderProgram = ShaderProgram.getDefaultShaderProgram();
+        shaderParameters = new float[ShaderParameter.MIN_PARAMETERS];
+        shaderParameters[ShaderParameter.COLOR_R] = 1;
+        shaderParameters[ShaderParameter.COLOR_G] = 1;
+        shaderParameters[ShaderParameter.COLOR_B] = 1;
+        shaderParameters[ShaderParameter.ALPHA] = 1;
     }
 
-    protected AbstractRenderer(ShaderParameters parameters) {
-        this.parameters = parameters;
-        blendMode = BlendMode.TRANSPARENT;
-        shaderProgram = ShaderProgram.getDefaultShaderProgram();
+    protected AbstractRenderer(float[] shaderParameters) {
+        this.shaderParameters = shaderParameters;
     }
 
-    @Override
-    public ShaderParameters getParameters() {
-        return parameters;
-    }
-
-    public ShaderProgram getShaderProgram() {
-        return shaderProgram != null ? shaderProgram : ShaderProgram.getDefaultShaderProgram();
-    }
-
-    public void setShaderProgram(ShaderProgram shaderProgram) {
-        this.shaderProgram = shaderProgram;
-    }
-
-    public BlendMode getBlendMode() {
-        return blendMode;
-    }
-
-    public void setBlendMode(BlendMode blendMode) {
-        this.blendMode = blendMode;
+    protected void applyShaderParameters(ShaderProgram program) {
+        program.setParameters(shaderParameters, 0, shaderParameters.length);
     }
 
     @Override
-    public void render(float alpha) {
-        ShaderProgram shaderProgram = getShaderProgram();
-        shaderProgram.bind();
-        shaderProgram.updateModelMatrix(ModelMatrix.instance());
-        applyParameters(alpha);
-        OpenGLUtils.setBlendMode(blendMode);
-        onRender(shaderProgram);
+    public float getShaderParameter(int setting) {
+        return shaderParameters[setting];
     }
 
-    protected void applyParameters(float alpha) {
-        ShaderParameters parameters = getParameters();
-        float alphaSetting = parameters.get(ShaderParameters.ALPHA);
-
-        try {
-            parameters.set(ShaderParameters.ALPHA, alphaSetting * alpha);
-            shaderProgram.setParameters(parameters.getArray(), 0, parameters.getLength());
-            shaderProgram.applyParameters();
-        } finally {
-            parameters.set(ShaderParameters.ALPHA, alphaSetting);
-        }
+    @Override
+    public void setShaderParameter(int setting, float value) {
+        shaderParameters[setting] = value;
     }
-
-    protected abstract void onRender(ShaderProgram shaderProgram);
 }

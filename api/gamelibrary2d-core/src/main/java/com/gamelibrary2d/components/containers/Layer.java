@@ -2,7 +2,6 @@ package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.components.denotations.*;
-import com.gamelibrary2d.components.denotations.PointerAware;
 
 import java.util.Comparator;
 

@@ -10,7 +10,7 @@ public interface Font {
 
     int getHeight();
 
-    float getTextWidth(String text, int offset, int len);
+    float getTextWidth(String text, int offset, int length);
 
-    void render(ShaderProgram shaderProgram, String text, int start, int end);
+    void render(ShaderProgram shaderProgram, String text, int offset, int length);
 }

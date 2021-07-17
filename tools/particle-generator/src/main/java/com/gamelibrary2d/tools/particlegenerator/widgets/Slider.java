@@ -1,12 +1,12 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
+import com.gamelibrary2d.Projection;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.components.denotations.PointerAware;
 import com.gamelibrary2d.components.objects.AbstractGameObject;
-import com.gamelibrary2d.Projection;
 import com.gamelibrary2d.components.widgets.DefaultWidget;
+import com.gamelibrary2d.framework.Renderable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

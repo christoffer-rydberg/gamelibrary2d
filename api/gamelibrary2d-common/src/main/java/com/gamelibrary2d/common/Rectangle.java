@@ -482,10 +482,6 @@ public class Rectangle {
         return upperY;
     }
 
-    public Point getCenter() {
-        return new Point(getCenterX(), getCenterY());
-    }
-
     public float getCenterX() {
         return 0.5f * lowerX + 0.5f * upperX;
     }

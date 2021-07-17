@@ -2,10 +2,10 @@ package com.gamelibrary2d.components.objects;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.denotations.Updatable;
-import com.gamelibrary2d.renderers.Renderer;
-import com.gamelibrary2d.renderers.ShaderParameters;
+import com.gamelibrary2d.glUtil.ShaderParameter;
+import com.gamelibrary2d.renderers.ContentRenderer;
 
-public class AnimatedGameObject<T extends Renderer> extends AbstractGameObject implements Updatable {
+public class AnimatedGameObject<T extends ContentRenderer> extends AbstractGameObject implements Updatable {
     private float animationTime;
     private T content;
     private Rectangle bounds;
@@ -37,7 +37,7 @@ public class AnimatedGameObject<T extends Renderer> extends AbstractGameObject i
     protected void setAnimationTime(float time) {
         this.animationTime = time;
         if (content != null) {
-            content.getParameters().set(ShaderParameters.TIME, time);
+            content.setShaderParameter(ShaderParameter.TIME, time);
         }
     }
 

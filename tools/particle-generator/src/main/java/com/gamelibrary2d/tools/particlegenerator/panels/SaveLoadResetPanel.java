@@ -11,17 +11,16 @@ import com.gamelibrary2d.common.random.RandomGenerator;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.objects.GameObject;
+import com.gamelibrary2d.components.widgets.Label;
 import com.gamelibrary2d.particle.parameters.EmitterParameters;
 import com.gamelibrary2d.particle.parameters.ParticleParameters;
 import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
 import com.gamelibrary2d.particle.parameters.PositionParameters;
-import com.gamelibrary2d.renderers.TextRenderer;
+import com.gamelibrary2d.resources.HorizontalTextAlignment;
+import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.resources.Fonts;
 import com.gamelibrary2d.tools.particlegenerator.widgets.Button;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
-import com.gamelibrary2d.components.widgets.Label;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +48,8 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
     }
 
     private void addButton(String text, float posX, float posY, Action onClick) {
-        Label content = new Label(text, new TextRenderer(Fonts.getDefaultFont()), Color.SOFT_BLUE);
+        Label content = new Label(Fonts.getDefaultFont(), text);
+        content.setColor(Color.SOFT_BLUE);
         content.setAlignment(HorizontalTextAlignment.LEFT, VerticalTextAlignment.BASE_LINE);
 
         Button<Label> button = new Button<>(content, onClick);
@@ -207,37 +207,40 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
         boolean localCenter = random.nextInt(2) == 1;
         particleSystem.getPositioner().setLocalCenter(localCenter);
 
+        final float windowWidth = game.getWindow().getWidth();
+        final float windowHeight = game.getWindow().getHeight();
+
         int areaRandomizer = random.nextInt(3);
         if (areaRandomizer == 0) {
             particleSystem.getPositioner().setSpawnAreaWidth(0);
             particleSystem.getPositioner().setSpawnAreaHeight(0);
 
             particleSystem.getPositioner().setSpawnAreaWidthVar(
-                    round(random.nextFloat() * game.getWindow().getWidth() / 4, 0));
+                    round(random.nextFloat() * windowWidth / 4f, 0));
 
             particleSystem.getPositioner().setSpawnAreaHeightVar(
-                    round(random.nextFloat() * game.getWindow().getHeight() / 4, 0));
+                    round(random.nextFloat() * windowHeight / 4f, 0));
         } else if (areaRandomizer == 1) {
             particleSystem.getPositioner().setSpawnAreaWidth(
-                    round(random.nextFloat() * game.getWindow().getWidth() / 4, 0));
+                    round(random.nextFloat() * windowWidth / 4f, 0));
 
             particleSystem.getPositioner().setSpawnAreaHeight(
-                    round(random.nextFloat() * game.getWindow().getHeight() / 4, 0));
+                    round(random.nextFloat() * windowHeight / 4f, 0));
 
             particleSystem.getPositioner().setSpawnAreaWidthVar(0);
             particleSystem.getPositioner().setSpawnAreaHeightVar(0);
         } else if (areaRandomizer == 2) {
             particleSystem.getPositioner().setSpawnAreaWidthVar(
-                    round(random.nextFloat() * game.getWindow().getWidth() / 8, 0));
+                    round(random.nextFloat() * windowWidth / 8f, 0));
 
             particleSystem.getPositioner().setSpawnAreaHeightVar(
-                    round(random.nextFloat() * game.getWindow().getHeight() / 8, 0));
+                    round(random.nextFloat() * windowHeight / 8f, 0));
 
             particleSystem.getPositioner().setSpawnAreaWidth(
-                    round(random.nextFloat() * game.getWindow().getWidth() / 8, 0));
+                    round(random.nextFloat() * windowWidth / 8f, 0));
 
             particleSystem.getPositioner().setSpawnAreaHeight(
-                    round(random.nextFloat() * game.getWindow().getHeight() / 8, 0));
+                    round(random.nextFloat() * windowHeight / 8f, 0));
         }
 
         particleSystem.getPositioner()

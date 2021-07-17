@@ -9,13 +9,13 @@ import com.gamelibrary2d.demos.networkgame.client.objects.network.LocalPlayer;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.components.denotations.PointerAware;
 import com.gamelibrary2d.components.denotations.Updatable;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.Quad;
 
 public class RotationArea implements Renderable, PointerAware, Updatable {
     private final Line line;
-    private final Renderer background;
+    private final ContentRenderer background;
     private final LocalPlayer player;
     private final float max;
     private final RotationMode mode;
@@ -24,7 +24,7 @@ public class RotationArea implements Renderable, PointerAware, Updatable {
     private float direction;
     private float rotationSpeed;
 
-    private RotationArea(RotationMode mode, Line line, Renderer background, LocalPlayer player, float maxDistance) {
+    private RotationArea(RotationMode mode, Line line, ContentRenderer background, LocalPlayer player, float maxDistance) {
         this.mode = mode;
         this.line = line;
         this.background = background;
@@ -43,7 +43,7 @@ public class RotationArea implements Renderable, PointerAware, Updatable {
     }
 
     private void setBackgroundColor(float r, float g, float b, float a) {
-        this.background.getParameters().setColor(r, g, b, a);
+        this.background.setColor(r, g, b, a);
     }
 
     private void setValue(float value) {

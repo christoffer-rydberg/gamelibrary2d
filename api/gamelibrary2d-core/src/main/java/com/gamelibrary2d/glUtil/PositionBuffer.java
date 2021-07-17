@@ -1,6 +1,7 @@
 package com.gamelibrary2d.glUtil;
 
 import com.gamelibrary2d.common.FloatArrayList;
+import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.framework.OpenGL;
 
@@ -44,6 +45,10 @@ public class PositionBuffer extends AbstractMirroredVertexArrayBuffer<MirroredFl
         updateGPU(size() - 1, 1);
     }
 
+    public void add(Point point) {
+        add(point.getX(), point.getY());
+    }
+
     public void add(int index, float x, float y) {
         int bufferIndex = index * STRIDE;
         data.add(bufferIndex, x);
@@ -51,11 +56,19 @@ public class PositionBuffer extends AbstractMirroredVertexArrayBuffer<MirroredFl
         updateGPU(index, size() - index);
     }
 
+    public void add(int index, Point point) {
+        add(index, point.getX(), point.getY());
+    }
+
     public void set(int index, float x, float y) {
         int bufferIndex = index * STRIDE;
         data.set(bufferIndex, x);
         data.set(bufferIndex + 1, y);
         updateGPU(index, 1);
+    }
+
+    public void set(int index, Point point) {
+        set(index, point.getX(), point.getY());
     }
 
     public void remove(int index) {

@@ -7,11 +7,11 @@ import com.gamelibrary2d.collision.handlers.CollisionHandler;
 import com.gamelibrary2d.collision.handlers.RestrictedAreaHandler;
 import com.gamelibrary2d.collision.handlers.UpdatedHandler;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.Layer;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.components.frames.AbstractFrame;
+import com.gamelibrary2d.components.frames.InitializationContext;
+import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.resources.Quad;
@@ -28,7 +28,7 @@ public class DemoFrame extends AbstractFrame {
     private final CollisionHandler<Ball, Ball> bounceHandler = new BounceHandler<>(Ball.class);
     private final Layer<Ball> ballLayer = new BasicLayer<>();
     private Surface ballSurface;
-    private Renderer ballRenderer;
+    private ContentRenderer ballRenderer;
     private BallTool tool;
 
     DemoFrame(Game game) {
@@ -42,7 +42,7 @@ public class DemoFrame extends AbstractFrame {
         Texture ballTexture = DefaultTexture.create(Ball.class.getResource("/ball.png"), this);
         ballSurface = Quad.create(Rectangle.create(32, 32), this);
         ballRenderer = new SurfaceRenderer<>(ballSurface, ballTexture);
-        ballRenderer.getParameters().setColor(152f / 255f, 251f / 255f, 152f / 255f);
+        ballRenderer.setColor(152f / 255f, 251f / 255f, 152f / 255f);
         tool = BallTool.create(this, ballRenderer, this::addBall);
     }
 

@@ -3,18 +3,17 @@ package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.common.io.Read;
+import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.components.objects.DefaultGameObject;
+import com.gamelibrary2d.components.widgets.Label;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.components.denotations.Updatable;
-import com.gamelibrary2d.components.objects.DefaultGameObject;
-import com.gamelibrary2d.renderers.TextRenderer;
 import com.gamelibrary2d.updaters.DurationUpdater;
 import com.gamelibrary2d.updaters.InstantUpdater;
 import com.gamelibrary2d.updaters.SequentialUpdater;
 import com.gamelibrary2d.updates.PositionUpdate;
-import com.gamelibrary2d.components.widgets.Label;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +31,8 @@ class Credits implements Renderable, Updatable {
         this.window = window;
         try (InputStream stream = resourceManager.open("credits.txt")) {
             String text = Read.text(stream, StandardCharsets.UTF_8);
-            Label label = new Label(text, new TextRenderer(Fonts.button()), Color.SOFT_BLUE);
+            Label label = new Label(Fonts.button(), text);
+            label.setColor(Color.SOFT_BLUE);
             credits = new DefaultGameObject<>(label);
         }
     }

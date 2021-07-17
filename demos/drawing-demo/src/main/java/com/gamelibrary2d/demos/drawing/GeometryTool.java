@@ -5,8 +5,8 @@ import com.gamelibrary2d.common.event.DefaultEventPublisher;
 import com.gamelibrary2d.common.event.EventListener;
 import com.gamelibrary2d.common.event.EventPublisher;
 import com.gamelibrary2d.common.functional.Factory;
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.components.denotations.PointerAware;
+import com.gamelibrary2d.framework.Renderable;
 
 public class GeometryTool implements Renderable, PointerAware {
     private final EventPublisher<Geometry> onCreated = new DefaultEventPublisher<>();

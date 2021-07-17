@@ -1,9 +1,9 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.renderers.TextRenderer;
-import com.gamelibrary2d.tools.particlegenerator.properties.IntegerProperty;
 import com.gamelibrary2d.components.widgets.TextField;
+import com.gamelibrary2d.resources.Font;
+import com.gamelibrary2d.tools.particlegenerator.properties.IntegerProperty;
 
 public class IntegerPropertyTextField extends TextField {
     private static final Color VALID = Color.WHITE;
@@ -13,12 +13,11 @@ public class IntegerPropertyTextField extends TextField {
 
     private float cachedValue;
 
-    public IntegerPropertyTextField(TextRenderer textRenderer, IntegerProperty property) {
-        super(textRenderer);
+    public IntegerPropertyTextField(Font font, IntegerProperty property) {
+        super(font, toString(property.get()));
         this.property = property;
         cachedValue = property.get();
-        textRenderer.getParameters().setColor(VALID);
-        setText(toString(cachedValue));
+        setColor(VALID);
         addTextChangedListener(this::onTextChanged);
     }
 
@@ -39,9 +38,9 @@ public class IntegerPropertyTextField extends TextField {
     private void onTextChanged(String before, String after) {
         try {
             property.set(Integer.parseInt(after));
-            getTextRenderer().getParameters().setColor(VALID);
+            setColor(VALID);
         } catch (Exception e) {
-            getTextRenderer().getParameters().setColor(INVALID);
+            setColor(INVALID);
         }
     }
 

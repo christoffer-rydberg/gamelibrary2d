@@ -1,25 +1,21 @@
 package com.gamelibrary2d.renderers;
 
 import com.gamelibrary2d.framework.OpenGL;
-import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.glUtil.OpenGLBuffer;
-import com.gamelibrary2d.glUtil.OpenGLUtils;
-import com.gamelibrary2d.glUtil.ShaderProgram;
+import com.gamelibrary2d.glUtil.*;
 import com.gamelibrary2d.resources.BlendMode;
 
-public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> implements ArrayRenderer<T> {
+public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> extends AbstractRenderer implements ArrayRenderer<T> {
     private final DrawMode drawMode;
-    private final ShaderParameters parameters;
     private boolean maskingOutBackground = false;
-    private BlendMode blendMode = BlendMode.ADDITIVE;
+    private BlendMode blendMode = BlendMode.TRANSPARENT;
+
+    protected AbstractArrayRenderer(DrawMode drawMode, float[] shaderParameters) {
+        super(shaderParameters);
+        this.drawMode = drawMode;
+    }
 
     protected AbstractArrayRenderer(DrawMode drawMode) {
         this.drawMode = drawMode;
-        parameters = new ShaderParameters();
-    }
-
-    public ShaderParameters getParameters() {
-        return parameters;
     }
 
     public BlendMode getBlendMode() {
@@ -83,15 +79,15 @@ public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> implements A
     }
 
     protected void applyParameters(float alpha) {
-        float alphaSetting = parameters.get(ShaderParameters.ALPHA);
+        float alphaSetting = getShaderParameter(ShaderParameter.ALPHA);
 
         try {
             ShaderProgram program = getShaderProgram();
-            parameters.set(ShaderParameters.ALPHA, alphaSetting * alpha);
-            program.setParameters(parameters.getArray(), 0, parameters.getLength());
+            setShaderParameter(ShaderParameter.ALPHA, alphaSetting * alpha);
+            applyShaderParameters(program);
             program.applyParameters();
         } finally {
-            parameters.set(ShaderParameters.ALPHA, alphaSetting);
+            setShaderParameter(ShaderParameter.ALPHA, alphaSetting);
         }
     }
 

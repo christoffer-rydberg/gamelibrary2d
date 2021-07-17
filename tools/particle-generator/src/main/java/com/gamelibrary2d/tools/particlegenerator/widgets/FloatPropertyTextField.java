@@ -1,9 +1,9 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.renderers.TextRenderer;
-import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
 import com.gamelibrary2d.components.widgets.TextField;
+import com.gamelibrary2d.resources.Font;
+import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
 
 public class FloatPropertyTextField extends TextField {
     private static final Color VALID = Color.WHITE;
@@ -13,12 +13,11 @@ public class FloatPropertyTextField extends TextField {
 
     private float cachedValue;
 
-    public FloatPropertyTextField(TextRenderer textRenderer, FloatProperty property) {
-        super(textRenderer);
+    public FloatPropertyTextField(Font font, FloatProperty property) {
+        super(font, toString(property.get()));
         this.property = property;
         cachedValue = property.get();
-        textRenderer.getParameters().setColor(VALID);
-        setText(toString(cachedValue));
+        setColor(VALID);
         addTextChangedListener(this::onTextChanged);
     }
 
@@ -39,9 +38,9 @@ public class FloatPropertyTextField extends TextField {
     private void onTextChanged(String before, String after) {
         try {
             property.set(Float.parseFloat(after));
-            getTextRenderer().getParameters().setColor(VALID);
+            setColor(VALID);
         } catch (Exception e) {
-            getTextRenderer().getParameters().setColor(INVALID);
+            setColor(INVALID);
         }
     }
 

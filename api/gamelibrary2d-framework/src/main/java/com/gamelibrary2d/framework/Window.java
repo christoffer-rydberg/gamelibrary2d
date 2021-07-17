@@ -26,34 +26,22 @@ public interface Window {
     boolean isFullScreen();
 
     /**
-     * The width of the window.
-     * <br>
-     * <br>
-     * In windowed mode, the width is always expressed in pixels.
-     * <br>
-     * <br>
-     * In fullscreen mode, however, the width might differ from {@link #getMonitorWidth()} depending on resolution.
+     * The width of the window in screen coordinates.
      */
     int getWidth();
 
     /**
-     * The height of the window.
-     * <br>
-     * <br>
-     * In windowed mode, the height is always expressed in pixels.
-     * <br>
-     * <br>
-     * In fullscreen mode, however, the height might differ from {@link #getMonitorHeight()} depending on resolution.
+     * The height of the window in screen coordinates.
      */
     int getHeight();
 
     /**
-     * The pixel width of the primary monitor.
+     * The width of the primary monitor in pixels.
      */
     int getMonitorWidth();
 
     /**
-     * The pixel height of the primary monitor.
+     * The height of the primary monitor in pixels.
      */
     int getMonitorHeight();
 
@@ -66,42 +54,6 @@ public interface Window {
      * The physical height of the primary monitor in millimetres.
      */
     double getPhysicalHeight();
-
-    default double getPhysicalPixelWidth() {
-        double physicalWidth = getPhysicalWidth();
-        return isFullScreen()
-                ? physicalWidth / getWidth()
-                : physicalWidth / getMonitorWidth();
-    }
-
-    default double getPhysicalPixelHeight() {
-        double physicalHeight = getPhysicalHeight();
-        return isFullScreen()
-                ? physicalHeight / getHeight()
-                : physicalHeight / getMonitorHeight();
-    }
-
-    default Point getWindowSize() {
-        return new Point(getWidth(), getHeight());
-    }
-
-    default double getPhysicalMonitorSize() {
-        double physicalWidth = getPhysicalWidth();
-        double physicalHeight = getPhysicalHeight();
-        return Math.sqrt(physicalWidth * physicalWidth + physicalHeight * physicalHeight);
-    }
-
-    default double getPhysicalWindowSize() {
-        if (isFullScreen()) {
-            return getPhysicalMonitorSize();
-        } else {
-            double widthFactor = (double) getWidth() / getMonitorWidth();
-            double heightFactor = (double) getHeight() / getMonitorHeight();
-            double physicalWidth = getPhysicalWidth() * widthFactor;
-            double physicalHeight = getPhysicalHeight() * heightFactor;
-            return Math.sqrt(physicalWidth * physicalWidth + physicalHeight * physicalHeight);
-        }
-    }
 
     /**
      * Provides a content scale - a factor that can be used to scale UI components and keep a reasonable size for
@@ -134,11 +86,44 @@ public interface Window {
      * windows with vastly different aspect ratios.
      *
      * @param baseSize The physical length of the window's diagonal in millimetres.
+     * @param output   Output for the content scale.
      */
-    default Point getContentScale(double baseSize) {
+    default void getContentScale(double baseSize, Point output) {
         double scaleFactor = getPhysicalWindowSize() / baseSize;
         double invertedPixelSizeX = 1.0 / getPhysicalPixelWidth();
         double invertedPixelSizeY = 1.0 / getPhysicalPixelHeight();
-        return new Point((float) (invertedPixelSizeX * scaleFactor), (float) (invertedPixelSizeY * scaleFactor));
+        output.set((float) (invertedPixelSizeX * scaleFactor), (float) (invertedPixelSizeY * scaleFactor));
+    }
+
+    default double getPhysicalPixelWidth() {
+        double physicalWidth = getPhysicalWidth();
+        return isFullScreen()
+                ? physicalWidth / getWidth()
+                : physicalWidth / getMonitorWidth();
+    }
+
+    default double getPhysicalPixelHeight() {
+        double physicalHeight = getPhysicalHeight();
+        return isFullScreen()
+                ? physicalHeight / getHeight()
+                : physicalHeight / getMonitorHeight();
+    }
+
+    default double getPhysicalMonitorSize() {
+        double physicalWidth = getPhysicalWidth();
+        double physicalHeight = getPhysicalHeight();
+        return Math.sqrt(physicalWidth * physicalWidth + physicalHeight * physicalHeight);
+    }
+
+    default double getPhysicalWindowSize() {
+        if (isFullScreen()) {
+            return getPhysicalMonitorSize();
+        } else {
+            double widthFactor = (double) getWidth() / getMonitorWidth();
+            double heightFactor = (double) getHeight() / getMonitorHeight();
+            double physicalWidth = getPhysicalWidth() * widthFactor;
+            double physicalHeight = getPhysicalHeight() * heightFactor;
+            return Math.sqrt(physicalWidth * physicalWidth + physicalHeight * physicalHeight);
+        }
     }
 }

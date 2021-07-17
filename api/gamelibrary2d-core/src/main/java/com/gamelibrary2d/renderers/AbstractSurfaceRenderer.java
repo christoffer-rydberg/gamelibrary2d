@@ -1,16 +1,17 @@
 package com.gamelibrary2d.renderers;
 
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.glUtil.ShaderParameter;
 import com.gamelibrary2d.glUtil.ShaderProgram;
 import com.gamelibrary2d.resources.Surface;
 import com.gamelibrary2d.resources.Texture;
 
-abstract class AbstractSurfaceRenderer<T extends Surface> extends AbstractRenderer implements TexturedRenderer {
+abstract class AbstractSurfaceRenderer<T extends Surface> extends AbstractContentRenderer {
     private T surface;
     private Texture texture;
 
-    protected AbstractSurfaceRenderer(ShaderParameters parameters) {
-        super(parameters);
+    protected AbstractSurfaceRenderer(float[] shaderParameters) {
+        super(shaderParameters);
     }
 
     protected AbstractSurfaceRenderer() {
@@ -34,7 +35,6 @@ abstract class AbstractSurfaceRenderer<T extends Surface> extends AbstractRender
         this.surface = surface;
     }
 
-    @Override
     public Texture getTexture() {
         return texture;
     }
@@ -50,7 +50,7 @@ abstract class AbstractSurfaceRenderer<T extends Surface> extends AbstractRender
 
     @Override
     protected void applyParameters(float alpha) {
-        getParameters().set(ShaderParameters.IS_TEXTURED, texture != null ? 1 : 0);
+        setShaderParameter(ShaderParameter.TEXTURED, texture != null ? 1 : 0);
         super.applyParameters(alpha);
     }
 

@@ -2,12 +2,20 @@ package com.gamelibrary2d.tools.particlegenerator.panels;
 
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.objects.DefaultGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.renderers.*;
+import com.gamelibrary2d.components.widgets.DefaultWidget;
+import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.components.widgets.TextField;
+import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.glUtil.ShaderParameter;
+import com.gamelibrary2d.renderers.ContentRenderer;
+import com.gamelibrary2d.renderers.LineRenderer;
+import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.Font;
+import com.gamelibrary2d.resources.HorizontalTextAlignment;
+import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.tools.particlegenerator.ParticleGenerator;
 import com.gamelibrary2d.tools.particlegenerator.properties.BooleanProperty;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
@@ -18,11 +26,6 @@ import com.gamelibrary2d.tools.particlegenerator.resources.Fonts;
 import com.gamelibrary2d.tools.particlegenerator.resources.Surfaces;
 import com.gamelibrary2d.tools.particlegenerator.resources.Textures;
 import com.gamelibrary2d.tools.particlegenerator.widgets.*;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
-import com.gamelibrary2d.components.widgets.DefaultWidget;
-import com.gamelibrary2d.components.widgets.Label;
-import com.gamelibrary2d.components.widgets.TextField;
 
 public class PanelElement {
     private static final Color BASE_LINE_COLOR = Color.SOFT_BLUE;
@@ -35,8 +38,8 @@ public class PanelElement {
             Color color,
             HorizontalTextAlignment horizontalAlignment,
             VerticalTextAlignment verticalAlignment) {
-        TextRenderer textRenderer = new TextRenderer(font);
-        Label label = new Label(text, textRenderer, color);
+        Label label = new Label(font, text);
+        label.setColor(color);
         label.setAlignment(horizontalAlignment, verticalAlignment);
         return label;
     }
@@ -71,7 +74,7 @@ public class PanelElement {
             DefaultGameObject<Label> label = createParameterLabel(parameterName);
 
             LineRenderer lineRenderer = new LineRenderer();
-            lineRenderer.getParameters().setColor(Color.SILVER);
+            lineRenderer.setColor(Color.SILVER);
 
             Checkbox checkBox = new Checkbox(
                     Surfaces.defaultCheckbox(),
@@ -136,21 +139,21 @@ public class PanelElement {
         }
 
         private GameObject createPropertyWidget(FloatProperty property, Color backgroundColor) {
-            Renderer background = new SurfaceRenderer<>(
+            ContentRenderer background = new SurfaceRenderer<>(
                     Surfaces.propertyBaseLine(),
                     Textures.propertyBaseLine()
             );
 
-            background.getParameters().setColor(backgroundColor);
-            background.getParameters().set(ShaderParameters.ALPHA, 0.5f);
+            background.setColor(backgroundColor);
+            background.setShaderParameter(ShaderParameter.ALPHA, 0.5f);
 
-            FloatPropertyTextField textBox = new FloatPropertyTextField(new TextRenderer(Fonts.getDefaultFont()), property);
+            FloatPropertyTextField textBox = new FloatPropertyTextField(Fonts.getDefaultFont(), property);
             textBox.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.BASE_LINE);
 
             DefaultWidget<Renderable> propertyWidget = new DefaultWidget<>(textBox);
             propertyWidget.setBackground(background);
             propertyWidget.addFocusChangedListener(focused ->
-                    background.getParameters().setColor(focused ? Color.GOLD : backgroundColor));
+                    background.setColor(focused ? Color.GOLD : backgroundColor));
             propertyWidget.setBounds(Bounds.PROPERTY_BASE_LINE.pad(0, 0, 0, 15f));
 
             return propertyWidget;
@@ -204,21 +207,21 @@ public class PanelElement {
         }
 
         private GameObject createPropertyWidget(IntegerProperty property, Color backgroundColor) {
-            Renderer background = new SurfaceRenderer<>(
+            ContentRenderer background = new SurfaceRenderer<>(
                     Surfaces.propertyBaseLine(),
                     Textures.propertyBaseLine()
             );
 
-            background.getParameters().setColor(backgroundColor);
-            background.getParameters().set(ShaderParameters.ALPHA, 0.5f);
+            background.setColor(backgroundColor);
+            background.setShaderParameter(ShaderParameter.ALPHA, 0.5f);
 
-            TextField textBox = new IntegerPropertyTextField(new TextRenderer(Fonts.getDefaultFont()), property);
+            TextField textBox = new IntegerPropertyTextField(Fonts.getDefaultFont(), property);
             textBox.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.BASE_LINE);
 
             DefaultWidget<Renderable> propertyWidget = new DefaultWidget<>(textBox);
             propertyWidget.setBackground(background);
             propertyWidget.addFocusChangedListener(focused ->
-                    background.getParameters().setColor(focused ? Color.GOLD : backgroundColor));
+                    background.setColor(focused ? Color.GOLD : backgroundColor));
             propertyWidget.setBounds(Bounds.PROPERTY_BASE_LINE.pad(0, 0, 0, 15f));
 
             return propertyWidget;
@@ -239,7 +242,7 @@ public class PanelElement {
             boundingBox.setBounds(bounds);
 
             LineRenderer checkBoxRenderer = new LineRenderer();
-            checkBoxRenderer.getParameters().setColor(Color.SILVER);
+            checkBoxRenderer.setColor(Color.SILVER);
 
             Checkbox checkBox = new Checkbox(
                     Surfaces.cornerCheckbox(),
@@ -278,15 +281,15 @@ public class PanelElement {
         public Enum(String parameterName, Class<T> enumType, GenericProperty<T> property) {
             GameObject label = createParameterLabel(parameterName);
 
-            Renderer background = new SurfaceRenderer<>(
+            ContentRenderer background = new SurfaceRenderer<>(
                     Surfaces.propertyBaseLine(),
                     Textures.propertyBaseLine()
             );
 
-            background.getParameters().setColor(ENUM_BASE_LINE_COLOR);
-            background.getParameters().set(ShaderParameters.ALPHA, 0.5f);
+            background.setColor(ENUM_BASE_LINE_COLOR);
+            background.setShaderParameter(ShaderParameter.ALPHA, 0.5f);
 
-            DefaultGameObject<Renderer> backgroundObj = new DefaultGameObject<>(background);
+            DefaultGameObject<ContentRenderer> backgroundObj = new DefaultGameObject<>(background);
             backgroundObj.setPosition(-backgroundObj.getBounds().getLowerX(), 0f);
             backgroundObj.setBounds(Bounds.PROPERTY_BASE_LINE.pad(0, 0, 0, 15f));
 

@@ -7,20 +7,15 @@ import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
+import com.gamelibrary2d.components.objects.AnimatedGameObject;
+import com.gamelibrary2d.components.objects.GameObject;
+import com.gamelibrary2d.components.widgets.DefaultWidget;
+import com.gamelibrary2d.components.widgets.Label;
 import com.gamelibrary2d.imaging.AnimationLoader;
 import com.gamelibrary2d.imaging.ImageAnimation;
 import com.gamelibrary2d.imaging.StandardAnimationFormats;
-import com.gamelibrary2d.components.objects.AnimatedGameObject;
-import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.renderers.AnimationRenderer;
-import com.gamelibrary2d.renderers.TextRenderer;
-import com.gamelibrary2d.resources.Animation;
-import com.gamelibrary2d.resources.DefaultFont;
-import com.gamelibrary2d.resources.Font;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
-import com.gamelibrary2d.components.widgets.DefaultWidget;
-import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.resources.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,11 +40,9 @@ public class DemoFrame extends AbstractFrame {
     private GameObject createLoadButton() {
         Font font = DefaultFont.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 48), this);
 
-        Label label = new Label();
+        Label label = new Label(font, "Click here to load an animation");
         label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.CENTER);
-        label.setTextRenderer(new TextRenderer(font));
         label.setColor(Color.WHITE);
-        label.setText("Click here to load an animation");
 
         DefaultWidget<Label> loadButton = new DefaultWidget<>();
         loadButton.setContent(label);

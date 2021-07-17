@@ -5,18 +5,17 @@ import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.containers.DefaultPanel;
 import com.gamelibrary2d.components.containers.Panel;
 import com.gamelibrary2d.components.objects.GameObject;
+import com.gamelibrary2d.components.widgets.Label;
 import com.gamelibrary2d.particle.renderers.ParticleShape;
-import com.gamelibrary2d.renderers.TextRenderer;
+import com.gamelibrary2d.resources.BlendMode;
+import com.gamelibrary2d.resources.HorizontalTextAlignment;
+import com.gamelibrary2d.resources.PointSmoothing;
+import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
 import com.gamelibrary2d.tools.particlegenerator.properties.GenericProperty;
 import com.gamelibrary2d.tools.particlegenerator.resources.Fonts;
 import com.gamelibrary2d.tools.particlegenerator.widgets.Button;
-import com.gamelibrary2d.resources.BlendMode;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.PointSmoothing;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
-import com.gamelibrary2d.components.widgets.Label;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,11 +38,9 @@ public class RenderingPanel extends AbstractPanel<GameObject> {
     public RenderingPanel(ParticleSystemModel particleSystem) {
         fileChooser = new FileChooser(TEMP_PATH);
 
-        textureLabel = new Label();
-        textureLabel.setAlignment(HorizontalTextAlignment.LEFT, VerticalTextAlignment.BASE_LINE);
-        textureLabel.setTextRenderer(new TextRenderer(Fonts.getDefaultFont()));
+        textureLabel = new Label(Fonts.getDefaultFont(), "None");
         textureLabel.setColor(Color.SOFT_BLUE);
-        textureLabel.setText("None");
+        textureLabel.setAlignment(HorizontalTextAlignment.LEFT, VerticalTextAlignment.BASE_LINE);
 
         this.particleSystem = particleSystem;
         this.shapePanel = new ShapePanel(particleSystem);

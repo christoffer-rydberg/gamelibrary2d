@@ -1,7 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.server;
 
 import com.gamelibrary2d.collision.CollisionDetection;
-import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
@@ -35,11 +34,11 @@ public class DemoGameLogic {
     public void startGame(List<ServerPlayer> players) {
         gameOver = false;
 
-        Point center = settings.getGameBounds().getCenter();
-
+        float centerX = settings.getGameBounds().getCenterX();
+        float centerY = settings.getGameBounds().getCenterY();
         for (byte i = 0; i < players.size(); ++i) {
             ServerPlayer player = players.get(i);
-            player.setPosition(center);
+            player.setPosition(centerX, centerY);
             float initialRotation = RandomInstance.get().nextFloat() * 360f;
             player.setRotation(initialRotation);
             player.setSpeedAndDirection(ServerPlayer.MAX_SPEED, initialRotation);
@@ -48,7 +47,7 @@ public class DemoGameLogic {
         }
 
         ServerPortal portal = new ServerPortal(this, settings.getPortalBounds());
-        portal.setPosition(settings.getGameBounds().getCenter());
+        portal.setPosition(centerX, centerY);
         spawn(portal);
     }
 

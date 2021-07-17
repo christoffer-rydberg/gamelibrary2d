@@ -5,19 +5,19 @@ import com.gamelibrary2d.common.io.BufferUtils;
 import com.gamelibrary2d.framework.OpenGL;
 import com.gamelibrary2d.glUtil.MirroredBuffer;
 import com.gamelibrary2d.glUtil.OpenGLBuffer;
+import com.gamelibrary2d.glUtil.ShaderParameter;
 import com.gamelibrary2d.glUtil.ShaderProgram;
 import com.gamelibrary2d.renderers.AbstractArrayRenderer;
-import com.gamelibrary2d.renderers.ShaderParameters;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.resources.BlendMode;
 import com.gamelibrary2d.resources.PointSmoothing;
+import com.gamelibrary2d.resources.Texture;
 
 import java.nio.FloatBuffer;
 
 public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffer> implements ParticleRenderer {
-
     private final static String boundsUniformName = "bounds";
-
     private final FloatBuffer boundsBuffer = BufferUtils.createFloatBuffer(4);
+
     private float pointSize = 1f;
     private ParticleShape particleShape = ParticleShape.QUAD;
     private PointSmoothing pointSmoothing = PointSmoothing.FASTEST;
@@ -26,6 +26,7 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
 
     public EfficientParticleRenderer() {
         super(DrawMode.POINTS);
+        setBlendMode(BlendMode.ADDITIVE);
         setBounds(Rectangle.create(16f, 16f));
     }
 
@@ -94,9 +95,9 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
             Texture texture = getTexture();
             if (texture != null) {
                 texture.bind();
-                getParameters().set(ShaderParameters.IS_TEXTURED, 1);
+                setShaderParameter(ShaderParameter.TEXTURED, 1);
             } else {
-                getParameters().set(ShaderParameters.IS_TEXTURED, 0);
+                setShaderParameter(ShaderParameter.TEXTURED, 0);
             }
         } else {
             OpenGL.instance().glPointSize(pointSize);

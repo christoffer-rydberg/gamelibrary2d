@@ -1,5 +1,6 @@
 package com.gamelibrary2d.components.containers;
 
+import com.gamelibrary2d.Projection;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.denotations.Clearable;
@@ -7,7 +8,6 @@ import com.gamelibrary2d.components.denotations.NavigationAware;
 import com.gamelibrary2d.components.denotations.PointerAware;
 import com.gamelibrary2d.components.objects.AbstractGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.Projection;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

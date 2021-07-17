@@ -11,7 +11,7 @@ import com.gamelibrary2d.components.denotations.Parent;
 import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.particle.parameters.ParticleParameters;
 import com.gamelibrary2d.particle.parameters.PositionParameters;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.Quad;
 import com.gamelibrary2d.resources.Surface;
@@ -43,7 +43,7 @@ public class ParticleSystemSettingsPanel extends AbstractPanel<GameObject> imple
         private PositionParameters originalPositionParameters;
         private ParticleParameters originalParticleParameters;
 
-        private ResizeSlider(Renderer handle, ParticleSystemModel particleSystem) {
+        private ResizeSlider(ContentRenderer handle, ParticleSystemModel particleSystem) {
             super(handle, SliderDirection.HORIZONTAL, -50, 50, 2);
             addDragBeginListener(value -> {
                 originalPositionParameters = createCopy(particleSystem.getPositioner(), PositionParameters::new);
@@ -69,7 +69,7 @@ public class ParticleSystemSettingsPanel extends AbstractPanel<GameObject> imple
 
         static ResizeSlider create(ParticleSystemModel particleSystem, Disposer disposer) {
             Surface quad = Quad.create(Rectangle.create(32, 16), disposer);
-            Renderer handle = new SurfaceRenderer<>(quad, Textures.sliderHandle());
+            ContentRenderer handle = new SurfaceRenderer<>(quad, Textures.sliderHandle());
             return new ResizeSlider(handle, particleSystem);
         }
     }

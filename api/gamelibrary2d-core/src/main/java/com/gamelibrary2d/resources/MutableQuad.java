@@ -8,22 +8,22 @@ import com.gamelibrary2d.glUtil.ShaderProgram;
 
 import java.nio.FloatBuffer;
 
-public class DynamicQuad extends InternalAbstractQuad implements Surface {
+public class MutableQuad extends InternalAbstractQuad implements Surface {
     private QuadShape shape;
     private Rectangle bounds;
     private FloatBuffer verticeBuffer;
     private boolean verticesChanged;
 
-    private DynamicQuad(QuadShape shape) {
+    private MutableQuad(QuadShape shape) {
         this.shape = shape;
     }
 
-    public static DynamicQuad create(Disposer disposer) {
+    public static MutableQuad create(Disposer disposer) {
         return create(QuadShape.RECTANGLE, disposer);
     }
 
-    public static DynamicQuad create(QuadShape shape, Disposer disposer) {
-        DynamicQuad quad = new DynamicQuad(shape);
+    public static MutableQuad create(QuadShape shape, Disposer disposer) {
+        MutableQuad quad = new MutableQuad(shape);
         quad.setup();
         disposer.registerDisposal(quad);
         return quad;

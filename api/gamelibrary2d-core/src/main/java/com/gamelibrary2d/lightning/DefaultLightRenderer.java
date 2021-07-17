@@ -6,33 +6,24 @@ import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.io.BufferUtils;
 import com.gamelibrary2d.framework.OpenGL;
-import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.glUtil.ShaderProgram;
-import com.gamelibrary2d.glUtil.ShaderType;
-import com.gamelibrary2d.renderers.ShaderParameters;
+import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.glUtil.*;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.DefaultShader;
 import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.glUtil.OpenGLState;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultLightRenderer implements LightRenderer {
-
     private static final int MAXIMUM_LIGHT = 127;
-
-    private static final int PARAMETER_ALPHA_MAP_COLS = ShaderParameters.MIN_LENGTH;
-
-    private static final int PARAMETER_ALPHA_MAP_ROWS = ShaderParameters.MIN_LENGTH + 1;
+    private static final int PARAMETER_ALPHA_MAP_COLS = ShaderParameter.MIN_PARAMETERS;
+    private static final int PARAMETER_ALPHA_MAP_ROWS = ShaderParameter.MIN_PARAMETERS + 1;
 
     private final Point position = new Point();
-
     private final List<LightMap> lightMaps = new ArrayList<>();
-
     private final int windowWidth;
-
     private final int windowHeight;
 
     private int textureId;
@@ -82,14 +73,17 @@ public class DefaultLightRenderer implements LightRenderer {
         OpenGL.instance().glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
         OpenGL.instance().glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_NEAREST);
 
-        ShaderParameters parameters = new ShaderParameters(new float[ShaderParameters.MIN_LENGTH + 2]);
-        parameters.setColor(0, 0, 0, 1f);
-        renderer = new SurfaceRenderer<>(parameters);
+        renderer = new SurfaceRenderer<>(new float[ShaderParameter.MIN_PARAMETERS + 2]);
+        renderer.setColor(0, 0, 0, 1f);
         renderer.setShaderProgram(shaderProgram);
     }
 
     public static DefaultLightRenderer create(int windowWidth, int windowHeight, Disposer disposer) {
         return new DefaultLightRenderer(windowWidth, windowHeight, disposer);
+    }
+
+    public static DefaultLightRenderer create(Window window, Disposer disposer) {
+        return new DefaultLightRenderer(window.getWidth(), window.getHeight(), disposer);
     }
 
     public void clearLightMaps() {
@@ -205,8 +199,8 @@ public class DefaultLightRenderer implements LightRenderer {
 
         // Render
         ModelMatrix.instance().translatef(position.getX(), position.getY(), 0);
-        renderer.getParameters().set(PARAMETER_ALPHA_MAP_COLS, alphaMapCols);
-        renderer.getParameters().set(PARAMETER_ALPHA_MAP_ROWS, alphaMapRows);
+        renderer.setShaderParameter(PARAMETER_ALPHA_MAP_COLS, alphaMapCols);
+        renderer.setShaderParameter(PARAMETER_ALPHA_MAP_ROWS, alphaMapRows);
         renderer.render(alpha);
     }
 

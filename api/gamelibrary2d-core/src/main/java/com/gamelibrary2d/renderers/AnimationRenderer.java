@@ -3,11 +3,11 @@ package com.gamelibrary2d.renderers;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.components.denotations.Bounded;
 import com.gamelibrary2d.glUtil.*;
 import com.gamelibrary2d.resources.*;
-import com.gamelibrary2d.resources.BlendMode;
 
-public class AnimationRenderer extends AbstractRenderer {
+public class AnimationRenderer extends AbstractContentRenderer implements Bounded {
     private final Disposer disposer;
     private Animation animation;
     private AnimationBackgroundBuffer backgroundBuffer;
@@ -118,7 +118,7 @@ public class AnimationRenderer extends AbstractRenderer {
     }
 
     private int getFrameIndex(int previousIndex) {
-        float time = getParameters().get(ShaderParameters.TIME);
+        float time = getShaderParameter(ShaderParameter.TIME);
         if (globalFrameDuration > 0f) {
             int size = animation.getFrames().size();
             int index = (int) (time / globalFrameDuration);
@@ -155,7 +155,7 @@ public class AnimationRenderer extends AbstractRenderer {
 
     @Override
     protected void applyParameters(float alpha) {
-        getParameters().set(ShaderParameters.IS_TEXTURED, 1);
+        setShaderParameter(ShaderParameter.TEXTURED, 1);
         super.applyParameters(alpha);
     }
 
@@ -260,7 +260,7 @@ public class AnimationRenderer extends AbstractRenderer {
             modelMatrix.pushMatrix();
             modelMatrix.clearMatrix();
 
-            float alpha = shaderProgram.getParameter(ShaderParameters.ALPHA);
+            float alpha = shaderProgram.getParameter(ShaderParameter.ALPHA);
             BlendMode blendMode = OpenGLUtils.getBlendMode();
 
             // Disable blend mode
@@ -294,7 +294,7 @@ public class AnimationRenderer extends AbstractRenderer {
                     }
 
                     if (frame.getRenderToBackgroundHint()) {
-                        if (shaderProgram.setParameter(ShaderParameters.ALPHA, 1f)) {
+                        if (shaderProgram.setParameter(ShaderParameter.ALPHA, 1f)) {
                             shaderProgram.applyParameters();
                         }
 

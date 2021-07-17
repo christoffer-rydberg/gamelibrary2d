@@ -1,11 +1,10 @@
 package com.gamelibrary2d.components.widgets;
 
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.framework.Keyboard;
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.components.denotations.InputAware;
 import com.gamelibrary2d.components.denotations.KeyAware;
-import com.gamelibrary2d.renderers.TextRenderer;
+import com.gamelibrary2d.framework.Keyboard;
+import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.resources.Font;
 
 public class TextField extends Label implements Renderable, KeyAware, InputAware {
 
@@ -13,20 +12,12 @@ public class TextField extends Label implements Renderable, KeyAware, InputAware
 
     }
 
-    public TextField(TextRenderer textRenderer) {
-        super(textRenderer);
+    public TextField(Font font) {
+        super(font);
     }
 
-    public TextField(String text, TextRenderer textRenderer) {
-        super(text, textRenderer);
-    }
-
-    public TextField(TextRenderer textRenderer, Color color) {
-        super(textRenderer, color);
-    }
-
-    public TextField(String text, TextRenderer textRenderer, Color color) {
-        super(text, textRenderer, color);
+    public TextField(Font font, String text) {
+        super(font, text);
     }
 
     public void addChar(char c) {

@@ -1,8 +1,12 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
 import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.components.containers.BasicLayer;
+import com.gamelibrary2d.components.containers.DefaultLayerObject;
+import com.gamelibrary2d.components.containers.Layer;
+import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
@@ -21,17 +25,11 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Surfaces;
 import com.gamelibrary2d.demos.networkgame.client.urls.Images;
 import com.gamelibrary2d.demos.networkgame.client.urls.Music;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
-import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.components.containers.BasicLayer;
-import com.gamelibrary2d.components.containers.DefaultLayerObject;
-import com.gamelibrary2d.components.containers.Layer;
-import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.network.AbstractNetworkFrame;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.renderers.TextRenderer;
 import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.resources.Texture;
 import com.gamelibrary2d.sound.MusicPlayer;
@@ -99,8 +97,11 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
         textures.initialize(this);
         effects.initialize(textures, this);
 
-        timeLabel = new TimeLabel(new TextRenderer(Fonts.timer()));
-        timeLabel.setPosition(game.getWindow().getWidth() / 2f, 9 * game.getWindow().getHeight() / 10f);
+        Window window = game.getWindow();
+        timeLabel = new TimeLabel(Fonts.timer());
+        timeLabel.setPosition(
+                window.getWidth() / 2f,
+                9 * window.getHeight() / 10f);
     }
 
     @Override
@@ -160,7 +161,7 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
     private Renderable createBackground(Rectangle windowBounds, Rectangle gameBounds) {
         PictureFrame gameFrame = PictureFrame.create(windowBounds, gameBounds, Color.BLACK, this);
 
-        Renderer background = new SurfaceRenderer<>(
+        ContentRenderer background = new SurfaceRenderer<>(
                 Surfaces.coverArea(
                         gameBounds,
                         backgroundTexture.getWidth(),
@@ -245,14 +246,14 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
     }
 
     public void gameOver() {
-        Point portalPosition = gameSettings.getGameBounds().getCenter();
+        Rectangle gameBounds = gameSettings.getGameBounds();
 
         ParallelUpdater parallelUpdater = new ParallelUpdater();
         objectLayer.getChildren().stream()
                 .map(obj -> new DurationUpdater(
                         2f,
                         true,
-                        new SuckedIntoPortalUpdate(obj, portalPosition)))
+                        new SuckedIntoPortalUpdate(obj, gameBounds.getCenterX(), gameBounds.getCenterY())))
                 .forEach(parallelUpdater::add);
 
         SequentialUpdater sequentialUpdater = new SequentialUpdater();
@@ -284,12 +285,12 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
 
         private float timer;
 
-        SuckedIntoPortalUpdate(ClientObject target, Point goal) {
+        SuckedIntoPortalUpdate(ClientObject target, float goalX, float goalY) {
             this.target = target;
             this.originX = target.getPosition().getX();
             this.originY = target.getPosition().getY();
-            this.goalX = goal.getX();
-            this.goalY = goal.getY();
+            this.goalX = goalX;
+            this.goalY = goalY;
         }
 
         @Override

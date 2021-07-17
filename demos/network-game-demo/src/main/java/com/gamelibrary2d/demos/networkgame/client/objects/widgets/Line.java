@@ -34,8 +34,8 @@ public class Line implements Renderable {
     }
 
     public void refresh() {
-        nodes.set(0, start.getX(), start.getY());
-        nodes.set(1, end.getX(), end.getY());
+        nodes.set(0, start);
+        nodes.set(1, end);
         nodes.updateGPU(0, 2);
     }
 

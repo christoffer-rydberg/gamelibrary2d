@@ -1,55 +1,37 @@
 package com.gamelibrary2d.components.widgets;
 
-import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.components.widgets.listeners.TextChangedListener;
 import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.renderers.ShaderParameters;
-import com.gamelibrary2d.renderers.TextRenderer;
+import com.gamelibrary2d.renderers.ContentRenderer;
+import com.gamelibrary2d.renderers.DefaultTextRenderer;
 import com.gamelibrary2d.resources.Font;
 import com.gamelibrary2d.resources.HorizontalTextAlignment;
 import com.gamelibrary2d.resources.VerticalTextAlignment;
-import com.gamelibrary2d.components.widgets.listeners.TextChangedListener;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Label implements Renderable {
+public class Label implements ContentRenderer {
+    private final DefaultTextRenderer textRenderer;
     private final List<TextChangedListener> textChangedListeners = new CopyOnWriteArrayList<>();
 
-    private String text = "";
-    private TextRenderer textRenderer;
-    private Color color;
-
-    private HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.CENTER;
-    private VerticalTextAlignment verticalAlignment = VerticalTextAlignment.CENTER;
-
+    private String text;
     private float rowHeight;
-    private float width = Float.MAX_VALUE;
-    private float height = Float.MAX_VALUE;
+    private float maxWidth = Float.MAX_VALUE;
+    private float maxHeight = Float.MAX_VALUE;
 
     public Label() {
-
+        this.textRenderer = new DefaultTextRenderer();
     }
 
-    public Label(TextRenderer textRenderer) {
-        setTextRenderer(textRenderer);
+    public Label(Font font) {
+        this.textRenderer = new DefaultTextRenderer(font);
     }
 
-    public Label(String text, TextRenderer textRenderer) {
-        setText(text);
-        setTextRenderer(textRenderer);
-    }
-
-    public Label(TextRenderer textRenderer, Color color) {
-        setTextRenderer(textRenderer);
-        setColor(color);
-    }
-
-    public Label(String text, TextRenderer textRenderer, Color color) {
-        setText(text);
-        setTextRenderer(textRenderer);
-        setColor(color);
+    public Label(Font font, String text) {
+        this(font);
+        this.text = text;
     }
 
     private static boolean isNewLine(String text, int index) {
@@ -67,12 +49,18 @@ public class Label implements Renderable {
         }
     }
 
-    public Color getColor() {
-        return color;
+    public String getText() {
+        return text;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
+    public void setText(String text) {
+        String oldText = this.text;
+        if (!text.equals(oldText)) {
+            this.text = text;
+            for (TextChangedListener listener : textChangedListeners) {
+                listener.onTextChanged(oldText, text);
+            }
+        }
     }
 
     public void addTextChangedListener(TextChangedListener listener) {
@@ -83,49 +71,20 @@ public class Label implements Renderable {
         textChangedListeners.remove(listener);
     }
 
-    public TextRenderer getTextRenderer() {
-        return textRenderer;
+    public float getMaxWidth() {
+        return maxWidth;
     }
 
-    public void setTextRenderer(TextRenderer textRenderer) {
-        this.textRenderer = textRenderer;
+    public void setMaxWidth(float maxWidth) {
+        this.maxWidth = maxWidth;
     }
 
-    public void setAlignment(HorizontalTextAlignment horizontal, VerticalTextAlignment vertical) {
-        setHorizontalAlignment(horizontal);
-        setVerticalAlignment(vertical);
+    public float getMaxHeight() {
+        return maxHeight;
     }
 
-    public HorizontalTextAlignment getHorizontalAlignment() {
-        return horizontalAlignment;
-    }
-
-    public void setHorizontalAlignment(HorizontalTextAlignment horizontalAlignment) {
-        this.horizontalAlignment = horizontalAlignment;
-    }
-
-    public VerticalTextAlignment getVerticalAlignment() {
-        return verticalAlignment;
-    }
-
-    public void setVerticalAlignment(VerticalTextAlignment verticalAlignment) {
-        this.verticalAlignment = verticalAlignment;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
-    public float getHeight() {
-        return height;
-    }
-
-    public void setHeight(float height) {
-        this.height = height;
+    public void setMaxHeight(float maxHeight) {
+        this.maxHeight = maxHeight;
     }
 
     public float getRowHeight() {
@@ -136,18 +95,7 @@ public class Label implements Renderable {
         this.rowHeight = rowHeight;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        String oldText = this.text;
-        this.text = text;
-        for (TextChangedListener listener : textChangedListeners) {
-            listener.onTextChanged(oldText, text);
-        }
-    }
-
+    @Override
     public void render(float alpha) {
         render(alpha, 0, text.length());
     }
@@ -161,27 +109,9 @@ public class Label implements Renderable {
      * @return Text offset where rendering stopped, i.e. the first index that wasn't rendered.
      */
     public int render(float alpha, int offset, int len) {
-        if (textRenderer == null) {
-            return offset;
-        } else if (color == null) {
-            return onRender(alpha, offset, len);
-        }
-
-        ShaderParameters params = textRenderer.getParameters();
-        float r = params.get(ShaderParameters.COLOR_R);
-        float g = params.get(ShaderParameters.COLOR_G);
-        float b = params.get(ShaderParameters.COLOR_B);
-        float a = params.get(ShaderParameters.ALPHA);
-
-        params.setColor(color);
-
-        int index = onRender(alpha, offset, len);
-
-        params.set(ShaderParameters.COLOR_R, r);
-        params.set(ShaderParameters.COLOR_G, g);
-        params.set(ShaderParameters.COLOR_B, b);
-        params.set(ShaderParameters.ALPHA, a);
-
+        ModelMatrix.instance().pushMatrix();
+        int index = iterateRows(offset, len, true, alpha, null);
+        ModelMatrix.instance().popMatrix();
         return index;
     }
 
@@ -191,36 +121,17 @@ public class Label implements Renderable {
         return output.bounds;
     }
 
-    private int onRender(float alpha, int offset, int len) {
-        ModelMatrix.instance().pushMatrix();
-        int index = iterateRows(offset, len, true, alpha, null);
-        ModelMatrix.instance().popMatrix();
-        return index;
-    }
-
-    private Rectangle getRowBounds(Font font, int offset, int len) {
-        float textWidth = font.getTextWidth(text, offset, len);
-        float offsetX = offsetFromHorizontalAlignment(textWidth);
-        float offsetY = offsetFromVerticalAlignment(font);
-        return new Rectangle(
-                offsetX,
-                offsetY - font.getDescent(),
-                textWidth + offsetX,
-                offsetY + font.getAscent());
-    }
-
     private int iterateRows(int offset, int len, boolean render, float alpha, TextBoundsOutput output) {
-        final float rowHeight = this.rowHeight > 0 ? this.rowHeight : textRenderer.getFont().getHeight();
-        final TextRenderer textRenderer = this.getTextRenderer();
-        final Font font = textRenderer.getFont();
-        final int rowCount = (int) (height / font.getHeight());
+        final Font font = getFont();
+        final int rowCount = (int) (maxHeight / font.getHeight());
+        final float rowHeight = this.rowHeight > 0 ? this.rowHeight : getFont().getHeight();
 
         int currentRow = 0;
         int rowStart = offset;
         int rowEnd = offset;
         int end = len + offset;
         while (rowStart < end && currentRow < rowCount) {
-            rowEnd = Math.min(getRowEnd(text, rowStart, width), end);
+            rowEnd = Math.min(getRowEnd(text, rowStart, maxWidth), end);
 
             boolean endOfText = rowEnd == end;
             int newLineSize = endOfText ? 0 : getNewLineSize(text, rowEnd);
@@ -235,11 +146,12 @@ public class Label implements Renderable {
             int rowLength = rowEnd - rowStart;
 
             if (output != null) {
-                output.expandBounds(getRowBounds(font, rowStart, rowLength).move(0, -currentRow * rowHeight));
+                output.expandBounds(textRenderer.calculateBounds(text, rowStart, rowLength).move(0, -currentRow * rowHeight));
             }
 
             if (render) {
-                renderRow(textRenderer, alpha, font.getTextWidth(text, rowStart, rowLength), rowHeight, rowStart, rowLength);
+                textRenderer.render(alpha, text, rowStart, rowLength);
+                ModelMatrix.instance().translatef(0, -rowHeight, 0);
             }
 
             rowStart = newLineSeparatorFound ? rowEnd + newLineSize : consumeSeparators(text, rowEnd, end);
@@ -258,51 +170,6 @@ public class Label implements Renderable {
         return index;
     }
 
-    private void renderRow(TextRenderer textRenderer, float alpha,
-                           float rowWidth, float rowHeight, int offset, int len) {
-        final float xOffset = offsetFromHorizontalAlignment(rowWidth);
-        final float yOffset = offsetFromVerticalAlignment(textRenderer.getFont());
-
-        if (xOffset != 0 || yOffset != 0) {
-            ModelMatrix.instance().pushMatrix();
-            ModelMatrix.instance().translatef(xOffset, yOffset, 0);
-        }
-
-        textRenderer.setText(text, offset, len);
-        textRenderer.render(alpha);
-
-        if (xOffset != 0 || yOffset != 0) {
-            ModelMatrix.instance().popMatrix();
-        }
-
-        ModelMatrix.instance().translatef(0, -rowHeight, 0);
-    }
-
-    private float offsetFromHorizontalAlignment(float size) {
-        switch (horizontalAlignment) {
-            case RIGHT:
-                return -size;
-            case CENTER:
-                return -size / 2;
-            default:
-                return 0;
-        }
-    }
-
-    private float offsetFromVerticalAlignment(Font font) {
-        switch (verticalAlignment) {
-            case TOP:
-                return -font.getAscent();
-            case CENTER:
-                return (font.getAscent() + font.getDescent()) / 2f - font.getAscent();
-            case BOTTOM:
-                return font.getDescent();
-            case BASE_LINE:
-            default:
-                return 0;
-        }
-    }
-
     private int getRowEnd(String text, int startIndex, float pixelWidth) {
         final int length = text.length();
         while (startIndex < length && pixelWidth > 0) {
@@ -310,7 +177,7 @@ public class Label implements Renderable {
                 break;
             }
 
-            Font font = getTextRenderer().getFont();
+            Font font = getFont();
             pixelWidth -= font.getTextWidth(text, startIndex, 1);
             if (pixelWidth > 0) {
                 ++startIndex;
@@ -318,6 +185,50 @@ public class Label implements Renderable {
         }
 
         return startIndex;
+    }
+
+    public Font getFont() {
+        return textRenderer.getFont();
+    }
+
+    public void setFont(Font font) {
+        textRenderer.setFont(font);
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return Rectangle.EMPTY;
+    }
+
+    @Override
+    public float getShaderParameter(int index) {
+        return textRenderer.getShaderParameter(index);
+    }
+
+    public HorizontalTextAlignment getHorizontalAlignment() {
+        return textRenderer.getHorizontalAlignment();
+    }
+
+    public void setHorizontalAlignment(HorizontalTextAlignment horizontalAlignment) {
+        textRenderer.setHorizontalAlignment(horizontalAlignment);
+    }
+
+    public VerticalTextAlignment getVerticalAlignment() {
+        return textRenderer.getVerticalAlignment();
+    }
+
+    public void setVerticalAlignment(VerticalTextAlignment verticalAlignment) {
+        textRenderer.setVerticalAlignment(verticalAlignment);
+    }
+
+    public void setAlignment(HorizontalTextAlignment horizontal, VerticalTextAlignment vertical) {
+        setHorizontalAlignment(horizontal);
+        setVerticalAlignment(vertical);
+    }
+
+    @Override
+    public void setShaderParameter(int index, float value) {
+        textRenderer.setShaderParameter(index, value);
     }
 
     private static class TextBoundsOutput {

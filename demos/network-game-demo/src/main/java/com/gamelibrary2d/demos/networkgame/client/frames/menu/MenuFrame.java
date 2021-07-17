@@ -1,6 +1,17 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.components.containers.BasicLayer;
+import com.gamelibrary2d.components.containers.DefaultLayerObject;
+import com.gamelibrary2d.components.containers.Layer;
+import com.gamelibrary2d.components.containers.LayerObject;
+import com.gamelibrary2d.components.denotations.KeyAware;
+import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.components.frames.AbstractFrame;
+import com.gamelibrary2d.components.frames.InitializationContext;
+import com.gamelibrary2d.components.objects.DefaultGameObject;
+import com.gamelibrary2d.components.objects.GameObject;
+import com.gamelibrary2d.components.widgets.Label;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.Button;
@@ -8,31 +19,18 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.demos.networkgame.client.resources.Surfaces;
 import com.gamelibrary2d.demos.networkgame.client.urls.Images;
 import com.gamelibrary2d.demos.networkgame.client.urls.Music;
-import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.components.containers.*;
-import com.gamelibrary2d.components.denotations.KeyAware;
-import com.gamelibrary2d.components.denotations.Updatable;
-import com.gamelibrary2d.components.objects.DefaultGameObject;
-import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.renderers.TextRenderer;
-import com.gamelibrary2d.resources.DefaultTexture;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.Surface;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.resources.*;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
 import com.gamelibrary2d.updaters.DurationUpdater;
 import com.gamelibrary2d.updaters.InstantUpdater;
 import com.gamelibrary2d.updaters.SequentialUpdater;
 import com.gamelibrary2d.updates.OpacityUpdate;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
-import com.gamelibrary2d.components.widgets.Label;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,8 +62,9 @@ public class MenuFrame extends AbstractFrame implements KeyAware {
     private Renderable createBackground() throws IOException {
         Texture backgroundTexture = resourceManager.load(Images.MENU_BACKGROUND, this::createTexture);
 
+        Window window = game.getWindow();
         Surface backgroundSurface = Surfaces.coverArea(
-                new Rectangle(0, 0, game.getWindow().getWidth(), game.getWindow().getHeight()),
+                new Rectangle(0, 0, window.getWidth(), window.getHeight()),
                 backgroundTexture.getWidth(),
                 backgroundTexture.getHeight(),
                 this);
@@ -86,7 +85,7 @@ public class MenuFrame extends AbstractFrame implements KeyAware {
                 stream -> DefaultTexture.create(stream, this));
 
         Surface surface = Quad.create(Rectangle.create(texture.getWidth(), texture.getHeight()), this);
-        Renderer renderer = new SurfaceRenderer<>(surface, texture);
+        ContentRenderer renderer = new SurfaceRenderer<>(surface, texture);
         return new DefaultGameObject<>(renderer);
     }
 
@@ -181,7 +180,7 @@ public class MenuFrame extends AbstractFrame implements KeyAware {
     }
 
     private Button createCreditsButton() {
-        Label label = new Label("Credits", new TextRenderer(Fonts.button()));
+        Label label = new Label(Fonts.button(), "Credits");
         label.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.BOTTOM);
         return new Button(label, label.calculateBounds(), this::showCredits);
     }

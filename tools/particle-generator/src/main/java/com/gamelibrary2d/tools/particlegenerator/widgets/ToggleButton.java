@@ -4,13 +4,18 @@ import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.widgets.AbstractWidget;
 import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.glUtil.ShaderParameter;
+import com.gamelibrary2d.resources.Font;
 
 public class ToggleButton extends AbstractWidget<Label> {
     private boolean toggled;
-    private Color defaultColor;
+    private float defaultR;
+    private float defaultG;
+    private float defaultB;
+    private float defaultA;
 
-    public ToggleButton() {
-        setContent(new Label());
+    public ToggleButton(Font font, String text) {
+        setContent(new Label(font, text));
     }
 
     public boolean isToggled() {
@@ -20,10 +25,13 @@ public class ToggleButton extends AbstractWidget<Label> {
     public void setToggled(boolean toggled) {
         this.toggled = toggled;
         if (toggled) {
-            defaultColor = getContent().getColor();
+            defaultR = getContent().getShaderParameter(ShaderParameter.COLOR_R);
+            defaultG = getContent().getShaderParameter(ShaderParameter.COLOR_G);
+            defaultB = getContent().getShaderParameter(ShaderParameter.COLOR_B);
+            defaultA = getContent().getShaderParameter(ShaderParameter.ALPHA);
             getContent().setColor(Color.GREEN);
         } else {
-            getContent().setColor(defaultColor);
+            getContent().setColor(defaultR, defaultG, defaultB, defaultA);
         }
     }
 

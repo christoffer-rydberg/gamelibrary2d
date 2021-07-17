@@ -7,14 +7,14 @@ import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.objects.AbstractCursor;
 import com.gamelibrary2d.particle.SequentialParticleEmitter;
 import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.renderers.ContentRenderer;
 
 public class Cursor extends AbstractCursor implements Updatable {
-    private final Renderer renderer;
+    private final ContentRenderer renderer;
     private final DefaultDynamicLightMap lightMap;
     private final SequentialParticleEmitter particleEmitter;
 
-    Cursor(Game game, Renderer renderer, DefaultDynamicLightMap lightMap, DefaultParticleSystem particleSystem) {
+    Cursor(Game game, ContentRenderer renderer, DefaultDynamicLightMap lightMap, DefaultParticleSystem particleSystem) {
         super(game, 0);
         this.renderer = renderer;
         this.lightMap = lightMap;

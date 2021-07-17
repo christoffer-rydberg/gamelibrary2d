@@ -5,7 +5,6 @@ import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.io.BufferUtils;
 import com.gamelibrary2d.framework.OpenGL;
 import com.gamelibrary2d.framework.Runtime;
-import com.gamelibrary2d.renderers.ShaderParameters;
 import com.gamelibrary2d.resources.Shader;
 
 import java.nio.FloatBuffer;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShaderProgram implements Disposable {
-
     private final static String PARAMETERS_ATTRIBUTE = "parameters";
     private final static int LOCATION_NOT_FOUND = Integer.MIN_VALUE;
     private static int activeProgram;
@@ -23,7 +21,7 @@ public class ShaderProgram implements Disposable {
     private static ShaderProgram quadParticleShaderProgram;
     private static ShaderProgram pointShaderProgram;
     private static ShaderProgram quadShaderProgram;
-    private final FloatBuffer parameters = BufferUtils.createFloatBuffer(ShaderParameters.MAX_LENGTH);
+    private final FloatBuffer parameters = BufferUtils.createFloatBuffer(ShaderParameter.MAX_PARAMETERS);
     private boolean initialized;
     private int programId;
     private int uniModel;
@@ -141,7 +139,7 @@ public class ShaderProgram implements Disposable {
         initialized = true;
     }
 
-    public void initializeMvp(int windowWidth, int windowHeight) {
+    public void initializeMvp(float windowWidth, float windowHeight) {
         if (!initialized) {
             throw new IllegalStateException("The shader program has not been initialized.");
         }

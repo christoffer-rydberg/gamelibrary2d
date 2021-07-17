@@ -5,14 +5,14 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.objects.AbstractGameObject;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.renderers.ContentRenderer;
 
 public class SpaceCraft extends AbstractGameObject implements Updatable {
     private final Rectangle area;
-    private final Renderer renderer;
+    private final ContentRenderer renderer;
     private final Point delta;
 
-    public SpaceCraft(Rectangle area, Renderer renderer) {
+    public SpaceCraft(Rectangle area, ContentRenderer renderer) {
         this.area = area;
         this.renderer = renderer;
         float direction = RandomInstance.get().nextFloat() * 360f;
@@ -31,11 +31,11 @@ public class SpaceCraft extends AbstractGameObject implements Updatable {
         return distDecimals * width + min;
     }
 
-    private static void wrap(Rectangle area, Point p) {
-        float x = getInRange(p.getX(), area.getLowerX(), area.getUpperX());
-        float y = getInRange(p.getY(), area.getLowerY(), area.getUpperY());
-        p.set(x, y);
-        p.add(area.getLowerX(), area.getLowerY());
+    private static void wrap(Rectangle area, Point position) {
+        float x = getInRange(position.getX(), area.getLowerX(), area.getUpperX());
+        float y = getInRange(position.getY(), area.getLowerY(), area.getUpperY());
+        position.set(x, y);
+        position.add(area.getLowerX(), area.getLowerY());
     }
 
     @Override

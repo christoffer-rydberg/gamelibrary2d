@@ -1,10 +1,10 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network;
 
 import com.gamelibrary2d.common.Point;
+import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.DurationEffect;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.InstantEffect;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.components.objects.GameObject;
 
 public interface ClientObject extends GameObject {
 

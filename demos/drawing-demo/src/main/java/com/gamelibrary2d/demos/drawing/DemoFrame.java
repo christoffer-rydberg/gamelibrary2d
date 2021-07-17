@@ -4,16 +4,16 @@ import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomGenerator;
 import com.gamelibrary2d.common.random.RandomInstance;
+import com.gamelibrary2d.components.containers.BasicLayer;
+import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.framework.Mouse;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.glUtil.PositionBuffer;
-import com.gamelibrary2d.components.containers.BasicLayer;
-import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.renderers.*;
-import com.gamelibrary2d.resources.DynamicQuad;
+import com.gamelibrary2d.resources.MutableQuad;
 import com.gamelibrary2d.resources.Quad;
 
 public class DemoFrame extends AbstractFrame {
@@ -37,19 +37,19 @@ public class DemoFrame extends AbstractFrame {
                 4f);
 
         lineTool.addGeometryCreatedListener(line -> {
-            randomizeColor(line.getRenderer().getParameters());
+            randomizeColor(line.getRenderer());
             objLayer.getContent().add(line);
             objLayer.flushCache();
         });
 
         QuadTool quadTool = new QuadTool(
                 Mouse.instance().mouseButton2(),
-                DynamicQuad.create(this),
+                MutableQuad.create(this),
                 r -> Quad.create(r, this));
 
         quadTool.addQuadCreatedListener(quad -> {
-            Renderer renderer = new SurfaceRenderer<>(quad);
-            randomizeColor(renderer.getParameters());
+            ContentRenderer renderer = new SurfaceRenderer<>(quad);
+            randomizeColor(renderer);
             objLayer.getContent().add(renderer);
             objLayer.flushCache();
         });
@@ -59,9 +59,9 @@ public class DemoFrame extends AbstractFrame {
         add(quadTool);
     }
 
-    private void randomizeColor(ShaderParameters params) {
+    private void randomizeColor(Renderer renderer) {
         RandomGenerator random = RandomInstance.get();
-        params.setColor(
+        renderer.setColor(
                 random.nextFloat(),
                 random.nextFloat(),
                 random.nextFloat()

@@ -3,15 +3,15 @@ package com.gamelibrary2d.demos.lightning;
 import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.io.ResourceReader;
+import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.lightning.*;
 import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
 import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
-import com.gamelibrary2d.renderers.Renderer;
+import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.resources.Quad;
@@ -47,12 +47,12 @@ class DemoFrame extends AbstractFrame {
 
     private Renderable createTorch(DefaultParticleSystem particleSystem, DefaultDynamicLightMap lightMap) throws IOException {
         Rectangle bounds = Rectangle.create(32, 64).move(11, -22);
-        Renderer renderer = createRenderer(bounds, "torch.png");
+        ContentRenderer renderer = createRenderer(bounds, "torch.png");
         return new Cursor(game, renderer, lightMap, particleSystem);
     }
 
     private LightRenderer createLightRenderer(Window window, LightMap lightMap) {
-        DefaultLightRenderer lightRenderer = DefaultLightRenderer.create(window.getWidth(), window.getHeight(), this);
+        DefaultLightRenderer lightRenderer = DefaultLightRenderer.create(window, this);
         lightRenderer.addLightMap(lightMap);
         lightRenderer.prepare(32, 32);
         return lightRenderer;
@@ -69,7 +69,7 @@ class DemoFrame extends AbstractFrame {
             Window window = game.getWindow();
             DefaultParticleSystem particleSystem = createParticleSystem();
             DefaultDynamicLightMap lightMap = new DefaultDynamicLightMap(new DefaultLightSpreadMatrix(20));
-            DefaultLayerObject frameLayer = new DefaultLayerObject<>();
+            DefaultLayerObject<Renderable> frameLayer = new DefaultLayerObject<>();
             frameLayer.getBackground().add(createBackground(window));
             frameLayer.add(createTorch(particleSystem, lightMap));
             frameLayer.getForeground().add(particleSystem);

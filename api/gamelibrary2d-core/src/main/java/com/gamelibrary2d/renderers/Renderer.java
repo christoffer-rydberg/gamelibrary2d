@@ -1,12 +1,32 @@
 package com.gamelibrary2d.renderers;
 
-import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.components.denotations.Bounded;
+import com.gamelibrary2d.common.Color;
+import com.gamelibrary2d.glUtil.ShaderParameter;
 
-public interface Renderer extends Bounded, Renderable {
+public interface Renderer {
 
-    @Override
-    void render(float alpha);
+    float getShaderParameter(int index);
 
-    ShaderParameters getParameters();
+    void setShaderParameter(int index, float value);
+
+    default void setColor(Color color) {
+        setColor(color, color.getA());
+    }
+
+    default void setColor(Color color, float alpha) {
+        setColor(color.getR(), color.getG(), color.getB(), alpha);
+    }
+
+    default void setColor(float r, float g, float b) {
+        setShaderParameter(ShaderParameter.COLOR_R, r);
+        setShaderParameter(ShaderParameter.COLOR_G, g);
+        setShaderParameter(ShaderParameter.COLOR_B, b);
+    }
+
+    default void setColor(float r, float g, float b, float a) {
+        setShaderParameter(ShaderParameter.COLOR_R, r);
+        setShaderParameter(ShaderParameter.COLOR_G, g);
+        setShaderParameter(ShaderParameter.COLOR_B, b);
+        setShaderParameter(ShaderParameter.ALPHA, a);
+    }
 }

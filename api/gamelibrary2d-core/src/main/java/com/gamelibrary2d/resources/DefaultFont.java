@@ -62,32 +62,6 @@ public class DefaultFont implements Font, Serializable {
         return new DefaultFont(texture, quads, ascent, descent, height);
     }
 
-    @Override
-    public void serialize(DataBuffer buffer) {
-        buffer.putInt(ascent);
-        buffer.putInt(descent);
-        buffer.putInt(height);
-
-        buffer.putInt(quads.size());
-        for (Character character : quads.keySet()) {
-            Quad quad = quads.get(character);
-            int charInt = (int) character;
-            buffer.putInt(charInt);
-            serializeRectangle(quad.getBounds(), buffer);
-            serializeRectangle(quad.getTextureBounds(), buffer);
-        }
-
-        Image textureImage = texture.loadImage();
-        buffer.putInt(textureImage.getWidth());
-        buffer.putInt(textureImage.getHeight());
-        buffer.putInt(textureImage.getChannels());
-
-        byte[] imageData = textureImage.getData();
-
-        buffer.putInt(imageData.length);
-        buffer.put(imageData);
-    }
-
     private static Rectangle deserializeRectangle(DataBuffer buffer) {
         return new Rectangle(buffer.getFloat(), buffer.getFloat(), buffer.getFloat(), buffer.getFloat());
     }
@@ -207,12 +181,38 @@ public class DefaultFont implements Font, Serializable {
     }
 
     @Override
-    public void render(ShaderProgram shaderProgram, String text, int start, int end) {
+    public void serialize(DataBuffer buffer) {
+        buffer.putInt(ascent);
+        buffer.putInt(descent);
+        buffer.putInt(height);
+
+        buffer.putInt(quads.size());
+        for (Character character : quads.keySet()) {
+            Quad quad = quads.get(character);
+            int charInt = (int) character;
+            buffer.putInt(charInt);
+            serializeRectangle(quad.getBounds(), buffer);
+            serializeRectangle(quad.getTextureBounds(), buffer);
+        }
+
+        Image textureImage = texture.loadImage();
+        buffer.putInt(textureImage.getWidth());
+        buffer.putInt(textureImage.getHeight());
+        buffer.putInt(textureImage.getChannels());
+
+        byte[] imageData = textureImage.getData();
+
+        buffer.putInt(imageData.length);
+        buffer.put(imageData);
+    }
+
+    @Override
+    public void render(ShaderProgram shaderProgram, String text, int offset, int length) {
         texture.bind();
 
         ModelMatrix.instance().pushMatrix();
 
-        for (int i = start; i < end; ++i) {
+        for (int i = offset; i < offset + length; ++i) {
             Quad quad = quads.get(text.charAt(i));
             if (quad == null)
                 continue;

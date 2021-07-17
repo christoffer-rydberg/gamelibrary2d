@@ -1,12 +1,13 @@
 package com.gamelibrary2d.tools.particlegenerator;
 
+import com.gamelibrary2d.components.containers.BasicLayer;
+import com.gamelibrary2d.components.containers.Layer;
+import com.gamelibrary2d.components.denotations.KeyAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.components.containers.BasicLayer;
-import com.gamelibrary2d.components.containers.Layer;
-import com.gamelibrary2d.components.denotations.KeyAware;
+import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.particle.systems.ParticleSystem;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.panels.EmitterPanel;
@@ -53,13 +54,16 @@ public class ParticleFrame extends AbstractFrame implements KeyAware {
         settingsPanel = new ParticleSystemSettingsPanel(particleSystem, this);
         settingsPanel.setPosition(160f, game.getWindow().getHeight() - 20f);
 
+        Window window = game.getWindow();
+
         renderingPanel = new RenderingPanel(particleSystem);
         renderingPanel.setPosition(
-                game.getWindow().getWidth() - renderingPanel.getBounds().getWidth() - WINDOW_MARGIN,
-                game.getWindow().getHeight() - WINDOW_MARGIN);
+                window.getWidth() - renderingPanel.getBounds().getWidth() - WINDOW_MARGIN,
+                window.getHeight() - WINDOW_MARGIN);
 
         emitterPanel = new EmitterPanel(particleSystem);
-        emitterPanel.setPosition(game.getWindow().getWidth() - WINDOW_MARGIN,
+        emitterPanel.setPosition(
+                window.getWidth() - WINDOW_MARGIN,
                 emitterPanel.getBounds().getHeight() + WINDOW_MARGIN);
 
         saveLoadResetPanel = new SaveLoadResetPanel(particleSystem, game);

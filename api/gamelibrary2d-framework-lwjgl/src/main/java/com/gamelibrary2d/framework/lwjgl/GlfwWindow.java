@@ -25,8 +25,8 @@ public class GlfwWindow implements Window {
     private final int height;
     private final boolean fullScreen;
     private final List<WindowHint> additionalWindowHints = new ArrayList<>();
-    private int windowWidth;
-    private int windowHeight;
+    private int actualWidth;
+    private int actualHeight;
     private int monitorWidth;
     private int monitorHeight;
     private int physicalWidth;
@@ -159,8 +159,8 @@ public class GlfwWindow implements Window {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
-        windowWidth = width;
-        windowHeight = height;
+        actualWidth = width;
+        actualHeight = height;
 
         windowHandle = windowId;
         glfwMakeContextCurrent(windowId);
@@ -236,13 +236,13 @@ public class GlfwWindow implements Window {
     }
 
     @Override
-    public int getHeight() {
-        return windowHeight;
+    public int getWidth() {
+        return actualWidth;
     }
 
     @Override
-    public int getWidth() {
-        return windowWidth;
+    public int getHeight() {
+        return actualHeight;
     }
 
     @Override
@@ -343,7 +343,7 @@ public class GlfwWindow implements Window {
                 // upper left corner of the window with the Y-axis down.
                 // The y-value is flipped in order to get the position
                 // relative to the lower left corner, with the Y-axis up.
-                cursorPosY = (float) (windowHeight - posY);
+                cursorPosY = (float) (actualHeight - posY);
 
                 eventListener.onPointerMove(0, cursorPosX, cursorPosY);
             }

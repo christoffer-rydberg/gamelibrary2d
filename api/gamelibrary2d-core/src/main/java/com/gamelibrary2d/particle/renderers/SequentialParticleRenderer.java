@@ -2,26 +2,26 @@ package com.gamelibrary2d.particle.renderers;
 
 import com.gamelibrary2d.glUtil.ModelMatrix;
 import com.gamelibrary2d.glUtil.OpenGLBuffer;
+import com.gamelibrary2d.glUtil.ShaderParameter;
 import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
 import com.gamelibrary2d.particle.systems.ParticleRenderBuffer;
-import com.gamelibrary2d.renderers.Renderer;
-import com.gamelibrary2d.renderers.ShaderParameters;
+import com.gamelibrary2d.renderers.ContentRenderer;
 
 public class SequentialParticleRenderer implements ParticleRenderer {
 
     private final DefaultParticleSystem particleSystem;
-    private Renderer renderer;
+    private ContentRenderer renderer;
 
-    public SequentialParticleRenderer(DefaultParticleSystem particleSystem, Renderer renderer) {
+    public SequentialParticleRenderer(DefaultParticleSystem particleSystem, ContentRenderer renderer) {
         this.particleSystem = particleSystem;
         this.renderer = renderer;
     }
 
-    public Renderer getRenderer() {
+    public ContentRenderer getRenderer() {
         return renderer;
     }
 
-    public void setRenderer(Renderer renderer) {
+    public void setRenderer(ContentRenderer renderer) {
         this.renderer = renderer;
     }
 
@@ -54,11 +54,11 @@ public class SequentialParticleRenderer implements ParticleRenderer {
                         renderBuffer.getScale(renderOffset),
                         1.0f);
 
-                renderer.getParameters().set(
-                        ShaderParameters.TIME,
+                renderer.setShaderParameter(
+                        ShaderParameter.TIME,
                         particleSystem.getParticleTime(i));
 
-                renderer.getParameters().setColor(
+                renderer.setColor(
                         renderBuffer.getColorR(renderOffset),
                         renderBuffer.getColorG(renderOffset),
                         renderBuffer.getColorB(renderOffset),

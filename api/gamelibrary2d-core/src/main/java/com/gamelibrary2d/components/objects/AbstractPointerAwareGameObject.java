@@ -1,12 +1,12 @@
 package com.gamelibrary2d.components.objects;
 
+import com.gamelibrary2d.Projection;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.denotations.PointerAware;
 import com.gamelibrary2d.renderers.FrameBufferRenderer;
-import com.gamelibrary2d.Projection;
 
 public abstract class AbstractPointerAwareGameObject extends AbstractGameObject implements PointerAware {
     private final Point projectionOutput = new Point();
