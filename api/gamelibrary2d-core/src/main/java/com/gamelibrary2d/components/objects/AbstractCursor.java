@@ -1,9 +1,11 @@
 package com.gamelibrary2d.components.objects;
 
 import com.gamelibrary2d.Game;
-import com.gamelibrary2d.components.denotations.PointerAware;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerMoveAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
 
-public abstract class AbstractCursor extends AbstractGameObject implements PointerAware {
+public abstract class AbstractCursor extends AbstractGameObject implements PointerDownAware, PointerMoveAware, PointerUpAware {
     private final Game game;
     private final int pointerId;
 

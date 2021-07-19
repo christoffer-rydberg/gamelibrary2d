@@ -5,7 +5,7 @@ import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.objects.DefaultGameObject;
-import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.framework.Renderable;

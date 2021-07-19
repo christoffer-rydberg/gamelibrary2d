@@ -27,18 +27,6 @@ public interface Panel<T extends GameObject> extends LayerObject<T> {
     void setAutoResizing(boolean autoResizing);
 
     /**
-     * Expands the panel {@link #getBounds() bounds} to overlap the rotated and
-     * scaled bounds of the specified object.
-     */
-    void expandBounds(T obj);
-
-    /**
-     * Expands the panel {@link #getBounds() bounds} to overlap the specified
-     * bounds.
-     */
-    void expandBounds(Rectangle bounds);
-
-    /**
      * Sets the panel {@link #getBounds() bounds}. Note that removing or adding
      * objects will affect the bounds unless {@link #isAutoResizing() auto resizing}
      * is set to false.
@@ -52,22 +40,16 @@ public interface Panel<T extends GameObject> extends LayerObject<T> {
     void recalculateBounds();
 
     /**
-     * Same as invoking {@link #stack(T, StackOrientation, float, float)} with the
-     * offset and padding set to 0, and reposition set to false.
+     * Same as invoking {@link #stack(T, StackOrientation, float, boolean)} with the
+     * offset set to 0, and reposition set to false.
      */
     void stack(T obj, StackOrientation orientation);
 
     /**
-     * Same as invoking {@link #stack(T, StackOrientation, float, float)} with the
-     * padding set to 0, and reposition set to false.
-     */
-    void stack(T obj, StackOrientation orientation, float offset);
-
-    /**
-     * Same as invoking {@link #stack(T, StackOrientation, float, float, boolean)} with
+     * Same as invoking {@link #stack(T, StackOrientation, float, boolean)} with
      * reposition set to false.
      */
-    void stack(T obj, StackOrientation orientation, float offset, float padding);
+    void stack(T obj, StackOrientation orientation, float offset);
 
     /**
      * Adds the specified object to the panel aligned to its current bounds. The
@@ -85,13 +67,11 @@ public interface Panel<T extends GameObject> extends LayerObject<T> {
      *                    opposite edge of the added object. A positive offset will
      *                    position the object away from the panel, while a negative
      *                    offset will position the object inwards towards the panel.
-     * @param padding     Additional padding to the panel's bounds, applied from the
-     *                    added object along the specified {@link StackOrientation}.
      * @param reposition  Indicates if the method is invoked in order to reposition
      *                    an object that has already been added to the panel. When
      *                    this flag is true, the object will not be added again,
      *                    only the position of the object and the bounds of the
      *                    panel will be updated (extended if needed).
      */
-    void stack(T obj, StackOrientation orientation, float offset, float padding, boolean reposition);
+    void stack(T obj, StackOrientation orientation, float offset, boolean reposition);
 }

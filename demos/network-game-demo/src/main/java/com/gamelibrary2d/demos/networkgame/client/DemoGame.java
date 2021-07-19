@@ -91,10 +91,10 @@ public class DemoGame extends AbstractGame {
     }
 
     private void createGlobalResources() throws IOException {
-        Dimensions dimensions = new Dimensions(getWindow());
+        Dimensions.create(getWindow());
         Fonts.create(resourceManager, this);
-        Surfaces.create(dimensions, this);
-        Textures.create(dimensions, this);
+        Surfaces.create(this);
+        Textures.create( this);
     }
 
     private void loadSoundBuffer(String resource, String format) throws IOException {

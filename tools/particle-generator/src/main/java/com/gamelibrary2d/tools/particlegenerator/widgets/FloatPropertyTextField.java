@@ -1,11 +1,11 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.components.widgets.TextField;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.resources.Font;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
 
-public class FloatPropertyTextField extends TextField {
+public class FloatPropertyTextField extends Label {
     private static final Color VALID = Color.WHITE;
     private static final Color INVALID = Color.RED;
 

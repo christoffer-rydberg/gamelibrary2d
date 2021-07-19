@@ -94,8 +94,8 @@ public class FocusManager {
             iterationList.addAll(focusedByPointer);
             for (int i = 0; i < iterationList.size(); ++i) {
                 Object obj = iterationList.get(i);
-                if (obj instanceof KeyAware) {
-                    ((KeyAware) obj).keyDown(key, repeat);
+                if (obj instanceof KeyDownAware) {
+                    ((KeyDownAware) obj).keyDown(key, repeat);
                 }
             }
         } finally {
@@ -109,8 +109,8 @@ public class FocusManager {
             iterationList.addAll(focusedByPointer);
             for (int i = 0; i < iterationList.size(); ++i) {
                 Object obj = iterationList.get(i);
-                if (obj instanceof KeyAware) {
-                    ((KeyAware) obj).keyUp(key);
+                if (obj instanceof KeyUpAware) {
+                    ((KeyUpAware) obj).keyUp(key);
                 }
             }
         } finally {
@@ -134,20 +134,18 @@ public class FocusManager {
     }
 
     private static void onPointerActionFinished(int id, int button, boolean released) {
-        try {
-            iterationList.addAll(focused);
-            for (int i = 0; i < iterationList.size(); ++i) {
-                Object obj = iterationList.get(i);
-                if (obj instanceof PointerWhenFocusedAware) {
-                    if (released) {
-                        ((PointerWhenFocusedAware) obj).pointerUpWhenFocused(id, button);
-                    } else {
-                        ((PointerWhenFocusedAware) obj).pointerDownWhenFocused(id, button);
+        if (!released) {
+            try {
+                iterationList.addAll(focused);
+                for (int i = 0; i < iterationList.size(); ++i) {
+                    Object obj = iterationList.get(i);
+                    if (obj instanceof PointerDownWhenFocusedAware) {
+                        ((PointerDownWhenFocusedAware) obj).pointerDownWhenFocused(id, button);
                     }
                 }
+            } finally {
+                iterationList.clear();
             }
-        } finally {
-            iterationList.clear();
         }
     }
 

@@ -1,28 +1,29 @@
-package com.gamelibrary2d.components.widgets;
+package com.gamelibrary2d.components.objects;
 
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.components.denotations.Bounded;
 import com.gamelibrary2d.framework.Renderable;
 
-public final class DefaultWidget<T extends Renderable> extends AbstractObservableWidget<T> {
+public final class DefaultObservableGameObject<T extends Renderable> extends AbstractObservableGameObject<T> {
     private Renderable background;
     private Renderable foreground;
+    private T content;
+    private Rectangle bounds;
 
-    public DefaultWidget() {
+    public DefaultObservableGameObject() {
 
     }
 
-    public DefaultWidget(T content) {
-        super(content);
+    public DefaultObservableGameObject(T content) {
+        this.content = content;
     }
 
-    @Override
     public T getContent() {
-        return super.getContent();
+        return content;
     }
 
-    @Override
     public void setContent(T content) {
-        super.setContent(content);
+        this.content = content;
     }
 
     public Renderable getBackground() {
@@ -47,7 +48,7 @@ public final class DefaultWidget<T extends Renderable> extends AbstractObservabl
             background.render(alpha);
         }
 
-        super.onRender(alpha);
+        content.render(alpha);
 
         if (foreground != null) {
             foreground.render(alpha);
@@ -55,7 +56,19 @@ public final class DefaultWidget<T extends Renderable> extends AbstractObservabl
     }
 
     @Override
+    public Rectangle getBounds() {
+        if (bounds != null) {
+            return bounds;
+        }
+
+        if (content instanceof Bounded) {
+            return ((Bounded) content).getBounds();
+        }
+
+        return Rectangle.EMPTY;
+    }
+
     public void setBounds(Rectangle bounds) {
-        super.setBounds(bounds);
+        this.bounds = bounds;
     }
 }

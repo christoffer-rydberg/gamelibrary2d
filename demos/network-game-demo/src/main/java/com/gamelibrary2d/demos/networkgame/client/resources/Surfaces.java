@@ -6,13 +6,17 @@ import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
 import com.gamelibrary2d.resources.Quad;
 import com.gamelibrary2d.resources.Surface;
 
-public class Surfaces {
+public final class Surfaces {
     private static Surface button;
     private static Surface inputField;
 
-    public static void create(Dimensions dimensions, Disposer disposer) {
-        button = Quad.create(dimensions.getButtonSize(), disposer);
-        inputField = Quad.create(dimensions.getInputFieldSize(), disposer);
+    private Surfaces() {
+
+    }
+
+    public static void create(Disposer disposer) {
+        button = Quad.create(Dimensions.getButtonSize(), disposer);
+        inputField = Quad.create(Dimensions.getInputFieldSize(), disposer);
     }
 
     public static Surface button() {

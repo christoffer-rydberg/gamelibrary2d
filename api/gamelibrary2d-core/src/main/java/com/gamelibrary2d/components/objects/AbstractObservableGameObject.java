@@ -1,12 +1,20 @@
-package com.gamelibrary2d.components.widgets;
+package com.gamelibrary2d.components.objects;
 
+import com.gamelibrary2d.FocusManager;
+import com.gamelibrary2d.components.denotations.FocusAware;
+import com.gamelibrary2d.components.denotations.InputAware;
+import com.gamelibrary2d.components.denotations.KeyDownAware;
+import com.gamelibrary2d.components.denotations.KeyUpAware;
+import com.gamelibrary2d.components.objects.listeners.*;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.components.widgets.listeners.*;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class AbstractObservableWidget<T extends Renderable> extends AbstractWidget<T> {
+public abstract class AbstractObservableGameObject<T extends Renderable>
+        extends AbstractPointerAwareGameObject
+        implements FocusAware, KeyDownAware, KeyUpAware, InputAware {
+
     private final List<PointerDownListener> pointerDownListeners = new CopyOnWriteArrayList<>();
     private final List<PointerHoverListener> pointerHoverListeners = new CopyOnWriteArrayList<>();
     private final List<PointerDragListener> pointerDragListeners = new CopyOnWriteArrayList<>();
@@ -16,12 +24,10 @@ public abstract class AbstractObservableWidget<T extends Renderable> extends Abs
     private final List<CharInputListener> charInputListeners = new CopyOnWriteArrayList<>();
     private final List<FocusChangedListener> focusChangedListeners = new CopyOnWriteArrayList<>();
 
-    protected AbstractObservableWidget() {
+    private boolean focused;
 
-    }
+    protected AbstractObservableGameObject() {
 
-    protected AbstractObservableWidget(T content) {
-        super(content);
     }
 
     public void addPointerDownListener(PointerDownListener listener) {
@@ -100,7 +106,6 @@ public abstract class AbstractObservableWidget<T extends Renderable> extends Abs
 
     @Override
     protected void onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        super.onPointerDown(id, button, x, y, projectedX, projectedY);
         for (PointerDownListener listener : pointerDownListeners) {
             listener.onPointerDown(id, button, x, y, projectedX, projectedY);
         }
@@ -122,47 +127,57 @@ public abstract class AbstractObservableWidget<T extends Renderable> extends Abs
 
     @Override
     protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
-        super.onPointerUp(id, button, x, y, projectedX, projectedY);
         for (PointerUpListener listener : pointerUpListeners) {
             listener.onPointerUp(id, button, x, y, projectedX, projectedY);
         }
     }
 
     @Override
-    public void onCharInput(char charInput) {
-        super.onCharInput(charInput);
+    public void charInput(char charInput) {
         for (CharInputListener listener : charInputListeners) {
             listener.onCharInput(charInput);
         }
     }
 
     @Override
-    public void onKeyDown(int key, boolean repeat) {
-        super.onKeyDown(key, repeat);
+    public void keyDown(int key, boolean repeat) {
         for (KeyDownListener listener : keyDownListeners) {
             listener.onKeyDown(key, repeat);
         }
     }
 
     @Override
-    public void onKeyUp(int key) {
-        super.onKeyUp(key);
+    public void keyUp(int key) {
         for (KeyUpListener listener : keyUpListeners) {
             listener.onKeyUp(key);
         }
     }
 
     @Override
-    public void onFocused() {
+    public void focused() {
+        this.focused = true;
+
         for (FocusChangedListener listener : focusChangedListeners) {
             listener.onFocusChanged(true);
         }
     }
 
     @Override
-    public void onUnfocused() {
+    public void unfocused() {
         for (FocusChangedListener listener : focusChangedListeners) {
             listener.onFocusChanged(false);
         }
+    }
+
+    public void focus() {
+        FocusManager.focus(this, false);
+    }
+
+    public void unfocus() {
+        FocusManager.unfocus(this, false);
+    }
+
+    public boolean isFocused() {
+        return focused;
     }
 }

@@ -3,7 +3,9 @@ package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.components.denotations.PointerAware;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerMoveAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.demos.networkgame.client.input.Controller;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerInputId;
@@ -13,7 +15,7 @@ import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.Quad;
 
-public class AccelerationArea implements Renderable, PointerAware, Updatable {
+public class AccelerationArea implements Renderable, Updatable, PointerDownAware, PointerMoveAware, PointerUpAware {
     private final Point origin = new Point();
     private final ContentRenderer background;
     private final LocalPlayer player;

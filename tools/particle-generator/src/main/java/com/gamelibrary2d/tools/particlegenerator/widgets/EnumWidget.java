@@ -1,21 +1,23 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.components.objects.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.tools.particlegenerator.properties.GenericProperty;
-import com.gamelibrary2d.components.widgets.AbstractWidget;
-import com.gamelibrary2d.components.widgets.Label;
 
-public class EnumWidget<T extends Enum<T>> extends AbstractWidget<Label> {
+public class EnumWidget<T extends Enum<T>> extends AbstractPointerAwareGameObject {
     private final T[] values;
+    private final Label label;
     private final GenericProperty<T> property;
 
     private T cachedValue;
     private int currentIndex;
+    private Rectangle bounds = Rectangle.EMPTY;
 
     public EnumWidget(Class<T> enumType, Label label, GenericProperty<T> property) {
+        this.label = label;
         this.values = enumType.getEnumConstants();
         this.property = property;
-        setContent(label);
         updateLabel();
     }
 
@@ -31,14 +33,14 @@ public class EnumWidget<T extends Enum<T>> extends AbstractWidget<Label> {
                 }
             }
 
-            getContent().setText(value.toString());
+            label.setText(value.toString());
         }
     }
 
     @Override
-    public void onRenderUnprojected(float alpha) {
+    protected void onRender(float alpha) {
         updateLabel();
-        super.onRenderUnprojected(alpha);
+        label.render(alpha);
     }
 
     @Override
@@ -47,11 +49,15 @@ public class EnumWidget<T extends Enum<T>> extends AbstractWidget<Label> {
         currentIndex = (currentIndex + 1) % values.length;
         cachedValue = values[currentIndex];
         property.set(cachedValue);
-        getContent().setText(cachedValue.toString());
+        label.setText(cachedValue.toString());
     }
 
     @Override
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
     public void setBounds(Rectangle bounds) {
-        super.setBounds(bounds);
+        this.bounds = bounds;
     }
 }

@@ -8,7 +8,7 @@ import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.containers.Layer;
-import com.gamelibrary2d.components.denotations.KeyAware;
+import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.components.objects.DefaultGameObject;
@@ -17,8 +17,8 @@ import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.glUtil.PositionBuffer;
-import com.gamelibrary2d.renderers.QuadsRenderer;
 import com.gamelibrary2d.renderers.ContentRenderer;
+import com.gamelibrary2d.renderers.QuadsRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.*;
 import com.gamelibrary2d.splitscreen.*;
@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-class DemoFrame extends AbstractFrame implements KeyAware {
+class DemoFrame extends AbstractFrame implements KeyDownAware {
     private final static Rectangle GAME_BOUNDS = new Rectangle(0, 0, 4000, 4000);
     private final static float SPLIT_LAYOUT_MARGIN = 1f;
     private final static Color SPLIT_COLOR = Color.WHITE;
@@ -220,10 +220,5 @@ class DemoFrame extends AbstractFrame implements KeyAware {
             removeSpaceCraft();
             refreshSplitLayout(spaceCrafts);
         }
-    }
-
-    @Override
-    public void keyUp(int key) {
-
     }
 }

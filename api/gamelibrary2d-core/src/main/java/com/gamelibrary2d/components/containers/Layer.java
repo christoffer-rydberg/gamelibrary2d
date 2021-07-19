@@ -1,14 +1,15 @@
 package com.gamelibrary2d.components.containers;
 
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.components.denotations.*;
+import com.gamelibrary2d.framework.Renderable;
 
 import java.util.Comparator;
 
 /**
  * Defines a layer of {@link Renderable} objects.
  */
-public interface Layer<T extends Renderable> extends Parent<T>, Renderable, Clearable, Updatable, PointerAware, Opacifiable {
+public interface Layer<T extends Renderable>
+        extends Parent<T>, Renderable, Clearable, Updatable, Opacifiable, PointerDownAware, PointerMoveAware, PointerUpAware {
 
     T get(int index);
 

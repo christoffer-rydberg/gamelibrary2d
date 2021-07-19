@@ -3,20 +3,22 @@ package com.gamelibrary2d.tools.particlegenerator.widgets;
 import com.gamelibrary2d.Projection;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.denotations.PointerAware;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerMoveAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
 import com.gamelibrary2d.components.objects.AbstractGameObject;
-import com.gamelibrary2d.components.widgets.DefaultWidget;
+import com.gamelibrary2d.components.objects.DefaultObservableGameObject;
 import com.gamelibrary2d.framework.Renderable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Slider extends AbstractGameObject implements PointerAware {
+public class Slider extends AbstractGameObject implements PointerDownAware, PointerMoveAware, PointerUpAware {
     private final Point projectionOutput = new Point();
     private final List<DragBeginListener> dragBeginListeners = new CopyOnWriteArrayList<>();
     private final List<DragStopListener> dragStopListeners = new CopyOnWriteArrayList<>();
     private final List<ValueChangedListener> valueChangedListeners = new CopyOnWriteArrayList<>();
-    private DefaultWidget<Renderable> handle;
+    private DefaultObservableGameObject<Renderable> handle;
     private SliderDirection direction;
     private float min;
     private float max;
@@ -98,8 +100,8 @@ public class Slider extends AbstractGameObject implements PointerAware {
         }
     }
 
-    private DefaultWidget<Renderable> createHandle(Renderable content) {
-        DefaultWidget<Renderable> handleObj = new DefaultWidget<>(content);
+    private DefaultObservableGameObject<Renderable> createHandle(Renderable content) {
+        DefaultObservableGameObject<Renderable> handleObj = new DefaultObservableGameObject<>(content);
         handleObj.addPointerDownListener(this::onHandleClicked);
         handleObj.addPointerDragListener(this::onHandleDragged);
         handleObj.addPointerUpListener(this::onHandleReleased);

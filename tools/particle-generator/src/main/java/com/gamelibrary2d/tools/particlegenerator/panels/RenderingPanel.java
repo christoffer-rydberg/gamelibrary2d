@@ -5,7 +5,7 @@ import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.containers.DefaultPanel;
 import com.gamelibrary2d.components.containers.Panel;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.particle.renderers.ParticleShape;
 import com.gamelibrary2d.resources.BlendMode;
 import com.gamelibrary2d.resources.HorizontalTextAlignment;
@@ -150,7 +150,7 @@ public class RenderingPanel extends AbstractPanel<GameObject> {
                         particleSystem::setHeight)
         );
 
-        Button<Label> textureButton = new Button<>(textureLabel, () -> {
+        Button textureButton = new Button(textureLabel, () -> {
             String fileName = loadTexture();
             textureLabel.setText(fileName == null ? "None" : fileName);
         });

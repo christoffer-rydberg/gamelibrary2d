@@ -11,7 +11,7 @@ import com.gamelibrary2d.common.random.RandomGenerator;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.particle.parameters.EmitterParameters;
 import com.gamelibrary2d.particle.parameters.ParticleParameters;
 import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
@@ -48,13 +48,13 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
     }
 
     private void addButton(String text, float posX, float posY, Action onClick) {
-        Label content = new Label(Fonts.getDefaultFont(), text);
-        content.setColor(Color.SOFT_BLUE);
-        content.setAlignment(HorizontalTextAlignment.LEFT, VerticalTextAlignment.BASE_LINE);
+        Label label = new Label(Fonts.getDefaultFont(), text);
+        label.setColor(Color.SOFT_BLUE);
+        label.setAlignment(HorizontalTextAlignment.LEFT, VerticalTextAlignment.BASE_LINE);
 
-        Button<Label> button = new Button<>(content, onClick);
+        Button button = new Button(label, onClick);
         button.setPosition(posX, posY);
-        button.setBounds(content.calculateBounds());
+        button.setBounds(label.calculateBounds());
         add(button);
     }
 

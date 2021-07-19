@@ -1,9 +1,7 @@
 package com.gamelibrary2d.components.containers;
 
+import com.gamelibrary2d.components.denotations.*;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.components.denotations.Clearable;
-import com.gamelibrary2d.components.denotations.PointerAware;
-import com.gamelibrary2d.components.denotations.Updatable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,8 +13,11 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     private final List<T> readonlyObjects = Collections.unmodifiableList(objects);
     private final List<Updatable> updatableObjects = new ArrayList<>();
     private final List<Clearable> clearableObjects = new ArrayList<>();
-    private final List<PointerAware> pointerAwareObjects = new ArrayList<>();
-    private final List<PointerAware> pointerAwareIterationList = new ArrayList<>();
+    private final List<PointerDownAware> pointerDownAwareObjects = new ArrayList<>();
+    private final List<PointerMoveAware> pointerMoveAwareObjects = new ArrayList<>();
+    private final List<PointerUpAware> pointerUpAwareObjects = new ArrayList<>();
+
+    private final List<Object> iterationList = new ArrayList<>();
 
     private Comparator<T> renderOrderComparator;
 
@@ -61,8 +62,12 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
             updatableObjects.add((Updatable) obj);
         if (obj instanceof Clearable)
             clearableObjects.add((Clearable) obj);
-        if (obj instanceof PointerAware)
-            pointerAwareObjects.add((PointerAware) obj);
+        if (obj instanceof PointerDownAware)
+            pointerDownAwareObjects.add((PointerDownAware) obj);
+        if (obj instanceof PointerMoveAware)
+            pointerMoveAwareObjects.add((PointerMoveAware) obj);
+        if (obj instanceof PointerUpAware)
+            pointerUpAwareObjects.add((PointerUpAware) obj);
     }
 
     @Override
@@ -85,15 +90,21 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
             updatableObjects.remove(obj);
         if (obj instanceof Clearable)
             clearableObjects.remove(obj);
-        if (obj instanceof PointerAware)
-            pointerAwareObjects.remove(obj);
+        if (obj instanceof PointerDownAware)
+            pointerDownAwareObjects.remove(obj);
+        if (obj instanceof PointerMoveAware)
+            pointerMoveAwareObjects.remove(obj);
+        if (obj instanceof PointerUpAware)
+            pointerUpAwareObjects.remove(obj);
     }
 
     @Override
     public void clear() {
         objects.clear();
         updatableObjects.clear();
-        pointerAwareObjects.clear();
+        pointerDownAwareObjects.clear();
+        pointerMoveAwareObjects.clear();
+        pointerUpAwareObjects.clear();
         for (Clearable clearable : clearableObjects) {
             clear(clearable);
         }
@@ -127,17 +138,16 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     protected boolean onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        pointerAwareIterationList.addAll(pointerAwareObjects);
-        for (int i = pointerAwareIterationList.size() - 1; i >= 0; --i) {
-            PointerAware obj = pointerAwareIterationList.get(i);
+        iterationList.addAll(pointerDownAwareObjects);
+        for (int i = iterationList.size() - 1; i >= 0; --i) {
+            PointerDownAware obj = (PointerDownAware) iterationList.get(i);
             if (obj.pointerDown(id, button, x, y, projectedX, projectedY)) {
-                pointerAwareIterationList.clear();
+                iterationList.clear();
                 return true;
             }
         }
 
-        pointerAwareIterationList.clear();
-
+        iterationList.clear();
         return false;
     }
 
@@ -147,17 +157,16 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     protected boolean onPointerMove(int id, float x, float y, float projectedX, float projectedY) {
-        pointerAwareIterationList.addAll(pointerAwareObjects);
-        for (int i = pointerAwareIterationList.size() - 1; i >= 0; --i) {
-            PointerAware obj = pointerAwareIterationList.get(i);
+        iterationList.addAll(pointerMoveAwareObjects);
+        for (int i = iterationList.size() - 1; i >= 0; --i) {
+            PointerMoveAware obj = (PointerMoveAware) iterationList.get(i);
             if (obj.pointerMove(id, x, y, projectedX, projectedY)) {
-                pointerAwareIterationList.clear();
+                iterationList.clear();
                 return true;
             }
         }
 
-        pointerAwareIterationList.clear();
-
+        iterationList.clear();
         return false;
     }
 
@@ -169,12 +178,13 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
-        pointerAwareIterationList.addAll(pointerAwareObjects);
-        for (int i = pointerAwareIterationList.size() - 1; i >= 0; --i) {
-            pointerAwareIterationList.get(i).pointerUp(id, button, x, y, projectedX, projectedY);
+        iterationList.addAll(pointerUpAwareObjects);
+        for (int i = iterationList.size() - 1; i >= 0; --i) {
+            PointerUpAware obj = (PointerUpAware) iterationList.get(i);
+            obj.pointerUp(id, button, x, y, projectedX, projectedY);
         }
 
-        pointerAwareIterationList.clear();
+        iterationList.clear();
     }
 
     @Override

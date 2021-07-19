@@ -5,9 +5,7 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.objects.DefaultGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.components.widgets.DefaultWidget;
-import com.gamelibrary2d.components.widgets.Label;
-import com.gamelibrary2d.components.widgets.TextField;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.ShaderParameter;
 import com.gamelibrary2d.renderers.ContentRenderer;
@@ -147,10 +145,10 @@ public class PanelElement {
             background.setColor(backgroundColor);
             background.setShaderParameter(ShaderParameter.ALPHA, 0.5f);
 
-            FloatPropertyTextField textBox = new FloatPropertyTextField(Fonts.getDefaultFont(), property);
-            textBox.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.BASE_LINE);
+            FloatPropertyTextField label = new FloatPropertyTextField(Fonts.getDefaultFont(), property);
+            label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.BASE_LINE);
 
-            DefaultWidget<Renderable> propertyWidget = new DefaultWidget<>(textBox);
+            TextField propertyWidget = new TextField(label);
             propertyWidget.setBackground(background);
             propertyWidget.addFocusChangedListener(focused ->
                     background.setColor(focused ? Color.GOLD : backgroundColor));
@@ -215,10 +213,10 @@ public class PanelElement {
             background.setColor(backgroundColor);
             background.setShaderParameter(ShaderParameter.ALPHA, 0.5f);
 
-            TextField textBox = new IntegerPropertyTextField(Fonts.getDefaultFont(), property);
-            textBox.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.BASE_LINE);
+            Label label = new IntegerPropertyTextField(Fonts.getDefaultFont(), property);
+            label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.BASE_LINE);
 
-            DefaultWidget<Renderable> propertyWidget = new DefaultWidget<>(textBox);
+            TextField propertyWidget = new TextField(label);
             propertyWidget.setBackground(background);
             propertyWidget.addFocusChangedListener(focused ->
                     background.setColor(focused ? Color.GOLD : backgroundColor));

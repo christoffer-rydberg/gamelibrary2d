@@ -1,5 +1,6 @@
 package com.gamelibrary2d.components.containers;
 
+import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.resources.StackOrientation;
@@ -83,13 +84,19 @@ public abstract class AbstractPanel<T extends GameObject> extends AbstractLayerO
         }
     }
 
-    @Override
-    public void expandBounds(T obj) {
+    /**
+     * Expands the panel {@link #getBounds() bounds} to overlap the rotated and
+     * scaled bounds of the specified object.
+     */
+    protected void expandBounds(T obj) {
         expandBounds(getExtentInPanel(obj));
     }
 
-    @Override
-    public void expandBounds(Rectangle bounds) {
+    /**
+     * Expands the panel {@link #getBounds() bounds} to overlap the specified
+     * bounds.
+     */
+    protected void expandBounds(Rectangle bounds) {
         Rectangle panelBounds = getBounds();
 
         if (panelBounds.isInfinite() || bounds.isEmpty()) {
@@ -101,12 +108,18 @@ public abstract class AbstractPanel<T extends GameObject> extends AbstractLayerO
             return;
         }
 
-        float xMin = Math.min(bounds.getLowerX(), panelBounds.getLowerX());
-        float yMin = Math.min(bounds.getLowerY(), panelBounds.getLowerY());
-        float xMax = Math.max(bounds.getUpperX(), panelBounds.getUpperX());
-        float yMax = Math.max(bounds.getUpperY(), panelBounds.getUpperY());
+        setBounds(panelBounds.add(bounds));
+    }
 
-        setBounds(new Rectangle(xMin, yMin, xMax, yMax));
+    /**
+     * Expands the panel {@link #getBounds() bounds} to overlap the specified point.
+     */
+    protected void expandBounds(Point point) {
+        Rectangle panelBounds = getBounds();
+
+        if (!panelBounds.isInfinite()) {
+            setBounds(panelBounds.add(point));
+        }
     }
 
     @Override
@@ -120,27 +133,18 @@ public abstract class AbstractPanel<T extends GameObject> extends AbstractLayerO
 
     @Override
     public void stack(T obj, StackOrientation orientation) {
-        stack(obj, orientation, 0, 0, false);
+        stack(obj, orientation, 0, false);
     }
 
     @Override
     public void stack(T obj, StackOrientation orientation, float offset) {
-        stack(obj, orientation, offset, 0, false);
+        stack(obj, orientation, offset, false);
     }
 
     @Override
-    public void stack(T obj, StackOrientation orientation, float offset, float padding) {
-        stack(obj, orientation, offset, padding, false);
-    }
-
-    @Override
-    public void stack(T obj, StackOrientation orientation, float offset, float padding, boolean reposition) {
+    public void stack(T obj, StackOrientation orientation, float offset, boolean reposition) {
         if (getBounds().isInfinite()) {
             throw new IllegalStateException("Cannot stack object in panel with infinite bounds.");
-        }
-
-        if (padding < 0) {
-            throw new IllegalStateException("Padding must be zero or greater.");
         }
 
         stackObject(obj, orientation, offset);
@@ -149,9 +153,9 @@ public abstract class AbstractPanel<T extends GameObject> extends AbstractLayerO
             Rectangle objectBounds = getExtentInPanel(obj);
 
             if (!objectBounds.equals(Rectangle.EMPTY)) {
-                stackExpandBounds(orientation, objectBounds, padding);
+                expandBounds(objectBounds);
             } else {
-                stackExpandPoint(orientation, obj.getPosition().getX(), obj.getPosition().getY(), padding);
+                expandBounds(obj.getPosition());
             }
         }
 
@@ -232,39 +236,5 @@ public abstract class AbstractPanel<T extends GameObject> extends AbstractLayerO
 
     private float stackDown(Rectangle objectBounds, float margin) {
         return getBounds().getLowerY() - objectBounds.getUpperY() - margin;
-    }
-
-    private void stackExpandBounds(StackOrientation orientation, Rectangle bounds, float padding) {
-        if (getBounds().equals(Rectangle.EMPTY)) {
-            bounds = bounds.add(0, 0);
-        }
-
-        if (padding != 0) {
-            bounds = bounds.pad(orientation == StackOrientation.LEFT ? padding : 0,
-                    orientation == StackOrientation.DOWN ? padding : 0,
-                    orientation == StackOrientation.RIGHT ? padding : 0,
-                    orientation == StackOrientation.UP ? padding : 0);
-        }
-
-        expandBounds(bounds);
-    }
-
-    private void stackExpandPoint(StackOrientation orientation, float posX, float posY, float padding) {
-        switch (orientation) {
-            case DOWN:
-                posY -= padding;
-                break;
-            case LEFT:
-                posX -= padding;
-                break;
-            case RIGHT:
-                posX += padding;
-                break;
-            case UP:
-                posY += padding;
-                break;
-        }
-
-        setBounds(getBounds().add(posX, posY));
     }
 }

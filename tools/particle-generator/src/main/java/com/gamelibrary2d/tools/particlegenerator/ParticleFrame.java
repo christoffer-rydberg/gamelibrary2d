@@ -2,7 +2,7 @@ package com.gamelibrary2d.tools.particlegenerator;
 
 import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.Layer;
-import com.gamelibrary2d.components.denotations.KeyAware;
+import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.framework.Keyboard;
@@ -15,7 +15,7 @@ import com.gamelibrary2d.tools.particlegenerator.panels.ParticleSystemSettingsPa
 import com.gamelibrary2d.tools.particlegenerator.panels.RenderingPanel;
 import com.gamelibrary2d.tools.particlegenerator.panels.SaveLoadResetPanel;
 
-public class ParticleFrame extends AbstractFrame implements KeyAware {
+public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     private static final float WINDOW_MARGIN = 40;
     private final ParticleGenerator game;
     private int dragging = -1;
@@ -156,10 +156,5 @@ public class ParticleFrame extends AbstractFrame implements KeyAware {
                 interfaceHidden = false;
             }
         }
-    }
-
-    @Override
-    public void keyUp(int key) {
-
     }
 }

@@ -1,14 +1,20 @@
 package com.gamelibrary2d.components.objects;
 
+import com.gamelibrary2d.FocusManager;
 import com.gamelibrary2d.Projection;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.components.denotations.PointerAware;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerDownWhenFocusedAware;
+import com.gamelibrary2d.components.denotations.PointerMoveAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
 import com.gamelibrary2d.renderers.FrameBufferRenderer;
 
-public abstract class AbstractPointerAwareGameObject extends AbstractGameObject implements PointerAware {
+public abstract class AbstractPointerAwareGameObject
+        extends AbstractGameObject
+        implements PointerDownAware, PointerMoveAware, PointerUpAware, PointerDownWhenFocusedAware {
     private final Point projectionOutput = new Point();
     private final PointerInteractionsArray pointerInteractions = new PointerInteractionsArray(10);
     private FrameBufferRenderer frameBufferRenderer;
@@ -113,6 +119,13 @@ public abstract class AbstractPointerAwareGameObject extends AbstractGameObject 
         }
     }
 
+    @Override
+    public void pointerDownWhenFocused(int id, int button) {
+        if (isEnabled() && !pointerInteractions.isActive(id, id)) {
+            FocusManager.unfocus(this, false);
+        }
+    }
+
     /**
      * Invoked before a pointer action is handled.
      *
@@ -133,12 +146,16 @@ public abstract class AbstractPointerAwareGameObject extends AbstractGameObject 
 
     }
 
-    protected abstract boolean isListeningToPointHoverEvents();
+    protected boolean isListeningToPointHoverEvents() {
+        return false;
+    }
 
-    protected abstract boolean isListeningToPointDragEvents();
+    protected boolean isListeningToPointDragEvents() {
+        return false;
+    }
 
     /**
-     * Invoked when a pointer down action is handled.
+     * Override this method to handle pointer-down actions.
      *
      * @param id         The id of the pointer.
      * @param button     The id of the pointer button.
@@ -147,10 +164,12 @@ public abstract class AbstractPointerAwareGameObject extends AbstractGameObject 
      * @param projectedX The x-coordinate of the pointer projected to this object.
      * @param projectedY The y-coordinate of the pointer projected to this object.
      */
-    protected abstract void onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY);
+    protected void onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+
+    }
 
     /**
-     * Invoked when a pointer up event is handled.
+     * Override this method to handle pointer-up actions.
      *
      * @param id         The id of the pointer.
      * @param button     The id of the pointer button.
@@ -159,10 +178,13 @@ public abstract class AbstractPointerAwareGameObject extends AbstractGameObject 
      * @param projectedX The x-coordinate of the pointer projected to this object.
      * @param projectedY The y-coordinate of the pointer projected to this object.
      */
-    protected abstract void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY);
+    protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+
+    }
 
     /**
-     * Invoked when the pointer hovers over this object.
+     * Override this method to handle pointer-hover actions. Note that {@link #isListeningToPointHoverEvents}
+     * must be overridden as well to return true.
      *
      * @param id         The id of the pointer.
      * @param x          The x-coordinate of the pointer.
@@ -170,11 +192,13 @@ public abstract class AbstractPointerAwareGameObject extends AbstractGameObject 
      * @param projectedX The x-coordinate of the pointer projected to this object.
      * @param projectedY The y-coordinate of the pointer projected to this object.
      */
-    protected abstract void onPointerHover(int id, float x, float y, float projectedX, float projectedY);
+    protected void onPointerHover(int id, float x, float y, float projectedX, float projectedY) {
+
+    }
 
     /**
-     * Invoked when one or more pointer down actions has been handled by this object,
-     * but not yet been released, and the pointer moves.
+     * Override this method to handle pointer-drag actions. Note that {@link #isListeningToPointDragEvents}
+     * must be overridden as well to return true.
      *
      * @param id         The id of the pointer.
      * @param x          The x-coordinate of the pointer.
@@ -182,7 +206,9 @@ public abstract class AbstractPointerAwareGameObject extends AbstractGameObject 
      * @param projectedX The x-coordinate of the pointer projected to this object.
      * @param projectedY The y-coordinate of the pointer projected to this object.
      */
-    protected abstract void onPointerDrag(int id, float x, float y, float projectedX, float projectedY);
+    protected void onPointerDrag(int id, float x, float y, float projectedX, float projectedY) {
+
+    }
 
     private static class PointerInteractions {
         private int count;

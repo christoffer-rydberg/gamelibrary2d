@@ -21,10 +21,11 @@ public class GlfwWindow implements Window {
 
     public static boolean SETUP_DEBUG_MESSAGE_CALLBACK = false;
 
-    private final int width;
-    private final int height;
     private final boolean fullScreen;
+    private final int requestedWidth;
+    private final int requestedHeight;
     private final List<WindowHint> additionalWindowHints = new ArrayList<>();
+
     private int actualWidth;
     private int actualHeight;
     private int monitorWidth;
@@ -32,8 +33,7 @@ public class GlfwWindow implements Window {
     private int physicalWidth;
     private int physicalHeight;
 
-    private long windowHandle;
-
+    private long window;
     private long monitor;
 
     private String title;
@@ -55,8 +55,8 @@ public class GlfwWindow implements Window {
 
     protected GlfwWindow(String title, int width, int height, boolean fullScreen) {
         this.title = title;
-        this.width = width;
-        this.height = height;
+        this.requestedWidth = width;
+        this.requestedHeight = height;
         this.fullScreen = fullScreen;
     }
 
@@ -112,11 +112,11 @@ public class GlfwWindow implements Window {
             this.monitorHeight = videoMode.height();
 
             if (fullScreen) {
-                int actualWidth = width <= 0 ? monitorWidth : Math.min(width, monitorWidth);
-                int actualHeight = height <= 0 ? monitorHeight : Math.min(height, monitorHeight);
+                int actualWidth = requestedWidth <= 0 ? monitorWidth : Math.min(requestedWidth, monitorWidth);
+                int actualHeight = requestedHeight <= 0 ? monitorHeight : Math.min(requestedHeight, monitorHeight);
                 onCreate(title, actualWidth, actualHeight, monitor);
             } else {
-                boolean isWindowedFullscreen = width <= 0;
+                boolean isWindowedFullscreen = requestedWidth <= 0;
 
                 if (isWindowedFullscreen) {
                     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -135,12 +135,12 @@ public class GlfwWindow implements Window {
                 } else {
                     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
                     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-                    onCreate(title, width, height, NULL);
+                    onCreate(title, requestedWidth, requestedHeight, NULL);
 
                     // Center window
-                    int xPos = Math.max(0, (videoMode.width() - width) / 2);
-                    int yPos = Math.max(30, (videoMode.height() - height) / 2);
-                    glfwSetWindowPos(windowHandle, xPos, yPos);
+                    int xPos = Math.max(0, (videoMode.width() - requestedWidth) / 2);
+                    int yPos = Math.max(30, (videoMode.height() - requestedHeight) / 2);
+                    glfwSetWindowPos(window, xPos, yPos);
                 }
             }
 
@@ -162,7 +162,7 @@ public class GlfwWindow implements Window {
         actualWidth = width;
         actualHeight = height;
 
-        windowHandle = windowId;
+        window = windowId;
         glfwMakeContextCurrent(windowId);
 
         GL.createCapabilities();
@@ -183,17 +183,17 @@ public class GlfwWindow implements Window {
 
     @Override
     public void show() {
-        glfwShowWindow(windowHandle);
+        glfwShowWindow(window);
     }
 
     public void hide() {
-        glfwHideWindow(windowHandle);
+        glfwHideWindow(window);
     }
 
     @Override
     public void setTitle(String title) {
         this.title = title;
-        glfwSetWindowTitle(windowHandle, title);
+        glfwSetWindowTitle(window, title);
     }
 
     @Override
@@ -204,7 +204,7 @@ public class GlfwWindow implements Window {
             content.render(alpha);
         }
 
-        glfwSwapBuffers(windowHandle);
+        glfwSwapBuffers(window);
     }
 
     public MouseCursorMode getMouseCursorMode() {
@@ -218,13 +218,13 @@ public class GlfwWindow implements Window {
 
         switch (mouseCursorMode) {
             case DISABLED:
-                glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
                 break;
             case HIDDEN:
-                glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
                 break;
             case NORMAL:
-                glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
                 break;
         }
 
@@ -267,7 +267,7 @@ public class GlfwWindow implements Window {
 
     @Override
     public boolean isCloseRequested() {
-        return glfwWindowShouldClose(windowHandle);
+        return glfwWindowShouldClose(window);
     }
 
     @Override
@@ -284,15 +284,15 @@ public class GlfwWindow implements Window {
     }
 
     public void setWindowAttribute(int attribute, int value) {
-        glfwSetWindowAttrib(windowHandle, attribute, value);
+        glfwSetWindowAttrib(window, attribute, value);
     }
 
     public int getWindowAttribute(int attribute) {
-        return glfwGetWindowAttrib(windowHandle, attribute);
+        return glfwGetWindowAttrib(window, attribute);
     }
 
     public void focus() {
-        glfwFocusWindow(windowHandle);
+        glfwFocusWindow(window);
     }
 
     private KeyAction getKeyAction(int action) {
@@ -323,19 +323,19 @@ public class GlfwWindow implements Window {
     public void setEventListener(WindowEventListener eventListener) {
         glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
 
-        glfwSetKeyCallback(windowHandle, new GLFWKeyCallback() {
+        glfwSetKeyCallback(window, new GLFWKeyCallback() {
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 eventListener.onKeyAction(key, getKeyAction(action));
             }
         });
 
-        glfwSetCharCallback(windowHandle, new GLFWCharCallback() {
+        glfwSetCharCallback(window, new GLFWCharCallback() {
             public void invoke(long window, int charInput) {
                 eventListener.onCharInput((char) charInput);
             }
         });
 
-        glfwSetCursorPosCallback(windowHandle, new GLFWCursorPosCallback() {
+        glfwSetCursorPosCallback(window, new GLFWCursorPosCallback() {
             public void invoke(long window, double posX, double posY) {
                 cursorPosX = (float) posX;
 
@@ -349,7 +349,7 @@ public class GlfwWindow implements Window {
             }
         });
 
-        glfwSetCursorEnterCallback(windowHandle, new GLFWCursorEnterCallback() {
+        glfwSetCursorEnterCallback(window, new GLFWCursorEnterCallback() {
             public void invoke(long window, boolean entered) {
                 if (entered) {
                     eventListener.onPointerEnter(0);
@@ -359,13 +359,13 @@ public class GlfwWindow implements Window {
             }
         });
 
-        glfwSetMouseButtonCallback(windowHandle, new GLFWMouseButtonCallback() {
+        glfwSetMouseButtonCallback(window, new GLFWMouseButtonCallback() {
             public void invoke(long window, int button, int action, int mods) {
                 eventListener.onPointerAction(0, button, cursorPosX, cursorPosY, getPointerAction(action));
             }
         });
 
-        glfwSetScrollCallback(windowHandle, new GLFWScrollCallback() {
+        glfwSetScrollCallback(window, new GLFWScrollCallback() {
             public void invoke(long window, double xOffset, double yOffset) {
                 eventListener.onScroll(0, (float) xOffset, (float) yOffset);
             }
@@ -392,10 +392,10 @@ public class GlfwWindow implements Window {
             debugProc.free();
         }
 
-        if (windowHandle != NULL) {
-            glfwFreeCallbacks(windowHandle);
-            glfwDestroyWindow(windowHandle);
-            windowHandle = NULL;
+        if (window != NULL) {
+            glfwFreeCallbacks(window);
+            glfwDestroyWindow(window);
+            window = NULL;
         }
 
         Objects.requireNonNull(glfwSetJoystickCallback(null)).free();

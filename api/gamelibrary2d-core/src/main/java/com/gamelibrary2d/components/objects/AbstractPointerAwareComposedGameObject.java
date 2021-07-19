@@ -1,9 +1,11 @@
 package com.gamelibrary2d.components.objects;
 
-import com.gamelibrary2d.components.denotations.PointerAware;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerMoveAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
 
 public class AbstractPointerAwareComposedGameObject<T extends GameObject>
-        extends AbstractComposedGameObject<T> implements PointerAware {
+        extends AbstractComposedGameObject<T> implements PointerDownAware, PointerMoveAware, PointerUpAware {
 
     protected AbstractPointerAwareComposedGameObject() {
 
@@ -16,8 +18,8 @@ public class AbstractPointerAwareComposedGameObject<T extends GameObject>
     @Override
     public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
         T content = getContent();
-        if (content instanceof PointerAware) {
-            return ((PointerAware) content).pointerDown(id, button, x, y, projectedX, projectedY);
+        if (content instanceof PointerDownAware) {
+            return ((PointerDownAware) content).pointerDown(id, button, x, y, projectedX, projectedY);
         }
         return false;
     }
@@ -25,8 +27,8 @@ public class AbstractPointerAwareComposedGameObject<T extends GameObject>
     @Override
     public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
         T content = getContent();
-        if (content instanceof PointerAware) {
-            return ((PointerAware) content).pointerMove(id, x, y, projectedX, projectedY);
+        if (content instanceof PointerMoveAware) {
+            return ((PointerMoveAware) content).pointerMove(id, x, y, projectedX, projectedY);
         }
         return false;
     }
@@ -34,8 +36,8 @@ public class AbstractPointerAwareComposedGameObject<T extends GameObject>
     @Override
     public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
         T content = getContent();
-        if (content instanceof PointerAware) {
-            ((PointerAware) content).pointerUp(id, button, x, y, projectedX, projectedY);
+        if (content instanceof PointerUpAware) {
+            ((PointerUpAware) content).pointerUp(id, button, x, y, projectedX, projectedY);
         }
     }
 }

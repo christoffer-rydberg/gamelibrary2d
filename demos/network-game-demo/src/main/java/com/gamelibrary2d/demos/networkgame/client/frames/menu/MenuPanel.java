@@ -6,7 +6,7 @@ import com.gamelibrary2d.components.containers.NavigationPanel;
 import com.gamelibrary2d.components.containers.Panel;
 import com.gamelibrary2d.components.objects.AbstractPointerAwareComposedGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.Button;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.InputField;
@@ -14,7 +14,7 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.demos.networkgame.client.resources.Surfaces;
 import com.gamelibrary2d.demos.networkgame.client.resources.Textures;
 import com.gamelibrary2d.demos.networkgame.client.settings.Colors;
-import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
 import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.HorizontalTextAlignment;
@@ -24,15 +24,22 @@ import com.gamelibrary2d.resources.VerticalTextAlignment;
 class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> {
     MenuPanel(DemoGame game) {
         NavigationPanel navigationPanel = new NavigationPanel();
+
         GameObject hostPanel = createHostPanel(game, navigationPanel);
         GameObject joinPanel = createJoinPanel(game, navigationPanel);
         GameObject mainPanel = createMainPanel(game, navigationPanel, hostPanel, joinPanel);
+
+        navigationPanel.setBounds(hostPanel.getBounds()
+                .add(joinPanel.getBounds())
+                .add(mainPanel.getBounds()));
+
         navigationPanel.navigateTo(mainPanel, false);
+
         setContent(navigationPanel);
     }
 
     private static <T extends GameObject> void stack(Panel<T> panel, T obj) {
-        panel.stack(obj, StackOrientation.DOWN);
+        panel.stack(obj, StackOrientation.DOWN, Dimensions.getDefaultOffset());
     }
 
     private static Button createButton(String text, Action onClick) {
@@ -48,10 +55,20 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
         return new Button(label, background, background.getBounds(), onClick);
     }
 
-    private static void center(GameObject obj, Window window) {
-        obj.setPosition(
-                window.getWidth() / 2f - obj.getBounds().getCenterX(),
-                window.getHeight() / 2f - obj.getBounds().getCenterY());
+    private static InputField createInputField(String text) {
+        ContentRenderer background = new SurfaceRenderer<>(
+                Surfaces.inputField(),
+                Textures.inputField());
+
+        background.setColor(Colors.INPUT_FIELD_COLOR);
+
+        Label textField = new Label(Fonts.inputField(), text);
+        textField.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.CENTER);
+
+        Label label = new Label(Fonts.button(), text);
+        label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.CENTER);
+
+        return new InputField(textField, background, background.getBounds());
     }
 
     private static GameObject createMainPanel(DemoGame game, NavigationPanel navigationPanel, GameObject hostPanel, GameObject joinPanel) {
@@ -62,16 +79,14 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
         stack(panel, createButton("Host", () -> navigationPanel.navigateTo(hostPanel, true)));
         stack(panel, createButton("Exit", game::exit));
 
-        center(panel, game.getWindow());
-
         return panel;
     }
 
     private static GameObject createHostPanel(DemoGame game, NavigationPanel navigationPanel) {
         Panel<GameObject> panel = new DefaultPanel<>();
 
-        InputField tcpField = new InputField("4444");
-        InputField udpField = new InputField("4444");
+        InputField tcpField = createInputField("4444");
+        InputField udpField = createInputField("4444");
 
         stack(panel, tcpField);
         stack(panel, udpField);
@@ -79,17 +94,15 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
                 game.hostNetworkGame(tcpField.getIntValue(), udpField.getIntValue())));
         stack(panel, createButton("Go back", navigationPanel::goBack));
 
-        center(panel, game.getWindow());
-
         return panel;
     }
 
     private static GameObject createJoinPanel(DemoGame game, NavigationPanel navigationPanel) {
         Panel<GameObject> panel = new DefaultPanel<>();
 
-        InputField ipField = new InputField("localhost");
-        InputField tcpField = new InputField("4444");
-        InputField udpField = new InputField("4444");
+        InputField ipField = createInputField("localhost");
+        InputField tcpField = createInputField("4444");
+        InputField udpField = createInputField("4444");
 
         Button startButton = createButton("Start game",
                 () -> game.joinNetworkGame(ipField.getStringValue(), tcpField.getIntValue(), udpField.getIntValue()));
@@ -101,8 +114,6 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
         stack(panel, udpField);
         stack(panel, startButton);
         stack(panel, backButton);
-
-        center(panel, game.getWindow());
 
         return panel;
     }

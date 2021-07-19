@@ -1,17 +1,14 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.containers.BasicLayer;
-import com.gamelibrary2d.components.containers.DefaultLayerObject;
-import com.gamelibrary2d.components.containers.Layer;
-import com.gamelibrary2d.components.containers.LayerObject;
-import com.gamelibrary2d.components.denotations.KeyAware;
+import com.gamelibrary2d.components.containers.*;
+import com.gamelibrary2d.components.denotations.KeyDownAware;
+import com.gamelibrary2d.components.denotations.KeyUpAware;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.components.objects.DefaultGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.components.widgets.Label;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.Button;
@@ -23,6 +20,7 @@ import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.renderers.ContentRenderer;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.*;
 import com.gamelibrary2d.sound.MusicPlayer;
@@ -35,7 +33,7 @@ import com.gamelibrary2d.updates.OpacityUpdate;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MenuFrame extends AbstractFrame implements KeyAware {
+public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware {
     private final DemoGame game;
     private final ResourceManager resourceManager;
     private final MusicPlayer musicPlayer;
@@ -48,7 +46,8 @@ public class MenuFrame extends AbstractFrame implements KeyAware {
 
     private boolean foregroundLayerIsHidden = true;
 
-    public MenuFrame(DemoGame game, ResourceManager resourceManager, MusicPlayer musicPlayer, SoundPlayer soundPlayer) {
+    public MenuFrame(DemoGame game, ResourceManager resourceManager,
+                     MusicPlayer musicPlayer, SoundPlayer soundPlayer) {
         this.game = game;
         this.resourceManager = resourceManager;
         this.musicPlayer = musicPlayer;
@@ -90,11 +89,6 @@ public class MenuFrame extends AbstractFrame implements KeyAware {
     }
 
     private Layer<Renderable> createForegroundLayer() throws IOException {
-        GameObject gameTitle = createGameTitle();
-        gameTitle.setPosition(
-                game.getWindow().getWidth() / 2f,
-                game.getWindow().getHeight() * 0.75f);
-
         GameObject creditsButton = createCreditsButton();
         creditsButton.setPosition(
                 19 * game.getWindow().getWidth() / 20f,
@@ -102,8 +96,20 @@ public class MenuFrame extends AbstractFrame implements KeyAware {
 
         BasicLayer<Renderable> foregroundLayer = new BasicLayer<>();
         foregroundLayer.setAutoClearing(false);
-        foregroundLayer.add(gameTitle);
-        foregroundLayer.add(new MenuPanel(game));
+
+        GameObject gameTitle = createGameTitle();
+        MenuPanel menuPanel = new MenuPanel(game);
+
+        float emptyVerticalSpace = game.getWindow().getHeight()
+                - gameTitle.getBounds().getHeight()
+                - menuPanel.getBounds().getHeight();
+
+        Panel<GameObject> panel = new DefaultPanel<>();
+        panel.setPosition(game.getWindow().getWidth() / 2f, game.getWindow().getHeight());
+        panel.stack(gameTitle, StackOrientation.DOWN, emptyVerticalSpace / 6f);
+        panel.stack(menuPanel, StackOrientation.DOWN, emptyVerticalSpace / 6f);
+
+        foregroundLayer.add(panel);
         foregroundLayer.add(creditsButton);
 
         return foregroundLayer;

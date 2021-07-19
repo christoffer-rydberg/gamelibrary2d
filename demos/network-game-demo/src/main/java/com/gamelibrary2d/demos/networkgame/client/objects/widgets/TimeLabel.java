@@ -3,7 +3,7 @@ package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.objects.AbstractGameObject;
-import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.resources.Font;
 import com.gamelibrary2d.resources.HorizontalTextAlignment;
 import com.gamelibrary2d.resources.VerticalTextAlignment;

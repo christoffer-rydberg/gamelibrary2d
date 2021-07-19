@@ -5,13 +5,15 @@ import com.gamelibrary2d.common.event.DefaultEventPublisher;
 import com.gamelibrary2d.common.event.EventListener;
 import com.gamelibrary2d.common.event.EventPublisher;
 import com.gamelibrary2d.common.functional.Func;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerMoveAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.components.denotations.PointerAware;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.MutableQuad;
 import com.gamelibrary2d.resources.Quad;
 
-public class QuadTool implements Renderable, PointerAware {
+public class QuadTool implements Renderable, PointerDownAware, PointerMoveAware, PointerUpAware {
     private final EventPublisher<Quad> onCreated = new DefaultEventPublisher<>();
     private final Func<Rectangle, Quad> quadFactory;
     private final SurfaceRenderer<MutableQuad> inProgressRenderer;

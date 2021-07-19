@@ -1,10 +1,8 @@
-package com.gamelibrary2d.components.widgets;
+package com.gamelibrary2d.renderers;
 
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.widgets.listeners.TextChangedListener;
+import com.gamelibrary2d.components.objects.listeners.TextChangedListener;
 import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.renderers.ContentRenderer;
-import com.gamelibrary2d.renderers.DefaultTextRenderer;
 import com.gamelibrary2d.resources.Font;
 import com.gamelibrary2d.resources.HorizontalTextAlignment;
 import com.gamelibrary2d.resources.VerticalTextAlignment;
@@ -97,7 +95,9 @@ public class Label implements ContentRenderer {
 
     @Override
     public void render(float alpha) {
-        render(alpha, 0, text.length());
+        if (text != null) {
+            render(alpha, 0, text.length());
+        }
     }
 
     /**

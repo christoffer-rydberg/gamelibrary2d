@@ -1,14 +1,12 @@
 package com.gamelibrary2d.splitscreen;
 
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.denotations.Clearable;
-import com.gamelibrary2d.components.denotations.PointerAware;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.components.denotations.*;
 import com.gamelibrary2d.components.objects.AbstractComposedGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
 
 public class SplitLayer<T extends GameObject> extends AbstractComposedGameObject<T>
-        implements Clearable, PointerAware, Updatable {
+        implements Clearable, PointerDownAware, PointerMoveAware, PointerUpAware, Updatable {
 
     private final Rectangle renderArea;
     private SplitLayout layout;
@@ -64,8 +62,8 @@ public class SplitLayer<T extends GameObject> extends AbstractComposedGameObject
     @Override
     public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
         T content = getContent();
-        if (content instanceof PointerAware) {
-            return ((PointerAware) content).pointerDown(id, button, x, y, projectedX, projectedY);
+        if (content instanceof PointerDownAware) {
+            return ((PointerDownAware) content).pointerDown(id, button, x, y, projectedX, projectedY);
         }
         return false;
     }
@@ -73,8 +71,8 @@ public class SplitLayer<T extends GameObject> extends AbstractComposedGameObject
     @Override
     public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
         T content = getContent();
-        if (content instanceof PointerAware) {
-            return ((PointerAware) content).pointerMove(id, x, y, projectedX, projectedY);
+        if (content instanceof PointerMoveAware) {
+            return ((PointerMoveAware) content).pointerMove(id, x, y, projectedX, projectedY);
         }
         return false;
     }
@@ -82,8 +80,8 @@ public class SplitLayer<T extends GameObject> extends AbstractComposedGameObject
     @Override
     public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
         T content = getContent();
-        if (content instanceof PointerAware) {
-            ((PointerAware) content).pointerUp(id, button, x, y, projectedX, projectedY);
+        if (content instanceof PointerUpAware) {
+            ((PointerUpAware) content).pointerUp(id, button, x, y, projectedX, projectedY);
         }
     }
 }

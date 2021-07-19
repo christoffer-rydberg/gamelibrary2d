@@ -9,8 +9,8 @@ import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.components.objects.AnimatedGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.components.widgets.DefaultWidget;
-import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.components.objects.DefaultObservableGameObject;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.imaging.AnimationLoader;
 import com.gamelibrary2d.imaging.ImageAnimation;
 import com.gamelibrary2d.imaging.StandardAnimationFormats;
@@ -44,7 +44,7 @@ public class DemoFrame extends AbstractFrame {
         label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.CENTER);
         label.setColor(Color.WHITE);
 
-        DefaultWidget<Label> loadButton = new DefaultWidget<>();
+        DefaultObservableGameObject<Label> loadButton = new DefaultObservableGameObject<>();
         loadButton.setContent(label);
         loadButton.setBounds(label.calculateBounds());
         loadButton.addPointerUpListener(this::onLoadButtonClicked);

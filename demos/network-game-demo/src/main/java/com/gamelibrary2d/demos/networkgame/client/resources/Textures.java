@@ -11,13 +11,17 @@ import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.resources.Quad;
 import com.gamelibrary2d.resources.Texture;
 
-public class Textures {
+public final class Textures {
     private static Texture button;
     private static Texture inputField;
 
-    public static void create(Dimensions dimensions, Disposer disposer) {
+    private Textures() {
+
+    }
+
+    public static void create(Disposer disposer) {
         button = createQuadStackTexture(
-                dimensions.getButtonSize(),
+                Dimensions.getButtonSize(),
                 Color.WHITE.divide(10),
                 Color.WHITE,
                 10,

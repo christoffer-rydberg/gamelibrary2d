@@ -4,8 +4,8 @@ import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.components.denotations.Bounded;
-import com.gamelibrary2d.components.widgets.AbstractWidget;
-import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.components.objects.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.ModelMatrix;
 import com.gamelibrary2d.renderers.LineRenderer;
@@ -14,7 +14,7 @@ import com.gamelibrary2d.resources.HorizontalTextAlignment;
 import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.tools.particlegenerator.properties.BooleanProperty;
 
-public class Checkbox extends AbstractWidget {
+public class Checkbox extends AbstractPointerAwareGameObject {
     private final BooleanProperty checked;
     private final Action onChecked;
     private final Action onUnchecked;
@@ -26,7 +26,6 @@ public class Checkbox extends AbstractWidget {
         this.renderer = new CheckboxRenderer(box, lineRenderer, font);
         this.onChecked = null;
         this.onUnchecked = null;
-        setContent(renderer);
     }
 
     public Checkbox(Box box, LineRenderer lineRenderer, Font font, BooleanProperty checked, Action onChecked, Action onUnchecked) {
@@ -34,7 +33,6 @@ public class Checkbox extends AbstractWidget {
         this.renderer = new CheckboxRenderer(box, lineRenderer, font);
         this.onChecked = onChecked;
         this.onUnchecked = onUnchecked;
-        setContent(renderer);
     }
 
     private void updateCheckbox() {
@@ -62,6 +60,11 @@ public class Checkbox extends AbstractWidget {
     }
 
     @Override
+    protected void onRender(float alpha) {
+        renderer.render(alpha);
+    }
+
+    @Override
     protected void onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
         super.onPointerDown(id, button, x, y, projectedX, projectedY);
         toggle();
@@ -70,6 +73,11 @@ public class Checkbox extends AbstractWidget {
     public void toggle() {
         checked.set(!checked.get());
         updateCheckbox();
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return renderer.getBounds();
     }
 
     private class CheckboxRenderer implements Renderable, Bounded {

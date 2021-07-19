@@ -2,20 +2,23 @@ package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.widgets.AbstractWidget;
-import com.gamelibrary2d.components.widgets.Label;
+import com.gamelibrary2d.components.objects.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.glUtil.ShaderParameter;
 import com.gamelibrary2d.resources.Font;
 
-public class ToggleButton extends AbstractWidget<Label> {
+public class ToggleButton extends AbstractPointerAwareGameObject {
+    private final Label label;
+
     private boolean toggled;
     private float defaultR;
     private float defaultG;
     private float defaultB;
     private float defaultA;
+    private Rectangle bounds = Rectangle.EMPTY;
 
     public ToggleButton(Font font, String text) {
-        setContent(new Label(font, text));
+        this.label = new Label(font, text);
     }
 
     public boolean isToggled() {
@@ -25,13 +28,13 @@ public class ToggleButton extends AbstractWidget<Label> {
     public void setToggled(boolean toggled) {
         this.toggled = toggled;
         if (toggled) {
-            defaultR = getContent().getShaderParameter(ShaderParameter.COLOR_R);
-            defaultG = getContent().getShaderParameter(ShaderParameter.COLOR_G);
-            defaultB = getContent().getShaderParameter(ShaderParameter.COLOR_B);
-            defaultA = getContent().getShaderParameter(ShaderParameter.ALPHA);
-            getContent().setColor(Color.GREEN);
+            defaultR = label.getShaderParameter(ShaderParameter.COLOR_R);
+            defaultG = label.getShaderParameter(ShaderParameter.COLOR_G);
+            defaultB = label.getShaderParameter(ShaderParameter.COLOR_B);
+            defaultA = label.getShaderParameter(ShaderParameter.ALPHA);
+            label.setColor(Color.GREEN);
         } else {
-            getContent().setColor(defaultR, defaultG, defaultB, defaultA);
+            label.setColor(defaultR, defaultG, defaultB, defaultA);
         }
     }
 
@@ -41,18 +44,21 @@ public class ToggleButton extends AbstractWidget<Label> {
         setToggled(!isToggled());
     }
 
-    @Override
-    public Label getContent() {
-        return super.getContent();
+    public Label getLabel() {
+        return label;
     }
 
     @Override
-    public void setContent(Label content) {
-        super.setContent(content);
+    protected void onRender(float alpha) {
+        label.render(alpha);
     }
 
     @Override
+    public Rectangle getBounds() {
+        return bounds;
+    }
+
     public void setBounds(Rectangle bounds) {
-        super.setBounds(bounds);
+        this.bounds = bounds;
     }
 }

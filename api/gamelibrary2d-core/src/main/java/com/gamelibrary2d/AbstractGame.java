@@ -5,7 +5,8 @@ import com.gamelibrary2d.common.disposal.AbstractDisposer;
 import com.gamelibrary2d.common.event.DefaultEventPublisher;
 import com.gamelibrary2d.common.event.EventPublisher;
 import com.gamelibrary2d.components.denotations.InputAware;
-import com.gamelibrary2d.components.denotations.KeyAware;
+import com.gamelibrary2d.components.denotations.KeyDownAware;
+import com.gamelibrary2d.components.denotations.KeyUpAware;
 import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.components.frames.FrameDisposal;
 import com.gamelibrary2d.components.frames.InitializationContext;
@@ -32,6 +33,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
      * Queue for code that will be invoked after the current update.
      */
     private final Deque<Runnable> invokeLater;
+
     /**
      * The OpenGL window used for rendering.
      */
@@ -41,30 +43,36 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
      * True whenever the game window has cursor focus, each index represents a pointer id.
      */
     private boolean[] pointerFocus = new boolean[10];
+
     /**
      * True while inside an update cycle. Used to determine if some actions, such as
      * changing frame, can be done instantly or if it should be delayed until after
      * the current cycle.
      */
     private boolean updating;
+
     /**
      * The current frame.
      */
     private Frame frame;
+
     /**
      * True if the current frame has not yet been updated, used so that the
      * deltaTime can be set to 0 for the first update (to avoid a very big initial
      * delta time).
      */
     private boolean frameNotUpdated;
+
     /**
      * The loading frame is displayed when loading a new frame.
      */
     private LoadingFrame loadingFrame;
+
     /**
      * The game loop is responsible for maintaining a steady frame rate.
      */
     private GameLoop gameLoop;
+
     /**
      * Speed factor each update, applied to the delta-time
      */
@@ -364,18 +372,18 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
             Frame frame = getFrame();
             switch (action) {
                 case DOWN:
-                    if (frame instanceof KeyAware)
-                        ((KeyAware) frame).keyDown(key, false);
+                    if (frame instanceof KeyDownAware)
+                        ((KeyDownAware) frame).keyDown(key, false);
                     FocusManager.keyDownEvent(key, false);
                     break;
                 case DOWN_REPEAT:
-                    if (frame instanceof KeyAware)
-                        ((KeyAware) frame).keyDown(key, true);
+                    if (frame instanceof KeyDownAware)
+                        ((KeyDownAware) frame).keyDown(key, true);
                     FocusManager.keyDownEvent(key, true);
                     break;
                 case UP:
-                    if (frame instanceof KeyAware)
-                        ((KeyAware) frame).keyUp(key);
+                    if (frame instanceof KeyUpAware)
+                        ((KeyUpAware) frame).keyUp(key);
                     FocusManager.keyUpEvent(key);
                     break;
             }

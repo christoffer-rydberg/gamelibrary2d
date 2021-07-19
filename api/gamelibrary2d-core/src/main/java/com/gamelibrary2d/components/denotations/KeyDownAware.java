@@ -1,6 +1,7 @@
 package com.gamelibrary2d.components.denotations;
 
-public interface KeyAware {
+public interface KeyDownAware {
+
     /**
      * Handles key down events.
      *
@@ -8,12 +9,5 @@ public interface KeyAware {
      * @param repeat True if the key action is repeat.
      */
     void keyDown(int key, boolean repeat);
-
-    /**
-     * Handles key up events.
-     *
-     * @param key The keyboard key that was released.
-     */
-    void keyUp(int key);
 
 }
