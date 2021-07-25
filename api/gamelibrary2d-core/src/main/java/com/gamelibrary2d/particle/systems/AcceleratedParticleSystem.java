@@ -316,10 +316,10 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
             if (isTransformingPosition()) {
                 ModelMatrix.instance().pushMatrix();
                 ModelMatrix.instance().translatef(positionTransformation.getX(), positionTransformation.getY(), 0);
-                renderer.render(renderBuffer[activeBuffer], false, 0, particlesInGpuBuffer, alpha);
+                renderer.render(this, renderBuffer[activeBuffer], false, 0, particlesInGpuBuffer, alpha);
                 ModelMatrix.instance().popMatrix();
             } else {
-                renderer.render(renderBuffer[activeBuffer], false, 0, particlesInGpuBuffer, alpha);
+                renderer.render(this, renderBuffer[activeBuffer], false, 0, particlesInGpuBuffer, alpha);
             }
         }
     }

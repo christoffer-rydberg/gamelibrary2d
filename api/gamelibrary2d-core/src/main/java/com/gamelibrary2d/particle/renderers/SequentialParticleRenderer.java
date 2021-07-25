@@ -5,15 +5,13 @@ import com.gamelibrary2d.glUtil.OpenGLBuffer;
 import com.gamelibrary2d.glUtil.ShaderParameter;
 import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
 import com.gamelibrary2d.particle.systems.ParticleRenderBuffer;
+import com.gamelibrary2d.particle.systems.ParticleSystem;
 import com.gamelibrary2d.renderers.ContentRenderer;
 
 public class SequentialParticleRenderer implements ParticleRenderer {
-
-    private final DefaultParticleSystem particleSystem;
     private ContentRenderer renderer;
 
-    public SequentialParticleRenderer(DefaultParticleSystem particleSystem, ContentRenderer renderer) {
-        this.particleSystem = particleSystem;
+    public SequentialParticleRenderer(ContentRenderer renderer) {
         this.renderer = renderer;
     }
 
@@ -26,7 +24,7 @@ public class SequentialParticleRenderer implements ParticleRenderer {
     }
 
     @Override
-    public void render(OpenGLBuffer buffer, boolean gpuOutdated, int offset, int len, float alpha) {
+    public void render(ParticleSystem particleSystem, OpenGLBuffer buffer, boolean gpuOutdated, int offset, int len, float alpha) {
         if (!(buffer instanceof ParticleRenderBuffer)) {
             throw new IllegalArgumentException("Buffer must be of type ParticleRenderBuffer");
         }
@@ -54,9 +52,11 @@ public class SequentialParticleRenderer implements ParticleRenderer {
                         renderBuffer.getScale(renderOffset),
                         1.0f);
 
-                renderer.setShaderParameter(
-                        ShaderParameter.TIME,
-                        particleSystem.getParticleTime(i));
+                if (particleSystem instanceof DefaultParticleSystem) {
+                    renderer.setShaderParameter(
+                            ShaderParameter.TIME,
+                            ((DefaultParticleSystem) particleSystem).getParticleTime(i));
+                }
 
                 renderer.setColor(
                         renderBuffer.getColorR(renderOffset),

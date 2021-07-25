@@ -10,6 +10,7 @@ public final class Dimensions {
     private static Rectangle buttonSize;
     private static Rectangle inputFieldSize;
     private static Point contentScale;
+    private static float defaultOffsetY;
 
     private Dimensions() {
 
@@ -17,17 +18,14 @@ public final class Dimensions {
 
     public static void create(Window window) {
         contentScale = new Point();
-
-        boolean isMobile = window.getPhysicalWindowSize() < MAX_MOBILE_SIZE;
-        if (isMobile) {
-            window.getContentScale(150, contentScale);
-            buttonSize = Rectangle.create(40f, 10f).resize(contentScale);
-            inputFieldSize = Rectangle.create(40f, 10f).resize(contentScale);
-        } else {
-            window.getContentScale(700, contentScale);
-            buttonSize = Rectangle.create(100f, 25f).resize(contentScale);
-            inputFieldSize = Rectangle.create(100f, 25f).resize(contentScale);
+        window.getContentScale(150, contentScale);
+        if (window.getPhysicalWindowSize() > MAX_MOBILE_SIZE) {
+            contentScale.divide(2f);
         }
+
+        buttonSize = Rectangle.create(40f, 7f).resize(contentScale);
+        inputFieldSize = Rectangle.create(40f, 7f).resize(contentScale);
+        defaultOffsetY = 2f * contentScale.getY();
     }
 
     public static float getContentScaleX() {
@@ -38,8 +36,8 @@ public final class Dimensions {
         return contentScale.getY();
     }
 
-    public static float getDefaultOffset() {
-        return 10f;
+    public static float getDefaultOffsetY() {
+        return defaultOffsetY;
     }
 
     public static Rectangle getInputFieldSize() {

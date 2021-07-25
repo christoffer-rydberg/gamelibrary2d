@@ -2,9 +2,9 @@ package com.gamelibrary2d.demos.networkgame.client.frames;
 
 import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.components.frames.AbstractLoadingFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
+import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 
 public class LoadingFrame extends AbstractLoadingFrame {
 

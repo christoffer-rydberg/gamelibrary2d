@@ -75,12 +75,12 @@ public class DemoGame extends AbstractGame {
         loadDemoFrame(serverManager::hostLocalServer);
     }
 
-    public void hostNetworkGame(int port, int localUdpPort) {
-        loadDemoFrame(() -> serverManager.hostNetworkServer(port, localUdpPort));
+    public void hostNetworkGame(String host, int port, int localUdpPort) {
+        loadDemoFrame(() -> serverManager.hostNetworkServer(host, port, localUdpPort));
     }
 
-    public void joinNetworkGame(String ip, int port, int localUdpPort) {
-        loadDemoFrame(() -> serverManager.connectToServer(ip, port, localUdpPort));
+    public void joinNetworkGame(String host, int port, int localUdpPort) {
+        loadDemoFrame(() -> serverManager.connectToServer(host, port, localUdpPort));
     }
 
     private void showSplashScreen() throws InitializationException {
@@ -94,7 +94,7 @@ public class DemoGame extends AbstractGame {
         Dimensions.create(getWindow());
         Fonts.create(resourceManager, this);
         Surfaces.create(this);
-        Textures.create( this);
+        Textures.create(this);
     }
 
     private void loadSoundBuffer(String resource, String format) throws IOException {

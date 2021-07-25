@@ -2,15 +2,12 @@ package com.gamelibrary2d.demos.networkgame.client.resources;
 
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.DynamicByteBuffer;
 import com.gamelibrary2d.common.io.Read;
-import com.gamelibrary2d.common.io.Write;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
 import com.gamelibrary2d.resources.DefaultFont;
 import com.gamelibrary2d.resources.Font;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -31,37 +28,20 @@ public final class Fonts {
     }
 
     public static void create(ResourceManager resourceManager, Disposer disposer) throws IOException {
-        try {
-            button = DefaultFont.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 36), disposer);
-            inputField = DefaultFont.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 36), disposer);
-            timer = DefaultFont.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 72), disposer);
+        float buttonFontSize = Dimensions.getContentScaleY() * 5f;
+        fontScale = buttonFontSize / 32f;
 
-            DataBuffer dataBuffer = new DynamicByteBuffer();
+        button = resourceManager.load(
+                "fonts/button.font",
+                stream -> readFont(stream, disposer));
 
-            String path = "C:/Users/Christoffer Rydberg/source/repos/JavaGames/gamelibrary2d/demos/android-demo/app/src/main/assets/fonts";
+        inputField = resourceManager.load(
+                "fonts/input_field.font",
+                stream -> readFont(stream, disposer));
 
-            dataBuffer.clear();
-            ((DefaultFont) button).serialize(dataBuffer);
-            dataBuffer.flip();
-            Write.bytes(dataBuffer, new File(path + "/button.font"), true);
-
-            dataBuffer.clear();
-            ((DefaultFont) inputField).serialize(dataBuffer);
-            dataBuffer.flip();
-            Write.bytes(dataBuffer, new File(path + "/inputField.font"), true);
-
-            dataBuffer.clear();
-            ((DefaultFont) timer).serialize(dataBuffer);
-            dataBuffer.flip();
-            Write.bytes(dataBuffer, new File(path + "/timer.font"), true);
-        } catch (Exception e) {
-            System.err.println("Exception while creating/saving fonts. Reading from resource manager");
-            button = resourceManager.load("fonts/button.font", stream -> readFont(stream, disposer));
-            inputField = resourceManager.load("fonts/inputField.font", stream -> readFont(stream, disposer));
-            timer = resourceManager.load("fonts/timer.font", stream -> readFont(stream, disposer));
-        }
-
-        fontScale = Dimensions.getContentScaleY() / 3f;
+        timer = resourceManager.load(
+                "fonts/timer.font",
+                stream -> readFont(stream, disposer));
     }
 
     public static float getFontScale() {

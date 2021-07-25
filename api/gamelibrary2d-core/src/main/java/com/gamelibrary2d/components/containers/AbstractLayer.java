@@ -137,6 +137,18 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         return isEnabled() ? onPointerDown(id, button, x, y, projectedX, projectedY) : false;
     }
 
+    @Override
+    public final boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
+        return isEnabled() ? onPointerMove(id, x, y, projectedX, projectedY) : false;
+    }
+
+    @Override
+    public final void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+        if (isEnabled()) {
+            onPointerUp(id, button, x, y, projectedX, projectedY);
+        }
+    }
+
     protected boolean onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
         iterationList.addAll(pointerDownAwareObjects);
         for (int i = iterationList.size() - 1; i >= 0; --i) {
@@ -151,11 +163,6 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         return false;
     }
 
-    @Override
-    public final boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
-        return isEnabled() ? onPointerMove(id, x, y, projectedX, projectedY) : false;
-    }
-
     protected boolean onPointerMove(int id, float x, float y, float projectedX, float projectedY) {
         iterationList.addAll(pointerMoveAwareObjects);
         for (int i = iterationList.size() - 1; i >= 0; --i) {
@@ -168,13 +175,6 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
 
         iterationList.clear();
         return false;
-    }
-
-    @Override
-    public final void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
-        if (isEnabled()) {
-            onPointerUp(id, button, x, y, projectedX, projectedY);
-        }
     }
 
     protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {

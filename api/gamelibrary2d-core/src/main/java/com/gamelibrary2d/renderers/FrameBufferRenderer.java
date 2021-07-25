@@ -7,9 +7,9 @@ import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.DefaultFrameBuffer;
 import com.gamelibrary2d.glUtil.FrameBuffer;
 import com.gamelibrary2d.glUtil.ModelMatrix;
+import com.gamelibrary2d.glUtil.OpenGLState;
 import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.resources.Texture;
-import com.gamelibrary2d.glUtil.OpenGLState;
 
 import static com.gamelibrary2d.framework.OpenGL.*;
 

@@ -1,14 +1,7 @@
-Special thanks to opengameart.org
-
-
-
 GRAPHIC DESIGN
 
-Blue fighter spaceship, by MillionthVector
-(https://opengameart.org/content/blue-fighter-spaceship)
-
-Space Ship Construction Kit, by Skorpio
-(https://opengameart.org/content/space-ship-construction-kit)
+Rocket, by JM.Atencia
+https://opengameart.org/content/rocket
 
 Rocks, by Écrivain
 (https://opengameart.org/content/rocks)
@@ -38,13 +31,11 @@ Crow-Man, by Spring
 
 MUSIC
 
+RPG Music Pack - Eerie Scene, Aaron Krogh
+https://forums.rpgmakerweb.com/index.php?threads/rpg-music-pack-free-commercial-use.926/
+
 Drifting Beyond the Stars, by Hitctrl
 (https://opengameart.org/content/drifting-beyond-the-stars-background-ambient)
-
-Frozen Jamm, by Jordan Trudgett (tgfcoder)
-(https://opengameart.org/content/frozen-jam-seamless-loop)
-
-
 
 
 SOUND EFFECTS
@@ -64,6 +55,6 @@ Moving Boulder, by themightyglider
 
 
 
-GAME CREATED BY
+CREATED BY
 
 Christoffer Rydberg

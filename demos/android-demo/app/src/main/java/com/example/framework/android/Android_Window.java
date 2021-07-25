@@ -1,6 +1,7 @@
 package com.example.framework.android;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
@@ -16,8 +17,11 @@ class Android_Window extends GLSurfaceView implements Window {
     private static final int POINTER_UP = 2;
     private final Activity activity;
     private final MotionEventStash motionEventStash = new MotionEventStash(100);
+    private final int monitorWidth;
+    private final int monitorHeight;
     private final double physicalWidth;
     private final double physicalHeight;
+
     private WindowEventListener eventListener;
 
     Android_Window(Activity activity) {
@@ -27,8 +31,10 @@ class Android_Window extends GLSurfaceView implements Window {
 
         DisplayMetrics dm = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        physicalWidth = (getWidth() / dm.xdpi) * 25.4;
-        physicalHeight = (getHeight() / dm.ydpi) * 25.4;
+        monitorWidth = Math.round(dm.widthPixels);
+        monitorHeight = Math.round(dm.heightPixels);
+        physicalWidth = (dm.widthPixels / dm.xdpi) * 25.4;
+        physicalHeight = (dm.heightPixels / dm.ydpi) * 25.4;
     }
 
     OpenGL.OpenGLVersion getSupportedOpenGLVersion() {
@@ -88,24 +94,34 @@ class Android_Window extends GLSurfaceView implements Window {
         return true;
     }
 
+    private boolean hasNaturalOrientation() {
+        DeviceUtil.DeviceOrientation naturalOrientation = DeviceUtil.getNaturalOrientation(activity);
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return naturalOrientation == DeviceUtil.DeviceOrientation.LANDSCAPE;
+        } else {
+            return naturalOrientation == DeviceUtil.DeviceOrientation.PORTRAIT;
+        }
+    }
+
     @Override
     public int getMonitorWidth() {
-        return super.getWidth();
+        return hasNaturalOrientation() ? monitorWidth : monitorHeight;
     }
 
     @Override
     public int getMonitorHeight() {
-        return super.getHeight();
+        return hasNaturalOrientation() ? monitorHeight : monitorWidth;
     }
 
     @Override
     public double getPhysicalWidth() {
-        return physicalWidth;
+        return hasNaturalOrientation() ? physicalWidth : physicalHeight;
     }
 
     @Override
     public double getPhysicalHeight() {
-        return physicalHeight;
+        return hasNaturalOrientation() ? physicalHeight : physicalWidth;
     }
 
     @Override

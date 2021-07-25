@@ -344,10 +344,10 @@ public class DefaultParticleSystem implements ParticleSystem, Clearable {
             if (isTransformingPosition()) {
                 ModelMatrix.instance().pushMatrix();
                 ModelMatrix.instance().translatef(positionTransformation.getX(), positionTransformation.getY(), 0);
-                renderer.render(renderBuffer, gpuOutdated, 0, particleCount, alpha);
+                renderer.render(this, renderBuffer, gpuOutdated, 0, particleCount, alpha);
                 ModelMatrix.instance().popMatrix();
             } else {
-                renderer.render(renderBuffer, gpuOutdated, 0, particleCount, alpha);
+                renderer.render(this, renderBuffer, gpuOutdated, 0, particleCount, alpha);
             }
 
             gpuOutdated = false;

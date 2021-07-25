@@ -3,8 +3,8 @@ package com.gamelibrary2d.tools.particlegenerator.models;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.components.containers.Layer;
+import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.particle.parameters.EmitterParameters;
 import com.gamelibrary2d.particle.parameters.ParticleParameters;
 import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
@@ -14,9 +14,9 @@ import com.gamelibrary2d.particle.systems.AcceleratedParticleSystem;
 import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
 import com.gamelibrary2d.particle.systems.ParticleSystem;
 import com.gamelibrary2d.resources.Animation;
+import com.gamelibrary2d.resources.BlendMode;
 import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.resources.Texture;
-import com.gamelibrary2d.resources.BlendMode;
 
 import java.io.IOException;
 import java.net.URL;
@@ -53,10 +53,7 @@ public class ParticleSystemModel {
         defaultParticleSystem = DefaultParticleSystem.create(settings, efficientRenderer, frame);
         acceleratedParticleSystem = AcceleratedParticleSystem.create(settings, efficientRenderer, 10000000, frame);
 
-        sequentialRenderer = new SequentialRendererModel(
-                frame,
-                defaultParticleSystem,
-                efficientRenderer.getBounds());
+        sequentialRenderer = new SequentialRendererModel(efficientRenderer.getBounds(), frame);
 
         updateParticleSize(
                 efficientRenderer.getBounds().getWidth(),

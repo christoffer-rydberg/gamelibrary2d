@@ -105,10 +105,6 @@ public class DefaultTexture extends AbstractDisposable implements Texture {
         int previousFbo = frameBuffer.bind();
 
         try {
-            // Fix for incorrect alpha blending. See:
-            // https://community.khronos.org/t/alpha-blending-issues-when-drawing-frame-buffer-into-default-buffer/73958/3
-            OpenGL.instance().glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
             ModelMatrix.instance().pushMatrix();
             ModelMatrix.instance().clearMatrix();
             ModelMatrix.instance().translatef(-area.getLowerX(), -area.getLowerY(), 0);

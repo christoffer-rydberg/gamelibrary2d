@@ -21,9 +21,9 @@ public class DemoGameLogic {
         this.server = server;
 
         settings = new GameSettings(
-                new Rectangle(0, 0, 1024, 1024),
+                new Rectangle(0, 0, 1200, 900),
                 Rectangle.create(32f, 32f),
-                Rectangle.create(32f, 32f));
+                Rectangle.create(28f, 45f));
 
         collisionDetection = new CollisionDetection(
                 settings.getGameBounds(),

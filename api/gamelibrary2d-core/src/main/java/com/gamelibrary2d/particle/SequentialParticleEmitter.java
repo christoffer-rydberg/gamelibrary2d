@@ -43,6 +43,14 @@ public class SequentialParticleEmitter implements Updatable {
         return position;
     }
 
+    public void setPosition(Point position) {
+        getPosition().set(position);
+    }
+
+    public void setPosition(float x, float y) {
+        position.set(x, y);
+    }
+
     public DefaultParticleSystem getParticleSystem() {
         return particleSystem;
     }

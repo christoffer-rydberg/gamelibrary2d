@@ -9,25 +9,24 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.renderers.Label;
 
 public class InputField extends AbstractPointerAwareGameObject implements KeyDownAware, InputAware {
     private final Rectangle bounds;
     private final Renderable background;
-    private final Label label;
+    private final ShadowedLabel label;
 
-    public InputField(Label label, Renderable background, Rectangle bounds) {
+    public InputField(ShadowedLabel label, Renderable background, Rectangle bounds) {
         this.bounds = bounds;
         this.label = label;
         this.background = background;
     }
 
     public int getIntValue() {
-        return Integer.parseInt(label.getText());
+        return Integer.parseInt(label.getLabel().getText());
     }
 
     public String getStringValue() {
-        return label.getText();
+        return label.getLabel().getText();
     }
 
     @Override
@@ -55,7 +54,7 @@ public class InputField extends AbstractPointerAwareGameObject implements KeyDow
 
     @Override
     public void charInput(char charInput) {
-        label.setText(label.getText() + charInput);
+        label.getLabel().setText(label.getLabel().getText() + charInput);
     }
 
     @Override
@@ -66,10 +65,10 @@ public class InputField extends AbstractPointerAwareGameObject implements KeyDow
     }
 
     private void removeLast() {
-        String text = label.getText();
+        String text = label.getLabel().getText();
         int textLength = text.length();
         if (textLength > 0) {
-            label.setText(text.substring(0, textLength - 1));
+            label.getLabel().setText(text.substring(0, textLength - 1));
         }
     }
 }

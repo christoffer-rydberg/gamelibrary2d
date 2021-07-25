@@ -8,14 +8,9 @@ import com.gamelibrary2d.imaging.AnimationLoader;
 import com.gamelibrary2d.imaging.ImageAnimation;
 import com.gamelibrary2d.imaging.StandardAnimationFormats;
 import com.gamelibrary2d.particle.renderers.SequentialParticleRenderer;
-import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
 import com.gamelibrary2d.renderers.AnimationRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.Animation;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.Texture;
-import com.gamelibrary2d.resources.BlendMode;
-import com.gamelibrary2d.resources.QuadShape;
+import com.gamelibrary2d.resources.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -31,10 +26,10 @@ public class SequentialRendererModel {
     private AnimationRenderer animationRenderer;
     private byte[] animationData;
 
-    public SequentialRendererModel(Disposer disposer, DefaultParticleSystem defaultParticleSystem, Rectangle bounds) {
+    public SequentialRendererModel(Rectangle bounds, Disposer disposer) {
         this.resourceDisposer = new DefaultDisposer(disposer);
         this.surfaceRenderer = new SurfaceRenderer<>();
-        this.renderer = new SequentialParticleRenderer(defaultParticleSystem, surfaceRenderer);
+        this.renderer = new SequentialParticleRenderer(surfaceRenderer);
         setBounds(bounds);
     }
 

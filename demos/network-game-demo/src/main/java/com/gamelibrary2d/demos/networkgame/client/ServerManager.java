@@ -45,8 +45,8 @@ public class ServerManager implements Disposable {
         return startServer(this::createLocalServer);
     }
 
-    public Future<Communicator> hostNetworkServer(int port, int localUdpPort) {
-        return startServer(() -> createNetworkServer(port, localUdpPort));
+    public Future<Communicator> hostNetworkServer(String host, int port, int localUdpPort) {
+        return startServer(() -> createNetworkServer(host, port, localUdpPort));
     }
 
     public void stopHostedServer() {
@@ -60,9 +60,9 @@ public class ServerManager implements Disposable {
         }
     }
 
-    public Future<Communicator> connectToServer(String ip, int port, int localUpdPort) {
+    public Future<Communicator> connectToServer(String host, int port, int localUpdPort) {
         return ClientSideCommunicator.connect(
-                new TcpConnectionSettings(ip, port),
+                new TcpConnectionSettings(host, port),
                 steps -> authenticate(steps, localUpdPort));
     }
 
@@ -83,14 +83,14 @@ public class ServerManager implements Disposable {
         }
     }
 
-    private ServerResult createNetworkServer(int port, int localUpdPort) {
-        DefaultNetworkServer server = new DefaultNetworkServer("localhost", port, s -> new DemoGameServer(s, keyPair));
+    private ServerResult createNetworkServer(String hostname, int port, int localUpdPort) {
+        DefaultNetworkServer server = new DefaultNetworkServer(hostname, port, s -> new DemoGameServer(s, keyPair));
 
         try {
             server.start();
             server.listenForConnections(true);
             return new ServerResult(server, () -> {
-                Future<Communicator> comFuture = connectToServer("localhost", port, localUpdPort);
+                Future<Communicator> comFuture = connectToServer(hostname, port, localUpdPort);
                 return new ResultHandlingFuture<>(
                         comFuture,
                         com -> {

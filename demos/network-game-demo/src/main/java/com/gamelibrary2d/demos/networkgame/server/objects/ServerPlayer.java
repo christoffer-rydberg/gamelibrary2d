@@ -13,7 +13,7 @@ import com.gamelibrary2d.network.common.Communicator;
 
 public class ServerPlayer extends AbstractDemoServerObject implements Obstacle {
     public final static float MAX_SPEED = 100f;
-    public final static float MAX_ACCELERATION = 200f;
+    public final static float MAX_ACCELERATION = 300f;
 
     private final DemoGameLogic gameLogic;
 

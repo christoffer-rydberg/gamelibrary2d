@@ -62,6 +62,7 @@ public class DemoGameServer implements ServerContext {
             throw new NullPointerException("Key pair has not been set");
         }
 
+        steps.add((context, com) -> log(String.format("%s: Performing client/server handshake", com.getEndpoint())));
         ServerHandshake serverHandshake = new ServerHandshake(keyPair);
         serverHandshake.configure(steps);
         steps.add(this::readPassword);
@@ -95,28 +96,30 @@ public class DemoGameServer implements ServerContext {
 
         int udpPort = decryptionBuffer.getInt();
         ((NetworkCommunicator) communicator).enableUdp(ConnectionType.WRITE, 0, udpPort);
+
+        log(String.format("%s: Client listens for UDP on port %d", communicator.getEndpoint(), udpPort));
         return true;
     }
 
     @Override
     public boolean acceptConnection(String endpoint) {
-        log(String.format("Accepting incoming connection: %s", endpoint));
+        log(String.format("%s: Accepting client connection", endpoint));
         return true;
     }
 
     @Override
     public void onConnectionFailed(String endpoint, Exception e) {
-        log(String.format("Incoming connection failed: %s", endpoint), e);
+        log(String.format("%s: Client connection failed", endpoint), e);
     }
 
     @Override
     public void onClientAuthenticated(CommunicationContext context, Communicator communicator) {
-        log(String.format("Client has been authenticated: %s", communicator.getEndpoint()));
+        log(String.format("%s: Client has authenticated", communicator.getEndpoint()));
     }
 
     @Override
     public void onConnected(Communicator communicator) {
-        log(String.format("Connection established: %s", communicator.getEndpoint()));
+        log(String.format("%s: Client has connected", communicator.getEndpoint()));
     }
 
     private void sendUpdateRate(CommunicationContext context, Communicator communicator) {
@@ -125,7 +128,7 @@ public class DemoGameServer implements ServerContext {
 
     @Override
     public void onClientInitialized(CommunicationContext context, Communicator communicator) {
-        log(String.format("Client has been initialized: %s", communicator.getEndpoint()));
+        log(String.format("%s: Client has been initialized", communicator.getEndpoint()));
 
         GameSettings settings = gameLogic.getGameSettings();
 
@@ -148,7 +151,7 @@ public class DemoGameServer implements ServerContext {
 
     @Override
     public void onDisconnected(Communicator communicator, boolean pending) {
-        log(String.format("Connection lost: %s", communicator.getEndpoint()));
+        log(String.format("%s: Client has disconnected", communicator.getEndpoint()));
         ClientState clientState = clientStateService.remove(communicator);
         if (clientState != null) {
             for (ServerPlayer player : clientState.getPlayers()) {

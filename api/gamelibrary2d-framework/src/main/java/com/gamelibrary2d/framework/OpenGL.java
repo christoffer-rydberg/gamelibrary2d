@@ -61,6 +61,8 @@ public interface OpenGL {
     int GL_FRAMEBUFFER = 36160;
     int GL_COLOR_ATTACHMENT0 = 36064;
     int GL_QUADS = 7;
+    int GL_FUNC_ADD = 32774;
+
 
     static OpenGL instance() {
         return Runtime.getFramework().getOpenGL();

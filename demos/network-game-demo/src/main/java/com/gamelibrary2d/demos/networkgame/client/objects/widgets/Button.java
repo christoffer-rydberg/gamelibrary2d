@@ -3,7 +3,6 @@ package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.components.objects.AbstractPointerAwareGameObject;
-import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.ModelMatrix;
@@ -12,13 +11,13 @@ public class Button extends AbstractPointerAwareGameObject {
     private final Action onClick;
     private final Rectangle bounds;
     private final Renderable background;
-    private final Label label;
+    private final ShadowedLabel label;
 
-    public Button(Label label, Rectangle bounds, Action onClick) {
+    public Button(ShadowedLabel label, Rectangle bounds, Action onClick) {
         this(label, null, bounds, onClick);
     }
 
-    public Button(Label label, Renderable background, Rectangle bounds, Action onClick) {
+    public Button(ShadowedLabel label, Renderable background, Rectangle bounds, Action onClick) {
         this.onClick = onClick;
         this.bounds = bounds;
         this.label = label;

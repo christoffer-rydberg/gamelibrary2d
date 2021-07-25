@@ -4,19 +4,19 @@ import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.functional.Factory;
 import com.gamelibrary2d.common.io.ResourceReader;
+import com.gamelibrary2d.components.containers.Layer;
+import com.gamelibrary2d.demos.networkgame.client.ParticleRendererFactory;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.ClientObject;
 import com.gamelibrary2d.demos.networkgame.client.urls.Particles;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.particle.SequentialParticleEmitter;
 import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particle.renderers.EfficientParticleRenderer;
 import com.gamelibrary2d.particle.renderers.ParticleRenderer;
 import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
-import com.gamelibrary2d.sound.SoundPlayer;
 import com.gamelibrary2d.resources.BlendMode;
+import com.gamelibrary2d.sound.SoundPlayer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class EffectMap {
     private final List<ParticleSystemItem> particleSystems = new ArrayList<>();
     private final Map<Byte, Map<Byte, InstantEffect>> destroyedEffects = new HashMap<>();
     private final Map<Byte, Map<Byte, Factory<DurationEffect>>> updateEffects = new HashMap<>();
-    private final EfficientParticleRenderer defaultRenderer = new EfficientParticleRenderer();
+    private ParticleRenderer defaultRenderer;
 
     public EffectMap(ResourceManager resourceManager, SoundMap sounds, SoundPlayer soundPlayer) {
         this.resourceManager = resourceManager;
@@ -55,6 +55,11 @@ public class EffectMap {
             int simultaneousEffects,
             Scene scene,
             Disposer disposer) {
+
+        if (defaultRenderer == null) {
+            defaultRenderer = ParticleRendererFactory.create(disposer);
+        }
+
         return createParticleSystem(
                 params,
                 defaultRenderer,
@@ -137,9 +142,10 @@ public class EffectMap {
 
         ParticleSystemParameters destroyParams = loadParameters(Particles.OBSTACLE_EXPLOSION);
         for (Byte key : textures.getKeys(ObjectTypes.OBSTACLE)) {
-            EfficientParticleRenderer particleRenderer = new EfficientParticleRenderer();
-            particleRenderer.setBlendMode(BlendMode.TRANSPARENT);
-            particleRenderer.setTexture(textures.getTexture(ObjectTypes.OBSTACLE, key));
+            ParticleRenderer particleRenderer = ParticleRendererFactory.create(
+                    textures.getTexture(ObjectTypes.OBSTACLE, key),
+                    BlendMode.TRANSPARENT,
+                    disposer);
 
             DefaultParticleSystem explosionSystem = createParticleSystem(
                     destroyParams,

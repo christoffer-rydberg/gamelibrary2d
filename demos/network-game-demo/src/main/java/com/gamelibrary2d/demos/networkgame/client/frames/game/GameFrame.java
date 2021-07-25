@@ -31,6 +31,7 @@ import com.gamelibrary2d.network.AbstractNetworkFrame;
 import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.DefaultTexture;
+import com.gamelibrary2d.resources.Quad;
 import com.gamelibrary2d.resources.Texture;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
@@ -185,19 +186,30 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
 
         float leftMargin = renderedGameBounds.getLowerX();
 
-        Rectangle leftArea = new Rectangle(
+        Rectangle visualizationArea = new Rectangle(
                 0,
                 0,
                 leftMargin,
                 window.getHeight());
 
+        Rectangle controllerArea = new Rectangle(
+                0,
+                0,
+                window.getWidth() / 2f,
+                window.getHeight());
+
         RotationArea rotationController = RotationArea.create(
                 RotationArea.RotationMode.TOWARD_DIRECTION,
-                leftArea,
+                controllerArea,
                 player,
-                leftArea.getWidth() / 4f,
+                controllerArea.getWidth() / 8f,
                 this);
 
+        SurfaceRenderer<Quad> areaRenderer = new SurfaceRenderer<>(Quad.create(visualizationArea, this));
+        areaRenderer.setColor(0, 0, 0, 1f);
+        rotationController.addValueChangedListener(value -> areaRenderer.setColor(0, Math.abs(value), 0, 1f));
+
+        controllerLayer.add(areaRenderer);
         controllerLayer.add(rotationController);
     }
 
@@ -206,18 +218,28 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
 
         float rightMargin = window.getWidth() - renderedGameBounds.getUpperX();
 
-        Rectangle rightArea = new Rectangle(
+        Rectangle visualizationArea = new Rectangle(
                 window.getWidth() - rightMargin,
                 0,
                 window.getWidth(),
                 window.getHeight());
 
-        AccelerationArea accelerationController = AccelerationArea.create(
-                rightArea,
-                player,
-                rightArea.getHeight() / 8f,
-                this);
+        Rectangle controllerArea = new Rectangle(
+                window.getWidth() / 2f,
+                0,
+                window.getWidth(),
+                window.getHeight());
 
+        AccelerationArea accelerationController = AccelerationArea.create(
+                controllerArea,
+                player,
+                controllerArea.getHeight() / 3f);
+
+        SurfaceRenderer<Quad> areaRenderer = new SurfaceRenderer<>(Quad.create(visualizationArea, this));
+        areaRenderer.setColor(0, 0, 0, 1f);
+        accelerationController.addValueChangedListener(value -> areaRenderer.setColor(0, value, 0, 1f));
+
+        controllerLayer.add(areaRenderer);
         controllerLayer.add(accelerationController);
     }
 

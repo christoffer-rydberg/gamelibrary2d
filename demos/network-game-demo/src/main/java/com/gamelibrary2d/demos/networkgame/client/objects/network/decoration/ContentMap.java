@@ -1,7 +1,9 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network.decoration;
 
+import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.ClientObject;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
@@ -16,6 +18,7 @@ import java.util.Map;
 
 public class ContentMap {
     private final Map<Byte, Map<Byte, Renderable>> renderers = new HashMap<>();
+    private PlayerRendererFactory playerRendererFactory;
 
     private void initializeRenderers(byte primaryType, TextureMap textures, Rectangle bounds, Disposer disposer) {
         Map<Byte, Renderable> renderers = new HashMap<>();
@@ -29,7 +32,10 @@ public class ContentMap {
     }
 
     private void initializePlayerRenderers(GameSettings settings, TextureMap textures, Disposer disposer) {
-        initializeRenderers(ObjectTypes.PLAYER, textures, settings.getSpaceCraftBounds().resize(1.25f), disposer);
+        playerRendererFactory = new PlayerRendererFactory(
+                textures.getPlayerBackground(),
+                textures.getPlayerForeground(),
+                Quad.create(settings.getSpaceCraftBounds().resize(1.25f), disposer));
     }
 
     private void initializeObstacleRenderers(GameSettings settings, TextureMap textures, Disposer disposer) {
@@ -42,11 +48,17 @@ public class ContentMap {
     }
 
     public Renderable get(ClientObject obj) {
-        return get(obj.getPrimaryType(), obj.getSecondaryType());
-    }
-
-    public Renderable get(Byte primaryType, Byte secondaryType) {
-        Map<Byte, Renderable> renderers = this.renderers.get(primaryType);
-        return renderers != null ? renderers.get(secondaryType) : null;
+        switch (obj.getPrimaryType()) {
+            case ObjectTypes.PLAYER:
+                return playerRendererFactory.create(new Color(
+                        RandomInstance.get().nextFloat(),
+                        RandomInstance.get().nextFloat(),
+                        RandomInstance.get().nextFloat()
+                ));
+            default: {
+                Map<Byte, Renderable> renderers = this.renderers.get(obj.getPrimaryType());
+                return renderers != null ? renderers.get(obj.getSecondaryType()) : null;
+            }
+        }
     }
 }

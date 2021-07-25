@@ -16,6 +16,8 @@ public class TextureMap {
     private final ResourceManager resourceManager;
     private final Map<Byte, Map<Byte, Texture>> textures = new HashMap<>();
     private final Set<Byte> emptyKeySet = Collections.unmodifiableSet(new HashSet<>(0));
+    private Texture playerBackground;
+    private Texture playerForeground;
 
     public TextureMap(ResourceManager resourceManager) {
         this.resourceManager = resourceManager;
@@ -53,8 +55,8 @@ public class TextureMap {
     }
 
     private void initializePlayerTextures(Disposer disposer) throws IOException {
-        Map<Byte, Texture> textures = load("images/spacecrafts/", "^*.png$", disposer);
-        this.textures.put(ObjectTypes.PLAYER, textures);
+        playerBackground = resourceManager.load("images/spacecrafts/rocket_background.png", s -> DefaultTexture.create(s, disposer));
+        playerForeground = resourceManager.load("images/spacecrafts/rocket_foreground.png", s -> DefaultTexture.create(s, disposer));
     }
 
     private void initializeObstacleTextures(Disposer disposer) throws IOException {
@@ -75,5 +77,13 @@ public class TextureMap {
     public Set<Byte> getKeys(byte primaryType) {
         Map<Byte, Texture> textures = this.textures.get(primaryType);
         return textures != null ? textures.keySet() : emptyKeySet;
+    }
+
+    public Texture getPlayerBackground() {
+        return playerBackground;
+    }
+
+    public Texture getPlayerForeground() {
+        return playerForeground;
     }
 }

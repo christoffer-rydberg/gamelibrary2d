@@ -7,19 +7,19 @@ import com.gamelibrary2d.components.denotations.KeyUpAware;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.components.objects.DefaultGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.Button;
+import com.gamelibrary2d.demos.networkgame.client.objects.widgets.ShadowedLabel;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.demos.networkgame.client.resources.Surfaces;
+import com.gamelibrary2d.demos.networkgame.client.settings.Colors;
 import com.gamelibrary2d.demos.networkgame.client.urls.Images;
 import com.gamelibrary2d.demos.networkgame.client.urls.Music;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.*;
@@ -28,6 +28,7 @@ import com.gamelibrary2d.sound.SoundPlayer;
 import com.gamelibrary2d.updaters.DurationUpdater;
 import com.gamelibrary2d.updaters.InstantUpdater;
 import com.gamelibrary2d.updaters.SequentialUpdater;
+import com.gamelibrary2d.updates.EmptyUpdate;
 import com.gamelibrary2d.updates.OpacityUpdate;
 
 import java.io.IOException;
@@ -41,6 +42,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     private final SequentialUpdater introUpdater = new SequentialUpdater();
 
     private Credits credits;
+    private GameTitle gameTitle;
     private Layer<Renderable> foregroundLayer;
     private LayerObject<Renderable> backgroundLayer;
 
@@ -78,16 +80,6 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         return backgroundLayer;
     }
 
-    private GameObject createGameTitle() throws IOException {
-        Texture texture = resourceManager.load(
-                Images.MENU_TITLE,
-                stream -> DefaultTexture.create(stream, this));
-
-        Surface surface = Quad.create(Rectangle.create(texture.getWidth(), texture.getHeight()), this);
-        ContentRenderer renderer = new SurfaceRenderer<>(surface, texture);
-        return new DefaultGameObject<>(renderer);
-    }
-
     private Layer<Renderable> createForegroundLayer() throws IOException {
         GameObject creditsButton = createCreditsButton();
         creditsButton.setPosition(
@@ -97,17 +89,17 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         BasicLayer<Renderable> foregroundLayer = new BasicLayer<>();
         foregroundLayer.setAutoClearing(false);
 
-        GameObject gameTitle = createGameTitle();
+        gameTitle = GameTitle.create(game.getWindow(), resourceManager, this);
         MenuPanel menuPanel = new MenuPanel(game);
-
-        float emptyVerticalSpace = game.getWindow().getHeight()
-                - gameTitle.getBounds().getHeight()
-                - menuPanel.getBounds().getHeight();
 
         Panel<GameObject> panel = new DefaultPanel<>();
         panel.setPosition(game.getWindow().getWidth() / 2f, game.getWindow().getHeight());
-        panel.stack(gameTitle, StackOrientation.DOWN, emptyVerticalSpace / 6f);
-        panel.stack(menuPanel, StackOrientation.DOWN, emptyVerticalSpace / 6f);
+
+        float titleOffset = Math.max(0f, (game.getWindow().getHeight() - menuPanel.getBounds().getHeight()) / 4f);
+        panel.stack(gameTitle, StackOrientation.DOWN, titleOffset);
+
+        float menuOffset = Math.max(0f, titleOffset - gameTitle.getBounds().getHeight() / 2f);
+        panel.stack(menuPanel, StackOrientation.DOWN, menuOffset);
 
         foregroundLayer.add(panel);
         foregroundLayer.add(creditsButton);
@@ -137,6 +129,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     private void runIntro() {
+        foregroundLayer.setEnabled(false);
         foregroundLayer.setOpacity(0f);
         backgroundLayer.setScale(10f);
 
@@ -148,19 +141,23 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
                 new IntroZoomUpdate(backgroundLayer)
         ));
 
-        introUpdater.add(new InstantUpdater(dt -> ShowMenu()));
+        introUpdater.add(new InstantUpdater(dt -> showMenu()));
+        introUpdater.add(new DurationUpdater(4f, new EmptyUpdate()));
+        introUpdater.add(gameTitle.createIntro());
 
         runUpdater(introUpdater);
     }
 
-    private void ShowMenu() {
+    private void showMenu() {
         if (foregroundLayerIsHidden) {
-            runUpdater(new DurationUpdater(
+            SequentialUpdater updater = new SequentialUpdater();
+            updater.add(new InstantUpdater(dt -> foregroundLayer.setEnabled(true)));
+            updater.add(new DurationUpdater(
                     4f,
                     true,
                     new OpacityUpdate<>(foregroundLayer, 1f)
             ));
-
+            runUpdater(updater);
             foregroundLayerIsHidden = false;
         }
     }
@@ -187,8 +184,9 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
 
     private Button createCreditsButton() {
         Label label = new Label(Fonts.button(), "Credits");
+        label.setColor(Colors.CREDITS_FONT);
         label.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.BOTTOM);
-        return new Button(label, label.calculateBounds(), this::showCredits);
+        return new Button(new ShadowedLabel(label, Colors.CREDITS_FONT_SHADOW), label.calculateBounds(), this::showCredits);
     }
 
     @Override
@@ -197,7 +195,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
             if (credits.isEnabled()) {
                 hideCredits();
             } else {
-                ShowMenu();
+                showMenu();
             }
         } else if (key == Keyboard.instance().keyEnter()) {
             if (credits.isEnabled()) {

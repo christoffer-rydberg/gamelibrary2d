@@ -7,6 +7,7 @@ public class Color {
     public static final Color WHITE = new Color(1, 1, 1);
     public static final Color RED = new Color(1, 0, 0);
     public static final Color LIGHT_CORAL = new Color(240f / 255f, 128f / 255f, 128f / 255f);
+    public static final Color LIGHT_GREEN = new Color(144f / 255f, 238f / 255f, 144f / 255f);
     public static final Color GREEN = new Color(0, 1, 0);
     public static final Color BLUE = new Color(0, 0, 1);
     public static final Color SKY_BLUE = new Color(135 / 255f, 206 / 255f, 235 / 255f);
@@ -27,6 +28,10 @@ public class Color {
     private final float g;
     private final float b;
     private final float a;
+
+    public Color(Color color, float alpha) {
+        this(color.r, color.g, color.b, alpha);
+    }
 
     public Color(float r, float g, float b) {
         this(r, g, b, 1);

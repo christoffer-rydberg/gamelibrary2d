@@ -56,7 +56,7 @@ public class CustomParticleSystem extends AbstractGpuBasedParticleSystem {
 
     @Override
     public void render(float alpha) {
-        renderer.render(renderBuffer, false, 0, renderBuffer.getCapacity(), alpha);
+        renderer.render(this, renderBuffer, false, 0, renderBuffer.getCapacity(), alpha);
     }
 
     @Override
