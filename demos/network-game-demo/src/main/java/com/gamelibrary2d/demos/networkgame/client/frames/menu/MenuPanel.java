@@ -22,6 +22,9 @@ import com.gamelibrary2d.resources.HorizontalTextAlignment;
 import com.gamelibrary2d.resources.StackOrientation;
 import com.gamelibrary2d.resources.VerticalTextAlignment;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+
 class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> {
     MenuPanel(DemoGame game) {
         NavigationPanel navigationPanel = new NavigationPanel();
@@ -78,8 +81,8 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
 
     private static GameObject createNetworkPanel(DemoGame game, NavigationPanel navigationPanel, GameObject hostPanel, GameObject joinPanel) {
         Panel<GameObject> panel = new DefaultPanel<>();
-        stack(panel, createButton("Join", () -> navigationPanel.navigateTo(joinPanel, true)));
-        stack(panel, createButton("Host", () -> navigationPanel.navigateTo(hostPanel, true)));
+        stack(panel, createButton("Join Server", () -> navigationPanel.navigateTo(joinPanel, true)));
+        stack(panel, createButton("Host Server", () -> navigationPanel.navigateTo(hostPanel, true)));
         stack(panel, createButton("Go back", navigationPanel::goBack));
         centerPanel(panel);
         return panel;
@@ -87,8 +90,8 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
 
     private static GameObject createMainPanel(DemoGame game, NavigationPanel navigationPanel, GameObject networkPanel) {
         Panel<GameObject> panel = new DefaultPanel<>();
-        stack(panel, createButton("Local", game::startLocalGame));
-        stack(panel, createButton("Network", () -> navigationPanel.navigateTo(networkPanel, true)));
+        stack(panel, createButton("New Game", game::startLocalGame));
+        stack(panel, createButton("Multiplayer", () -> navigationPanel.navigateTo(networkPanel, true)));
         stack(panel, createButton("Exit", game::exit));
         centerPanel(panel);
         return panel;
@@ -96,7 +99,15 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
 
     private static GameObject createHostPanel(DemoGame game, NavigationPanel navigationPanel) {
         Panel<GameObject> panel = new DefaultPanel<>();
-        InputField ipField = createInputField("192.168.0.32");
+
+        String ip;
+        try {
+            ip = Inet4Address.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            ip = "localhost";
+        }
+
+        InputField ipField = createInputField(ip);
         InputField tcpField = createInputField("4444");
         InputField udpField = createInputField("4444");
         stack(panel, ipField);

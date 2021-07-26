@@ -43,10 +43,10 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
 
     private Credits credits;
     private GameTitle gameTitle;
-    private Layer<Renderable> foregroundLayer;
+    private Layer<Renderable> menuLayer;
     private LayerObject<Renderable> backgroundLayer;
 
-    private boolean foregroundLayerIsHidden = true;
+    private boolean menuLayerIsHidden = true;
 
     public MenuFrame(DemoGame game, ResourceManager resourceManager,
                      MusicPlayer musicPlayer, SoundPlayer soundPlayer) {
@@ -80,14 +80,14 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         return backgroundLayer;
     }
 
-    private Layer<Renderable> createForegroundLayer() throws IOException {
+    private Layer<Renderable> createMenuLayer() throws IOException {
         GameObject creditsButton = createCreditsButton();
         creditsButton.setPosition(
                 19 * game.getWindow().getWidth() / 20f,
                 game.getWindow().getHeight() / 20f);
 
-        BasicLayer<Renderable> foregroundLayer = new BasicLayer<>();
-        foregroundLayer.setAutoClearing(false);
+        BasicLayer<Renderable> menuLayer = new BasicLayer<>();
+        menuLayer.setAutoClearing(false);
 
         gameTitle = GameTitle.create(game.getWindow(), resourceManager, this);
         MenuPanel menuPanel = new MenuPanel(game);
@@ -101,16 +101,16 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         float menuOffset = Math.max(0f, titleOffset - gameTitle.getBounds().getHeight() / 2f);
         panel.stack(menuPanel, StackOrientation.DOWN, menuOffset);
 
-        foregroundLayer.add(panel);
-        foregroundLayer.add(creditsButton);
+        menuLayer.add(panel);
+        menuLayer.add(creditsButton);
 
-        return foregroundLayer;
+        return menuLayer;
     }
 
     @Override
     protected void onInitialize(InitializationContext context) throws IOException {
         backgroundLayer = createBackgroundLayer();
-        foregroundLayer = createForegroundLayer();
+        menuLayer = createMenuLayer();
         credits = new Credits(game.getWindow(), resourceManager);
     }
 
@@ -123,14 +123,14 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     protected void onLoaded(InitializationContext context) {
         hideCredits();
         add(backgroundLayer);
-        add(foregroundLayer);
+        add(menuLayer);
         add(credits);
         runIntro();
     }
 
     private void runIntro() {
-        foregroundLayer.setEnabled(false);
-        foregroundLayer.setOpacity(0f);
+        menuLayer.setEnabled(false);
+        menuLayer.setOpacity(0f);
         backgroundLayer.setScale(10f);
 
         introUpdater.clear();
@@ -149,16 +149,16 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     private void showMenu() {
-        if (foregroundLayerIsHidden) {
+        if (menuLayerIsHidden) {
             SequentialUpdater updater = new SequentialUpdater();
-            updater.add(new InstantUpdater(dt -> foregroundLayer.setEnabled(true)));
+            updater.add(new InstantUpdater(dt -> menuLayer.setEnabled(true)));
             updater.add(new DurationUpdater(
                     4f,
                     true,
-                    new OpacityUpdate<>(foregroundLayer, 1f)
+                    new OpacityUpdate<>(menuLayer, 1f)
             ));
             runUpdater(updater);
-            foregroundLayerIsHidden = false;
+            menuLayerIsHidden = false;
         }
     }
 
@@ -173,13 +173,13 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     private void showCredits() {
-        foregroundLayer.setEnabled(false);
+        menuLayer.setEnabled(false);
         credits.enable(this::hideCredits);
     }
 
     private void hideCredits() {
         credits.disable();
-        foregroundLayer.setEnabled(true);
+        menuLayer.setEnabled(true);
     }
 
     private Button createCreditsButton() {
@@ -210,6 +210,19 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
             if (credits.isEnabled()) {
                 credits.setSpeedFactor(1f);
             }
+        }
+    }
+
+    @Override
+    protected boolean onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+        if (credits.isEnabled()) {
+            hideCredits();
+            return true;
+        } else if (menuLayerIsHidden) {
+            showMenu();
+            return true;
+        } else {
+            return super.onPointerDown(id, button, x, y, projectedX, projectedY);
         }
     }
 

@@ -13,14 +13,13 @@ public class Android_GameLoop implements GameLoop {
     private Action exitAction;
     private Action disposeAction;
     private double prevTime;
-    private boolean initialized;
     private boolean running;
+    private volatile boolean paused;
 
     @Override
     public void initialize(UpdateAction updateAction, Action disposeAction, Window window) {
         this.updateAction = updateAction;
         this.disposeAction = disposeAction;
-        initialized = true;
     }
 
     @Override
@@ -35,16 +34,19 @@ public class Android_GameLoop implements GameLoop {
         running = false;
     }
 
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        if (paused) {
+            paused = false;
+            prevTime = timer.getTime();
+        }
+    }
+
     boolean isRunning() {
-        return running;
-    }
-
-    boolean isInitialized() {
-        return initialized;
-    }
-
-    void deinitialize() {
-        initialized = false;
+        return running && !paused;
     }
 
     Action getDisposeAction() {
@@ -60,6 +62,4 @@ public class Android_GameLoop implements GameLoop {
         updateAction.perform((float) (time - prevTime));
         prevTime = time;
     }
-
-
 }

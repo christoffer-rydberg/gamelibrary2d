@@ -5,7 +5,7 @@ import com.example.framework.android.AbstractGameActivity;
 import com.example.framework.android.Android_Framework;
 import com.example.framework.android.DeviceUtil;
 import com.example.sound.android.DefaultSoundManager;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
+import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ServerManager;
 import com.gamelibrary2d.demos.networkgame.client.input.VirtualController;
@@ -15,8 +15,6 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AbstractGameActivity {
-
-    private final static DefaultDisposer disposer = new DefaultDisposer();
 
     public MainActivity() {
         super(MainActivity::createGame);
@@ -28,7 +26,7 @@ public class MainActivity extends AbstractGameActivity {
         return keyGen.generateKeyPair();
     }
 
-    private static DemoGame createGame(Activity activity) {
+    private static DemoGame createGame(Activity activity, Disposer disposer) {
         try {
             return new DemoGame(
                     new Android_Framework(),

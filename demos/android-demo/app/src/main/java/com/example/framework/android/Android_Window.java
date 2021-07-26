@@ -1,7 +1,6 @@
 package com.example.framework.android;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
@@ -30,7 +29,7 @@ class Android_Window extends GLSurfaceView implements Window {
         setEGLContextClientVersion(3);
 
         DisplayMetrics dm = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        activity.getWindowManager().getDefaultDisplay().getRealMetrics(dm);
         monitorWidth = Math.round(dm.widthPixels);
         monitorHeight = Math.round(dm.heightPixels);
         physicalWidth = (dm.widthPixels / dm.xdpi) * 25.4;
@@ -94,34 +93,24 @@ class Android_Window extends GLSurfaceView implements Window {
         return true;
     }
 
-    private boolean hasNaturalOrientation() {
-        DeviceUtil.DeviceOrientation naturalOrientation = DeviceUtil.getNaturalOrientation(activity);
-        int orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            return naturalOrientation == DeviceUtil.DeviceOrientation.LANDSCAPE;
-        } else {
-            return naturalOrientation == DeviceUtil.DeviceOrientation.PORTRAIT;
-        }
-    }
-
     @Override
     public int getMonitorWidth() {
-        return hasNaturalOrientation() ? monitorWidth : monitorHeight;
+        return monitorWidth;
     }
 
     @Override
     public int getMonitorHeight() {
-        return hasNaturalOrientation() ? monitorHeight : monitorWidth;
+        return monitorHeight;
     }
 
     @Override
     public double getPhysicalWidth() {
-        return hasNaturalOrientation() ? physicalWidth : physicalHeight;
+        return physicalWidth;
     }
 
     @Override
     public double getPhysicalHeight() {
-        return hasNaturalOrientation() ? physicalHeight : physicalWidth;
+        return physicalHeight;
     }
 
     @Override

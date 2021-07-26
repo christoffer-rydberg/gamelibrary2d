@@ -17,6 +17,7 @@ public class DefaultSoundSource implements SoundSource<DefaultSoundBuffer> {
     private float volume = 1f;
     private boolean looping = false;
     private DefaultSoundBuffer soundBuffer;
+    private volatile boolean disposed;
 
     private DefaultSoundSource(DefaultSoundManager soundManager, AudioTrack track) {
         this.soundManager = soundManager;
@@ -82,7 +83,9 @@ public class DefaultSoundSource implements SoundSource<DefaultSoundBuffer> {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } finally {
-                    track.stop();
+                    if (!disposed) {
+                        track.stop();
+                    }
                     this.thread.compareAndSet(Thread.currentThread(), null);
                 }
             });
@@ -140,7 +143,11 @@ public class DefaultSoundSource implements SoundSource<DefaultSoundBuffer> {
 
     @Override
     public void dispose() {
-        track.release();
+        try {
+            track.release();
+        } finally {
+            disposed = true;
+        }
     }
 
     private static class AudioTrackSink implements AudioSink {

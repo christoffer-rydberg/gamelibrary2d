@@ -5,10 +5,8 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.denotations.InputAware;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.objects.AbstractPointerAwareGameObject;
-import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.glUtil.ModelMatrix;
 
 public class InputField extends AbstractPointerAwareGameObject implements KeyDownAware, InputAware {
     private final Rectangle bounds;
@@ -40,11 +38,7 @@ public class InputField extends AbstractPointerAwareGameObject implements KeyDow
             background.render(alpha);
         }
 
-        ModelMatrix.instance().pushMatrix();
-        float fontScale = Fonts.getFontScale();
-        ModelMatrix.instance().scalef(fontScale, fontScale, 1f);
         label.render(alpha);
-        ModelMatrix.instance().popMatrix();
     }
 
     @Override

@@ -150,6 +150,24 @@ public class GlfwWindow implements Window {
         }
     }
 
+    private void readActualSize() {
+        IntBuffer x = BufferUtils.createIntBuffer(1);
+        IntBuffer y = BufferUtils.createIntBuffer(1);
+        glfwGetWindowSize(this.window, x, y);
+
+        actualWidth = x.get(0);
+        actualHeight = y.get(0);
+    }
+
+    private void readPhysicalSize() {
+        IntBuffer x = BufferUtils.createIntBuffer(1);
+        IntBuffer y = BufferUtils.createIntBuffer(1);
+        glfwGetMonitorPhysicalSize(this.monitor, x, y);
+
+        physicalWidth = x.get(0);
+        physicalHeight = y.get(0);
+    }
+
     private void onCreate(String title, int width, int height, long monitor) {
         for (WindowHint hint : additionalWindowHints)
             glfwWindowHint(hint.hint, hint.value);
@@ -158,9 +176,6 @@ public class GlfwWindow implements Window {
         if (windowId == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
-
-        actualWidth = width;
-        actualHeight = height;
 
         window = windowId;
         glfwMakeContextCurrent(windowId);
@@ -173,12 +188,8 @@ public class GlfwWindow implements Window {
         // Enable v-sync
         glfwSwapInterval(1);
 
-        IntBuffer x = BufferUtils.createIntBuffer(1);
-        IntBuffer y = BufferUtils.createIntBuffer(1);
-        glfwGetMonitorPhysicalSize(this.monitor, x, y);
-
-        physicalWidth = x.get(0);
-        physicalHeight = y.get(0);
+        readActualSize();
+        readPhysicalSize();
     }
 
     @Override

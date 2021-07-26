@@ -96,17 +96,15 @@ public interface Window {
     }
 
     default double getPhysicalPixelWidth() {
-        double physicalWidth = getPhysicalWidth();
         return isFullScreen()
-                ? physicalWidth / getWidth()
-                : physicalWidth / getMonitorWidth();
+                ? getPhysicalWidth() / getWidth()
+                : getPhysicalWidth() / getMonitorWidth();
     }
 
     default double getPhysicalPixelHeight() {
-        double physicalHeight = getPhysicalHeight();
         return isFullScreen()
-                ? physicalHeight / getHeight()
-                : physicalHeight / getMonitorHeight();
+                ? getPhysicalHeight() / getHeight()
+                : getPhysicalHeight() / getMonitorHeight();
     }
 
     default double getPhysicalMonitorSize() {

@@ -4,22 +4,38 @@ import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import com.gamelibrary2d.Game;
+import com.gamelibrary2d.common.disposal.DefaultDisposer;
+import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.functional.Action;
-import com.gamelibrary2d.common.functional.Func;
 import com.gamelibrary2d.exceptions.InitializationException;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public abstract class AbstractGameActivity extends Activity {
-    private final Func<Activity, Game> gameFactory;
+    protected final DefaultDisposer disposer = new DefaultDisposer();
+
+    private final GameFactory gameFactory;
+    private Android_GameLoop gameLoop;
 
     protected AbstractGameActivity(Game game) {
-        gameFactory = a -> game;
+        gameFactory = (activity, disposer) -> game;
     }
 
-    protected AbstractGameActivity(Func<Activity, Game> gameFactory) {
+    protected AbstractGameActivity(GameFactory gameFactory) {
         this.gameFactory = gameFactory;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        gameLoop.pause();
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        gameLoop.resume();
     }
 
     @Override
@@ -29,21 +45,27 @@ public abstract class AbstractGameActivity extends Activity {
     }
 
     protected void initialize() {
-        Game game = gameFactory.invoke(this);
+        gameLoop = new Android_GameLoop();
+        Game game = gameFactory.create(this, disposer);
         Android_Window window = new Android_Window(this);
-        window.setRenderer(new GLSurfaceViewRenderer(game, window));
+        window.setRenderer(new GLSurfaceViewRenderer(game, window, gameLoop));
         setContentView(window);
     }
 
-    private static class GLSurfaceViewRenderer implements GLSurfaceView.Renderer {
+    protected interface GameFactory {
+        Game create(Activity activity, Disposer disposer);
+    }
+
+    private class GLSurfaceViewRenderer implements GLSurfaceView.Renderer {
         private final Game game;
         private final Android_Window window;
         private final Android_GameLoop gameLoop;
+        private boolean finished;
 
-        GLSurfaceViewRenderer(Game game, Android_Window window) {
+        GLSurfaceViewRenderer(Game game, Android_Window window, Android_GameLoop gameLoop) {
             this.game = game;
             this.window = window;
-            this.gameLoop = new Android_GameLoop();
+            this.gameLoop = gameLoop;
         }
 
         @Override
@@ -63,17 +85,21 @@ public abstract class AbstractGameActivity extends Activity {
 
         @Override
         public void onDrawFrame(GL10 gl) {
-            if (gameLoop.isInitialized()) {
+            if (!finished) {
                 if (gameLoop.isRunning()) {
                     gameLoop.triggerUpdate();
                 } else {
-                    gameLoop.getDisposeAction().perform();
-                    gameLoop.deinitialize();
-                    Action exitAction = gameLoop.getExitAction();
-                    if (exitAction != null) {
-                        exitAction.perform();
+                    try {
+                        gameLoop.getDisposeAction().perform();
+                        Action exitAction = gameLoop.getExitAction();
+                        if (exitAction != null) {
+                            exitAction.perform();
+                        }
+                        disposer.dispose();
+                    } finally {
+                        finished = true;
+                        finishAndRemoveTask();
                     }
-                    // TODO: Exit game?
                 }
             }
         }
