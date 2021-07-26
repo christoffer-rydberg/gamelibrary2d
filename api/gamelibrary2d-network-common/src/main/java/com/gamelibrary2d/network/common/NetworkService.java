@@ -80,7 +80,6 @@ public class NetworkService {
             socketChannel.socket().bind(new InetSocketAddress(hostName, port));
             connectionListeners.put(socketChannel, new ConnectionListener(onConnected, onConnectionFailed));
             socketChannel.register(selector, SelectionKey.OP_ACCEPT);
-            selector.wakeup();
             return new ServerSocketChannelRegistration(socketChannel, socketChannel.socket().getLocalPort());
         } catch (IOException e) {
             close(socketChannel);
@@ -119,8 +118,6 @@ public class NetworkService {
             disconnect(channel, e);
             throw e;
         }
-
-        selector.wakeup();
     }
 
     public void send(SocketChannel channel, DataBuffer buffer) throws IOException {
@@ -141,8 +138,6 @@ public class NetworkService {
             disconnect(channel, e);
             throw e;
         }
-
-        selector.wakeup();
     }
 
     public void connect(String hostname, int port, SocketChannelConnectedHandler onConnected,
@@ -152,7 +147,6 @@ public class NetworkService {
         channel.connect(new InetSocketAddress(hostname, port));
         connectionListeners.put(channel, new ConnectionListener(onConnected, onConnectionFailed));
         channel.register(selector, SelectionKey.OP_CONNECT);
-        selector.wakeup();
     }
 
     public void connect(SocketChannel socketChannel, Communicator communicator,
@@ -161,7 +155,6 @@ public class NetworkService {
             TcpConnection tcpConnection = new TcpConnection(communicator, disconnectedHandler);
             tcpConnections.put(socketChannel, tcpConnection);
             socketChannel.register(selector, SelectionKey.OP_READ, tcpConnection);
-            selector.wakeup();
         } catch (IOException e) {
             disconnect(socketChannel, e);
         }
@@ -191,23 +184,31 @@ public class NetworkService {
     private void run() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                selector.select();
-                Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
-                while (keys.hasNext()) {
-                    SelectionKey key = keys.next();
-                    keys.remove();
+                int selectedKeys = selector.selectNow();
+                if (selectedKeys > 0) {
+                    Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
+                    while (keys.hasNext()) {
+                        SelectionKey key = keys.next();
+                        keys.remove();
 
-                    if (!key.isValid())
-                        continue;
+                        if (!key.isValid())
+                            continue;
 
-                    if (key.isAcceptable()) {
-                        accept(key);
-                    } else if (key.isWritable()) {
-                        write(key);
-                    } else if (key.isReadable()) {
-                        read(key);
-                    } else if (key.isConnectable()) {
-                        handleConnect(key);
+                        if (key.isAcceptable()) {
+                            accept(key);
+                        } else if (key.isWritable()) {
+                            write(key);
+                        } else if (key.isReadable()) {
+                            read(key);
+                        } else if (key.isConnectable()) {
+                            handleConnect(key);
+                        }
+                    }
+                } else {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        break;
                     }
                 }
             }

@@ -5,8 +5,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.GeneralSecurityException;
-import java.security.Key;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -15,24 +13,18 @@ import java.util.Random;
  * is not guaranteed as neither the IV nor the cipher text is authenticated,
  * e.g. using HMAC. The reason is to favor performance over integrity, especially
  * since all other messages are sent in plaintext without authentication.
- * The {@link DefaultDecryptor} is used for decryption.
+ * The {@link DefaultDecrypter} is used for decryption.
  */
-public class DefaultEncryptor implements Encryptor {
-    private final Key key;
+public class DefaultEncrypter implements Encrypter {
+    private final SecretKey key;
     private final Cipher cipher;
     private final byte[] iv;
     private final Random secureRandom = new SecureRandom();
 
-    public DefaultEncryptor(PublicKey key, Cipher cipher) {
+    public DefaultEncrypter(SecretKey key, Cipher cipher, int ivLength) {
         this.key = key;
         this.cipher = cipher;
-        this.iv = null;
-    }
-
-    public DefaultEncryptor(SecretKey key, Cipher cipher, int ivLength) {
-        this.key = key;
-        this.cipher = cipher;
-        this.iv = ivLength > 0 ? new byte[ivLength] : null;
+        this.iv = new byte[ivLength];
     }
 
     private static byte[] combine(byte[] iv, byte[] ciphertext) {
@@ -45,22 +37,13 @@ public class DefaultEncryptor implements Encryptor {
 
     @Override
     public byte[] encrypt(byte[] plaintext) throws GeneralSecurityException {
-        if (iv == null) {
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-        } else {
-            secureRandom.nextBytes(iv);
+        secureRandom.nextBytes(iv);
 
-            cipher.init(
-                    Cipher.ENCRYPT_MODE,
-                    new SecretKeySpec(key.getEncoded(), key.getAlgorithm()),
-                    new IvParameterSpec(iv));
-        }
+        cipher.init(
+                Cipher.ENCRYPT_MODE,
+                new SecretKeySpec(key.getEncoded(), key.getAlgorithm()),
+                new IvParameterSpec(iv));
 
-        byte[] iv = cipher.getIV();
-        if (iv == null) {
-            return cipher.doFinal(plaintext);
-        } else {
-            return combine(iv, cipher.doFinal(plaintext));
-        }
+        return combine(cipher.getIV(), cipher.doFinal(plaintext));
     }
 }

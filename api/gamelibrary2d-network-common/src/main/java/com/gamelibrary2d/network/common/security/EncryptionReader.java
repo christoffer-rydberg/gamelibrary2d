@@ -7,24 +7,24 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 
 public class EncryptionReader {
-    private final Decryptor decryptor;
+    private final Decrypter decrypter;
     private final byte[] encryptionHeader;
     private final byte[] encryptionHeaderBuffer;
 
-    public EncryptionReader(Decryptor decryptor) {
+    public EncryptionReader(Decrypter decrypter) {
         this.encryptionHeader = null;
         this.encryptionHeaderBuffer = null;
-        this.decryptor = decryptor;
+        this.decrypter = decrypter;
     }
 
     /**
      * @param encryptionHeader Header sent before each encrypted message.
-     * @param decryptor        Used to decrypt data.
+     * @param decrypter        Used to decrypt data.
      */
-    public EncryptionReader(byte[] encryptionHeader, Decryptor decryptor) {
+    public EncryptionReader(byte[] encryptionHeader, Decrypter decrypter) {
         this.encryptionHeader = encryptionHeader;
         this.encryptionHeaderBuffer = new byte[encryptionHeader.length];
-        this.decryptor = decryptor;
+        this.decrypter = decrypter;
     }
 
     /**
@@ -58,7 +58,7 @@ public class EncryptionReader {
         // Decrypt
         byte[] decrypted;
         try {
-            decrypted = decryptor.decrypt(bytes);
+            decrypted = decrypter.decrypt(bytes);
         } catch (GeneralSecurityException e) {
             throw new IOException("Decryption failed", e);
         }

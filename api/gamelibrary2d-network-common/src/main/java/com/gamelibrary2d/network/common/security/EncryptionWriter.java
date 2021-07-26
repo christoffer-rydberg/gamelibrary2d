@@ -7,24 +7,24 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 public class EncryptionWriter {
-    private final Encryptor encryptor;
+    private final Encrypter encrypter;
     private final byte[] encryptionHeader;
 
     /**
-     * @param encryptor Used to encrypt data.
+     * @param encrypter Used to encrypt data.
      */
-    public EncryptionWriter(Encryptor encryptor) {
-        this.encryptor = encryptor;
+    public EncryptionWriter(Encrypter encrypter) {
+        this.encrypter = encrypter;
         this.encryptionHeader = null;
     }
 
     /**
      * @param encryptionHeader Header sent before each encrypted message.
-     * @param encryptor        Used to encrypt data.
+     * @param encrypter        Used to encrypt data.
      */
-    public EncryptionWriter(byte[] encryptionHeader, Encryptor encryptor) {
+    public EncryptionWriter(byte[] encryptionHeader, Encrypter encrypter) {
         this.encryptionHeader = encryptionHeader;
-        this.encryptor = encryptor;
+        this.encrypter = encrypter;
     }
 
     /**
@@ -48,7 +48,7 @@ public class EncryptionWriter {
         // Encrypt
         byte[] encrypted;
         try {
-            encrypted = encryptor.encrypt(bytes);
+            encrypted = encrypter.encrypt(bytes);
         } catch (GeneralSecurityException e) {
             throw new IOException("Encryption failed", e);
         }

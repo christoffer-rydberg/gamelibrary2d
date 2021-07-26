@@ -1,38 +1,25 @@
 package com.gamelibrary2d.network.common.security;
 
-import com.gamelibrary2d.common.io.Write;
 import com.gamelibrary2d.common.random.RandomInstance;
+import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.security.spec.MGF1ParameterSpec;
 
 public class ClientHandshake {
-    private static final String DEFAULT_RSA_CIPHER_TRANSFORMATION = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
     private static final String DEFAULT_AES_CIPHER_TRANSFORMATION = "AES/CBC/PKCS5PADDING";
-    private static final int AES_IV_LENGTH = 16;
 
-    private static final PublicKeyValidator DEFAULT_PUBLIC_KEY_VALIDATOR = pk -> {
-        switch (pk.getAlgorithm().toLowerCase()) {
-            case "rsa":
-                return CompletableFuture.completedFuture(
-                        new CipherTransformation(DEFAULT_RSA_CIPHER_TRANSFORMATION));
-            default:
-                String errorMessage = "A PublicKeyValidator must be specified. Missing default cipher transformation for algorithm: %s";
-                CompletableFuture<CipherTransformation> future = new CompletableFuture<>();
-                future.completeExceptionally(new IllegalStateException(String.format(errorMessage, pk.getAlgorithm())));
-                return future;
-        }
-    };
+    private static final int AES_IV_LENGTH = 16;
 
     private static final SecretKeyFactory DEFAULT_SECRET_KEY_FACTORY = () ->
             new SecretKeyMessage(
@@ -40,39 +27,53 @@ public class ClientHandshake {
                     DEFAULT_AES_CIPHER_TRANSFORMATION,
                     AES_IV_LENGTH);
 
-    private final PublicKeyValidator publicKeyValidator;
-    private final SecretKeyFactory secretKeyFactory;
+    private static final SecretKeyEncrypterFactory DEFAULT_SECRET_KEY_ENCRYPTER_FACTORY = DefaultRsaEncrypter::new;
+    private volatile SecretKeyFactory secretKeyFactory;
+    private volatile SecretKeyEncrypterFactory secretKeyEncrypterFactory;
 
     public ClientHandshake() {
-        this(DEFAULT_PUBLIC_KEY_VALIDATOR, DEFAULT_SECRET_KEY_FACTORY);
+        this.secretKeyFactory = DEFAULT_SECRET_KEY_FACTORY;
+        this.secretKeyEncrypterFactory = DEFAULT_SECRET_KEY_ENCRYPTER_FACTORY;
     }
 
-    public ClientHandshake(
-            PublicKeyValidator publicKeyValidator,
-            SecretKeyFactory secretKeyFactory) {
-        this.publicKeyValidator = publicKeyValidator;
+    /**
+     * Factory used to create an {@link Encrypter} for the {@link #getSecretKeyFactory secret key} when sending it to the server.
+     */
+    public SecretKeyEncrypterFactory getSecretKeyEncrypterFactory() {
+        return secretKeyEncrypterFactory;
+    }
+
+    /**
+     * Setter for the {@link #getSecretKeyEncrypterFactory secret key encryption factory}
+     */
+    public void setSecretKeyEncrypterFactory(SecretKeyEncrypterFactory secretKeyEncrypterFactory) {
+        this.secretKeyEncrypterFactory = secretKeyEncrypterFactory;
+    }
+
+    /**
+     * Factory for the secret key that will be used to create the {@link EncryptionReader} and {@link EncryptionWriter} on the client/server {@link Communicator}.
+     */
+    public SecretKeyFactory getSecretKeyFactory() {
+        return secretKeyFactory;
+    }
+
+    /**
+     * Setter for the {@link #getSecretKeyFactory secret key factory}
+     */
+    public void setSecretKeyFactory(SecretKeyFactory secretKeyFactory) {
         this.secretKeyFactory = secretKeyFactory;
     }
 
     public void configure(CommunicationSteps steps) {
-        readPublicKey(steps);
+        createSecretKeyEncrypter(steps);
         shareSecretKey(steps);
     }
 
-    private void readPublicKey(CommunicationSteps steps) {
+    private void createSecretKeyEncrypter(CommunicationSteps steps) {
         steps.add((context, com, inbox) -> {
-            try {
-                PublicKey publicKey = new PublicKeyMessage(inbox).getKey();
-                Future<CipherTransformation> validationFuture = publicKeyValidator.validate(publicKey);
-                CipherTransformation cipherTransformation = validationFuture.get();
-                context.register(PublicKey.class, publicKey);
-                context.register(CipherTransformation.class, cipherTransformation);
-                return true;
-            } catch (InterruptedException e) {
-                throw new IOException("Public key validation interrupted", e);
-            } catch (ExecutionException e) {
-                throw new IOException("Public key validation failed", e);
-            }
+            PublicKey publicKey = new PublicKeyMessage(inbox).getKey();
+            context.register("secretKeyEncrypter", secretKeyEncrypterFactory.create(publicKey));
+            return true;
         });
     }
 
@@ -84,8 +85,8 @@ public class ClientHandshake {
 
     private void shareSecretKey(CommunicationSteps steps) {
         steps.add((context, com) -> {
-            PublicKey publicKey = context.get(PublicKey.class);
-            CipherTransformation publicKeyCipherTransformation = context.get(CipherTransformation.class);
+            EncryptionWriter secretKeyEncryptionWriter = new EncryptionWriter(
+                    context.get(Encrypter.class, "secretKeyEncrypter"));
 
             SecretKeyMessage secretKeyMessage;
             try {
@@ -94,30 +95,24 @@ public class ClientHandshake {
                 throw new IOException("Failed to generate secret key", e);
             }
 
-            EncryptionWriter encryptionWriter = new EncryptionWriter(
-                    new DefaultEncryptor(
-                            publicKey,
-                            createCipher(publicKeyCipherTransformation.value)));
-
             byte[] encryptionHeader = createEncryptionHeader();
             com.getOutgoing().putInt(encryptionHeader.length);
             com.getOutgoing().put(encryptionHeader);
 
-            Write.textWithSizeHeader(publicKeyCipherTransformation.value, com.getOutgoing());
-            encryptionWriter.write(com.getOutgoing(), secretKeyMessage::serializeMessage);
+            secretKeyEncryptionWriter.write(com.getOutgoing(), secretKeyMessage::serializeMessage);
 
             Cipher cipher = createCipher(secretKeyMessage.getCipherTransformation());
 
             com.setEncryptionWriter(new EncryptionWriter(
                     encryptionHeader,
-                    new DefaultEncryptor(
+                    new DefaultEncrypter(
                             secretKeyMessage.getKey(),
                             cipher,
                             secretKeyMessage.getIvLength())));
 
             com.setEncryptionReader(new EncryptionReader(
                     encryptionHeader,
-                    new DefaultDecryptor(
+                    new DefaultDecrypter(
                             secretKeyMessage.getKey(),
                             cipher,
                             secretKeyMessage.getIvLength())));
@@ -132,23 +127,45 @@ public class ClientHandshake {
         }
     }
 
-    public interface PublicKeyValidator {
-        Future<CipherTransformation> validate(PublicKey publicKey);
-    }
-
     public interface SecretKeyFactory {
         SecretKeyMessage create() throws GeneralSecurityException;
     }
 
-    public static class CipherTransformation {
-        private final String value;
+    public interface SecretKeyEncrypterFactory {
+        Encrypter create(PublicKey key) throws IOException;
+    }
 
-        public CipherTransformation(String value) {
-            this.value = value;
+    private static class DefaultRsaEncrypter implements Encrypter {
+
+        /**
+         * Cipher with OAEPPadding, used together with {@link #RSA_PARAMETER_SPEC}, as recommended here:
+         * https://developer.android.com/guide/topics/security/cryptography#oaep-mgf1-digest
+         */
+        private static final String RSA_CIPHER_TRANSFORMATION = "RSA/ECB/OAEPPadding";
+
+        /**
+         * Explicit parameters to use SHA-256 for the main digest and SHA-1 for the MGF1 digest.
+         */
+        private static final OAEPParameterSpec RSA_PARAMETER_SPEC = new OAEPParameterSpec(
+                "SHA-256", "MGF1", new MGF1ParameterSpec("SHA-1"), PSource.PSpecified.DEFAULT);
+
+        private final PublicKey key;
+        private final Cipher cipher;
+
+        public DefaultRsaEncrypter(PublicKey key) {
+            this.key = key;
+            try {
+                this.cipher = Cipher.getInstance(RSA_CIPHER_TRANSFORMATION);
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+                throw new RuntimeException("Failed to create cipher", e);
+            }
         }
 
-        public String getValue() {
-            return value;
+        @Override
+        public byte[] encrypt(byte[] plaintext) throws GeneralSecurityException {
+            cipher.init(Cipher.ENCRYPT_MODE, key, RSA_PARAMETER_SPEC);
+            return cipher.doFinal(plaintext);
         }
     }
 }
+
