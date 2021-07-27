@@ -5,6 +5,7 @@ import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
 import com.gamelibrary2d.demos.networkgame.client.input.Controller;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerInputId;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.ContentMap;
 import com.gamelibrary2d.demos.networkgame.common.PlayerAcceleration;
 
 public class LocalPlayer extends AbstractPlayer {
@@ -12,7 +13,6 @@ public class LocalPlayer extends AbstractPlayer {
     private final PlayerAcceleration playerAcceleration;
 
     private float acceleration;
-    private float accelerationLimit = 1f;
 
     public LocalPlayer(ControllerFactory controllerFactory, byte primaryType, GameFrameClient client, DataBuffer buffer) {
         super(primaryType, client, buffer);
@@ -26,11 +26,11 @@ public class LocalPlayer extends AbstractPlayer {
 
         controller.addBinding(
                 ControllerInputId.LEFT,
-                playerAcceleration::setLeftAcceleration);
+                playerAcceleration::setLeftRotationAcceleration);
 
         controller.addBinding(
                 ControllerInputId.RIGHT,
-                playerAcceleration::setRightAcceleration);
+                playerAcceleration::setRightRotationAcceleration);
     }
 
     public Controller getController() {
@@ -39,12 +39,12 @@ public class LocalPlayer extends AbstractPlayer {
 
     private void setAcceleration(float acceleration) {
         this.acceleration = acceleration;
-        playerAcceleration.setAcceleration(Math.min(accelerationLimit, acceleration));
+        playerAcceleration.setAcceleration(acceleration);
     }
 
-    public void setAccelerationLimit(float accelerationLimit) {
-        this.accelerationLimit = accelerationLimit;
-        playerAcceleration.setAcceleration(Math.min(accelerationLimit, acceleration));
+    @Override
+    public void addContent(ContentMap contentMap) {
+        contentMap.setContent(this);
     }
 
     @Override
@@ -52,5 +52,9 @@ public class LocalPlayer extends AbstractPlayer {
         super.update(deltaTime);
         controller.update(deltaTime);
         playerAcceleration.updateServer();
+    }
+
+    public void rotateTowardsGoal(int goalDirection) {
+        playerAcceleration.setGoalRotation(goalDirection);
     }
 }

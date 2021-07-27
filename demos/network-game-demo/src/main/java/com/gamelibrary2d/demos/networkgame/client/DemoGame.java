@@ -9,6 +9,7 @@ import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrame;
 import com.gamelibrary2d.demos.networkgame.client.frames.menu.MenuFrame;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.SoundMap;
+import com.gamelibrary2d.demos.networkgame.client.options.Options;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.demos.networkgame.client.resources.Surfaces;
 import com.gamelibrary2d.demos.networkgame.client.resources.Textures;
@@ -29,6 +30,7 @@ public class DemoGame extends AbstractGame {
     private final ServerManager serverManager;
     private final SoundManager soundManager;
     private final ResourceManager resourceManager;
+    private final Options options = new Options();
 
     private Frame menuFrame;
     private LoadingFrame loadingFrame;
@@ -129,5 +131,9 @@ public class DemoGame extends AbstractGame {
     @Override
     protected void onExit() {
         gameFrame.disconnect();
+    }
+
+    public Options getOptions() {
+        return options;
     }
 }

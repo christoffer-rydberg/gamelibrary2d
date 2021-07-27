@@ -10,7 +10,7 @@ public final class Dimensions {
     private static Rectangle buttonSize;
     private static Rectangle inputFieldSize;
     private static Point contentScale;
-    private static float defaultOffsetY;
+    private static float defaultVerticalOffset;
 
     private Dimensions() {
 
@@ -23,9 +23,9 @@ public final class Dimensions {
             contentScale.divide(2f);
         }
 
-        buttonSize = Rectangle.create(40f, 7f).resize(contentScale);
-        inputFieldSize = Rectangle.create(40f, 7f).resize(contentScale);
-        defaultOffsetY = 2f * contentScale.getY();
+        buttonSize = Rectangle.create(50f, 7f).resize(contentScale);
+        inputFieldSize = Rectangle.create(50f, 7f).resize(contentScale);
+        defaultVerticalOffset = 2f * contentScale.getY();
     }
 
     public static float getContentScaleX() {
@@ -36,8 +36,8 @@ public final class Dimensions {
         return contentScale.getY();
     }
 
-    public static float getDefaultOffsetY() {
-        return defaultOffsetY;
+    public static float getDefaultVerticalOffset() {
+        return defaultVerticalOffset;
     }
 
     public static Rectangle getInputFieldSize() {

@@ -6,6 +6,7 @@ import com.gamelibrary2d.demos.networkgame.client.input.VirtualController;
 import com.gamelibrary2d.framework.Keyboard;
 
 public class KeyboardController extends AbstractController {
+    private final int FIXED_STEPS = 10;
     private final VirtualController virtualController = new VirtualController();
 
     private static int convertToKeyboardInputId(ControllerInputId id) {
@@ -21,8 +22,7 @@ public class KeyboardController extends AbstractController {
         }
     }
 
-    @Override
-    public float getValue(ControllerInputId id) {
+    private float getExactValue(ControllerInputId id) {
         float virtualValue = virtualController.getValue(id);
         if (virtualValue == 0f) {
             int keyboardInputId = convertToKeyboardInputId(id);
@@ -30,6 +30,11 @@ public class KeyboardController extends AbstractController {
         } else {
             return virtualValue;
         }
+    }
+
+    @Override
+    public float getValue(ControllerInputId id) {
+        return Math.round(getExactValue(id) * FIXED_STEPS) / (float) FIXED_STEPS;
     }
 
     @Override

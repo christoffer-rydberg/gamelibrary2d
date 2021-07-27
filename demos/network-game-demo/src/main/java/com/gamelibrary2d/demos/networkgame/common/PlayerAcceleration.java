@@ -11,6 +11,7 @@ public class PlayerAcceleration implements Message {
     private float acceleration;
     private float leftAcceleration;
     private float rightAcceleration;
+    private int goalRotation = Integer.MAX_VALUE;
 
     private boolean changed = true;
 
@@ -26,15 +27,26 @@ public class PlayerAcceleration implements Message {
         }
     }
 
-    public void setLeftAcceleration(float leftAcceleration) {
+    public void setGoalRotation(int goalRotation) {
+        if (this.goalRotation != goalRotation) {
+            this.leftAcceleration = 0;
+            this.rightAcceleration = 0;
+            this.goalRotation = goalRotation;
+            changed = true;
+        }
+    }
+
+    public void setLeftRotationAcceleration(float leftAcceleration) {
         if (this.leftAcceleration != leftAcceleration) {
+            this.goalRotation = Integer.MAX_VALUE;
             this.leftAcceleration = leftAcceleration;
             changed = true;
         }
     }
 
-    public void setRightAcceleration(float rightAcceleration) {
+    public void setRightRotationAcceleration(float rightAcceleration) {
         if (this.rightAcceleration != rightAcceleration) {
+            this.goalRotation = Integer.MAX_VALUE;
             this.rightAcceleration = rightAcceleration;
             changed = true;
         }
@@ -52,6 +64,9 @@ public class PlayerAcceleration implements Message {
         buffer.put(ClientMessages.PLAYER_ACCELERATION);
         buffer.putInt(playerId);
         buffer.putFloat(acceleration);
-        buffer.putFloat(rightAcceleration - leftAcceleration);
+        buffer.putInt(goalRotation);
+        if (goalRotation == Integer.MAX_VALUE) {
+            buffer.putFloat(rightAcceleration - leftAcceleration);
+        }
     }
 }

@@ -41,7 +41,7 @@ public class DemoGameLogic {
             player.setPosition(centerX, centerY);
             float initialRotation = RandomInstance.get().nextFloat() * 360f;
             player.setRotation(initialRotation);
-            player.setSpeedAndDirection(ServerPlayer.MAX_SPEED, initialRotation);
+            player.setSpeedAndDirection(Float.MAX_VALUE, initialRotation);
             player.setSecondaryType(i);
             spawn(player);
         }

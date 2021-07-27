@@ -5,13 +5,19 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.components.denotations.Bounded;
 import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.components.objects.AbstractGameObject;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.ContentMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.DurationEffect;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.EffectMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.InstantEffect;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.interpolation.InterpolatableAngle;
 import com.gamelibrary2d.interpolation.PositionInterpolator;
+import com.gamelibrary2d.updaters.DurationUpdater;
+import com.gamelibrary2d.updaters.Updater;
+import com.gamelibrary2d.updates.ScaleUpdate;
 
 public abstract class AbstractClientObject
         extends AbstractGameObject implements ClientObject, Updatable {
@@ -24,11 +30,10 @@ public abstract class AbstractClientObject
     private final InterpolatableAngle direction = new InterpolatableAngle();
 
     private final Point particleHotspot = new Point();
-
+    private final Updater spawnUpdater = new DurationUpdater(1f, new ScaleUpdate<>(this, 1f));
     private DurationEffect updateEffect;
     private InstantEffect destroyedEffect;
     private boolean accelerating;
-
     private Renderable content;
 
     protected AbstractClientObject(byte primaryType, GameFrameClient client, DataBuffer buffer) {
@@ -58,24 +63,37 @@ public abstract class AbstractClientObject
         return content;
     }
 
-    @Override
     public void setContent(Renderable content) {
         this.content = content;
     }
 
     @Override
+    public void addContent(ContentMap contentMap) {
+        contentMap.setContent(this);
+    }
+
     public void setUpdateEffect(DurationEffect updateEffect) {
         this.updateEffect = updateEffect;
+    }
+
+    public void setDestroyedEffect(InstantEffect destroyedEffect) {
+        this.destroyedEffect = destroyedEffect;
+    }
+
+    @Override
+    public void spawn(Frame frame) {
+        setScale(0f);
+        frame.runUpdater(spawnUpdater);
+    }
+
+    @Override
+    public void addEffects(EffectMap effectMap) {
+        effectMap.setEffects(this);
     }
 
     @Override
     public Point getParticleHotspot() {
         return particleHotspot;
-    }
-
-    @Override
-    public void setDestroyedEffect(InstantEffect destroyedEffect) {
-        this.destroyedEffect = destroyedEffect;
     }
 
     public boolean isAccelerating() {

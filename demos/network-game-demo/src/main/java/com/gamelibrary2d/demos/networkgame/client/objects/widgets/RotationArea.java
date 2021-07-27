@@ -1,50 +1,52 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
-import com.gamelibrary2d.common.FloatUtils;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.input.Controller;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerInputId;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.LocalPlayer;
+import com.gamelibrary2d.demos.networkgame.client.options.RotationMode;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
 import com.gamelibrary2d.framework.Renderable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class RotationArea implements Renderable, PointerDownAware, PointerMoveAware, PointerUpAware, Updatable {
+public class RotationArea implements Renderable, PointerDownAware, PointerMoveAware, PointerUpAware {
+    private final DemoGame game;
     private final LocalPlayer player;
-    private final float max;
-    private final RotationMode mode;
     private final Rectangle bounds;
+    private final Rectangle lowerBounds;
+    private final float minNodeInterval = 5f * Dimensions.getContentScaleX();
+    private final float maxLeftRightDistance = 10f * Dimensions.getContentScaleX();
     private final List<ValueChangedListener> valueChangedListeners = new CopyOnWriteArrayList<>();
 
-    private final float minNodeInterval = 5f * Dimensions.getContentScaleX();
     private final Point start = new Point();
     private int pointerId = -1;
     private int pointerButton = -1;
     private float direction;
-    private float rotationSpeed;
     private float value;
 
-    private RotationArea(RotationMode mode, Rectangle bounds, LocalPlayer player, float maxDistance) {
-        this.mode = mode;
+    private RotationArea(DemoGame game, Rectangle bounds, LocalPlayer player) {
+        this.game = game;
         this.bounds = bounds;
+        this.lowerBounds = new Rectangle(bounds.getLowerX(), bounds.getLowerY(), bounds.getUpperX(), bounds.getUpperY() / 10f);
         this.player = player;
-        this.max = maxDistance;
     }
 
-    public static RotationArea create(RotationMode mode, Rectangle bounds, LocalPlayer player, float maxDistance, Disposer disposer) {
+    public static RotationArea create(DemoGame game, Rectangle bounds, LocalPlayer player) {
         return new RotationArea(
-                mode,
+                game,
                 bounds,
-                player,
-                maxDistance);
+                player);
+    }
+
+    public RotationMode getMode() {
+        return game.getOptions().getRotationMode();
     }
 
     public void addValueChangedListener(ValueChangedListener listener) {
@@ -55,62 +57,53 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
         valueChangedListeners.remove(listener);
     }
 
-    private void setValue(float value) {
-        float controllerValue = Math.max(-max, Math.min(max, value)) / max;
-        if (this.value != controllerValue) {
-            this.value = controllerValue;
-            Controller controller = player.getController();
-
-            if (mode == RotationMode.TOWARD_DIRECTION) {
-                player.setAccelerationLimit(1f - Math.abs(controllerValue));
-            }
-
-            if (controllerValue < 0) {
-                controller.setValue(ControllerInputId.RIGHT, 0f);
-                controller.setValue(ControllerInputId.LEFT, Math.abs(controllerValue));
-            } else {
-                controller.setValue(ControllerInputId.LEFT, 0f);
-                controller.setValue(ControllerInputId.RIGHT, controllerValue);
-            }
-
-            for (ValueChangedListener listener : valueChangedListeners) {
-                listener.onValueChanged(controllerValue);
-            }
-        }
-    }
-
     @Override
     public void render(float alpha) {
+
     }
 
     @Override
     public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        if (bounds.contains(projectedX, projectedY)) {
+        if (lowerBounds.contains(projectedX, projectedY)) {
+            switch (getMode()) {
+                case LEFT_OR_RIGHT:
+                    game.getOptions().setRotationMode(RotationMode.TOWARD_DIRECTION);
+                    break;
+                case TOWARD_DIRECTION:
+                    game.getOptions().setRotationMode(RotationMode.LEFT_OR_RIGHT);
+                    break;
+            }
+            return true;
+        } else if (bounds.contains(projectedX, projectedY)) {
             if (pointerId < 0) {
                 pointerId = id;
                 pointerButton = button;
                 start.set(projectedX, projectedY);
+                if (getMode() == RotationMode.TOWARD_DIRECTION) {
+                    setValue(1f);
+                }
             }
 
             return true;
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     @Override
     public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
         if (pointerId == id) {
-            switch (mode) {
+            switch (getMode()) {
                 case LEFT_OR_RIGHT:
                     direction = start.getDirectionDegrees(projectedX, projectedY);
-                    rotationSpeed = Math.min(max, start.getDistance(projectedX, start.getY()));
+                    float value = Math.min(1f, start.getDistance(projectedX, start.getY()) / maxLeftRightDistance);
+                    setLeftRightControllerValue(direction >= 0 ? value : -value);
                     break;
                 case TOWARD_DIRECTION:
                     if (start.getDistance(projectedX, projectedY) > minNodeInterval) {
-                        rotationSpeed = max;
                         direction = start.getDirectionDegrees(projectedX, projectedY);
                         start.set(projectedX, projectedY);
+                        player.rotateTowardsGoal(Math.round(direction));
                     }
                     break;
             }
@@ -121,37 +114,48 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
         return false;
     }
 
-    @Override
-    public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
-        if (pointerId == id && pointerButton == button) {
-            pointerId = -1;
-            pointerButton = -1;
-            if (mode == RotationMode.LEFT_OR_RIGHT) {
-                direction = 0;
-                rotationSpeed = 0;
-                setValue(0f);
-            }
-        }
-    }
-
-    @Override
-    public void update(float deltaTime) {
-        switch (mode) {
+    private void reset() {
+        pointerId = -1;
+        pointerButton = -1;
+        direction = 0;
+        switch (getMode()) {
             case LEFT_OR_RIGHT:
-                if (pointerId >= 0) {
-                    setValue(direction >= 0 ? rotationSpeed : -rotationSpeed);
-                    break;
-                }
+                setLeftRightControllerValue(0f);
+                break;
             case TOWARD_DIRECTION:
-                float delta = FloatUtils.normalizeDegrees(direction - player.getRotation());
-                setValue((delta / 180f) * rotationSpeed * 2);
+                setValue(0f);
                 break;
         }
     }
 
-    public enum RotationMode {
-        LEFT_OR_RIGHT,
-        TOWARD_DIRECTION
+    @Override
+    public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+        if (pointerId == id && pointerButton == button) {
+            reset();
+        }
+    }
+
+    private void setValue(float value) {
+        if (this.value != value) {
+            this.value = value;
+            for (ValueChangedListener listener : valueChangedListeners) {
+                listener.onValueChanged(value);
+            }
+        }
+    }
+
+    private void setLeftRightControllerValue(float value) {
+        Controller controller = player.getController();
+
+        if (value < 0) {
+            controller.setValue(ControllerInputId.RIGHT, 0f);
+            controller.setValue(ControllerInputId.LEFT, Math.abs(value));
+        } else {
+            controller.setValue(ControllerInputId.LEFT, 0f);
+            controller.setValue(ControllerInputId.RIGHT, value);
+        }
+
+        setValue(value);
     }
 
     public interface ValueChangedListener {

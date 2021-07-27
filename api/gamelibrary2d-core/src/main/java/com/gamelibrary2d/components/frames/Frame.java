@@ -1,9 +1,9 @@
 package com.gamelibrary2d.components.frames;
 
 import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.updaters.Updater;
 
 public interface Frame extends Layer<Renderable>, Disposer {
@@ -85,6 +85,13 @@ public interface Frame extends Layer<Renderable>, Disposer {
      *                runs from the beginning, if this property is set to true.
      */
     void runUpdater(Updater updater, boolean reset);
+
+    /**
+     * Invokes {@link #runUpdater(Updater, boolean)} with reset = true.
+     */
+    default void runUpdater(Updater updater) {
+        runUpdater(updater, true);
+    }
 
     void invokeLater(Runnable runnable);
 }

@@ -166,10 +166,15 @@ public class DemoGameServer implements ServerContext {
         switch (id) {
             case ClientMessages.PLAYER_ACCELERATION:
                 ServerPlayer player = clientStateService.get(communicator).getPlayer(buffer.getInt());
-                float acceleration = buffer.getFloat();
-                float rotationAcceleration = buffer.getFloat();
-                player.setAcceleration(acceleration);
-                player.setRotationAcceleration(rotationAcceleration);
+
+                player.setAcceleration(buffer.getFloat());
+
+                float goalRotation = buffer.getInt();
+                if (goalRotation == Integer.MAX_VALUE) {
+                    player.setRotationAcceleration(buffer.getFloat());
+                } else {
+                    player.setGoalRotation(goalRotation);
+                }
                 break;
             case ClientMessages.PLAY_AGAIN:
                 clientStateService.get(communicator).setReady(true);

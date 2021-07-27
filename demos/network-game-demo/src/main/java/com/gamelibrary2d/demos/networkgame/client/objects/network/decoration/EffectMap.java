@@ -7,6 +7,7 @@ import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.demos.networkgame.client.ParticleRendererFactory;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.AbstractClientObject;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.ClientObject;
 import com.gamelibrary2d.demos.networkgame.client.urls.Particles;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
@@ -183,7 +184,7 @@ public class EffectMap {
         }
     }
 
-    public InstantEffect getDestroyed(ClientObject obj) {
+    private InstantEffect getDestroyed(ClientObject obj) {
         Map<Byte, InstantEffect> effects = destroyedEffects.get(obj.getPrimaryType());
         if (effects != null) {
             byte secondaryType = obj.getSecondaryType();
@@ -195,7 +196,7 @@ public class EffectMap {
         return null;
     }
 
-    public DurationEffect getUpdate(ClientObject obj) {
+    private DurationEffect getUpdate(ClientObject obj) {
         Map<Byte, Factory<DurationEffect>> effects = updateEffects.get(obj.getPrimaryType());
         if (effects != null) {
             byte secondaryType = obj.getSecondaryType();
@@ -207,6 +208,11 @@ public class EffectMap {
         }
 
         return null;
+    }
+
+    public void setEffects(AbstractClientObject obj) {
+        obj.setUpdateEffect(getUpdate(obj));
+        obj.setDestroyedEffect(getDestroyed(obj));
     }
 
     private enum Scene {

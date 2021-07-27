@@ -1,10 +1,10 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network;
 
 import com.gamelibrary2d.common.Point;
+import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.DurationEffect;
-import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.InstantEffect;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.ContentMap;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.EffectMap;
 
 public interface ClientObject extends GameObject {
 
@@ -24,15 +24,15 @@ public interface ClientObject extends GameObject {
 
     float getDirection();
 
-    void setContent(Renderable content);
+    void addContent(ContentMap contentMap);
 
-    void setUpdateEffect(DurationEffect updateEffect);
-
-    void setDestroyedEffect(InstantEffect destroyedEffect);
+    void addEffects(EffectMap effectMap);
 
     void destroy();
 
     void setAccelerating(boolean accelerating);
+
+    void spawn(Frame frame);
 }
 
 

@@ -44,4 +44,17 @@ public class FloatUtils {
         }
     }
 
+    public static float cap(float value, float min, float max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
+
+    public static boolean equal(float value, float comparison, float gamma) {
+        return Math.abs(value - comparison) < gamma;
+    }
 }

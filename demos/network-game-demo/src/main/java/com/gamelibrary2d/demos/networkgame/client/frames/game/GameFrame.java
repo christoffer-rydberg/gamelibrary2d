@@ -40,7 +40,6 @@ import com.gamelibrary2d.updaters.InstantUpdater;
 import com.gamelibrary2d.updaters.ParallelUpdater;
 import com.gamelibrary2d.updaters.SequentialUpdater;
 import com.gamelibrary2d.updates.EmptyUpdate;
-import com.gamelibrary2d.updates.ScaleUpdate;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -177,6 +176,10 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
     }
 
     void destroy(ClientObject obj) {
+        if (obj instanceof LocalPlayer) {
+            removeVirtualController(((LocalPlayer) obj));
+        }
+
         objectLayer.remove(obj);
         obj.destroy();
     }
@@ -199,11 +202,9 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
                 window.getHeight());
 
         RotationArea rotationController = RotationArea.create(
-                RotationArea.RotationMode.TOWARD_DIRECTION,
+                game,
                 controllerArea,
-                player,
-                controllerArea.getWidth() / 8f,
-                this);
+                player);
 
         SurfaceRenderer<Quad> areaRenderer = new SurfaceRenderer<>(Quad.create(visualizationArea, this));
         areaRenderer.setColor(0, 0, 0, 1f);
@@ -232,8 +233,7 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
 
         AccelerationArea accelerationController = AccelerationArea.create(
                 controllerArea,
-                player,
-                controllerArea.getHeight() / 3f);
+                player);
 
         SurfaceRenderer<Quad> areaRenderer = new SurfaceRenderer<>(Quad.create(visualizationArea, this));
         areaRenderer.setColor(0, 0, 0, 1f);
@@ -248,17 +248,18 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
         addRotationController(player);
     }
 
+    private void removeVirtualController(LocalPlayer player) {
+        controllerLayer.clear();
+    }
+
     void spawn(ClientObject obj) {
         if (obj instanceof LocalPlayer) {
             addVirtualController(((LocalPlayer) obj));
         }
 
-        obj.setScale(0f);
-        runUpdater(new DurationUpdater(1f, new ScaleUpdate<>(obj, 1f)));
-
-        obj.setContent(content.get(obj));
-        obj.setUpdateEffect(effects.getUpdate(obj));
-        obj.setDestroyedEffect(effects.getDestroyed(obj));
+        obj.spawn(this);
+        obj.addContent(content);
+        obj.addEffects(effects);
 
         objectLayer.add(obj);
     }

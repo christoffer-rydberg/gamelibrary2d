@@ -1,11 +1,9 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
-import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
-import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.demos.networkgame.client.input.Controller;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerInputId;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.LocalPlayer;
@@ -14,30 +12,22 @@ import com.gamelibrary2d.framework.Renderable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class AccelerationArea implements Renderable, Updatable, PointerDownAware, PointerMoveAware, PointerUpAware {
-    private final Point origin = new Point();
+public class AccelerationArea implements Renderable, PointerDownAware, PointerMoveAware, PointerUpAware {
     private final Rectangle bounds;
     private final LocalPlayer player;
-    private final float max, step;
     private final List<ValueChangedListener> valueChangedListeners = new CopyOnWriteArrayList<>();
 
     private int pointerId = -1;
     private int pointerButton = -1;
-    private float acceleration;
     private float value;
 
-    private AccelerationArea(Rectangle bounds, LocalPlayer player, float maxDistance) {
+    private AccelerationArea(Rectangle bounds, LocalPlayer player) {
         this.bounds = bounds;
         this.player = player;
-        this.max = maxDistance;
-        this.step = 1f;
     }
 
-    public static AccelerationArea create(Rectangle bounds, LocalPlayer player, float maxDistance) {
-        return new AccelerationArea(
-                bounds,
-                player,
-                maxDistance);
+    public static AccelerationArea create(Rectangle bounds, LocalPlayer player) {
+        return new AccelerationArea(bounds, player);
     }
 
     public void addValueChangedListener(ValueChangedListener listener) {
@@ -49,7 +39,7 @@ public class AccelerationArea implements Renderable, Updatable, PointerDownAware
     }
 
     private void setValue(float value) {
-        float controllerValue = Math.max(0f, Math.min(max, value)) / max;
+        float controllerValue = Math.min(value, 1f);
         if (this.value != controllerValue) {
             this.value = controllerValue;
 
@@ -73,7 +63,7 @@ public class AccelerationArea implements Renderable, Updatable, PointerDownAware
             if (pointerId < 0) {
                 pointerId = id;
                 pointerButton = button;
-                origin.set(projectedX, projectedY);
+                setValue(1f);
             }
 
             return true;
@@ -85,7 +75,6 @@ public class AccelerationArea implements Renderable, Updatable, PointerDownAware
     @Override
     public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
         if (pointerId == id) {
-            acceleration = (projectedY - origin.getY()) / step;
             return true;
         }
 
@@ -97,15 +86,7 @@ public class AccelerationArea implements Renderable, Updatable, PointerDownAware
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;
-            acceleration = 0f;
             setValue(0f);
-        }
-    }
-
-    @Override
-    public void update(float deltaTime) {
-        if (pointerId >= 0) {
-            setValue(acceleration);
         }
     }
 

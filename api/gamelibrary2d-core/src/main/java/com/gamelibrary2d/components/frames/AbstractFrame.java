@@ -132,10 +132,6 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         loaded = false;
     }
 
-    protected void runUpdater(Updater updater) {
-        runUpdater(updater, true);
-    }
-
     @Override
     public void runUpdater(Updater updater, boolean reset) {
         if (!updaters.contains(updater))
