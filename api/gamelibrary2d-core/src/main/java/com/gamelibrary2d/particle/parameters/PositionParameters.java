@@ -181,8 +181,8 @@ public class PositionParameters implements Serializable {
             posY = posY < 0 ? -spawnAreaHeight : spawnAreaHeight;
 
         // Randomize based on variation
-        posX += spawnAreaWidthVar * RandomInstance.random11();
-        posY += spawnAreaHeightVar * RandomInstance.random11();
+        posX = (posX + spawnAreaWidthVar * RandomInstance.random11()) / 2f;
+        posY = (posY + spawnAreaHeightVar * RandomInstance.random11()) /2f;
 
         particle.setPosition(centerX + (float) posX, centerY + (float) posY);
     }
@@ -193,13 +193,13 @@ public class PositionParameters implements Serializable {
         float spawnAreaHeight = getSpawnAreaHeight();
         float spawnAreaHeightVar = getSpawnAreaHeightVar();
 
-        // Randomize radius based on variation
+        // Randomize based on variation
         float width = spawnAreaWidth + spawnAreaWidthVar * RandomInstance.random11();
         float height = spawnAreaHeight + spawnAreaHeightVar * RandomInstance.random11();
 
         // Create an ellipse
-        double posX = Math.cos(angleRadians) * width;
-        double posY = -Math.sin(angleRadians) * height;
+        double posX = Math.cos(angleRadians) * width / 2f;
+        double posY = -Math.sin(angleRadians) * height / 2f;
 
         particle.setPosition(centerX + (float) posX, centerY + (float) posY);
     }

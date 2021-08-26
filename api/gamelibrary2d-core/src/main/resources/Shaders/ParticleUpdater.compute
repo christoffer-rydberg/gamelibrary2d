@@ -107,8 +107,8 @@ void positionInRectangleArea(inout Render r, inout uint seed, float centerX, flo
         posY = posY < 0 ? -spawnAreaHeight : spawnAreaHeight;
 
     // Randomize based on variation
-    posX += spawnAreaWidthVar * random11(++seed);
-    posY += spawnAreaHeightVar * random11(++seed);
+    posX = (posX + spawnAreaWidthVar * random11(++seed)) / 2.0;
+    posY = (posY + spawnAreaHeightVar * random11(++seed)) / 2.0;
 
     r.Part0[0] = centerX + posX;
     r.Part0[1] = centerY + posY;
@@ -120,13 +120,13 @@ void positionInEllipseArea(inout Render r, inout uint seed, float centerX, float
     float spawnAreaHeight = positionParameters.Part1[2];
     float spawnAreaHeightVar = positionParameters.Part1[3];
 
-    // Randomize radius based on variation
+    // Randomize based on variation
     float width = spawnAreaWidth + spawnAreaWidthVar * random11(++seed);
     float height = spawnAreaHeight + spawnAreaHeightVar * random11(++seed);
 
     // Create an ellipse
-    float posX = cos(angleRadians) * width;
-    float posY = -sin(angleRadians) * height;
+    float posX = cos(angleRadians) * width / 2.0;
+    float posY = -sin(angleRadians) * height / 2.0;
 
     r.Part0[0] = centerX + posX;
     r.Part0[1] = centerY + posY;
