@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.transparentwindow;
 
 import com.gamelibrary2d.Game;
+import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
@@ -25,6 +26,7 @@ public class DemoFrame extends AbstractFrame {
 
     DemoFrame(Game game) {
         this.game = game;
+        setBackgroundColor(Color.TRANSPARENT);
     }
 
     private Animation createAnimation() throws IOException {
@@ -41,7 +43,7 @@ public class DemoFrame extends AbstractFrame {
         Collections.reverse(animationMetadata.getFrames());
         animationMetadata.getFrames().addAll(originalFrames);
 
-        return Animation.create(animationMetadata, bounds,this);
+        return Animation.create(animationMetadata, bounds, this);
     }
 
     @Override

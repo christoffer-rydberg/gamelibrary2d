@@ -25,7 +25,6 @@ public class DemoGame extends AbstractGame {
 
     @Override
     protected void onStart() throws InitializationException {
-        setBackgroundColor(Color.TRANSPARENT);
         setFrame(new DemoFrame(this));
     }
 

@@ -10,6 +10,7 @@ public class LoadingFrame extends AbstractLoadingFrame {
 
     public LoadingFrame(Game game, ResourceManager resourceManager) {
         super(game);
+        setBackgroundColor(Color.LIGHT_CORAL);
     }
 
     @Override
@@ -29,12 +30,11 @@ public class LoadingFrame extends AbstractLoadingFrame {
 
     @Override
     protected void onBegin() {
-        getGame().setBackgroundColor(Color.LIGHT_CORAL);
+
     }
 
     @Override
     protected void onEnd() {
-        getGame().setBackgroundColor(Color.BLACK);
-    }
 
+    }
 }

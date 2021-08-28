@@ -1,6 +1,5 @@
 package com.gamelibrary2d;
 
-import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.disposal.AbstractDisposer;
 import com.gamelibrary2d.common.event.DefaultEventPublisher;
 import com.gamelibrary2d.common.event.EventPublisher;
@@ -193,11 +192,6 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     @Override
     public void setViewPort(int x, int y, int width, int height) {
         OpenGL.instance().glViewport(x, y, width, height);
-    }
-
-    @Override
-    public void setBackgroundColor(Color color) {
-        OpenGL.instance().glClearColor(color.getR(), color.getG(), color.getB(), color.getA());
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.gamelibrary2d.components.frames;
 
+import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.disposal.Disposable;
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.exceptions.InitializationException;
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.components.containers.AbstractLayer;
+import com.gamelibrary2d.exceptions.InitializationException;
+import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.updaters.Updater;
 
 import java.io.IOException;
@@ -22,6 +24,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     private boolean paused;
     private boolean initialized;
     private volatile boolean loaded;
+    private Color backgroundColor = Color.BLACK;
 
     public void invokeLater(Runnable runnable) {
         invokeLater.addLast(runnable);
@@ -175,11 +178,21 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         return paused;
     }
 
+    protected void setBackgroundColor(Color color) {
+        if (color == null) {
+            throw new IllegalArgumentException("Background color cannot be null");
+        }
+
+        this.backgroundColor = color;
+    }
+
     @Override
     public void begin() {
         if (!isLoaded()) {
             throw new IllegalStateException("Frame has not been loaded");
         }
+
+        OpenGL.instance().glClearColor(backgroundColor.getR(), backgroundColor.getG(), backgroundColor.getB(), backgroundColor.getA());
 
         onBegin();
     }

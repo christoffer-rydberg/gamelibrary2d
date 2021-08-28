@@ -44,6 +44,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     DemoFrame(Game game) {
         this.game = game;
         spacecraftLayer = new DefaultLayerObject<>();
+        setBackgroundColor(SPLIT_COLOR);
     }
 
     private SpaceCraft createSpaceCraft(Quad quad, Texture texture) {
@@ -203,7 +204,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
 
     @Override
     protected void onBegin() {
-        game.setBackgroundColor(SPLIT_COLOR);
+
     }
 
     @Override

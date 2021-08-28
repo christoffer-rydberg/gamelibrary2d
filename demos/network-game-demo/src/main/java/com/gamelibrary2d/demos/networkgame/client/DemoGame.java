@@ -86,7 +86,7 @@ public class DemoGame extends AbstractGame {
     }
 
     private void showSplashScreen() throws InitializationException {
-        SplashFrame splashFrame = new SplashFrame(this);
+        SplashFrame splashFrame = new SplashFrame(this, resourceManager);
         setFrame(splashFrame);
         getWindow().show();
         render();

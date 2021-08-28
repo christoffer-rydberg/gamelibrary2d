@@ -27,8 +27,6 @@ public interface Game extends Disposer, Updatable {
 
     void setViewPort(int x, int y, int width, int height);
 
-    void setBackgroundColor(Color color);
-
     void render();
 
     /**
