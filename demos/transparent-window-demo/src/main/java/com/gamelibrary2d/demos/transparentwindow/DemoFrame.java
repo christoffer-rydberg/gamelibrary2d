@@ -6,15 +6,14 @@ import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.components.objects.AnimatedGameObject;
 import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.imaging.AnimationFrameMetadata;
 import com.gamelibrary2d.imaging.AnimationLoader;
-import com.gamelibrary2d.imaging.ImageAnimation;
+import com.gamelibrary2d.imaging.AnimationMetadata;
 import com.gamelibrary2d.imaging.StandardAnimationFormats;
 import com.gamelibrary2d.renderers.AnimationRenderer;
 import com.gamelibrary2d.resources.Animation;
-import com.gamelibrary2d.resources.AnimationFrame;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,25 +28,20 @@ public class DemoFrame extends AbstractFrame {
     }
 
     private Animation createAnimation() throws IOException {
-        URL animationUrl = DemoFrame.class.getResource("/Images/homer.gif");
+        AnimationMetadata animationMetadata = AnimationLoader.load(
+                DemoFrame.class.getResource("/Images/homer.gif"),
+                StandardAnimationFormats.GIF);
 
-        ImageAnimation imageAnimation = AnimationLoader.load(animationUrl, StandardAnimationFormats.GIF);
+        Rectangle bounds = animationMetadata.calculateBounds()
+                .resize(Rectangle.create(1f, 1f))
+                .restrict(game.getWindow().getWidth(), game.getWindow().getHeight());
 
-        Animation animation = Animation.fromImageAnimation(
-                imageAnimation,
-                imageAnimation.getBounds()
-                        .resize(Rectangle.create(1f, 1f))
-                        .restrict(game.getWindow().getWidth(), game.getWindow().getHeight()),
-                this);
+        // Modify frames to reverse back when finished:
+        List<AnimationFrameMetadata> originalFrames = new ArrayList<>(animationMetadata.getFrames());
+        Collections.reverse(animationMetadata.getFrames());
+        animationMetadata.getFrames().addAll(originalFrames);
 
-        List<AnimationFrame> frames = animation.getFrames();
-
-        List<AnimationFrame> updatedFrames = new ArrayList<>(frames.size() * 2);
-        updatedFrames.addAll(frames);
-        Collections.reverse(updatedFrames);
-        updatedFrames.addAll(frames);
-
-        return new Animation(updatedFrames);
+        return Animation.create(animationMetadata, bounds,this);
     }
 
     @Override

@@ -2,8 +2,8 @@ package com.gamelibrary2d.resources;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.imaging.ImageAnimationFrame;
 import com.gamelibrary2d.components.denotations.Bounded;
+import com.gamelibrary2d.imaging.AnimationFrameMetadata;
 
 public class AnimationFrame implements Bounded {
     private final Surface surface;
@@ -40,15 +40,15 @@ public class AnimationFrame implements Bounded {
         this.renderToBackgroundHint = renderToBackground;
     }
 
-    public static AnimationFrame fromImageAnimationFrame(ImageAnimationFrame imageAnimationFrame, Rectangle bounds, Disposer disposer) {
-        Texture texture = DefaultTexture.create(imageAnimationFrame.getImage(), disposer);
-        Surface surface = Quad.create(bounds, imageAnimationFrame.getImageCoordinates(), disposer);
+    public static AnimationFrame create(AnimationFrameMetadata metadata, Rectangle bounds, Disposer disposer) {
+        Texture texture = DefaultTexture.create(metadata.getImage(), disposer);
+        Surface surface = Quad.create(bounds, metadata.getImageCoordinates(), disposer);
         return new AnimationFrame(
                 surface,
                 texture,
-                imageAnimationFrame.getDurationHint(),
-                imageAnimationFrame.getRestoreBackgroundHint(),
-                imageAnimationFrame.getRenderToBackgroundHint());
+                metadata.getDurationHint(),
+                metadata.getRestoreBackgroundHint(),
+                metadata.getRenderToBackgroundHint());
     }
 
     /**

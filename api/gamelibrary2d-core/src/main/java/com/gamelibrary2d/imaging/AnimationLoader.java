@@ -55,7 +55,7 @@ public class AnimationLoader {
      * @param stream The animation stream.
      * @param format The animation format.
      */
-    public static ImageAnimation load(InputStream stream, String format) throws IOException {
+    public static AnimationMetadata load(InputStream stream, String format) throws IOException {
         String lowerCaseFormat = format.toLowerCase();
         if (animationReaders.containsKey(lowerCaseFormat)) {
             return animationReaders.get(lowerCaseFormat).read(stream);
@@ -70,7 +70,7 @@ public class AnimationLoader {
      * @param url    The animation url.
      * @param format The animation format.
      */
-    public static ImageAnimation load(URL url, String format) throws IOException {
+    public static AnimationMetadata load(URL url, String format) throws IOException {
         try (InputStream stream = url.openStream()) {
             return load(stream, format);
         }
@@ -79,7 +79,7 @@ public class AnimationLoader {
     /**
      * Loads an animation from all image files inside the specified folder that matches the specified pattern.
      */
-    public static ImageAnimation load(Path folderPath, Pattern filePattern, float frameDuration) throws IOException {
+    public static AnimationMetadata load(Path folderPath, Pattern filePattern, float frameDuration) throws IOException {
         return load(
                 Runtime.getFramework().createDefaultImageReader(),
                 folderPath,
@@ -91,13 +91,13 @@ public class AnimationLoader {
     /**
      * Loads an animation from all image files inside the specified folder that matches the specified pattern.
      */
-    public static ImageAnimation load(ImageReader imageReader, Path folderPath, Pattern filePattern, float frameDuration) throws IOException {
+    public static AnimationMetadata load(ImageReader imageReader, Path folderPath, Pattern filePattern, float frameDuration) throws IOException {
         List<Path> filePaths = getFilePaths(folderPath, filePattern);
-        List<ImageAnimationFrame> frames = new ArrayList<>(filePaths.size());
+        List<AnimationFrameMetadata> frames = new ArrayList<>(filePaths.size());
         for (Path filePath : filePaths) {
             try (InputStream stream = filePath.toUri().toURL().openStream()) {
                 Image image = imageReader.read(stream);
-                frames.add(new ImageAnimationFrame(
+                frames.add(new AnimationFrameMetadata(
                         image,
                         new Rectangle(0, 0, 1, 1),
                         -image.getWidth() / 2f,
@@ -109,7 +109,7 @@ public class AnimationLoader {
 
         }
 
-        return new ImageAnimation(frames);
+        return new AnimationMetadata(frames);
     }
 
 }

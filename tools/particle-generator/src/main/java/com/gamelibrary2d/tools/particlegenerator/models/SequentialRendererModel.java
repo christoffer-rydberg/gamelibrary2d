@@ -5,7 +5,7 @@ import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.imaging.AnimationLoader;
-import com.gamelibrary2d.imaging.ImageAnimation;
+import com.gamelibrary2d.imaging.AnimationMetadata;
 import com.gamelibrary2d.imaging.StandardAnimationFormats;
 import com.gamelibrary2d.particle.renderers.SequentialParticleRenderer;
 import com.gamelibrary2d.renderers.AnimationRenderer;
@@ -46,12 +46,12 @@ public class SequentialRendererModel {
 
         if (animationRenderer != null) {
             try {
-                ImageAnimation imageAnimation = AnimationLoader.load(
+                AnimationMetadata animationMetadata = AnimationLoader.load(
                         new ByteArrayInputStream(animationData),
                         StandardAnimationFormats.GIF);
 
-                Animation animation = Animation.fromImageAnimation(
-                        imageAnimation,
+                Animation animation = Animation.create(
+                        animationMetadata,
                         bounds,
                         resourceDisposer);
 
@@ -90,12 +90,12 @@ public class SequentialRendererModel {
             animationData = Read.byteArray(stream);
         }
 
-        ImageAnimation imageAnimation = AnimationLoader.load(
+        AnimationMetadata animationMetadata = AnimationLoader.load(
                 new ByteArrayInputStream(animationData),
                 StandardAnimationFormats.GIF);
 
-        Animation animation = Animation.fromImageAnimation(
-                imageAnimation,
+        Animation animation = Animation.create(
+                animationMetadata,
                 bounds,
                 resourceDisposer);
 

@@ -2,12 +2,13 @@ package com.gamelibrary2d.resources;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.imaging.ImageAnimation;
-import com.gamelibrary2d.imaging.ImageAnimationFrame;
 import com.gamelibrary2d.components.denotations.Bounded;
+import com.gamelibrary2d.imaging.AnimationFrameMetadata;
+import com.gamelibrary2d.imaging.AnimationMetadata;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class Animation implements Bounded {
@@ -15,20 +16,47 @@ public class Animation implements Bounded {
     private final float[] timeIndex;
     private final Rectangle bounds;
 
-    public Animation(Collection<AnimationFrame> frames) {
-        if (frames.isEmpty()) {
-            throw new IllegalStateException("An animation must contain at least one frame");
-        }
-
-        this.frames = new ArrayList<>(frames);
+    public Animation(Iterable<AnimationFrame> frames) {
+        this.frames = toReadOnlyList(frames);
         this.timeIndex = createTimeIndex(this.frames);
         this.bounds = calculateBounds(this.frames);
     }
 
-    private static Rectangle calculateBounds(List<AnimationFrame> frames) {
+    private List<AnimationFrame> toReadOnlyList(Iterable<AnimationFrame> frames) {
+        List<AnimationFrame> result = new ArrayList<>();
+        frames.forEach(result::add);
+        return Collections.unmodifiableList(result);
+    }
+
+    public static Animation create(AnimationMetadata metadata, Rectangle size, Disposer disposer) {
+        Rectangle bounds = calculateBounds(metadata.getFrames());
+
+        float scaleX = size.getWidth() / bounds.getWidth();
+        float scaleY = size.getHeight() / bounds.getHeight();
+
+        float offsetX = size.getLowerX() - (bounds.getLowerX() * scaleX);
+        float offsetY = size.getLowerY() - (bounds.getLowerY() * scaleY);
+
+        return create(metadata, scaleX, scaleY, offsetX, offsetY, disposer);
+    }
+
+    private static Animation create(AnimationMetadata metadata, float scaleX, float scaleY, float offsetX, float offsetY, Disposer disposer) {
+        List<AnimationFrame> frames = new ArrayList<>(metadata.getFrames().size());
+        for (AnimationFrameMetadata frameMetadata : metadata.getFrames()) {
+            Rectangle frameBounds = frameMetadata.getBounds()
+                    .resize(scaleX, scaleY)
+                    .move(offsetX, offsetY);
+
+            frames.add(AnimationFrame.create(frameMetadata, frameBounds, disposer));
+        }
+
+        return new Animation(frames);
+    }
+
+    private static <T extends Bounded> Rectangle calculateBounds(Collection<T> frames) {
         float xMin = Float.MAX_VALUE, yMin = Float.MAX_VALUE;
         float xMax = Float.MIN_VALUE, yMax = Float.MIN_VALUE;
-        for (AnimationFrame frame : frames) {
+        for (Bounded frame : frames) {
             Rectangle bounds = frame.getBounds();
             xMin = Math.min(xMin, bounds.getLowerX());
             yMin = Math.min(yMin, bounds.getLowerY());
@@ -51,34 +79,6 @@ public class Animation implements Bounded {
         return index;
     }
 
-    private static Animation fromImageAnimation(ImageAnimation imageAnimation, float scaleX, float scaleY, float offsetX, float offsetY, Disposer disposer) {
-        List<AnimationFrame> frames = new ArrayList<>(imageAnimation.getFrames().size());
-        for (ImageAnimationFrame frame : imageAnimation.getFrames()) {
-            int imageWidth = frame.getImage().getWidth();
-            int imageHeight = frame.getImage().getHeight();
-
-            Rectangle frameBounds = new Rectangle(0, 0, imageWidth, imageHeight)
-                    .move(frame.getOffsetX(), frame.getOffsetY())
-                    .resize(scaleX, scaleY)
-                    .move(offsetX, offsetY);
-
-            frames.add(AnimationFrame.fromImageAnimationFrame(frame, frameBounds, disposer));
-        }
-
-        return new Animation(frames);
-    }
-
-    public static Animation fromImageAnimation(ImageAnimation imageAnimation, Rectangle size, Disposer disposer) {
-        Rectangle bounds = imageAnimation.getBounds();
-
-        float scaleX = size.getWidth() / bounds.getWidth();
-        float scaleY = size.getHeight() / bounds.getHeight();
-
-        float offsetX = size.getLowerX() - (bounds.getLowerX() * scaleX);
-        float offsetY = size.getLowerY() - (bounds.getLowerY() * scaleY);
-
-        return fromImageAnimation(imageAnimation, scaleX, scaleY, offsetX, offsetY, disposer);
-    }
 
     public float getDuration() {
         return timeIndex[timeIndex.length - 1];

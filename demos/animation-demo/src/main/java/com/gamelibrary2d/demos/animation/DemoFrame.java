@@ -12,7 +12,7 @@ import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.components.objects.DefaultObservableGameObject;
 import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.imaging.AnimationLoader;
-import com.gamelibrary2d.imaging.ImageAnimation;
+import com.gamelibrary2d.imaging.AnimationMetadata;
 import com.gamelibrary2d.imaging.StandardAnimationFormats;
 import com.gamelibrary2d.renderers.AnimationRenderer;
 import com.gamelibrary2d.resources.*;
@@ -30,7 +30,7 @@ public class DemoFrame extends AbstractFrame {
 
     private final Game game;
     private final Disposer animationDisposer = new DefaultDisposer(this);
-    private Future<ImageAnimation> loadingAnimation;
+    private Future<AnimationMetadata> loadingAnimation;
     private AnimatedGameObject<AnimationRenderer> animatedObject;
 
     DemoFrame(Game game) {
@@ -87,7 +87,7 @@ public class DemoFrame extends AbstractFrame {
 
     }
 
-    private ImageAnimation loadAnimation(File file) throws IOException {
+    private AnimationMetadata loadAnimation(File file) throws IOException {
         if (file.isDirectory()) {
             return AnimationLoader.load(
                     file.toPath(),
@@ -98,7 +98,7 @@ public class DemoFrame extends AbstractFrame {
         }
     }
 
-    private Future<ImageAnimation> loadAnimationAsync(File file) {
+    private Future<AnimationMetadata> loadAnimationAsync(File file) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return loadAnimation(file);
@@ -108,7 +108,7 @@ public class DemoFrame extends AbstractFrame {
         });
     }
 
-    private Future<ImageAnimation> selectAnimation() throws IOException {
+    private Future<AnimationMetadata> selectAnimation() throws IOException {
         FileChooser fileChooser = new FileChooser(System.getenv("TEMP") + "/animation_demo/file_chooser_path.txt");
         File file = fileChooser.browse(FileSelectionMode.FILES_AND_DIRECTORIES);
         return file != null ? loadAnimationAsync(file) : null;
@@ -126,11 +126,11 @@ public class DemoFrame extends AbstractFrame {
                 try {
                     animationDisposer.dispose();
 
-                    ImageAnimation imageAnimation = loadingAnimation.get();
+                    AnimationMetadata animationMetadata = loadingAnimation.get();
 
-                    Animation animation = Animation.fromImageAnimation(
-                            imageAnimation,
-                            imageAnimation.getBounds()
+                    Animation animation = Animation.create(
+                            animationMetadata,
+                            animationMetadata.calculateBounds()
                                     .resize(Rectangle.create(1f, 1f))
                                     .restrict(game.getWindow().getWidth(), game.getWindow().getHeight()),
                             animationDisposer);

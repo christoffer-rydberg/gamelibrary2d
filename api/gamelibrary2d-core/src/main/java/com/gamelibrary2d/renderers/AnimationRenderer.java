@@ -15,11 +15,6 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
     private int previousFrameIndex = -1;
     private float globalFrameDuration = -1;
 
-    public AnimationRenderer(Animation animation, boolean loop) {
-        disposer = null;
-        setAnimation(animation, loop);
-    }
-
     public AnimationRenderer(Animation animation, boolean loop, Disposer disposer) {
         this.disposer = disposer;
         setAnimation(animation, loop);

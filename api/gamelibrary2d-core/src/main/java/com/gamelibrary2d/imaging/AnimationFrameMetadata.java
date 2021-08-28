@@ -1,29 +1,29 @@
 package com.gamelibrary2d.imaging;
 
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.components.denotations.Bounded;
 import com.gamelibrary2d.framework.Image;
 
-public class ImageAnimationFrame {
+public class AnimationFrameMetadata implements Bounded {
     private final Image img;
+    private final Rectangle bounds;
     private final Rectangle imageCoordinates;
-    private final float offsetX;
-    private final float offsetY;
     private final float durationHint;
     private final boolean restoreBackgroundHint;
     private final boolean renderToBackgroundHint;
 
     /**
-     * Creates a new instance of {@link ImageAnimationFrame}.
+     * Creates a new instance of {@link AnimationFrameMetadata}.
      *
      * @param img                The frame image.
      * @param imageCoordinates   The image coordinates used for this frame.
      * @param offsetX            The offset along the X axis.
      * @param offsetY            The offset along the Y axis.
-     * @param duration           Sets the {@link ImageAnimationFrame#getDurationHint} field.
-     * @param restoreBackground  Sets the {@link ImageAnimationFrame#restoreBackgroundHint} field.
-     * @param renderToBackground Sets the {@link ImageAnimationFrame#getRenderToBackgroundHint} field.
+     * @param duration           Sets the {@link AnimationFrameMetadata#getDurationHint} field.
+     * @param restoreBackground  Sets the {@link AnimationFrameMetadata#restoreBackgroundHint} field.
+     * @param renderToBackground Sets the {@link AnimationFrameMetadata#getRenderToBackgroundHint} field.
      */
-    public ImageAnimationFrame(
+    public AnimationFrameMetadata(
             Image img,
             Rectangle imageCoordinates,
             float offsetX,
@@ -33,11 +33,15 @@ public class ImageAnimationFrame {
             boolean renderToBackground) {
         this.img = img;
         this.imageCoordinates = imageCoordinates;
-        this.offsetX = offsetX;
-        this.offsetY = offsetY;
         this.durationHint = duration;
         this.restoreBackgroundHint = restoreBackground;
         this.renderToBackgroundHint = renderToBackground;
+        this.bounds = new Rectangle(
+                offsetX,
+                offsetY,
+                offsetX + img.getWidth(),
+                offsetY + img.getHeight()
+        );
     }
 
     /**
@@ -68,12 +72,9 @@ public class ImageAnimationFrame {
         return durationHint;
     }
 
-    public float getOffsetX() {
-        return offsetX;
-    }
-
-    public float getOffsetY() {
-        return offsetY;
+    @Override
+    public Rectangle getBounds() {
+        return bounds;
     }
 
     public Rectangle getImageCoordinates() {

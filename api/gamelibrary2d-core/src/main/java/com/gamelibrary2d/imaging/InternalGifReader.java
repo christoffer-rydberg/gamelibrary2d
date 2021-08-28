@@ -18,12 +18,12 @@ import java.util.List;
 class InternalGifReader implements AnimationReader {
     private static final Rectangle IMAGE_COORDINATES = new Rectangle(0, 0, 1, 1);
 
-    private static ImageAnimationFrame createAnimationFrame(Image img, float offsetX, float offsetY, float duration, DisposalMethod disposalMethod) {
+    private static AnimationFrameMetadata createAnimationFrame(Image img, float offsetX, float offsetY, float duration, DisposalMethod disposalMethod) {
         switch (disposalMethod) {
             case DO_NOT_DISPOSE:
-                return new ImageAnimationFrame(img, IMAGE_COORDINATES, offsetX, offsetY, duration, false, true);
+                return new AnimationFrameMetadata(img, IMAGE_COORDINATES, offsetX, offsetY, duration, false, true);
             case RESTORE_TO_BACKGROUND:
-                return new ImageAnimationFrame(img, IMAGE_COORDINATES, offsetX, offsetY, duration, true, false);
+                return new AnimationFrameMetadata(img, IMAGE_COORDINATES, offsetX, offsetY, duration, true, false);
             case UNSPECIFIED:
             case RESTORE_TO_PREVIOUS:
             case TO_BE_DEFINED_1:
@@ -31,17 +31,17 @@ class InternalGifReader implements AnimationReader {
             case TO_BE_DEFINED_3:
             case TO_BE_DEFINED_4:
             default:
-                return new ImageAnimationFrame(img, IMAGE_COORDINATES, offsetX, offsetY, duration, false, false);
+                return new AnimationFrameMetadata(img, IMAGE_COORDINATES, offsetX, offsetY, duration, false, false);
         }
     }
 
-    private static ImageAnimation loadInternal(InputStream stream) throws IOException, ImageReadException {
+    private static AnimationMetadata loadInternal(InputStream stream) throws IOException, ImageReadException {
         byte[] bytes = Read.byteArray(stream);
         List<BufferedImage> images = Imaging.getAllBufferedImages(bytes);
         GifImageMetadata metadata = (GifImageMetadata) Imaging.getMetadata(bytes);
 
         int frameCount = images.size();
-        List<ImageAnimationFrame> animationFrames = new ArrayList<>(frameCount);
+        List<AnimationFrameMetadata> frames = new ArrayList<>(frameCount);
 
         BufferedImageParser bufferedImageParser = new BufferedImageParser();
 
@@ -57,22 +57,22 @@ class InternalGifReader implements AnimationReader {
                     ? DisposalMethod.UNSPECIFIED
                     : metadataItem.getDisposalMethod();
 
-            ImageAnimationFrame frame = createAnimationFrame(
+            AnimationFrameMetadata frameMetadata = createAnimationFrame(
                     bufferedImageParser.parse(frameImage),
                     xOffset,
                     yOffset,
                     metadataItem.getDelay() / 100f,
                     disposalMethod);
 
-            animationFrames.add(frame);
+            frames.add(frameMetadata);
 
-            backgroundRenderingRequired |= frame.getRenderToBackgroundHint();
+            backgroundRenderingRequired |= frameMetadata.getRenderToBackgroundHint();
         }
 
-        return new ImageAnimation(animationFrames);
+        return new AnimationMetadata(frames);
     }
 
-    public ImageAnimation read(InputStream stream) throws IOException {
+    public AnimationMetadata read(InputStream stream) throws IOException {
         try {
             return loadInternal(stream);
         } catch (ImageReadException e) {
