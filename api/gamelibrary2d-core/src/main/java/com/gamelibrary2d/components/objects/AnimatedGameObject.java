@@ -30,11 +30,11 @@ public class AnimatedGameObject<T extends ContentRenderer> extends AbstractGameO
         }
     }
 
-    protected float getAnimationTime() {
+    public float getAnimationTime() {
         return animationTime;
     }
 
-    protected void setAnimationTime(float time) {
+    public void setAnimationTime(float time) {
         this.animationTime = time;
         if (content != null) {
             content.setShaderParameter(ShaderParameter.TIME, time);

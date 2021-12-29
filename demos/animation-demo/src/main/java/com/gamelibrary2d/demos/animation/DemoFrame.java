@@ -8,13 +8,13 @@ import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.components.objects.AnimatedGameObject;
-import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.components.objects.DefaultObservableGameObject;
-import com.gamelibrary2d.renderers.Label;
+import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.imaging.AnimationLoader;
 import com.gamelibrary2d.imaging.AnimationMetadata;
 import com.gamelibrary2d.imaging.StandardAnimationFormats;
 import com.gamelibrary2d.renderers.AnimationRenderer;
+import com.gamelibrary2d.renderers.Label;
 import com.gamelibrary2d.resources.*;
 
 import java.io.File;
@@ -60,7 +60,7 @@ public class DemoFrame extends AbstractFrame {
         GameObject loadButton = createLoadButton();
         loadButton.setPosition(windowWidth / 2, windowHeight - windowHeight / 6);
 
-        animatedObject = new AnimatedGameObject<>();
+        animatedObject = new AnimatedGameObject<>(new AnimationRenderer(this));
         animatedObject.setPosition(windowWidth / 2, windowHeight / 2);
 
         add(animatedObject);
@@ -135,7 +135,23 @@ public class DemoFrame extends AbstractFrame {
                                     .restrict(game.getWindow().getWidth(), game.getWindow().getHeight()),
                             animationDisposer);
 
-                    animatedObject.setContent(new AnimationRenderer(animation, true, animationDisposer));
+                    animatedObject.getContent().setAnimation(animation, true);
+
+                    boolean hasInvalidFrameDurations = animation.getFrames()
+                            .stream()
+                            .anyMatch(frame -> frame.getDurationHint() <= 0);
+
+                    if (hasInvalidFrameDurations) {
+                        animatedObject.getContent().setGlobalFrameDuration(0.1f);
+                    } else {
+                        animatedObject.getContent().disableGlobalFrameDuration();
+                    }
+
+                    animatedObject.setEnabled(false);
+                    invokeLater(() -> invokeLater(() -> {
+                        animatedObject.setEnabled(true);
+                        animatedObject.setAnimationTime(0f);
+                    }));
 
                     loadingAnimation = null;
                 } catch (InterruptedException | ExecutionException e) {

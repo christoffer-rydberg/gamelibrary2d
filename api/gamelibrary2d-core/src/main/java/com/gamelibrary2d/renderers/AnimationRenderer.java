@@ -15,16 +15,16 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
     private int previousFrameIndex = -1;
     private float globalFrameDuration = -1;
 
+    public AnimationRenderer(Disposer disposer) {
+        this.disposer = disposer;
+    }
+
     public AnimationRenderer(Animation animation, boolean loop, Disposer disposer) {
         this.disposer = disposer;
         setAnimation(animation, loop);
     }
 
-    public Animation getAnimation() {
-        return animation;
-    }
-
-    private boolean requiresBackgroundBuffering() {
+    private static boolean requiresBackgroundBuffering(Animation animation) {
         for (AnimationFrame frame : animation.getFrames()) {
             if (frame.getRenderToBackgroundHint())
                 return true;
@@ -32,27 +32,46 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
         return false;
     }
 
-    private void setAnimation(Animation animation, boolean loop) {
-        this.animation = animation;
-        this.looping = loop;
-        this.previousFrameIndex = -1;
+    private static void render(ShaderProgram shaderProgram, AnimationFrame frame) {
+        frame.getTexture().bind();
+        frame.getSurface().render(shaderProgram);
+    }
 
-        if (backgroundBuffer != null) {
-            backgroundBuffer.dispose();
-            backgroundBuffer = null;
+    private float getDuration(Animation animation) {
+        return globalFrameDuration > 0f
+                ? globalFrameDuration * animation.getFrames().size()
+                : animation.getDuration();
+    }
+
+    private float getAnimationTime(Animation animation, boolean looping) {
+        float duration = getDuration(animation);
+        float timeParameter = getShaderParameter(ShaderParameter.TIME);
+        if (looping) {
+            int roundTrips = (int) (timeParameter / duration);
+            return timeParameter - roundTrips * duration;
+        } else {
+            return Math.min(timeParameter, duration);
         }
+    }
 
-        if (requiresBackgroundBuffering()) {
-            backgroundBuffer = new AnimationBackgroundBuffer(animation, disposer);
+    public Animation getAnimation() {
+        return animation;
+    }
+
+    public void setAnimation(Animation animation, boolean loop) {
+        this.looping = loop;
+        if (this.animation != animation) {
+            this.animation = animation;
+            this.previousFrameIndex = -1;
         }
     }
 
     /**
-     * The global frame duration is used to determine the duration of each frame.
+     * The global frame duration determines the duration of each frame.
      * It can be enabled by invoking {@link #setGlobalFrameDuration} and disabled by invoking {@link #disableGlobalFrameDuration}.
      * If disabled, the {@link AnimationFrame#getDurationHint() duration hint} for each frame will be respected.
      *
-     * @return The global frame duration if enabled, otherwise -1.
+     * @return The global frame duration or -1 if disabled.
      */
     public float getGlobalFrameDuration() {
         return this.globalFrameDuration;
@@ -87,65 +106,60 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
         return looping;
     }
 
-    public void setLooping(boolean looping) {
-        this.looping = looping;
-    }
-
-    private int getFrameIndexFromAnimation(int previousFrame, float time) {
-        if (previousFrame > 0) {
-            // Try previous frame again:
-            if (animation.isFrameActive(previousFrame, time)) {
-                return previousFrame;
-            }
-
-            int nextFrame = looping
-                    ? (previousFrame + 1) % animation.getFrames().size()
-                    : previousFrame + 1;
-
-            // Try next frame:
-            if (animation.isFrameActive(nextFrame, time)) {
-                return nextFrame;
-            }
+    private int getFrameIndex(Animation animation, boolean looping, int previousIndex) {
+        float duration = getDuration(animation);
+        if (duration <= 0f) {
+            return Math.max(previousIndex, 0);
         }
 
-        // Search for frame:
-        return animation.getFrameIndex(time);
-    }
-
-    private int getFrameIndex(int previousIndex) {
-        float time = getShaderParameter(ShaderParameter.TIME);
-        if (globalFrameDuration > 0f) {
-            int size = animation.getFrames().size();
-            int index = (int) (time / globalFrameDuration);
-            return looping ? index % size : Math.min(index, size - 1);
+        float time = getAnimationTime(animation, looping);
+        if (!looping && time == getDuration(animation)) {
+            return animation.getFrames().size() - 1;
+        } else if (globalFrameDuration > 0f) {
+            return (int) (time / globalFrameDuration);
         } else {
-            if (looping) {
-                float duration = animation.getDuration();
-                int roundTrips = (int) (time / duration);
-                float timeWithinAnimation = time - roundTrips * duration;
-                return getFrameIndexFromAnimation(previousIndex, timeWithinAnimation);
+            if (previousIndex > 0) {
+                // Try previous frame again:
+                if (animation.isFrameActive(previousIndex, time)) {
+                    return previousIndex;
+                }
+
+                int nextFrame = (previousIndex + 1) % animation.getFrames().size();
+
+                // Try next frame:
+                if (animation.isFrameActive(nextFrame, time)) {
+                    return nextFrame;
+                }
             }
 
-            return getFrameIndexFromAnimation(previousIndex, time);
+            // Search for frame:
+            return animation.getFrameIndex(time);
         }
     }
 
-    private int getFrameIndex() {
-        previousFrameIndex = getFrameIndex(previousFrameIndex);
+    private int getFrameIndex(Animation animation, boolean looping) {
+        previousFrameIndex = getFrameIndex(animation, looping, previousFrameIndex);
         return previousFrameIndex;
     }
 
     public AnimationFrame getFrame() {
-        return animation.getFrame(getFrameIndex());
+        Animation animation = getAnimation();
+        return animation != null ? animation.getFrame(getFrameIndex(animation, looping)) : null;
     }
 
     public boolean isAnimationFinished() {
-        return !looping && getFrameIndex() == animation.getFrames().size() - 1;
+        Animation animation = getAnimation();
+        if (animation == null) {
+            return true;
+        }
+
+        return !looping && getFrameIndex(animation, false) == animation.getFrames().size() - 1;
     }
 
     @Override
     public Rectangle getBounds() {
-        return animation.getBounds();
+        Animation animation = getAnimation();
+        return animation != null ? animation.getBounds() : Rectangle.EMPTY;
     }
 
     @Override
@@ -154,32 +168,47 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
         super.applyParameters(alpha);
     }
 
-    @Override
-    protected void onRender(ShaderProgram shaderProgram) {
-        int frameIndex = getFrameIndex();
-
-        AnimationFrame activeFrame = animation.getFrame(frameIndex);
+    private void prepareBackgroundBuffer() {
         if (backgroundBuffer != null) {
-            backgroundBuffer.render(shaderProgram, frameIndex);
-
-            if (!activeFrame.getRenderToBackgroundHint()) {
-                render(shaderProgram, activeFrame);
+            if (backgroundBuffer.animation == animation) {
+                return;
             }
-        } else {
-            render(shaderProgram, activeFrame);
+
+            backgroundBuffer.dispose();
+            backgroundBuffer = null;
+        }
+
+        if (animation != null && requiresBackgroundBuffering(animation)) {
+            backgroundBuffer = new AnimationBackgroundBuffer(animation, disposer);
         }
     }
 
-    private void render(ShaderProgram shaderProgram, AnimationFrame frame) {
-        frame.getTexture().bind();
-        frame.getSurface().render(shaderProgram);
+    @Override
+    protected void onRender(ShaderProgram shaderProgram) {
+        Animation animation = getAnimation();
+        if (animation != null) {
+            prepareBackgroundBuffer();
+
+            int frameIndex = getFrameIndex(animation, looping);
+
+            AnimationFrame activeFrame = animation.getFrame(frameIndex);
+            if (backgroundBuffer != null) {
+                backgroundBuffer.render(shaderProgram, frameIndex);
+
+                if (!activeFrame.getRenderToBackgroundHint()) {
+                    render(shaderProgram, activeFrame);
+                }
+            } else {
+                render(shaderProgram, activeFrame);
+            }
+        }
     }
 
     private static class AnimationBackgroundBuffer {
         private final Animation animation;
         private final DefaultDisposer resourceDisposer;
         private FrameBuffer frameBuffer;
-        private SurfaceRenderer frameBufferRenderer;
+        private SurfaceRenderer<?> frameBufferRenderer;
         private FrameRenderer[] frameRenderers;
         private int previousFrame;
 

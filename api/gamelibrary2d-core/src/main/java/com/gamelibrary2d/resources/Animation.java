@@ -18,11 +18,11 @@ public class Animation implements Bounded {
 
     public Animation(Iterable<AnimationFrame> frames) {
         this.frames = toReadOnlyList(frames);
-        this.timeIndex = createTimeIndex(this.frames);
         this.bounds = calculateBounds(this.frames);
+        this.timeIndex = createTimeIndex(this.frames);
     }
 
-    private List<AnimationFrame> toReadOnlyList(Iterable<AnimationFrame> frames) {
+    private static List<AnimationFrame> toReadOnlyList(Iterable<AnimationFrame> frames) {
         List<AnimationFrame> result = new ArrayList<>();
         frames.forEach(result::add);
         return Collections.unmodifiableList(result);
@@ -72,13 +72,12 @@ public class Animation implements Bounded {
         float duration = 0f;
         for (int i = 0; i < index.length; ++i) {
             AnimationFrame frame = frames.get(i);
-            duration += frame.getDurationHint();
+            duration += Math.max(0f, frame.getDurationHint());
             index[i] = duration;
         }
 
         return index;
     }
-
 
     public float getDuration() {
         return timeIndex[timeIndex.length - 1];
@@ -91,25 +90,21 @@ public class Animation implements Bounded {
     }
 
     public int getFrameIndex(float time) {
-        if (time < 0f) {
-            return 0;
-        } else if (time > getDuration()) {
-            return frames.size() - 1;
-        } else {
-            int start = 0, end = timeIndex.length;
-            while (true) {
-                int index = (start + end) / 2;
-                float frameStart = index == 0 ? 0 : timeIndex[index - 1];
-                float frameEnd = timeIndex[index];
-                if (time >= frameEnd) {
-                    start = index;
-                } else if (time < frameStart) {
-                    end = index;
-                } else {
-                    return index;
-                }
+        int start = 0, end = timeIndex.length;
+        while (end - start > 1) {
+            int index = (start + end) / 2;
+            float frameStart = timeIndex[index - 1];
+            float frameEnd = timeIndex[index];
+            if (time >= frameEnd) {
+                start = index;
+            } else if (time < frameStart) {
+                end = index;
+            } else {
+                return index;
             }
         }
+
+        return start;
     }
 
     public List<AnimationFrame> getFrames() {
