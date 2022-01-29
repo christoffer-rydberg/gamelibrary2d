@@ -85,14 +85,12 @@ public interface Game extends Disposer, Updatable {
     void exit();
 
     /**
-     * The frame changed event occurs when a frame has been set, right before <@link
-     * {@link Frame#begin()} is invoked.
+     * The frame changed event occurs when a frame has been set, right before {@link Frame#begin()} is invoked.
      */
     void addFrameChangedListener(FrameChangedListener listener);
 
     /**
-     * Removes the specified {@link #addFrameChangedListener frame changed} event
-     * listener.
+     * Removes the specified {@link #addFrameChangedListener frame changed} event listener.
      */
     void removeFrameChangedListener(FrameChangedListener listener);
 

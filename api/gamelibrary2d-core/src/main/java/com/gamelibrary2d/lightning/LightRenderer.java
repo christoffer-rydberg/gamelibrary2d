@@ -86,8 +86,7 @@ public interface LightRenderer extends Renderable {
      * decided, but before any light is added. Light is added by invoking
      * {@link #addLight}. Note that added {@link LightMap light maps} will add light
      * when {@link #apply} is invoked. However, the prepare-method will also invoke
-     * the {@link LightMap#prepare} method (and possibly
-     * {@link LightMap#onReallocate}) for all added light maps. It is equally
+     * the {@link LightMap#prepare} method for all added light maps. It is equally
      * important for most light maps that this is done in the beginning of the
      * update, before any light values are changed. Because of this, it is important
      * to respect the following turn order during an update:

@@ -19,7 +19,7 @@ public class Cursor extends AbstractCursor implements Updatable {
         this.renderer = renderer;
         this.lightMap = lightMap;
         this.particleEmitter = new SequentialParticleEmitter(particleSystem);
-        particleEmitter.getParticleSystem().setUpdateListener((sys, par) -> {
+        particleSystem.setUpdateListener((sys, par) -> {
             float alpha = par.getColorA();
             float size = par.getScale() * par.getScale();
             float light = 2 * (alpha + 0.5f) * size;
