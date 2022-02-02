@@ -1,9 +1,9 @@
-package com.gamelibrary2d.particle.parameters;
+package com.gamelibrary2d.particles.parameters;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.common.random.RandomInstance;
-import com.gamelibrary2d.particle.systems.Particle;
+import com.gamelibrary2d.particles.Particle;
 
 /**
  * Parameters for setting the initial state and behaviour of emitted particles.

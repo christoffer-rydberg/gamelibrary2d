@@ -1,5 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
+import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.io.ResourceReader;
@@ -12,10 +13,10 @@ import com.gamelibrary2d.demos.networkgame.client.ParticleRendererFactory;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.urls.Images;
 import com.gamelibrary2d.demos.networkgame.client.urls.Particles;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.particle.SequentialParticleEmitter;
-import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
+import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
+import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.DefaultTexture;
@@ -31,11 +32,11 @@ public class GameTitle extends AbstractGameObject implements Updatable {
     private final GameObject part1;
     private final GameObject part2;
     private final GameObject part3;
-    private final SequentialParticleEmitter portal;
+    private final Portal portal;
 
     private boolean showPortal;
 
-    private GameTitle(Rectangle bounds, GameObject part1, GameObject part2, GameObject part3, SequentialParticleEmitter portal) {
+    private GameTitle(Rectangle bounds, GameObject part1, GameObject part2, GameObject part3, Portal portal) {
         this.bounds = bounds;
         this.part1 = part1;
         this.part2 = part2;
@@ -73,10 +74,7 @@ public class GameTitle extends AbstractGameObject implements Updatable {
         portalSystem.getParameters().getPositionParameters().scale(0.0005f * window.getWidth());
         portalSystem.getParameters().getParticleParameters().scale(0.0005f * window.getWidth());
 
-        SequentialParticleEmitter portal = new SequentialParticleEmitter(portalSystem);
-        portal.getPosition().set(part2.getPosition());
-
-        return new GameTitle(bounds, part1, part2, part3, portal);
+        return new GameTitle(bounds, part1, part2, part3, new Portal(portalSystem, part2.getPosition()));
     }
 
     private Updater suckInMiddlePart(float duration) {
@@ -118,7 +116,7 @@ public class GameTitle extends AbstractGameObject implements Updatable {
     @Override
     protected void onRender(float alpha) {
         if (showPortal) {
-            portal.getParticleSystem().render(alpha);
+            portal.render(alpha);
         }
 
         part1.render(alpha);
@@ -135,7 +133,28 @@ public class GameTitle extends AbstractGameObject implements Updatable {
     public void update(float deltaTime) {
         if (showPortal) {
             portal.update(deltaTime);
-            portal.getParticleSystem().update(deltaTime);
+        }
+    }
+
+    private static class Portal implements Updatable, Renderable {
+        private final Point position;
+        private final DefaultParticleSystem particleSystem;
+        private float timer;
+
+        private Portal(DefaultParticleSystem particleSystem, Point position) {
+            this.particleSystem = particleSystem;
+            this.position = new Point(position);
+        }
+
+        @Override
+        public void update(float deltaTime) {
+            timer = particleSystem.emit(position, timer + deltaTime);
+            particleSystem.update(deltaTime);
+        }
+
+        @Override
+        public void render(float alpha) {
+            particleSystem.render(alpha);
         }
     }
 }

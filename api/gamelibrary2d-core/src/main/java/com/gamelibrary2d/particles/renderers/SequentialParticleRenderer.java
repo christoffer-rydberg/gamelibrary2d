@@ -1,11 +1,10 @@
-package com.gamelibrary2d.particle.renderers;
+package com.gamelibrary2d.particles.renderers;
 
 import com.gamelibrary2d.glUtil.ModelMatrix;
 import com.gamelibrary2d.glUtil.OpenGLBuffer;
 import com.gamelibrary2d.glUtil.ShaderParameter;
-import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
-import com.gamelibrary2d.particle.systems.ParticleRenderBuffer;
-import com.gamelibrary2d.particle.systems.ParticleSystem;
+import com.gamelibrary2d.particles.DefaultParticleSystem;
+import com.gamelibrary2d.particles.ParticleRenderBuffer;
 import com.gamelibrary2d.renderers.ContentRenderer;
 
 public class SequentialParticleRenderer implements ParticleRenderer {
@@ -24,7 +23,7 @@ public class SequentialParticleRenderer implements ParticleRenderer {
     }
 
     @Override
-    public void render(ParticleSystem particleSystem, OpenGLBuffer buffer, boolean gpuOutdated, int offset, int len, float alpha) {
+    public void render(Object particleSystem, OpenGLBuffer buffer, boolean gpuOutdated, int offset, int len, float alpha) {
         if (!(buffer instanceof ParticleRenderBuffer)) {
             throw new IllegalArgumentException("Buffer must be of type ParticleRenderBuffer");
         }

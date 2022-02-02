@@ -1,4 +1,4 @@
-package com.gamelibrary2d.particle.renderers;
+package com.gamelibrary2d.particles.renderers;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.io.BufferUtils;
@@ -7,7 +7,6 @@ import com.gamelibrary2d.glUtil.MirroredBuffer;
 import com.gamelibrary2d.glUtil.OpenGLBuffer;
 import com.gamelibrary2d.glUtil.ShaderParameter;
 import com.gamelibrary2d.glUtil.ShaderProgram;
-import com.gamelibrary2d.particle.systems.ParticleSystem;
 import com.gamelibrary2d.renderers.AbstractArrayRenderer;
 import com.gamelibrary2d.resources.BlendMode;
 import com.gamelibrary2d.resources.PointSmoothing;
@@ -78,7 +77,7 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
     }
 
     @Override
-    public void render(ParticleSystem particleSystem, OpenGLBuffer buffer, boolean gpuOutdated, int offset, int len, float alpha) {
+    public void render(Object particleSystem, OpenGLBuffer buffer, boolean gpuOutdated, int offset, int len, float alpha) {
         if (gpuOutdated && buffer instanceof MirroredBuffer) {
             buffer.bind();
             ((MirroredBuffer) buffer).updateGPU(offset, len);

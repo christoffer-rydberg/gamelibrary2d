@@ -4,12 +4,11 @@ import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.particle.SequentialParticleEmitter;
-import com.gamelibrary2d.particle.parameters.EmitterParameters;
-import com.gamelibrary2d.particle.parameters.ParticleParameters;
-import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particle.parameters.PositionParameters;
-import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
+import com.gamelibrary2d.particles.parameters.EmitterParameters;
+import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
+import com.gamelibrary2d.particles.parameters.PositionParameters;
+import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.updaters.DurationUpdater;
 import com.gamelibrary2d.updaters.InstantUpdater;
 import com.gamelibrary2d.updaters.SequentialUpdater;
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class DemoFrame extends AbstractFrame {
     private final Game game;
-    private List<SequentialParticleEmitter> emitters = new ArrayList<>();
+    private final List<ParticleEmitter> emitters = new ArrayList<>();
     private DefaultParticleSystem fireSystem;
     private DefaultParticleSystem explosionSystem;
 
@@ -31,8 +30,8 @@ public class DemoFrame extends AbstractFrame {
 
     private PositionParameters createPositionParameters() {
         PositionParameters spawnSettings = new PositionParameters();
-        spawnSettings.setSpawnAreaWidthVar(75f);
-        spawnSettings.setSpawnAreaHeightVar(25f);
+        spawnSettings.setSpawnAreaWidthVar(150f);
+        spawnSettings.setSpawnAreaHeightVar(50f);
         return spawnSettings;
     }
 
@@ -62,7 +61,7 @@ public class DemoFrame extends AbstractFrame {
         try {
             // Example of particle system settings created from code:
             EmitterParameters emitterParameters = new EmitterParameters();
-            emitterParameters.setDefaultInterval(1f / 350f);
+            emitterParameters.setEmissionRate(1f / 350f);
 
             ParticleSystemParameters fireSystemSettings = new ParticleSystemParameters(
                     emitterParameters,
@@ -109,21 +108,20 @@ public class DemoFrame extends AbstractFrame {
     private void createFire(float posX, float posY, float delay) {
         SequentialUpdater updater = new SequentialUpdater();
         updater.add(new DurationUpdater(delay, new EmptyUpdate()));
-        updater.add(new InstantUpdater(dt ->
-                emitters.add(new SequentialParticleEmitter(fireSystem, posX, posY))));
+        updater.add(new InstantUpdater(dt -> emitters.add(new ParticleEmitter(posX, posY, fireSystem))));
         runUpdater(updater);
     }
 
     @Override
     protected boolean onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        explosionSystem.emitAll(projectedX, projectedY);
+        explosionSystem.emit(projectedX, projectedY);
         createFire(projectedX, projectedY, 1f);
         return true;
     }
 
     @Override
     public void onUpdate(float deltaTime) {
-        for (SequentialParticleEmitter emitter : emitters) {
+        for (ParticleEmitter emitter : emitters) {
             emitter.update(deltaTime);
         }
         super.onUpdate(deltaTime);

@@ -1,4 +1,4 @@
-package com.gamelibrary2d.particle.systems;
+package com.gamelibrary2d.particles;
 
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.framework.OpenGL;

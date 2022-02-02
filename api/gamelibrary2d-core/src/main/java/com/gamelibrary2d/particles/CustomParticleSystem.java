@@ -1,25 +1,50 @@
-package com.gamelibrary2d.particle.systems;
+package com.gamelibrary2d.particles;
 
 import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.*;
-import com.gamelibrary2d.particle.renderers.EfficientParticleRenderer;
+import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
 
-public class CustomParticleSystem extends AbstractGpuBasedParticleSystem {
+public class CustomParticleSystem implements Updatable, Renderable {
+    private final static int WORK_GROUP_SIZE = 512;
+
+    private final int glUniformDeltaTime;
+    private final int glUniformParticleCount;
+    private final ShaderProgram updateProgram;
+
     private final MirroredFloatBuffer updateBuffer;
     private final OpenGLBuffer renderBuffer;
     private final EfficientParticleRenderer renderer;
 
     private CustomParticleSystem(
-            ShaderProgram updaterProgram,
+            ShaderProgram updateProgram,
             MirroredFloatBuffer updateBuffer,
             OpenGLBuffer renderBuffer,
             EfficientParticleRenderer renderer) {
 
-        super(updaterProgram);
-        this.updateBuffer = updateBuffer;
-        this.renderBuffer = renderBuffer;
-        this.renderer = renderer;
+        boolean updateProgramInUse = updateProgram.inUse();
+
+        try {
+            if (!updateProgramInUse) {
+                updateProgram.bind();
+            }
+
+            this.updateProgram = updateProgram;
+
+            // Cache uniforms
+            glUniformDeltaTime = updateProgram.getUniformLocation("deltaTime");
+            glUniformParticleCount = updateProgram.getUniformLocation("particleCount");
+
+            this.updateBuffer = updateBuffer;
+            this.renderBuffer = renderBuffer;
+            this.renderer = renderer;
+        } finally {
+            if (!updateProgramInUse) {
+                updateProgram.unbind();
+            }
+        }
     }
 
     public static CustomParticleSystem create(
@@ -56,12 +81,37 @@ public class CustomParticleSystem extends AbstractGpuBasedParticleSystem {
 
     @Override
     public void render(float alpha) {
-        renderer.render(this, renderBuffer, false, 0, renderBuffer.getCapacity(), alpha);
+        renderer.render(this, renderBuffer, false, 0, getParticleCount(), alpha);
+    }
+
+    public int getParticleCount() {
+        return renderBuffer.getCapacity();
     }
 
     @Override
-    public int getParticleCount() {
-        return renderBuffer.getCapacity();
+    public void update(float deltaTime) {
+        OpenGL openGL = OpenGL.instance();
+
+        int particleCount = getParticleCount();
+
+        updateProgram.bind();
+
+        openGL.glUniform1f(glUniformDeltaTime, deltaTime);
+        openGL.glUniform1i(glUniformParticleCount, particleCount);
+
+        bindUpdateBuffers();
+
+        openGL.glDispatchCompute((int) Math.ceil((double) particleCount / WORK_GROUP_SIZE), 1, 1);
+
+        applyMemoryBarriers();
+
+        updateProgram.unbind();
+    }
+
+    private void applyMemoryBarriers() {
+        OpenGL.instance().glMemoryBarrier(
+                OpenGL.GL_SHADER_STORAGE_BARRIER_BIT |
+                        OpenGL.GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
     }
 
     private static class CustomParticleBuffer extends AbstractMirroredVertexArrayBuffer<MirroredBuffer> {

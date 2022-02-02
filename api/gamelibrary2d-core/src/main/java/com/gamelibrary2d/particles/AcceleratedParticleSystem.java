@@ -1,33 +1,44 @@
-package com.gamelibrary2d.particle.systems;
+package com.gamelibrary2d.particles;
 
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.io.BufferUtils;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.denotations.Clearable;
+import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.*;
-import com.gamelibrary2d.particle.ParticleUpdateListener;
-import com.gamelibrary2d.particle.parameters.EmitterParameters;
-import com.gamelibrary2d.particle.parameters.ParticleParameters;
-import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particle.parameters.PositionParameters;
-import com.gamelibrary2d.particle.renderers.EfficientParticleRenderer;
+import com.gamelibrary2d.particles.parameters.EmitterParameters;
+import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
+import com.gamelibrary2d.particles.parameters.PositionParameters;
+import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
 
 import java.nio.FloatBuffer;
 
-public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem implements Clearable {
+public class AcceleratedParticleSystem implements Updatable, Renderable, Clearable {
+    private final static int WORK_GROUP_SIZE = 512;
+    private final int glUniformDeltaTime;
+    private final int glUniformParticleCount;
+    private final ShaderProgram updateProgram;
+
     private final float[] position = new float[2];
     private final FloatBuffer externalAcceleration = BufferUtils.createFloatBuffer(2);
 
     private final MirroredIntBuffer atomicBuffer;
     private final MirroredFloatBuffer parametersBuffer;
-    private final MirroredFloatBuffer positionbuffer;
+    private final MirroredFloatBuffer positionBuffer;
 
     private final DefaultOpenGLBuffer[] updateBuffer;
     private final DefaultVertexArrayBuffer<DefaultOpenGLBuffer>[] renderBuffer;
 
     private final int capacity;
+
+    private final int glUniformPosition;
+    private final int glUniformExternalAcceleration;
+    private final int glUniformParticlesInGpu;
+    private final int glUniformRandomSeed;
 
     private Point positionTransformation;
     private int parameterUpdateCounter;
@@ -37,16 +48,10 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
 
     private EfficientParticleRenderer renderer;
     private ParticleSystemParameters parameters;
-    private ParticleUpdateListener updateListener;
-
-    private int glUniformPosition;
-    private int glUniformExternalAcceleration;
-    private int glUniformParticlesInGpu;
-    private int glUniformRandomSeed;
 
     private int particlesInGpuBuffer;
 
-    private AcceleratedParticleSystem(ShaderProgram updaterProgram,
+    private AcceleratedParticleSystem(ShaderProgram updateProgram,
                                       MirroredFloatBuffer positionBuffer,
                                       MirroredFloatBuffer parametersBuffer,
                                       DefaultOpenGLBuffer[] updateBuffer,
@@ -55,32 +60,42 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
                                       EfficientParticleRenderer renderer,
                                       int capacity,
                                       Disposer disposer) {
-        super(updaterProgram);
-        this.updateBuffer = updateBuffer;
-        this.renderBuffer = renderBuffer;
-        this.parameters = parameters;
-        this.renderer = renderer;
-        this.capacity = capacity;
-        atomicBuffer = MirroredIntBuffer.create(new int[1], OpenGL.GL_ATOMIC_COUNTER_BUFFER, OpenGL.GL_DYNAMIC_DRAW, disposer);
 
-        boolean updateProgramInUse = updaterProgram.inUse();
-        if (!updateProgramInUse) {
-            updaterProgram.bind();
-        }
+        boolean updateProgramInUse = updateProgram.inUse();
 
-        this.positionbuffer = positionBuffer;
-        positionUpdateCounter = parameters.getPositionParameters().getUpdateCounter();
+        try {
+            if (!updateProgramInUse) {
+                updateProgram.bind();
+            }
 
-        this.parametersBuffer = parametersBuffer;
-        parameterUpdateCounter = parameters.getParticleParameters().getUpdateCounter();
+            this.updateProgram = updateProgram;
 
-        glUniformPosition = updaterProgram.getUniformLocation("position");
-        glUniformExternalAcceleration = updaterProgram.getUniformLocation("externalAcceleration");
-        glUniformParticlesInGpu = updaterProgram.getUniformLocation("particlesInGpu");
-        glUniformRandomSeed = updaterProgram.getUniformLocation("randomSeed");
+            // Cache uniforms
+            glUniformDeltaTime = updateProgram.getUniformLocation("deltaTime");
+            glUniformParticleCount = updateProgram.getUniformLocation("particleCount");
 
-        if (!updateProgramInUse) {
-            updaterProgram.unbind();
+            this.updateBuffer = updateBuffer;
+            this.renderBuffer = renderBuffer;
+            this.parameters = parameters;
+            this.renderer = renderer;
+            this.capacity = capacity;
+            atomicBuffer = MirroredIntBuffer.create(new int[1], OpenGL.GL_ATOMIC_COUNTER_BUFFER, OpenGL.GL_DYNAMIC_DRAW, disposer);
+
+            this.positionBuffer = positionBuffer;
+            positionUpdateCounter = parameters.getPositionParameters().getUpdateCounter();
+
+            this.parametersBuffer = parametersBuffer;
+            parameterUpdateCounter = parameters.getParticleParameters().getUpdateCounter();
+
+            glUniformPosition = updateProgram.getUniformLocation("position");
+            glUniformExternalAcceleration = updateProgram.getUniformLocation("externalAcceleration");
+            glUniformParticlesInGpu = updateProgram.getUniformLocation("particlesInGpu");
+            glUniformRandomSeed = updateProgram.getUniformLocation("randomSeed");
+
+        } finally {
+            if (!updateProgramInUse) {
+                updateProgram.unbind();
+            }
         }
     }
 
@@ -145,24 +160,6 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
         externalAcceleration.flip();
     }
 
-    /**
-     * Gets the update listener.
-     *
-     * @return The update listener, or null if no update listener has been set.
-     */
-    public ParticleUpdateListener getUpdateListener() {
-        return updateListener;
-    }
-
-    /**
-     * Sets the update listener.
-     *
-     * @param listener The update listener.
-     */
-    public void setUpdateListener(ParticleUpdateListener listener) {
-        updateListener = listener;
-    }
-
     public Point getPositionTransformation() {
         return positionTransformation;
     }
@@ -172,18 +169,18 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
     }
 
     /**
-     * Emits all particles at the specified coordinates. The particles count
-     * is specified by {@link EmitterParameters#getDefaultCount()}.
+     * Emits all particles.
+     * The number of particles is decided by the count-parameters of the particle system's {@link EmitterParameters}.
      */
-    public void emitAll() {
+    public void emit() {
         EmitterParameters emitterParameters = parameters.getEmitterParameters();
-        emit(Math.round(emitterParameters.getDefaultCount() + emitterParameters.getDefaultCountVar() * RandomInstance.random11()));
+        emit(Math.round(emitterParameters.getParticleCount() + emitterParameters.getParticleCountVar() * RandomInstance.random11()));
     }
 
     /**
-     * Emits particles at the specified coordinates.
+     * Emits particles.
      *
-     * @param count The number of emitted particles.
+     * @param count The number of particles to emit.
      */
     public void emit(int count) {
         int remaining = capacity - particleCount;
@@ -195,54 +192,27 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
     }
 
     /**
-     * Sequentially emits particles at the specified coordinates. The interval is
-     * specified by {@link EmitterParameters#getDefaultInterval()}.
+     * Emits particles.
+     * The number of particles is decided by the deltaTime parameter
+     * in conjunction with the emission rate of the particle system's {@link EmitterParameters}.
      *
-     * @param time      The current emitter time, in seconds. The delta time will be
-     *                  added to this value. Particles will be emitted while the
-     *                  time exceeds the emitter interval.
-     * @param deltaTime Time since the last update, in seconds.
-     * @return The new emitter time, i.e. how much time has passed since a particle
-     * was emitted.
+     * @param deltaTime The time, in seconds, since the last particle was emitted.
+     * @return The time, in seconds, since the last particle was emitted.
+     * If no particles were emitted, this will be the same as the deltaTime parameter.
+     * This value should be added to the update cycle's deltaTime the next time this method is invoked.
      */
-    public float emitSequential(float time, float deltaTime) {
-        return emitSequential(time, deltaTime, parameters.getEmitterParameters().getDefaultInterval());
-    }
+    public float emit(float deltaTime) {
+        float rate = parameters.getEmitterParameters().getEmissionRate();
+        if (rate > 0) {
+            int numberOfEmissions = (int) (deltaTime * rate);
+            for (int i = 0; i < numberOfEmissions; ++i) {
+                emit();
+            }
 
-    /**
-     * Sequentially emits particles at the specified coordinates.
-     *
-     * @param time      The current emitter time, in seconds. The delta time will be
-     *                  added to this value. Particles will be emitted while the
-     *                  time exceeds the emitter interval.
-     * @param deltaTime Time since the last update, in seconds.
-     * @param interval  The interval between emitted particles, in seconds.
-     * @return The new emitter time, i.e. how much time has passed since a particle
-     * was emitted.
-     */
-    public float emitSequential(float time, float deltaTime, float interval) {
-        if (interval > 0) {
-            time += deltaTime;
-
-            int iterations = (int) (time / interval);
-
-            float remainingTime = time - (iterations * interval);
-
-            EmitterParameters emitterParameters = parameters.getEmitterParameters();
-            int count = emitterParameters.isPulsating()
-                    ? (emitterParameters.getDefaultCount() + emitterParameters.getDefaultCountVar()) * iterations
-                    : iterations;
-
-            emit(count);
-
-            time = remainingTime;
+            return deltaTime - numberOfEmissions / rate;
+        } else {
+            return 0f; // No particles will ever be emitted
         }
-
-        return time;
-    }
-
-    public void emit() {
-        emit(1);
     }
 
     @Override
@@ -252,7 +222,20 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
             atomicBuffer.getData()[0] = 0;
             atomicBuffer.updateGPU(0, 1);
 
-            super.update(deltaTime);
+            OpenGL openGL = OpenGL.instance();
+
+            updateProgram.bind();
+
+            openGL.glUniform1f(glUniformDeltaTime, deltaTime);
+            openGL.glUniform1i(glUniformParticleCount, particleCount);
+
+            bindUpdateBuffers();
+
+            openGL.glDispatchCompute((int) Math.ceil((double) particleCount / WORK_GROUP_SIZE), 1, 1);
+
+            applyMemoryBarriers();
+
+            updateProgram.unbind();
 
             // Update particle count
             atomicBuffer.updateCPU(0, 1);
@@ -263,8 +246,7 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
         }
     }
 
-    @Override
-    protected void bindUpdateBuffers() {
+    private void bindUpdateBuffers() {
         OpenGL openGL = OpenGL.instance();
 
         openGL.glUniform1i(glUniformRandomSeed, RandomInstance.get().nextInt());
@@ -280,10 +262,10 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
         openGL.glUniform2fv(glUniformExternalAcceleration, externalAcceleration);
 
         PositionParameters positionParameters = parameters.getPositionParameters();
-        if (!positionbuffer.allocate(positionParameters.getInternalStateArray())) {
+        if (!positionBuffer.allocate(positionParameters.getInternalStateArray())) {
             if (positionUpdateCounter != positionParameters.getUpdateCounter()) {
                 positionUpdateCounter = positionParameters.getUpdateCounter();
-                positionbuffer.updateGPU(0, positionbuffer.getCapacity());
+                positionBuffer.updateGPU(0, positionBuffer.getCapacity());
             }
         }
 
@@ -296,7 +278,7 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
         }
 
         openGL.glBindBufferBase(OpenGL.GL_ATOMIC_COUNTER_BUFFER, 0, atomicBuffer.getBufferId());
-        openGL.glBindBufferBase(OpenGL.GL_SHADER_STORAGE_BUFFER, 1, positionbuffer.getBufferId());
+        openGL.glBindBufferBase(OpenGL.GL_SHADER_STORAGE_BUFFER, 1, positionBuffer.getBufferId());
         openGL.glBindBufferBase(OpenGL.GL_SHADER_STORAGE_BUFFER, 2, parametersBuffer.getBufferId());
         openGL.glBindBufferBase(OpenGL.GL_SHADER_STORAGE_BUFFER, 3, renderBuffer[activeBuffer].getBufferId());
         openGL.glBindBufferBase(OpenGL.GL_SHADER_STORAGE_BUFFER, 4, updateBuffer[activeBuffer].getBufferId());
@@ -334,7 +316,6 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
         return true;
     }
 
-    @Override
     public int getParticleCount() {
         return particleCount;
     }
@@ -353,5 +334,11 @@ public class AcceleratedParticleSystem extends AbstractGpuBasedParticleSystem im
 
     public void setParameters(ParticleSystemParameters parameters) {
         this.parameters = parameters;
+    }
+
+    private void applyMemoryBarriers() {
+        OpenGL.instance().glMemoryBarrier(
+                OpenGL.GL_SHADER_STORAGE_BARRIER_BIT |
+                        OpenGL.GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
     }
 }

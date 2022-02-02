@@ -6,7 +6,7 @@ import com.gamelibrary2d.components.containers.DefaultPanel;
 import com.gamelibrary2d.components.containers.Panel;
 import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.renderers.Label;
-import com.gamelibrary2d.particle.renderers.ParticleShape;
+import com.gamelibrary2d.particles.renderers.ParticleShape;
 import com.gamelibrary2d.resources.BlendMode;
 import com.gamelibrary2d.resources.HorizontalTextAlignment;
 import com.gamelibrary2d.resources.PointSmoothing;

@@ -12,10 +12,10 @@ import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.renderers.Label;
-import com.gamelibrary2d.particle.parameters.EmitterParameters;
-import com.gamelibrary2d.particle.parameters.ParticleParameters;
-import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particle.parameters.PositionParameters;
+import com.gamelibrary2d.particles.parameters.EmitterParameters;
+import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
+import com.gamelibrary2d.particles.parameters.PositionParameters;
 import com.gamelibrary2d.resources.HorizontalTextAlignment;
 import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
@@ -95,7 +95,7 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
     private void randomizeParticleSystem() {
         RandomGenerator random = RandomInstance.get();
 
-        ParticleParameters particleParameters = particleSystem.getParameters();
+        ParticleParameters particleParameters = particleSystem.getParameters().getParticleParameters();
 
         float life = round(random.nextFloat() * 5, 1);
         particleParameters.setLife(life);
@@ -195,15 +195,11 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
         PositionParameters.SpawnArea spawnArea = PositionParameters.SpawnArea.values()[origin];
         particleSystem.getPositioner().setSpawnArea(spawnArea);
 
-        float count = round(random.nextFloat() * 750, 1);
-        float countVar = round(random.nextFloat() * (count / 2f), 1);
-
         EmitterParameters emitterParameters = particleSystem.getSettings().getEmitterParameters();
+        emitterParameters.setEmissionRate(round(random.nextFloat() * 750, 1));
+        emitterParameters.setParticleCount(1);
+        emitterParameters.setParticleCountVar(1);
 
-        emitterParameters.setDefaultCount((int) count);
-        emitterParameters.setDefaultCountVar((int) countVar);
-        emitterParameters.setDefaultInterval(1.f / count);
-        emitterParameters.setPulsating(false);
         boolean localCenter = random.nextInt(2) == 1;
         particleSystem.getPositioner().setLocalCenter(localCenter);
 

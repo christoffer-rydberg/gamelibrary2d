@@ -5,20 +5,20 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.lightning.DefaultDynamicLightMap;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.objects.AbstractCursor;
-import com.gamelibrary2d.particle.SequentialParticleEmitter;
-import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
+import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.renderers.ContentRenderer;
 
 public class Cursor extends AbstractCursor implements Updatable {
     private final ContentRenderer renderer;
     private final DefaultDynamicLightMap lightMap;
-    private final SequentialParticleEmitter particleEmitter;
+    private float particleSystemTimer;
+    private final DefaultParticleSystem particleSystem;
 
     Cursor(Game game, ContentRenderer renderer, DefaultDynamicLightMap lightMap, DefaultParticleSystem particleSystem) {
         super(game, 0);
         this.renderer = renderer;
         this.lightMap = lightMap;
-        this.particleEmitter = new SequentialParticleEmitter(particleSystem);
+        this.particleSystem = particleSystem;
         particleSystem.setUpdateListener((sys, par) -> {
             float alpha = par.getColorA();
             float size = par.getScale() * par.getScale();
@@ -31,8 +31,7 @@ public class Cursor extends AbstractCursor implements Updatable {
     @Override
     public void update(float deltaTime) {
         lightMap.addInterpolated(getPosition().getX() / 32f, getPosition().getY() / 32f, 20);
-        particleEmitter.getPosition().set(getPosition());
-        particleEmitter.update(deltaTime);
+        particleSystemTimer = particleSystem.emit(getPosition(), particleSystemTimer + deltaTime);
     }
 
     @Override

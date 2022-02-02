@@ -12,10 +12,9 @@ import com.gamelibrary2d.demos.networkgame.client.objects.network.ClientObject;
 import com.gamelibrary2d.demos.networkgame.client.urls.Particles;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.particle.SequentialParticleEmitter;
-import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particle.renderers.ParticleRenderer;
-import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
+import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
+import com.gamelibrary2d.particles.renderers.ParticleRenderer;
+import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.resources.BlendMode;
 import com.gamelibrary2d.sound.SoundPlayer;
 
@@ -42,13 +41,7 @@ public class EffectMap {
     }
 
     private DurationEffect createUpdateEffect(DefaultParticleSystem particleSystem) {
-        SequentialParticleEmitter emitter = new SequentialParticleEmitter(particleSystem);
-        return (obj, deltaTime) -> {
-            emitter.getPosition().set(obj.getParticleHotspot());
-            emitter.getPosition().rotate(obj.getRotation());
-            emitter.getPosition().add(obj.getPosition());
-            emitter.update(deltaTime);
-        };
+        return new ParticleDurationEffect(particleSystem);
     }
 
     private DefaultParticleSystem createParticleSystem(
@@ -103,7 +96,7 @@ public class EffectMap {
                 disposer);
 
         Map<Byte, InstantEffect> destroyedEffects = new HashMap<>();
-        destroyedEffects.put((byte) 0, obj -> explosionSystem.emitAll(obj.getPosition()));
+        destroyedEffects.put((byte) 0, obj -> explosionSystem.emit(obj.getPosition()));
         this.destroyedEffects.put(ObjectTypes.PLAYER, destroyedEffects);
     }
 
@@ -159,8 +152,8 @@ public class EffectMap {
 
             destroyedEffects.put(key, obj -> {
                 Point position = obj.getPosition();
-                shockwaveSystem.emitAll(position);
-                explosionSystem.emitAll(position);
+                shockwaveSystem.emit(position);
+                explosionSystem.emit(position);
                 if (soundEffect != null) {
                     soundPlayer.play(soundEffect, 0.5f);
                 }
@@ -227,6 +220,24 @@ public class EffectMap {
         ParticleSystemItem(DefaultParticleSystem particleSystem, Scene scene) {
             this.particleSystem = particleSystem;
             this.scene = scene;
+        }
+    }
+
+    private static class ParticleDurationEffect implements DurationEffect {
+        private final Point position = new Point();
+        private final DefaultParticleSystem particleSystem;
+        private float timer;
+
+        ParticleDurationEffect(DefaultParticleSystem particleSystem) {
+            this.particleSystem = particleSystem;
+        }
+
+        @Override
+        public void onUpdate(ClientObject obj, float deltaTime) {
+            position.set(obj.getParticleHotspot());
+            position.rotate(obj.getRotation());
+            position.add(obj.getPosition());
+            timer = particleSystem.emit(position, timer + deltaTime);
         }
     }
 }

@@ -5,14 +5,14 @@ import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.particle.parameters.EmitterParameters;
-import com.gamelibrary2d.particle.parameters.ParticleParameters;
-import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particle.parameters.PositionParameters;
-import com.gamelibrary2d.particle.renderers.EfficientParticleRenderer;
-import com.gamelibrary2d.particle.systems.AcceleratedParticleSystem;
-import com.gamelibrary2d.particle.systems.DefaultParticleSystem;
-import com.gamelibrary2d.particle.systems.ParticleSystem;
+import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.particles.parameters.EmitterParameters;
+import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
+import com.gamelibrary2d.particles.parameters.PositionParameters;
+import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
+import com.gamelibrary2d.particles.AcceleratedParticleSystem;
+import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.resources.Animation;
 import com.gamelibrary2d.resources.BlendMode;
 import com.gamelibrary2d.resources.DefaultTexture;
@@ -119,8 +119,8 @@ public class ParticleSystemModel {
         });
     }
 
-    public ParticleParameters getParameters() {
-        return settings.getParticleParameters();
+    public ParticleSystemParameters getParameters() {
+        return settings;
     }
 
     public void setParameters(ParticleParameters updateSettings) {
@@ -135,14 +135,14 @@ public class ParticleSystemModel {
         settings.setPositionParameters(positionParameters);
     }
 
-    public float emitSequential(float time, float deltaTime) {
+    public float emit(float deltaTime) {
         switch (particleSystemType) {
             case ACCELERATED:
                 acceleratedParticleSystem.setPosition(posX, posY);
-                return acceleratedParticleSystem.emitSequential(time, deltaTime);
+                return acceleratedParticleSystem.emit(deltaTime);
             case EFFICIENT:
             case SEQUENTIAL:
-                return defaultParticleSystem.emitSequential(posX, posY, time, deltaTime);
+                return defaultParticleSystem.emit(posX, posY, deltaTime);
             default:
                 throw new IllegalStateException("Unexpected value: " + particleSystemType);
         }
@@ -167,11 +167,11 @@ public class ParticleSystemModel {
         switch (particleSystemType) {
             case ACCELERATED:
                 acceleratedParticleSystem.setPosition(posX, posY);
-                acceleratedParticleSystem.emitAll();
+                acceleratedParticleSystem.emit();
                 break;
             case EFFICIENT:
             case SEQUENTIAL:
-                defaultParticleSystem.emitAll(posX, posY);
+                defaultParticleSystem.emit(posX, posY);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + particleSystemType);
@@ -188,7 +188,7 @@ public class ParticleSystemModel {
         acceleratedParticleSystem.setParameters(settings);
     }
 
-    public void addToLayer(Layer<ParticleSystem> layer) {
+    public void addToLayer(Layer<Renderable> layer) {
         layer.add(defaultParticleSystem);
         layer.add(acceleratedParticleSystem);
     }

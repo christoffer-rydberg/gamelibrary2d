@@ -1,4 +1,4 @@
-package com.gamelibrary2d.particle.parameters;
+package com.gamelibrary2d.particles.parameters;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.Serializable;
@@ -25,7 +25,7 @@ public final class ParticleSystemParameters implements Serializable {
 
     public int estimateCapacityFromCount() {
         EmitterParameters emitterParameters = getEmitterParameters();
-        return emitterParameters.getDefaultCount() + emitterParameters.getDefaultCountVar();
+        return emitterParameters.getParticleCount() + emitterParameters.getParticleCountVar();
     }
 
     public int estimateCapacityFromInterval() {
@@ -33,11 +33,9 @@ public final class ParticleSystemParameters implements Serializable {
 
         EmitterParameters emitterParameters = getEmitterParameters();
 
-        int particleCount = emitterParameters.isPulsating()
-                ? emitterParameters.getDefaultCount() + emitterParameters.getDefaultCountVar()
-                : 1;
+        int particleCount = emitterParameters.getParticleCount() + emitterParameters.getParticleCountVar();
 
-        return (int) Math.ceil(1.2f * maxLife * particleCount / emitterParameters.getDefaultInterval());
+        return (int) Math.ceil(1.2f * maxLife * particleCount / emitterParameters.getEmissionRate());
     }
 
     public int estimateCapacity() {

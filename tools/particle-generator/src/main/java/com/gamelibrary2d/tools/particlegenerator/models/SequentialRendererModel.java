@@ -7,7 +7,7 @@ import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.imaging.AnimationLoader;
 import com.gamelibrary2d.imaging.AnimationMetadata;
 import com.gamelibrary2d.imaging.StandardAnimationFormats;
-import com.gamelibrary2d.particle.renderers.SequentialParticleRenderer;
+import com.gamelibrary2d.particles.renderers.SequentialParticleRenderer;
 import com.gamelibrary2d.renderers.AnimationRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.*;

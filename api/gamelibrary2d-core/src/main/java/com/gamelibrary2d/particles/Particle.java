@@ -1,4 +1,4 @@
-package com.gamelibrary2d.particle.systems;
+package com.gamelibrary2d.particles;
 
 public class Particle {
     private int index = -1;

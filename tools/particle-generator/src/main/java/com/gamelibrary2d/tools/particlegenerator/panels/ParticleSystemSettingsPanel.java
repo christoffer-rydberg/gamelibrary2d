@@ -9,8 +9,8 @@ import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.denotations.Parent;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.particle.parameters.ParticleParameters;
-import com.gamelibrary2d.particle.parameters.PositionParameters;
+import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.PositionParameters;
 import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.Quad;
@@ -47,7 +47,7 @@ public class ParticleSystemSettingsPanel extends AbstractPanel<GameObject> imple
             super(handle, SliderDirection.HORIZONTAL, -50, 50, 2);
             addDragBeginListener(value -> {
                 originalPositionParameters = createCopy(particleSystem.getPositioner(), PositionParameters::new);
-                originalParticleParameters = createCopy(particleSystem.getParameters(), ParticleParameters::new);
+                originalParticleParameters = createCopy(particleSystem.getParameters().getParticleParameters(), ParticleParameters::new);
             });
             addValueChangedListener(value -> {
                 float resizeValue = ((value < 0 ? value : value * 2) + 100f) * 0.01f;

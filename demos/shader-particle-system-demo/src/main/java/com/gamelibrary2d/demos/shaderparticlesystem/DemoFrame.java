@@ -7,7 +7,6 @@ import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.particle.systems.ParticleSystem;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -30,7 +29,7 @@ public class DemoFrame extends AbstractFrame {
             BufferedImage init = ImageIO.read(DemoFrame.class.getResource("/Images/before.jpg"));
             BufferedImage goal = ImageIO.read(DemoFrame.class.getResource("/Images/after.jpg"));
 
-            ParticleSystem particleSystem = ParticleSystemFactory.create(init, goal, windowWidth / 2f,
+            Renderable particleSystem = ParticleSystemFactory.create(init, goal, windowWidth / 2f,
                     windowHeight / 2f, this);
 
             // Adjust scale to fit on screen

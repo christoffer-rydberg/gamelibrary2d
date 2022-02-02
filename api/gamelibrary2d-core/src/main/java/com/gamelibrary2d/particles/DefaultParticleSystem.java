@@ -1,29 +1,29 @@
-package com.gamelibrary2d.particle.systems;
+package com.gamelibrary2d.particles;
 
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.denotations.Clearable;
+import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.particle.ParticleUpdateListener;
-import com.gamelibrary2d.particle.parameters.EmitterParameters;
-import com.gamelibrary2d.particle.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particle.renderers.EfficientParticleRenderer;
-import com.gamelibrary2d.particle.renderers.ParticleRenderer;
+import com.gamelibrary2d.particles.parameters.EmitterParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
+import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
+import com.gamelibrary2d.particles.renderers.ParticleRenderer;
 
-public class DefaultParticleSystem implements ParticleSystem, Clearable {
+public class DefaultParticleSystem implements Updatable, Renderable, Clearable {
     private final float[] externalSpeed = new float[2];
     private final float[] externalAcceleration = new float[2];
+    private final ParticleRenderBuffer renderBuffer;
+    private final ParticleUpdateBuffer updateBuffer;
     private final Particle particle;
-
-    private Point positionTransformation;
 
     private int particleCount;
     private boolean gpuOutdated = true;
     private ParticleSystemParameters parameters;
     private ParticleRenderer renderer;
-    private ParticleRenderBuffer renderBuffer;
-    private ParticleUpdateBuffer updateBuffer;
+    private Point positionTransformation;
     private ParticleUpdateListener updateListener;
 
     private DefaultParticleSystem(
@@ -127,41 +127,19 @@ public class DefaultParticleSystem implements ParticleSystem, Clearable {
     }
 
     /**
-     * Emits all particles at the specified position. The particles count
-     * is specified by {@link EmitterParameters#getDefaultCount()}.
-     *
-     * @param x The X-position of the emitted particles.
-     * @param y The Y-position of the emitted particles.
-     */
-    public void emitAll(float x, float y) {
-        EmitterParameters emitterParameters = parameters.getEmitterParameters();
-        emit(x, y, Math.round(emitterParameters.getDefaultCount() + emitterParameters.getDefaultCountVar() * RandomInstance.random11()));
-    }
-
-    /**
-     * Emits all particles at the specified position. The particles count
-     * is specified by {@link EmitterParameters#getDefaultCount()}.
-     *
-     * @param pos The position of the emitted particles.
-     */
-    public void emitAll(Point pos) {
-        emitAll(pos.getX(), pos.getY());
-    }
-
-    /**
      * Emits particles at the specified position.
      *
-     * @param x     The X-position of the emitted particles.
-     * @param y     The Y-position of the emitted particles.
-     * @param count The number of emitted particles.
+     * @param x     The X-position of the particles.
+     * @param y     The Y-position of the particles.
+     * @param count The number of particles to emit.
      */
     public void emit(float x, float y, int count) {
-        int updateParticleCount = particleCount + count;
-        renderBuffer.ensureCapacity(updateParticleCount * renderBuffer.getStride());
-        updateBuffer.ensureCapacity(updateParticleCount * updateBuffer.getStride());
+        int updatedParticleCount = particleCount + count;
+        renderBuffer.ensureCapacity(updatedParticleCount * renderBuffer.getStride());
+        updateBuffer.ensureCapacity(updatedParticleCount * updateBuffer.getStride());
         EmitterParameters emitterParameters = parameters.getEmitterParameters();
-        x += emitterParameters.getOffsetX() + emitterParameters.getOffsetXVar() * RandomInstance.random11();
-        y += emitterParameters.getOffsetY() + emitterParameters.getOffsetYVar() * RandomInstance.random11();
+        x += emitterParameters.getOffsetX();
+        y += emitterParameters.getOffsetY();
         for (int i = 0; i < count; ++i) {
             onEmit(x, y);
         }
@@ -170,120 +148,58 @@ public class DefaultParticleSystem implements ParticleSystem, Clearable {
     /**
      * Emits particles at the specified position.
      *
-     * @param pos   The position of the emitted particles.
-     * @param count The number of emitted particles.
+     * @param position The position of the particles.
+     * @param count    The number of particles to emit.
      */
-    public void emit(Point pos, int count) {
-        emit(pos.getX(), pos.getY(), count);
+    public void emit(Point position, int count) {
+        emit(position.getX(), position.getY(), count);
     }
 
     /**
-     * Sequentially emits particles at the specified position. The interval is
-     * specified by {@link EmitterParameters#getDefaultInterval()}.
+     * Emits particles at the specified position.
+     * The number of particles is decided by the count-parameters of the particle system's {@link EmitterParameters}.
      *
-     * @param x         The X-position of the emitted particles.
-     * @param y         The Y-position of the emitted particles.
-     * @param time      The current emitter time, in seconds. The delta time will be
-     *                  added to this value. Particles will be emitted while the
-     *                  time exceeds the emitter interval.
-     * @param deltaTime Time since the last update, in seconds.
-     * @return The new emitter time, i.e. how much time has passed since a particle
-     * was emitted.
-     */
-    public float emitSequential(float x, float y, float time, float deltaTime) {
-        return emitSequential(x, y, time, deltaTime, parameters.getEmitterParameters().getDefaultInterval());
-    }
-
-    /**
-     * Sequentially emits particles at the specified position. The interval is
-     * specified by {@link EmitterParameters#getDefaultInterval()}.
-     *
-     * @param pos       The position of the emitted particles.
-     * @param time      The current emitter time, in seconds. The delta time will be
-     *                  added to this value. Particles will be emitted while the
-     *                  time exceeds the emitter interval.
-     * @param deltaTime Time since the last update, in seconds.
-     * @return The new emitter time, i.e. how much time has passed since a particle
-     * was emitted.
-     */
-    public float emitSequential(Point pos, float time, float deltaTime) {
-        return emitSequential(pos.getX(), pos.getY(), time, deltaTime);
-    }
-
-    /**
-     * Sequentially emits particles at the specified position.
-     *
-     * @param x         The X-position of the emitted particles.
-     * @param y         The Y-position of the emitted particles.
-     * @param time      The current emitter time, in seconds. The delta time will be
-     *                  added to this value. Particles will be emitted while the
-     *                  time exceeds the emitter interval.
-     * @param deltaTime Time since the last update, in seconds.
-     * @param interval  The interval between emitted particles, in seconds.
-     * @return The new emitter time, i.e. how much time has passed since a particle
-     * was emitted.
-     */
-    public float emitSequential(float x, float y, float time, float deltaTime, float interval) {
-        if (interval > 0) {
-            time += deltaTime;
-            int iterations = (int) (time / interval);
-
-            EmitterParameters emitterParameters = parameters.getEmitterParameters();
-
-            int count = emitterParameters.isPulsating()
-                    ? Math.round(emitterParameters.getDefaultCount() + emitterParameters.getDefaultCountVar() * RandomInstance.random11())
-                    : 1;
-
-            int updateParticleCount = particleCount + iterations * count;
-            renderBuffer.ensureCapacity(updateParticleCount * renderBuffer.getStride());
-            updateBuffer.ensureCapacity(updateParticleCount * updateBuffer.getStride());
-            for (int i = 0; i < iterations; ++i) {
-                float emittedX = x + emitterParameters.getOffsetX() + emitterParameters.getOffsetXVar() * RandomInstance.random11();
-                float emittedY = y + emitterParameters.getOffsetY() + emitterParameters.getOffsetYVar() * RandomInstance.random11();
-                for (int j = 0; j < count; ++j) {
-                    onEmit(emittedX, emittedY);
-                }
-            }
-
-            time -= iterations * interval;
-        }
-
-        return time;
-    }
-
-    /**
-     * Sequentially emits particles at the specified position.
-     *
-     * @param pos       The position of the emitted particles.
-     * @param time      The current emitter time, in seconds. The delta time will be
-     *                  added to this value. Particles will be emitted while the
-     *                  time exceeds the emitter interval.
-     * @param deltaTime Time since the last update, in seconds.
-     * @param interval  The interval between emitted particles, in seconds.
-     * @return The new emitter time, i.e. how much time has passed since a particle
-     * was emitted.
-     */
-    public float emitSequential(Point pos, float time, float deltaTime, float interval) {
-        return emitSequential(pos.getX(), pos.getY(), time, deltaTime, interval);
-    }
-
-    /**
-     * Emits a single particle at the specified position.
+     * @param x The X-position of the particles.
+     * @param y The Y-position of the particles.
      */
     public void emit(float x, float y) {
         EmitterParameters emitterParameters = parameters.getEmitterParameters();
-        x += emitterParameters.getOffsetX() + emitterParameters.getOffsetXVar() * RandomInstance.random11();
-        y += emitterParameters.getOffsetY() + emitterParameters.getOffsetYVar() * RandomInstance.random11();
-        renderBuffer.ensureCapacity((particleCount + 1) * renderBuffer.getStride());
-        updateBuffer.ensureCapacity((particleCount + 1) * updateBuffer.getStride());
-        onEmit(x, y);
+        int count = Math.round(emitterParameters.getParticleCount() + emitterParameters.getParticleCountVar() * RandomInstance.random11());
+        emit(x, y, count);
+    }
+
+    public void emit(Point position) {
+        emit(position.getX(), position.getY());
     }
 
     /**
-     * Emits a single particle at the specified position.
+     * Emits particles at the specified position.
+     * The number of particles is decided by the deltaTime parameter
+     * in conjunction with the emission rate of the particle system's {@link EmitterParameters}.
+     *
+     * @param x         The X-position of the emitted particles.
+     * @param y         The Y-position of the emitted particles.
+     * @param deltaTime The time, in seconds, since the last particle was emitted.
+     * @return The time, in seconds, since the last particle was emitted.
+     * If no particles were emitted, this will be the same as the deltaTime parameter.
+     * This value should be added to the update cycle's deltaTime the next time this method is invoked.
      */
-    public void emit(Point pos) {
-        emit(pos.getX(), pos.getY());
+    public float emit(float x, float y, float deltaTime) {
+        float rate = parameters.getEmitterParameters().getEmissionRate();
+        if (rate > 0) {
+            int numberOfEmissions = (int) (deltaTime * rate);
+            for (int i = 0; i < numberOfEmissions; ++i) {
+                emit(x, y);
+            }
+
+            return deltaTime - numberOfEmissions / rate;
+        } else {
+            return 0f; // No particles will ever be emitted
+        }
+    }
+
+    public float emit(Point position, float deltaTime) {
+        return emit(position.getX(), position.getY(), deltaTime);
     }
 
     private void onEmit(float x, float y) {
@@ -376,5 +292,15 @@ public class DefaultParticleSystem implements ParticleSystem, Clearable {
             renderBuffer.copy(lastIndex, index, 1);
             updateBuffer.copy(lastIndex, index, 1);
         }
+    }
+
+    public interface ParticleUpdateListener {
+
+        /**
+         * @param system   The particle system owning the particle.
+         * @param particle The updated particle.
+         * @return True if the particle has collided and should be destroyed.
+         */
+        boolean updated(DefaultParticleSystem system, Particle particle);
     }
 }

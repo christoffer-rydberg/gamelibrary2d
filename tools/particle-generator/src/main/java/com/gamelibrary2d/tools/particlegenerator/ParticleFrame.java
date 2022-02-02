@@ -8,7 +8,6 @@ import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.particle.systems.ParticleSystem;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.panels.EmitterPanel;
 import com.gamelibrary2d.tools.particlegenerator.panels.ParticleSystemSettingsPanel;
@@ -22,7 +21,7 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     private ParticleSystemModel particleSystem;
 
     private Layer<Renderable> screenLayer;
-    private Layer<ParticleSystem> particleLayer;
+    private Layer<Renderable> particleLayer;
     private Layer<Renderable> backgroundLayer;
 
     private EmitterPanel emitterPanel;
@@ -104,7 +103,7 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     protected void onUpdate(float deltaTime) {
         super.onUpdate(deltaTime);
         if (emitterPanel.isLaunchingSequential()) {
-            particleEmitterTime = particleSystem.emitSequential(particleEmitterTime, deltaTime);
+            particleEmitterTime = particleSystem.emit(particleEmitterTime + deltaTime);
         }
     }
 

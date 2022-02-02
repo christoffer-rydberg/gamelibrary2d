@@ -1,4 +1,4 @@
-package com.gamelibrary2d.particle.systems;
+package com.gamelibrary2d.particles;
 
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.framework.OpenGL;
@@ -49,7 +49,7 @@ public class ParticleUpdateBuffer extends AbstractInterleavedBuffer<MirroredFloa
         this.internalState = internalState;
     }
 
-    public static ParticleUpdateBuffer create(int capacity, Disposer disposer) {
+    static ParticleUpdateBuffer create(int capacity, Disposer disposer) {
         float[] data = new float[capacity * STRIDE];
         return new ParticleUpdateBuffer(data, disposer);
     }
