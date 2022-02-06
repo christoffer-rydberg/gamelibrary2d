@@ -21,7 +21,6 @@ public class QuadsRenderer extends AbstractArrayRenderer<PositionBuffer> {
     private QuadShape shape = QuadShape.RECTANGLE;
 
     public QuadsRenderer(Rectangle bounds) {
-        super(DrawMode.POINTS);
         setBounds(bounds);
     }
 
@@ -61,7 +60,7 @@ public class QuadsRenderer extends AbstractArrayRenderer<PositionBuffer> {
     }
 
     @Override
-    protected void renderPrepare(ShaderProgram shaderProgram) {
+    protected void beforeRender(ShaderProgram shaderProgram) {
         if (texture != null) {
             texture.bind();
         }
@@ -81,6 +80,11 @@ public class QuadsRenderer extends AbstractArrayRenderer<PositionBuffer> {
                 OpenGL.instance().glUniform1i(glShapeUniform, 1);
                 break;
         }
+    }
+
+    @Override
+    protected int getOpenGlDrawMode() {
+        return OpenGL.GL_POINTS;
     }
 
     @Override

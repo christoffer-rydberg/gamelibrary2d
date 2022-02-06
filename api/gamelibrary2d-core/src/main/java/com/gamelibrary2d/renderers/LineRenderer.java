@@ -5,14 +5,14 @@ import com.gamelibrary2d.glUtil.ShaderProgram;
 import com.gamelibrary2d.glUtil.PositionBuffer;
 
 public class LineRenderer extends AbstractArrayRenderer<PositionBuffer> {
+    private boolean loop;
     private float lineWidth = 1f;
 
     public LineRenderer() {
-        super(DrawMode.LINE);
+
     }
 
     public LineRenderer(float lineWidth) {
-        this();
         this.lineWidth = lineWidth;
     }
 
@@ -24,8 +24,21 @@ public class LineRenderer extends AbstractArrayRenderer<PositionBuffer> {
         this.lineWidth = lineWidth;
     }
 
+    public boolean isLoop() {
+        return loop;
+    }
+
+    public void setLoop(boolean loop) {
+        this.loop = loop;
+    }
+
     @Override
-    protected void renderPrepare(ShaderProgram shaderProgram) {
+    protected int getOpenGlDrawMode() {
+        return loop ? OpenGL.GL_LINE_LOOP : OpenGL.GL_LINE_STRIP;
+    }
+
+    @Override
+    protected void beforeRender(ShaderProgram shaderProgram) {
         OpenGL.instance().glLineWidth(lineWidth);
     }
 

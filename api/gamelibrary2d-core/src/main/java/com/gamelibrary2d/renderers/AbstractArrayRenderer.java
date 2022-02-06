@@ -5,17 +5,15 @@ import com.gamelibrary2d.glUtil.*;
 import com.gamelibrary2d.resources.BlendMode;
 
 public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> extends AbstractRenderer implements ArrayRenderer<T> {
-    private final DrawMode drawMode;
     private boolean maskingOutBackground = false;
     private BlendMode blendMode = BlendMode.TRANSPARENT;
 
-    protected AbstractArrayRenderer(DrawMode drawMode, float[] shaderParameters) {
-        super(shaderParameters);
-        this.drawMode = drawMode;
+    protected AbstractArrayRenderer() {
+
     }
 
-    protected AbstractArrayRenderer(DrawMode drawMode) {
-        this.drawMode = drawMode;
+    protected AbstractArrayRenderer(float[] shaderParameters) {
+        super(shaderParameters);
     }
 
     public BlendMode getBlendMode() {
@@ -41,24 +39,13 @@ public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> extends Abst
         this.maskingOutBackground = maskingOutBackground;
     }
 
-    private int getOpenGlDrawMode() {
-        switch (drawMode) {
-            case POINTS:
-                return OpenGL.GL_POINTS;
-            case LINE:
-                return OpenGL.GL_LINE_STRIP;
-            default:
-                throw new IllegalStateException("Unexpected value: " + drawMode);
-        }
-    }
-
     @Override
     public void render(float alpha, OpenGLBuffer array, int offset, int len) {
         ShaderProgram shaderProgram = getShaderProgram();
         shaderProgram.bind();
         shaderProgram.updateModelMatrix(ModelMatrix.instance());
 
-        renderPrepare(shaderProgram);
+        beforeRender(shaderProgram);
 
         array.bind();
 
@@ -74,7 +61,6 @@ public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> extends Abst
 
         OpenGL.instance().glDrawArrays(drawMode, offset, len);
 
-        // Cleanup
         array.unbind();
     }
 
@@ -91,12 +77,9 @@ public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> extends Abst
         }
     }
 
+    protected abstract int getOpenGlDrawMode();
+
+    protected abstract void beforeRender(ShaderProgram shaderProgram);
+
     protected abstract ShaderProgram getShaderProgram();
-
-    protected abstract void renderPrepare(ShaderProgram shaderProgram);
-
-    protected enum DrawMode {
-        POINTS,
-        LINE
-    }
 }

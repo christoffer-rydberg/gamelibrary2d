@@ -331,20 +331,20 @@ public class ParticleParameters implements Serializable {
         setInternalState(CENTRIPETAL_ACCELERATION_VAR, centripetalAccVar);
     }
 
-    public float getTangentalAcceleration() {
+    public float getTangentialAcceleration() {
         return internalState[TANGENTIAL_ACCELERATION];
     }
 
-    public void setTangentalAcceleration(float tangentalAcc) {
-        setInternalState(TANGENTIAL_ACCELERATION, tangentalAcc);
+    public void setTangentialAcceleration(float tangentialAcc) {
+        setInternalState(TANGENTIAL_ACCELERATION, tangentialAcc);
     }
 
-    public float getTangentalAccelerationVar() {
+    public float getTangentialAccelerationVar() {
         return internalState[TANGENTIAL_ACCELERATION_VAR];
     }
 
-    public void setTangentalAccelerationVar(float tangentalAccVar) {
-        setInternalState(TANGENTIAL_ACCELERATION_VAR, tangentalAccVar);
+    public void setTangentialAccelerationVar(float tangentialAccVar) {
+        setInternalState(TANGENTIAL_ACCELERATION_VAR, tangentialAccVar);
     }
 
     private void setInternalState(int index, float value) {
@@ -558,8 +558,8 @@ public class ParticleParameters implements Serializable {
         setAccelerationVar(getHorizontalAccelerationVar() * factor, getVerticalAccelerationVar() * factor);
         setCentripetalAcceleration(getCentripetalAcceleration() * factor);
         setCentripetalAccelerationVar(getCentripetalAccelerationVar() * factor);
-        setTangentalAcceleration(getTangentalAcceleration() * factor);
-        setTangentalAccelerationVar(getTangentalAccelerationVar() * factor);
+        setTangentialAcceleration(getTangentialAcceleration() * factor);
+        setTangentialAccelerationVar(getTangentialAccelerationVar() * factor);
     }
 
     public void apply(Particle particle) {
@@ -625,7 +625,7 @@ public class ParticleParameters implements Serializable {
 
         particle.setCentripetalAcceleration(centripetalAcc);
 
-        particle.setTangentialAcceleration(getTangentalAcceleration() + getTangentalAccelerationVar() * RandomInstance.random11());
+        particle.setTangentialAcceleration(getTangentialAcceleration() + getTangentialAccelerationVar() * RandomInstance.random11());
 
         if (isRotatedForward()) {
             particle.setRotatedForward(true);

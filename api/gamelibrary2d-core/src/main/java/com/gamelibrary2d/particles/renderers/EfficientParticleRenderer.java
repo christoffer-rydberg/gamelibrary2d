@@ -25,7 +25,6 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
     private Rectangle bounds;
 
     public EfficientParticleRenderer() {
-        super(DrawMode.POINTS);
         setBlendMode(BlendMode.ADDITIVE);
         setBounds(Rectangle.create(16f, 16f));
     }
@@ -87,7 +86,7 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
     }
 
     @Override
-    protected void renderPrepare(ShaderProgram shaderProgram) {
+    protected void beforeRender(ShaderProgram shaderProgram) {
         if (particleShape == ParticleShape.QUAD) {
             int glBoundsUniform = shaderProgram.getUniformLocation(boundsUniformName);
             OpenGL.instance().glUniform4fv(glBoundsUniform, boundsBuffer);
@@ -118,6 +117,11 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
                     throw new IllegalStateException("Unexpected value: " + pointSmoothing);
             }
         }
+    }
+
+    @Override
+    protected int getOpenGlDrawMode() {
+        return OpenGL.GL_POINTS;
     }
 
     @Override

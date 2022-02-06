@@ -8,7 +8,9 @@ public interface OpenGL {
     int GL_TRUE = 1;
     int GL_TRIANGLES = 4;
     int GL_POINTS = 0;
+    int GL_LINE_LOOP = 2;
     int GL_LINE_STRIP = 3;
+    int GL_POLYGON = 9;
     int GL_UNSIGNED_BYTE = 5121;
     int GL_FLOAT = 5126;
     int GL_ARRAY_BUFFER = 34962;
@@ -60,9 +62,6 @@ public interface OpenGL {
     int GL_RGB8 = 32849;
     int GL_FRAMEBUFFER = 36160;
     int GL_COLOR_ATTACHMENT0 = 36064;
-    int GL_QUADS = 7;
-    int GL_FUNC_ADD = 32774;
-
 
     static OpenGL instance() {
         return Runtime.getFramework().getOpenGL();

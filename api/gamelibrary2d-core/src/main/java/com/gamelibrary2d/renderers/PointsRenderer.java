@@ -10,16 +10,14 @@ public class PointsRenderer extends AbstractArrayRenderer<PositionBuffer> {
     private PointSmoothing pointSmoothing = PointSmoothing.FASTEST;
 
     public PointsRenderer() {
-        super(DrawMode.POINTS);
+
     }
 
     public PointsRenderer(float pointSize) {
-        this();
         this.pointSize = pointSize;
     }
 
     public PointsRenderer(float pointSize, PointSmoothing pointSmoothing) {
-        this();
         this.pointSize = pointSize;
         this.pointSmoothing = pointSmoothing;
     }
@@ -41,7 +39,7 @@ public class PointsRenderer extends AbstractArrayRenderer<PositionBuffer> {
     }
 
     @Override
-    protected void renderPrepare(ShaderProgram shaderProgram) {
+    protected void beforeRender(ShaderProgram shaderProgram) {
         OpenGL.instance().glPointSize(pointSize);
         switch (pointSmoothing) {
             case FASTEST:
@@ -58,6 +56,11 @@ public class PointsRenderer extends AbstractArrayRenderer<PositionBuffer> {
             default:
                 throw new IllegalStateException("Unexpected value: " + pointSmoothing);
         }
+    }
+
+    @Override
+    protected int getOpenGlDrawMode() {
+        return OpenGL.GL_POINTS;
     }
 
     @Override
