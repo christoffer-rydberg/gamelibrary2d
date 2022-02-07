@@ -19,7 +19,7 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
     private final FloatBuffer boundsBuffer = BufferUtils.createFloatBuffer(4);
 
     private float pointSize = 1f;
-    private ParticleShape particleShape = ParticleShape.QUAD;
+    private ParticleShape particleShape;
     private PointSmoothing pointSmoothing = PointSmoothing.FASTEST;
     private Texture texture;
     private Rectangle bounds;
@@ -27,6 +27,7 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
     public EfficientParticleRenderer() {
         setBlendMode(BlendMode.ADDITIVE);
         setBounds(Rectangle.create(16f, 16f));
+        setParticleShape(ParticleShape.QUAD);
     }
 
     public Rectangle getBounds() {
@@ -56,7 +57,18 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
     }
 
     public void setParticleShape(ParticleShape particleShape) {
-        this.particleShape = particleShape;
+        switch (particleShape) {
+            case POINT:
+                this.particleShape = particleShape;
+                setShaderProgram(ShaderProgram.getPointParticleShaderProgram());
+                break;
+            case QUAD:
+                this.particleShape = particleShape;
+                setShaderProgram(ShaderProgram.getQuadParticleShaderProgram());
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + particleShape);
+        }
     }
 
     public float getPointSize() {
@@ -86,7 +98,7 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
     }
 
     @Override
-    protected void beforeRender(ShaderProgram shaderProgram) {
+    protected void renderPrepare(ShaderProgram shaderProgram) {
         if (particleShape == ParticleShape.QUAD) {
             int glBoundsUniform = shaderProgram.getUniformLocation(boundsUniformName);
             OpenGL.instance().glUniform4fv(glBoundsUniform, boundsBuffer);
@@ -122,17 +134,5 @@ public class EfficientParticleRenderer extends AbstractArrayRenderer<OpenGLBuffe
     @Override
     protected int getOpenGlDrawMode() {
         return OpenGL.GL_POINTS;
-    }
-
-    @Override
-    protected ShaderProgram getShaderProgram() {
-        switch (particleShape) {
-            case POINT:
-                return ShaderProgram.getPointParticleShaderProgram();
-            case QUAD:
-                return ShaderProgram.getQuadParticleShaderProgram();
-            default:
-                throw new IllegalStateException("Unexpected value: " + particleShape);
-        }
     }
 }

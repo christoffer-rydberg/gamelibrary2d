@@ -12,12 +12,7 @@ public class PolygonRenderer extends AbstractArrayRenderer<PositionBuffer> {
     }
 
     @Override
-    protected void beforeRender(ShaderProgram shaderProgram) {
+    protected void renderPrepare(ShaderProgram shaderProgram) {
 
-    }
-
-    @Override
-    protected ShaderProgram getShaderProgram() {
-        return ShaderProgram.getPointShaderProgram();
     }
 }

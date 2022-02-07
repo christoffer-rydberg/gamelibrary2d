@@ -5,15 +5,23 @@ import com.gamelibrary2d.glUtil.*;
 import com.gamelibrary2d.resources.BlendMode;
 
 public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> extends AbstractRenderer implements ArrayRenderer<T> {
-    private boolean maskingOutBackground = false;
     private BlendMode blendMode = BlendMode.TRANSPARENT;
+    private boolean maskingOutBackground = false;
 
     protected AbstractArrayRenderer() {
-
+        super(ShaderProgram.getPointShaderProgram());
     }
 
     protected AbstractArrayRenderer(float[] shaderParameters) {
-        super(shaderParameters);
+        super(ShaderProgram.getPointShaderProgram(),shaderParameters);
+    }
+
+    protected AbstractArrayRenderer(ShaderProgram shaderProgram) {
+        super(shaderProgram);
+    }
+
+    protected AbstractArrayRenderer(ShaderProgram shaderProgram, float[] shaderParameters) {
+        super(shaderProgram, shaderParameters);
     }
 
     public BlendMode getBlendMode() {
@@ -41,16 +49,12 @@ public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> extends Abst
 
     @Override
     public void render(float alpha, OpenGLBuffer array, int offset, int len) {
-        ShaderProgram shaderProgram = getShaderProgram();
-        shaderProgram.bind();
-        shaderProgram.updateModelMatrix(ModelMatrix.instance());
-
-        beforeRender(shaderProgram);
+        ShaderProgram shaderProgram = prepareShaderProgram(alpha);
 
         array.bind();
+        renderPrepare(shaderProgram);
 
-        applyParameters(alpha);
-
+        BlendMode blendMode = getBlendMode();
         int drawMode = getOpenGlDrawMode();
         if (blendMode != BlendMode.NONE && isMaskingOutBackground()) {
             OpenGLUtils.setBlendMode(BlendMode.MASKED);
@@ -58,28 +62,12 @@ public abstract class AbstractArrayRenderer<T extends OpenGLBuffer> extends Abst
         }
 
         OpenGLUtils.setBlendMode(blendMode);
-
         OpenGL.instance().glDrawArrays(drawMode, offset, len);
 
         array.unbind();
     }
 
-    protected void applyParameters(float alpha) {
-        float alphaSetting = getShaderParameter(ShaderParameter.ALPHA);
-
-        try {
-            ShaderProgram program = getShaderProgram();
-            setShaderParameter(ShaderParameter.ALPHA, alphaSetting * alpha);
-            applyShaderParameters(program);
-            program.applyParameters();
-        } finally {
-            setShaderParameter(ShaderParameter.ALPHA, alphaSetting);
-        }
-    }
-
     protected abstract int getOpenGlDrawMode();
 
-    protected abstract void beforeRender(ShaderProgram shaderProgram);
-
-    protected abstract ShaderProgram getShaderProgram();
+    protected abstract void renderPrepare(ShaderProgram shaderProgram);
 }

@@ -281,6 +281,11 @@ public class Lwjgl_OpenGL implements OpenGL {
     }
 
     @Override
+    public void glLineStipple(int factor, short pattern) {
+        GL15.glLineStipple(factor, pattern);
+    }
+
+    @Override
     public void glDisable(int target) {
         GL11.glDisable(target);
     }

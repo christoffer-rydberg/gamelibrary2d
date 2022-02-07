@@ -163,9 +163,9 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
     }
 
     @Override
-    protected void applyParameters(float alpha) {
+    protected ShaderProgram prepareShaderProgram(float alpha) {
         setShaderParameter(ShaderParameter.TEXTURED, 1);
-        super.applyParameters(alpha);
+        return super.prepareShaderProgram(alpha);
     }
 
     private void prepareBackgroundBuffer() {

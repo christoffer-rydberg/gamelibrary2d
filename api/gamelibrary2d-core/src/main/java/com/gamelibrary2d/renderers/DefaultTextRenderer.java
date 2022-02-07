@@ -12,10 +12,9 @@ import com.gamelibrary2d.resources.VerticalTextAlignment;
 
 public class DefaultTextRenderer extends AbstractRenderer implements TextRenderer {
     private Font font;
+    private BlendMode blendMode = BlendMode.TRANSPARENT;
     private HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.CENTER;
     private VerticalTextAlignment verticalAlignment = VerticalTextAlignment.CENTER;
-    private ShaderProgram shaderProgram;
-    private BlendMode blendMode = BlendMode.TRANSPARENT;
 
     public DefaultTextRenderer() {
 
@@ -25,20 +24,20 @@ public class DefaultTextRenderer extends AbstractRenderer implements TextRendere
         setFont(font);
     }
 
-    public ShaderProgram getShaderProgram() {
-        return shaderProgram != null ? shaderProgram : ShaderProgram.getDefaultShaderProgram();
-    }
-
-    public void setShaderProgram(ShaderProgram shaderProgram) {
-        this.shaderProgram = shaderProgram;
-    }
-
     public Font getFont() {
         return font;
     }
 
     public void setFont(Font font) {
         this.font = font;
+    }
+
+    public BlendMode getBlendMode() {
+        return blendMode;
+    }
+
+    public void setBlendMode(BlendMode blendMode) {
+        this.blendMode = blendMode;
     }
 
     public Rectangle calculateBounds(String text, int offset, int length) {
@@ -52,28 +51,20 @@ public class DefaultTextRenderer extends AbstractRenderer implements TextRendere
                 offsetY + font.getAscent());
     }
 
-    protected void applyParameters(float alpha) {
-        setShaderParameter(ShaderParameter.TEXTURED, 1);
-        float alphaSetting = getShaderParameter(ShaderParameter.ALPHA);
-
-        try {
-            ShaderProgram program = getShaderProgram();
-            setShaderParameter(ShaderParameter.ALPHA, alphaSetting * alpha);
-            applyShaderParameters(program);
-            program.applyParameters();
-        } finally {
-            setShaderParameter(ShaderParameter.ALPHA, alphaSetting);
-        }
+    @Override
+    public void render(float alpha, String text, int offset, int len) {
+        ShaderProgram shaderProgram = prepareShaderProgram(alpha);
+        OpenGLUtils.setBlendMode(blendMode);
+        onRender(shaderProgram, text, offset, len);
     }
 
     @Override
-    public void render(float alpha, String text, int offset, int len) {
-        ShaderProgram shaderProgram = getShaderProgram();
-        shaderProgram.bind();
-        shaderProgram.updateModelMatrix(ModelMatrix.instance());
-        applyParameters(alpha);
-        OpenGLUtils.setBlendMode(blendMode);
+    protected ShaderProgram prepareShaderProgram(float alpha) {
+        setShaderParameter(ShaderParameter.TEXTURED, 1);
+        return super.prepareShaderProgram(alpha);
+    }
 
+    private void onRender(ShaderProgram shaderProgram, String text, int offset, int len) {
         float textWidth = font.getTextWidth(text, offset, len);
         float xOffset = offsetFromHorizontalAlignment(textWidth);
         float yOffset = offsetFromVerticalAlignment(font);

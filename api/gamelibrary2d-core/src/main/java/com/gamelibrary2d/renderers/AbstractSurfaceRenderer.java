@@ -49,9 +49,9 @@ abstract class AbstractSurfaceRenderer<T extends Surface> extends AbstractConten
     }
 
     @Override
-    protected void applyParameters(float alpha) {
+    protected ShaderProgram prepareShaderProgram(float alpha) {
         setShaderParameter(ShaderParameter.TEXTURED, texture != null ? 1 : 0);
-        super.applyParameters(alpha);
+        return super.prepareShaderProgram(alpha);
     }
 
     @Override

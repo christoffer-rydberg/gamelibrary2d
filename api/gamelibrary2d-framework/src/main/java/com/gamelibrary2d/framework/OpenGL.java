@@ -10,6 +10,7 @@ public interface OpenGL {
     int GL_POINTS = 0;
     int GL_LINE_LOOP = 2;
     int GL_LINE_STRIP = 3;
+    int GL_LINE_STIPPLE = 2852;
     int GL_POLYGON = 9;
     int GL_UNSIGNED_BYTE = 5121;
     int GL_FLOAT = 5126;
@@ -171,6 +172,8 @@ public interface OpenGL {
     void glBindTexture(int target, int texture);
 
     void glEnable(int target);
+
+    void glLineStipple(int factor, short pattern);
 
     void glDisable(int target);
 
