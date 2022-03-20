@@ -31,10 +31,10 @@ public class ParticleParameters implements Serializable {
     private final static int DIRECTION_VAR = 14;
     private final static int MOVE_FROM_CENTER = 15;
 
-    private final static int HORIZONTAL_ACCELERATION = 16;
-    private final static int HORIZONTAL_ACCELERATION_VAR = 17;
-    private final static int VERTICAL_ACCELERATION = 18;
-    private final static int VERTICAL_ACCELERATION_VAR = 19;
+    private final static int ACCELERATION_X = 16;
+    private final static int ACCELERATION_X_VAR = 17;
+    private final static int ACCELERATION_Y = 18;
+    private final static int ACCELERATION_Y_VAR = 19;
 
     private final static int CENTRIPETAL_ACCELERATION = 20;
     private final static int CENTRIPETAL_ACCELERATION_VAR = 21;
@@ -72,6 +72,7 @@ public class ParticleParameters implements Serializable {
     private final static int END_ALPHA_VAR = 47;
 
     private final static int UPDATE_ALPHA = 48;
+    private final static int INDIVIDUAL_GRAVITY_CENTER = 49;
 
     private final float[] internalState = new float[STRIDE];
     private int updateCounter;
@@ -113,14 +114,22 @@ public class ParticleParameters implements Serializable {
         setInternalState(UPDATE_SCALE, updateScale ? 1f : 0f);
     }
 
-    public void setAcceleration(float horizontal, float vertical) {
-        setInternalState(HORIZONTAL_ACCELERATION, horizontal);
-        setInternalState(VERTICAL_ACCELERATION, vertical);
+    public boolean isIndividualGravityCenter() {
+        return internalState[INDIVIDUAL_GRAVITY_CENTER] != 0;
     }
 
-    public void setAccelerationVar(float horizontalAccVar, float verticalAccVar) {
-        setInternalState(HORIZONTAL_ACCELERATION_VAR, horizontalAccVar);
-        setInternalState(VERTICAL_ACCELERATION_VAR, verticalAccVar);
+    public void setIndividualGravityCenter(boolean individualGravityCenter) {
+        setInternalState(INDIVIDUAL_GRAVITY_CENTER, individualGravityCenter ? 1 : 0);
+    }
+
+    public void setAcceleration(float x, float y) {
+        setInternalState(ACCELERATION_X, x);
+        setInternalState(ACCELERATION_Y, y);
+    }
+
+    public void setAccelerationVar(float xVar, float yVar) {
+        setInternalState(ACCELERATION_X_VAR, xVar);
+        setInternalState(ACCELERATION_Y_VAR, yVar);
     }
 
     public void setUpdateColor(boolean updateColor) {
@@ -243,7 +252,7 @@ public class ParticleParameters implements Serializable {
         return internalState[MOVE_FROM_CENTER] == 1f;
     }
 
-    public void setMoveFromCenter(boolean moveFromCenter) {
+    public void setMovingFromCenter(boolean moveFromCenter) {
         setInternalState(MOVE_FROM_CENTER, moveFromCenter ? 1f : 0f);
     }
 
@@ -283,36 +292,36 @@ public class ParticleParameters implements Serializable {
         setInternalState(END_SCALE_VAR, endScaleVar);
     }
 
-    public float getHorizontalAcceleration() {
-        return internalState[HORIZONTAL_ACCELERATION];
+    public float getAccelerationX() {
+        return internalState[ACCELERATION_X];
     }
 
-    public void setHorizontalAcceleration(float x) {
-        setInternalState(HORIZONTAL_ACCELERATION, x);
+    public void setAccelerationX(float x) {
+        setInternalState(ACCELERATION_X, x);
     }
 
-    public float getVerticalAcceleration() {
-        return internalState[VERTICAL_ACCELERATION];
+    public float getAccelerationY() {
+        return internalState[ACCELERATION_Y];
     }
 
-    public void setVerticalAcceleration(float y) {
-        setInternalState(VERTICAL_ACCELERATION, y);
+    public void setAccelerationY(float y) {
+        setInternalState(ACCELERATION_Y, y);
     }
 
-    public float getHorizontalAccelerationVar() {
-        return internalState[HORIZONTAL_ACCELERATION_VAR];
+    public float getAccelerationXVar() {
+        return internalState[ACCELERATION_X_VAR];
     }
 
-    public void setHorizontalAccelerationVar(float x) {
-        setInternalState(HORIZONTAL_ACCELERATION_VAR, x);
+    public void setAccelerationXVar(float x) {
+        setInternalState(ACCELERATION_X_VAR, x);
     }
 
-    public float getVerticalAccelerationVar() {
-        return internalState[VERTICAL_ACCELERATION_VAR];
+    public float getAccelerationYVar() {
+        return internalState[ACCELERATION_Y_VAR];
     }
 
-    public void setVerticalAccelerationVar(float y) {
-        setInternalState(VERTICAL_ACCELERATION_VAR, y);
+    public void setAccelerationYVar(float y) {
+        setInternalState(ACCELERATION_Y_VAR, y);
     }
 
     public float getCentripetalAcceleration() {
@@ -554,15 +563,21 @@ public class ParticleParameters implements Serializable {
         setScaleVar(getScaleVar() * factor);
         setEndScale(getEndScale() * factor);
         setEndScaleVar(getEndScaleVar() * factor);
-        setAcceleration(getHorizontalAcceleration() * factor, getVerticalAcceleration() * factor);
-        setAccelerationVar(getHorizontalAccelerationVar() * factor, getVerticalAccelerationVar() * factor);
+        setAcceleration(getAccelerationX() * factor, getAccelerationY() * factor);
+        setAccelerationVar(getAccelerationXVar() * factor, getAccelerationYVar() * factor);
         setCentripetalAcceleration(getCentripetalAcceleration() * factor);
         setCentripetalAccelerationVar(getCentripetalAccelerationVar() * factor);
         setTangentialAcceleration(getTangentialAcceleration() * factor);
         setTangentialAccelerationVar(getTangentialAccelerationVar() * factor);
     }
 
-    public void apply(Particle particle) {
+    public void apply(Particle particle, float x, float y, double spawnAngle) {
+        if (isIndividualGravityCenter()) {
+            particle.setGravityCenter(particle.getPosX(), particle.getPosY());
+        } else {
+            particle.setGravityCenter(x, y);
+        }
+
         float emittedLife = getLife() + getLifeVar() * RandomInstance.random11();
 
         float emittedColor0 = getColorR() + getColorRVar() * RandomInstance.random11();
@@ -574,23 +589,11 @@ public class ParticleParameters implements Serializable {
 
         float emittedSpeed = getSpeed() + getSpeedVar() * RandomInstance.random11();
 
-        float centripetalAcc = getCentripetalAcceleration() + getCentripetalAccelerationVar() * RandomInstance.random11();
-        if (centripetalAcc != 0 && emittedSpeed == 0) {
-            emittedSpeed = 1f; // A little bump to get a direction for the velocity vector.
-        }
-
         float velocityX = 0, velocityY = 0;
         if (emittedSpeed != 0) {
             if (isMovingFromCenter()) {
-                float dirX = particle.getPosX() - particle.getCenterX();
-                float dirY = particle.getPosY() - particle.getCenterY();
-                if (dirX != 0 || dirY != 0) {
-                    float length = (float) Math.sqrt(dirX * dirX + dirY * dirY);
-                    velocityX = (dirX / length) * emittedSpeed;
-                    velocityY = (dirY / length) * emittedSpeed;
-                } else {
-                    velocityY = emittedSpeed;
-                }
+                velocityX = (float) Math.cos(spawnAngle) * emittedSpeed;
+                velocityY = (float) -Math.sin(spawnAngle) * emittedSpeed;
             } else {
                 velocityY = emittedSpeed;
             }
@@ -617,14 +620,13 @@ public class ParticleParameters implements Serializable {
         particle.setEndSpeedFactor(endSpeedFactor);
         particle.setVelocity(velocityX, velocityY);
 
-        particle.setHorizontalAcceleration(
-                getHorizontalAcceleration() + getHorizontalAccelerationVar() * RandomInstance.random11());
+        particle.setAccelerationX(
+                getAccelerationX() + getAccelerationXVar() * RandomInstance.random11());
 
-        particle.setVerticalAcceleration(
-                getVerticalAcceleration() + getVerticalAccelerationVar() * RandomInstance.random11());
+        particle.setAccelerationY(
+                getAccelerationY() + getAccelerationYVar() * RandomInstance.random11());
 
-        particle.setCentripetalAcceleration(centripetalAcc);
-
+        particle.setCentripetalAcceleration(getCentripetalAcceleration() + getCentripetalAccelerationVar() * RandomInstance.random11());
         particle.setTangentialAcceleration(getTangentialAcceleration() + getTangentialAccelerationVar() * RandomInstance.random11());
 
         if (isRotatedForward()) {

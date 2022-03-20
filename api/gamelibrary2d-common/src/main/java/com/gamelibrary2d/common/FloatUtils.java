@@ -7,20 +7,20 @@ public class FloatUtils {
     /**
      * Returns the floor modulus of the float arguments.
      */
-    public static float floorMod(float x, float y) {
-        return (x - (float) Math.floor(x / y) * y);
+    public static float floorMod(float x, float y){
+        return (float) (x - Math.floor(x/y) * y);
     }
 
     /**
-     * Normalizes an angle to fit in the interval (-180, 180]
+     * Normalizes an angle to fit in the interval [-180, 180)
      *
      * @param degrees The angle in degrees.
      */
     public static float normalizeDegrees(float degrees) {
         float wrapped = floorMod(degrees, 360f);
-        if (wrapped > 180f) {
+        if (wrapped >= 180f) {
             return wrapped - 360f;
-        } else if (wrapped <= -180f) {
+        } else if (wrapped < -180f) {
             return wrapped + 360f;
         } else {
             return wrapped;
@@ -28,16 +28,16 @@ public class FloatUtils {
     }
 
     /**
-     * Normalizes an angle to fit in the interval (-{@link #PI}, {@link #PI}]
+     * Normalizes an angle to fit in the interval [-{@link #PI}, {@link #PI})
      *
      * @param radians The angle in radians.
      */
     public static float normalizeRadians(float radians) {
         final float doublePi = 2 * PI;
         float wrapped = floorMod(radians, doublePi);
-        if (wrapped > PI) {
+        if (wrapped >= PI) {
             return wrapped - doublePi;
-        } else if (wrapped <= -PI) {
+        } else if (wrapped < -PI) {
             return wrapped + doublePi;
         } else {
             return wrapped;

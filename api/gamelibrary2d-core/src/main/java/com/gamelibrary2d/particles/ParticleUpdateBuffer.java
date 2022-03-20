@@ -13,8 +13,8 @@ public class ParticleUpdateBuffer extends AbstractInterleavedBuffer<MirroredFloa
     public final static int STRIDE = 24;
 
     private final static int INITIALIZED = 0;
-    private final static int CENTER_X = 1;
-    private final static int CENTER_Y = 2;
+    private final static int GRAVITY_CENTER_X = 1;
+    private final static int GRAVITY_CENTER_Y = 2;
     private final static int DELAY = 3;
 
     private final static int LIFE = 4;
@@ -40,7 +40,6 @@ public class ParticleUpdateBuffer extends AbstractInterleavedBuffer<MirroredFloa
     private final static int TIME = 20;
     private final static int EXTERNAL_SPEED_X = 21;
     private final static int EXTERNAL_SPEED_Y = 22;
-    private final static int CUSTOM = 23;
 
     private float[] internalState;
 
@@ -108,23 +107,23 @@ public class ParticleUpdateBuffer extends AbstractInterleavedBuffer<MirroredFloa
         return internalState[offset + END_SPEED_FACTOR];
     }
 
-    float getCenterX(int offset) {
-        return internalState[offset + CENTER_X];
+    float getGravityCenterX(int offset) {
+        return internalState[offset + GRAVITY_CENTER_X];
     }
 
-    float getCenterY(int offset) {
-        return internalState[offset + CENTER_Y];
+    float getGravityCenterY(int offset) {
+        return internalState[offset + GRAVITY_CENTER_Y];
     }
 
     boolean isRotatedForward(int offset) {
         return internalState[offset + ROTATED_FORWARD] != 0;
     }
 
-    float getHorizontalAcceleration(int offset) {
+    float getAccelerationX(int offset) {
         return internalState[offset + ACCELERATION_X];
     }
 
-    float getVerticalAcceleration(int offset) {
+    float getAccelerationY(int offset) {
         return internalState[offset + ACCELERATION_Y];
     }
 
@@ -176,10 +175,6 @@ public class ParticleUpdateBuffer extends AbstractInterleavedBuffer<MirroredFloa
         return internalState[offset + LIFE];
     }
 
-    float getCustom(int offset) {
-        return internalState[offset + CUSTOM];
-    }
-
     void setExternalSpeedX(int offset, float value) {
         internalState[offset + EXTERNAL_SPEED_X] = value;
     }
@@ -204,23 +199,23 @@ public class ParticleUpdateBuffer extends AbstractInterleavedBuffer<MirroredFloa
         internalState[offset + END_SPEED_FACTOR] = value;
     }
 
-    void setCenterX(int offset, float value) {
-        internalState[offset + CENTER_X] = value;
+    void setGravityCenterX(int offset, float value) {
+        internalState[offset + GRAVITY_CENTER_X] = value;
     }
 
-    void setCenterY(int offset, float value) {
-        internalState[offset + CENTER_Y] = value;
+    void setGravityCenterY(int offset, float value) {
+        internalState[offset + GRAVITY_CENTER_Y] = value;
     }
 
     void setRotatedForward(int offset, boolean value) {
         internalState[offset + ROTATED_FORWARD] = value ? 1 : 0;
     }
 
-    void setHorizontalAcceleration(int offset, float value) {
+    void setAccelerationX(int offset, float value) {
         internalState[offset + ACCELERATION_X] = value;
     }
 
-    void setVerticalAcceleration(int offset, float value) {
+    void setAccelerationY(int offset, float value) {
         internalState[offset + ACCELERATION_Y] = value;
     }
 
@@ -270,9 +265,5 @@ public class ParticleUpdateBuffer extends AbstractInterleavedBuffer<MirroredFloa
 
     void setLife(int offset, float value) {
         internalState[offset + LIFE] = value;
-    }
-
-    void setCustom(int offset, float value) {
-        internalState[offset + CUSTOM] = value;
     }
 }

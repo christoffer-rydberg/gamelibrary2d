@@ -5,9 +5,7 @@ import com.gamelibrary2d.components.denotations.Parent;
 import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.particles.parameters.PositionParameters;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
-import com.gamelibrary2d.tools.particlegenerator.properties.BooleanProperty;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
-import com.gamelibrary2d.tools.particlegenerator.properties.GenericProperty;
 
 public class PositionParametersPanel extends AbstractPanel<GameObject> implements Parent<GameObject> {
 
@@ -15,55 +13,54 @@ public class PositionParametersPanel extends AbstractPanel<GameObject> implement
 
     public PositionParametersPanel(ParticleSystemModel particleSystem) {
         this.particleSystem = particleSystem;
-        PanelUtil.stack(this, spawnArea(), 0f);
-        PanelUtil.stack(this, spawnAreaWidth());
-        PanelUtil.stack(this, spawnAreaHeight());
-        PanelUtil.stack(this, spawnAngle());
-        PanelUtil.stack(this, localCenter());
+        PanelUtil.stack(this, angle());
+        PanelUtil.stack(this, radiusX());
+        PanelUtil.stack(this, radiusY());
+        PanelUtil.stack(this, varX());
+        PanelUtil.stack(this, varY());
     }
 
     private PositionParameters params() {
         return particleSystem.getSettings().getPositionParameters();
     }
 
-    private GameObject localCenter() {
-        return new PanelElement.Boolean(
-                "Local Center",
-                new BooleanProperty(() -> params().isLocalCenter(), v -> params().setLocalCenter(v))
-        );
-    }
-
-    private GameObject spawnArea() {
-        return new PanelElement.Enum<>(
-                "Spawn Area",
-                PositionParameters.SpawnArea.class,
-                new GenericProperty<>(
-                        () -> params().getSpawnArea(),
-                        v -> params().setSpawnArea(v))
-        );
-    }
-
-    private GameObject spawnAreaWidth() {
-        return new PanelElement.Float(
-                "Spawn Area Width",
-                new FloatProperty(() -> params().getSpawnAreaWidth(), v -> params().setSpawnAreaWidth(v)),
-                new FloatProperty(() -> params().getSpawnAreaWidthVar(), v -> params().setSpawnAreaWidthVar(v))
-        );
-    }
-
-    private GameObject spawnAreaHeight() {
-        return new PanelElement.Float(
-                "Spawn Area Height",
-                new FloatProperty(() -> params().getSpawnAreaHeight(), v -> params().setSpawnAreaHeight(v)),
-                new FloatProperty(() -> params().getSpawnAreaHeightVar(), v -> params().setSpawnAreaHeightVar(v))
-        );
-    }
-
-    private GameObject spawnAngle() {
+    private GameObject angle() {
         return new PanelElement.Float(
                 "Spawn Angle",
-                new FloatProperty(() -> params().getSpawnAngle(), v -> params().setSpawnAngle(v)),
-                new FloatProperty(() -> params().getSpawnAngleVar(), v -> params().setSpawnAngleVar(v))
+                new FloatProperty(() -> params().getAngle(), v -> params().setAngle(v)),
+                new FloatProperty(() -> params().getAngleVar(), v -> params().setAngleVar(v))
+        );
+    }
+
+    private GameObject radiusX() {
+        return new PanelElement.Float(
+                "Spawn Radius X",
+                new FloatProperty(() -> params().getRadiusX(), v -> params().setRadiusX(v)),
+                new FloatProperty(() -> params().getRadiusXVar(), v -> params().setRadiusXVar(v))
+        );
+    }
+
+    private GameObject radiusY() {
+        return new PanelElement.Float(
+                "Spawn Radius Y",
+                new FloatProperty(() -> params().getRadiusY(), v -> params().setRadiusY(v)),
+                new FloatProperty(() -> params().getRadiusYVar(), v -> params().setRadiusYVar(v))
+        );
+    }
+
+    private GameObject varX() {
+        return new PanelElement.Float(
+                "Spawn Offset X",
+                new FloatProperty(() -> params().getOffsetX(), v -> params().setOffsetX(v)),
+                new FloatProperty(() -> params().getOffsetXVar(), v -> params().setOffsetXVar(v))
+        );
+    }
+
+    private GameObject varY() {
+        return new PanelElement.Float(
+                "Spawn Offset Y",
+                new FloatProperty(() -> params().getOffsetY(), v -> params().setOffsetY(v)),
+                new FloatProperty(() -> params().getOffsetYVar(), v -> params().setOffsetYVar(v))
         );
     }
 }

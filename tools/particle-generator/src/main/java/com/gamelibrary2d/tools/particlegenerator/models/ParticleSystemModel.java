@@ -1,18 +1,19 @@
 package com.gamelibrary2d.tools.particlegenerator.models;
 
+import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.particles.AcceleratedParticleSystem;
+import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.particles.parameters.EmitterParameters;
 import com.gamelibrary2d.particles.parameters.ParticleParameters;
 import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
 import com.gamelibrary2d.particles.parameters.PositionParameters;
 import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
-import com.gamelibrary2d.particles.AcceleratedParticleSystem;
-import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.resources.Animation;
 import com.gamelibrary2d.resources.BlendMode;
 import com.gamelibrary2d.resources.DefaultTexture;
@@ -31,9 +32,7 @@ public class ParticleSystemModel {
 
     private final Disposer textureDisposer;
 
-
-    private float posX;
-    private float posY;
+    private final Point pos = new Point();
     private BlendMode blendMode;
     private ParticleSystemParameters settings;
     private ParticleSystemType particleSystemType = ParticleSystemType.EFFICIENT;
@@ -67,8 +66,11 @@ public class ParticleSystemModel {
     }
 
     public void setPosition(float x, float y) {
-        this.posX = x;
-        this.posY = y;
+        pos.set(x, y);
+    }
+
+    public Point getPosition() {
+        return pos;
     }
 
     public void reset() {
@@ -127,7 +129,7 @@ public class ParticleSystemModel {
         settings.setParticleParameters(updateSettings);
     }
 
-    public PositionParameters getPositioner() {
+    public PositionParameters getPositionParameters() {
         return settings.getPositionParameters();
     }
 
@@ -138,11 +140,11 @@ public class ParticleSystemModel {
     public float emit(float deltaTime) {
         switch (particleSystemType) {
             case ACCELERATED:
-                acceleratedParticleSystem.setPosition(posX, posY);
+                acceleratedParticleSystem.setPosition(pos);
                 return acceleratedParticleSystem.emit(deltaTime);
             case EFFICIENT:
             case SEQUENTIAL:
-                return defaultParticleSystem.emit(posX, posY, deltaTime);
+                return defaultParticleSystem.emit(pos, deltaTime);
             default:
                 throw new IllegalStateException("Unexpected value: " + particleSystemType);
         }
@@ -151,12 +153,12 @@ public class ParticleSystemModel {
     public void emit() {
         switch (particleSystemType) {
             case ACCELERATED:
-                acceleratedParticleSystem.setPosition(posX, posY);
+                acceleratedParticleSystem.setPosition(pos);
                 acceleratedParticleSystem.emit();
                 break;
             case EFFICIENT:
             case SEQUENTIAL:
-                defaultParticleSystem.emit(posX, posY);
+                defaultParticleSystem.emit(pos);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + particleSystemType);
@@ -166,12 +168,12 @@ public class ParticleSystemModel {
     public void emitAll() {
         switch (particleSystemType) {
             case ACCELERATED:
-                acceleratedParticleSystem.setPosition(posX, posY);
+                acceleratedParticleSystem.setPosition(pos);
                 acceleratedParticleSystem.emit();
                 break;
             case EFFICIENT:
             case SEQUENTIAL:
-                defaultParticleSystem.emit(posX, posY);
+                defaultParticleSystem.emit(pos);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + particleSystemType);

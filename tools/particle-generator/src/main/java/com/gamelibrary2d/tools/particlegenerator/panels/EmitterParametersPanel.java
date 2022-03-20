@@ -15,8 +15,6 @@ public class EmitterParametersPanel extends AbstractPanel<GameObject> implements
         this.particleSystem = particleSystem;
         PanelUtil.stack(this, emissionRate(), 0f);
         PanelUtil.stack(this, particleCount());
-        PanelUtil.stack(this, offsetX());
-        PanelUtil.stack(this, offsetY());
     }
 
     private EmitterParameters settings() {
@@ -36,17 +34,5 @@ public class EmitterParametersPanel extends AbstractPanel<GameObject> implements
                 "Emission Rate",
                 new FloatProperty(() -> settings().getEmissionRate(), v -> settings().setEmissionRate(v))
         );
-    }
-
-    private GameObject offsetX() {
-        return new PanelElement.Float(
-                "Offset X",
-                new FloatProperty(() -> settings().getOffsetX(), v -> settings().setOffsetX(v)));
-    }
-
-    private GameObject offsetY() {
-        return new PanelElement.Float(
-                "Offset Y",
-                new FloatProperty(() -> settings().getOffsetY(), v -> settings().setOffsetY(v)));
     }
 }

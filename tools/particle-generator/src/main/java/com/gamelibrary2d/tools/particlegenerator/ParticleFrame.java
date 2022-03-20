@@ -51,7 +51,7 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
         backgroundLayer = new BasicLayer<>();
 
         settingsPanel = new ParticleSystemSettingsPanel(particleSystem, this);
-        settingsPanel.setPosition(160f, game.getWindow().getHeight() - 20f);
+        settingsPanel.setPosition(180f, game.getWindow().getHeight() - 20f);
 
         Window window = game.getWindow();
 

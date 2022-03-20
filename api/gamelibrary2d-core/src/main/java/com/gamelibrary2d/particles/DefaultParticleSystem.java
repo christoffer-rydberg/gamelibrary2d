@@ -137,9 +137,6 @@ public class DefaultParticleSystem implements Updatable, Renderable, Clearable {
         int updatedParticleCount = particleCount + count;
         renderBuffer.ensureCapacity(updatedParticleCount * renderBuffer.getStride());
         updateBuffer.ensureCapacity(updatedParticleCount * updateBuffer.getStride());
-        EmitterParameters emitterParameters = parameters.getEmitterParameters();
-        x += emitterParameters.getOffsetX();
-        y += emitterParameters.getOffsetY();
         for (int i = 0; i < count; ++i) {
             onEmit(x, y);
         }
@@ -206,12 +203,11 @@ public class DefaultParticleSystem implements Updatable, Renderable, Clearable {
         particle.setIndex(particleCount++);
 
         particle.setInitialized(false);
-        parameters.getPositionParameters().apply(particle, x, y);
-        parameters.getParticleParameters().apply(particle);
+        double spawnAngle = parameters.getPositionParameters().apply(particle, x, y);
+        parameters.getParticleParameters().apply(particle, x, y, spawnAngle);
 
         particle.setExternalSpeedX(externalSpeed[0]);
         particle.setExternalSpeedY(externalSpeed[1]);
-        particle.setCustom(0);
     }
 
     private boolean isTransformingPosition() {

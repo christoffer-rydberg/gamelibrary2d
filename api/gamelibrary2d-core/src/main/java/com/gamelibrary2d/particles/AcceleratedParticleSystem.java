@@ -148,6 +148,10 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
                 positionBuffer, parametersBuffer, updateBuffer, renderBuffer, parameters, renderer, capacity, disposer);
     }
 
+    public void setPosition(Point position) {
+        setPosition(position.getX(), position.getY());
+    }
+
     public void setPosition(float x, float y) {
         position[0] = x;
         position[1] = y;
@@ -253,15 +257,14 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
 
         openGL.glUniform1i(glUniformParticlesInGpu, particlesInGpuBuffer);
 
-        EmitterParameters emitterParameters = parameters.getEmitterParameters();
+        PositionParameters positionParameters = parameters.getPositionParameters();
 
         openGL.glUniform2f(
                 glUniformPosition,
-                position[0] + emitterParameters.getOffsetX(),
-                position[1] + emitterParameters.getOffsetY());
+                position[0] + positionParameters.getOffsetX(),
+                position[1] + positionParameters.getOffsetY());
         openGL.glUniform2fv(glUniformExternalAcceleration, externalAcceleration);
 
-        PositionParameters positionParameters = parameters.getPositionParameters();
         if (!positionBuffer.allocate(positionParameters.getInternalStateArray())) {
             if (positionUpdateCounter != positionParameters.getUpdateCounter()) {
                 positionUpdateCounter = positionParameters.getUpdateCounter();

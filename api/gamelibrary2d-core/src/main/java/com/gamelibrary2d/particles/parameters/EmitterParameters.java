@@ -10,8 +10,6 @@ public class EmitterParameters implements Serializable {
     private int particleCount;
     private int particleCountVar;
     private float emissionRate;
-    private float offsetX;
-    private float offsetY;
 
     public EmitterParameters() {
         particleCount = 1;
@@ -22,24 +20,6 @@ public class EmitterParameters implements Serializable {
         particleCount = buffer.getInt();
         particleCountVar = buffer.getInt();
         emissionRate = buffer.getFloat();
-        offsetX = buffer.getFloat();
-        offsetY = buffer.getFloat();
-    }
-
-    public float getOffsetX() {
-        return offsetX;
-    }
-
-    public void setOffsetX(float offsetX) {
-        this.offsetX = offsetX;
-    }
-
-    public float getOffsetY() {
-        return offsetY;
-    }
-
-    public void setOffsetY(float offsetY) {
-        this.offsetY = offsetY;
     }
 
     /**
@@ -89,7 +69,5 @@ public class EmitterParameters implements Serializable {
         buffer.putInt(particleCount);
         buffer.putInt(particleCountVar);
         buffer.putFloat(emissionRate);
-        buffer.putFloat(offsetX);
-        buffer.putFloat(offsetY);
     }
 }

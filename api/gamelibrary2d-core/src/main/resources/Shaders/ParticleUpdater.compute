@@ -3,8 +3,8 @@
 layout( local_size_x = 512, local_size_y = 1, local_size_z = 1) in;
 
 struct PositionParameters {
-    vec4 Part0; // LocalCenter, SpawnAngle, SpawnAngleVar, SpawnArea
-    vec4 Part1; // SpawnAreaWidth, SpawnAreaWidthVar, SpawnAreaHeight, SpawnAreaHeightVar
+    vec4 Part0; // Angle, AngleVar, RadiusX, RadiusXVar
+    vec4 Part1; // RadiusY, RadiusYVar, OffsetXVar, OffsetYVar
 };
 
 struct Parameters {
@@ -12,7 +12,7 @@ struct Parameters {
    vec4 Part1; // Speed, SpeedVar, EndSpeedFactor, EndSpeedFactorVar
    vec4 Part2; // Scale, ScaleVar, EndScale, EndScaleVar
    vec4 Part3; // UpdateScale, Direction, DirectionVar, MoveFromCenter
-   vec4 Part4; // HorizontalAcc, HorizontalAccVar, VerticalAcc, VerticalAccVar
+   vec4 Part4; // AccelerationX, AccelerationXVar, AccelerationY, AccelerationYVar
    vec4 Part5; // CentripetalAcc, CentripetalAccVar, TangentialAcc, TangentialAccVar
    vec4 Part6; // Rotation, RotationVar, RotationSpeed, RotationSpeedVar
    vec4 Part7; // RotationAcc, RotationAccVar, RotatedForward, UpdateColor
@@ -20,7 +20,7 @@ struct Parameters {
    vec4 Part9; // ColorB, ColorBVar, EndColorR, EndColorRVar
    vec4 Part10; // EndColorG, EndColorGVar, EndColorB, EndColorBVar
    vec4 Part11; // Alpha, AlphaVar, EndAlpha, EndAlphaVar
-   vec4 Part12; // UpdateAlpha, PADDING, PADDING, PADDING
+   vec4 Part12; // UpdateAlpha, individualGravityCenter, PADDING, PADDING
 };
 
 struct Render {
@@ -31,7 +31,7 @@ struct Render {
 struct Update {
    vec4 Part0; // CenterX, CenterY, Initialized, Delay
    vec4 Part1; // Life, EndSpeedFactor, DeltaX, DeltaY
-   vec4 Part2; // HorizontalAcc, VerticalAcc, CentripetalAcc, TangentialAcc
+   vec4 Part2; // AccelerationX, AccelerationY, CentripetalAcc, TangentialAcc
    vec4 Part3; // RotatedForward, RotationAcceleration, DeltaRotation, DeltaScale
    vec4 Part4; // DeltaColorR, DeltaColorG, DeltaColorB, DeltaColorA,
    vec4 Part5; // Time, ExternalSpeedX, ExternalSpeedY, PADDING
@@ -71,90 +71,64 @@ uniform int particlesInGpu;
 uniform vec2 position;
 uniform vec2 externalAcceleration;
 
-uint wang_hash(uint seed)
+// Recommended here: https://www.reedbeta.com/blog/hash-functions-for-gpu-rendering/
+uint pcg_hash(uint seed)
 {
-    seed = (seed ^ 61) ^ (seed >> 16);
-    seed *= 9;
-    seed = seed ^ (seed >> 4);
-    seed *= 0x27d4eb2d;
-    seed = seed ^ (seed >> 15);
-    return seed;
+    uint state = seed * 747796405u + 2891336453u;
+    uint word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+    return (word >> 22u) ^ word;
 }
 
 float randomFloat(uint seed) {
-	return float(wang_hash(seed)) * (1.0 / 4294967296.0);
+	return float(pcg_hash(seed)) * (1.0 / 4294967296.0);
 }
 
 float random11(uint seed) {
 	return 2 * randomFloat(seed) - 1;
 }
 
-void positionInRectangleArea(inout Render r, inout uint seed, float centerX, float centerY, float angleRadians) {
-    float spawnAreaWidth = positionParameters.Part1[0];
-    float spawnAreaWidthVar = positionParameters.Part1[1];
-    float spawnAreaHeight = positionParameters.Part1[2];
-    float spawnAreaHeightVar = positionParameters.Part1[3];
+float applyPositionParameters(inout Render r, inout Update u, inout uint seed) {
+    float posX = 0.0;
+    float posY = 0.0;
 
-    // Create a circle that is touching the corners of the rectangle
-    float radius = sqrt(spawnAreaWidth * spawnAreaWidth + spawnAreaHeight * spawnAreaHeight);
-    float posX = cos(angleRadians) * radius;
-    float posY = -sin(angleRadians) * radius;
+    float angle = positionParameters.Part0[0];
+    float angleVar = positionParameters.Part0[1];
+    float radiusX = positionParameters.Part0[2];
+    float radiusXVar = positionParameters.Part0[3];
+    float radiusY = positionParameters.Part1[0];
+    float radiusYVar = positionParameters.Part1[1];
+    if (radiusX != 0.0 || radiusXVar != 0.0 || radiusY != 0.0 || radiusYVar != 0.0) {
+        float angle = angle - angleVar * random11(++seed) - 90;
+        float angleRadians = angle * M_PI / 180.0;
 
-    // Cut the circle horizontally and vertically from the rectangle corners.
-    if (abs(posX) > spawnAreaWidth)
-        posX = posX < 0 ? -spawnAreaWidth : spawnAreaWidth;
-    if (abs(posY) > spawnAreaHeight)
-        posY = posY < 0 ? -spawnAreaHeight : spawnAreaHeight;
+        float alpha = randomFloat(++seed);
 
-    // Randomize based on variation
-    posX = (posX + spawnAreaWidthVar * random11(++seed)) / 2.0;
-    posY = (posY + spawnAreaHeightVar * random11(++seed)) / 2.0;
+        float minRx = radiusX - radiusXVar;
+        float maxRx = radiusX + radiusXVar;
+        float rx = minRx * (1.0 - alpha) + maxRx * alpha;
 
-    r.Part0[0] = centerX + posX;
-    r.Part0[1] = centerY + posY;
-}
+        float minRy = radiusY - radiusYVar;
+        float maxRy = radiusY + radiusYVar;
+        float ry = minRy * (1.0 - alpha) + maxRy * alpha;
 
-void positionInEllipseArea(inout Render r, inout uint seed, float centerX, float centerY, float angleRadians) {
-    float spawnAreaWidth = positionParameters.Part1[0];
-    float spawnAreaWidthVar = positionParameters.Part1[1];
-    float spawnAreaHeight = positionParameters.Part1[2];
-    float spawnAreaHeightVar = positionParameters.Part1[3];
-
-    // Randomize based on variation
-    float width = spawnAreaWidth + spawnAreaWidthVar * random11(++seed);
-    float height = spawnAreaHeight + spawnAreaHeightVar * random11(++seed);
-
-    // Create an ellipse
-    float posX = cos(angleRadians) * width / 2.0;
-    float posY = -sin(angleRadians) * height / 2.0;
-
-    r.Part0[0] = centerX + posX;
-    r.Part0[1] = centerY + posY;
-}
-
-void applyPositionParameters(inout Render r, inout Update u, inout uint seed) {
-    float x = position.x;
-    float y = position.y;
-    float angle = positionParameters.Part0[1] - positionParameters.Part0[2] * random11(++seed) - 90;
-    float angleRadians = angle * M_PI / 180.0;
-
-    float spawnArea = positionParameters.Part0[3];
-    if(spawnArea == 0) {
-        positionInRectangleArea(r, seed, x, y, angleRadians);
-    } else {
-        positionInEllipseArea(r, seed, x, y, angleRadians);
+        posX += cos(angleRadians) * rx;
+        posY += -sin(angleRadians) * ry;
     }
 
-    if (positionParameters.Part0[0] != 0) {
-        u.Part0[1] = r.Part0[0];
-        u.Part0[2] = r.Part0[1];
-    } else {
-        u.Part0[1] = x;
-        u.Part0[2] = y;
+    float offsetXVar = positionParameters.Part1[2];
+    float offsetYVar = positionParameters.Part1[3];
+    if (offsetXVar != 0.0 || offsetYVar != 0.0) {
+        posX += offsetXVar * random11(++seed);
+        posY += offsetYVar * random11(++seed);
     }
+
+    r.Part0[0] = position.x + posX;
+    r.Part0[1] = position.y + posY;
+
+    return atan(posX, posY) - M_PI / 2.0;
 }
 
-void applyParameters(inout Render r, inout Update u, inout uint seed) {
+void applyParameters(inout Render r, inout Update u, float spawnAngle, inout uint seed) {
     float life = parameters.Part0[0];
     float lifeVar = parameters.Part0[1];
     float delay = parameters.Part0[2];
@@ -175,10 +149,10 @@ void applyParameters(inout Render r, inout Update u, inout uint seed) {
     float directionVar = parameters.Part3[2];
     float moveFromCenter = parameters.Part3[3];
 
-    float horizontalAcc = parameters.Part4[0];
-    float horizontalAccVar = parameters.Part4[1];
-    float verticalAcc = parameters.Part4[2];
-    float verticalAccVar = parameters.Part4[3];
+    float accelerationX = parameters.Part4[0];
+    float accelerationXVar = parameters.Part4[1];
+    float accelerationY = parameters.Part4[2];
+    float accelerationYVar = parameters.Part4[3];
 
     float centripetalAcc = parameters.Part5[0];
     float centripetalAccVar = parameters.Part5[1];
@@ -216,12 +190,18 @@ void applyParameters(inout Render r, inout Update u, inout uint seed) {
     float endAlphaVar = parameters.Part11[3];
 
     float updateAlpha = parameters.Part12[0];
+    float individualGravityCenter = parameters.Part12[1];
+
+    if (individualGravityCenter != 0) {
+        u.Part0[1] = r.Part0[0];
+        u.Part0[2] = r.Part0[1];
+    } else {
+        u.Part0[1] = position.x;
+        u.Part0[2] = position.y;
+    }
 
     float posX = r.Part0[0];
     float posY = r.Part0[1];
-
-    float centerX = u.Part0[1];
-    float centerY = u.Part0[2];
 
     float emittedLife = life + lifeVar * random11(++seed);
 
@@ -234,24 +214,12 @@ void applyParameters(inout Render r, inout Update u, inout uint seed) {
 
     float emittedSpeed = speed + speedVar * random11(++seed);
 
-    float emittedCentripetalAcc = centripetalAcc + centripetalAccVar * random11(++seed);
-    if (emittedCentripetalAcc != 0 && emittedSpeed == 0) {
-        emittedSpeed = 1.0; // A little bump to get a direction for the velocity vector.
-    }
-
     float velocityX = 0;
     float velocityY = 0;
     if (emittedSpeed != 0) {
         if (moveFromCenter != 0) {
-            float dirX = posX - centerX;
-            float dirY = posY - centerY;
-            if (dirX != 0 || dirY != 0) {
-                float length = sqrt(dirX * dirX + dirY * dirY);
-                velocityX = (dirX / length) * emittedSpeed;
-                velocityY = (dirY / length) * emittedSpeed;
-            } else {
-                velocityY = emittedSpeed;
-            }
+            velocityX = cos(spawnAngle) * emittedSpeed;
+            velocityY = -sin(spawnAngle) * emittedSpeed;
         } else {
             velocityY = emittedSpeed;
         }
@@ -280,9 +248,9 @@ void applyParameters(inout Render r, inout Update u, inout uint seed) {
     u.Part1[2] = velocityX;
     u.Part1[3] = velocityY;
 
-    u.Part2[0] = horizontalAcc + horizontalAccVar * random11(++seed);
-    u.Part2[1] = verticalAcc + verticalAccVar * random11(++seed);
-    u.Part2[2] = centripetalAcc;
+    u.Part2[0] = accelerationX + accelerationXVar * random11(++seed);
+    u.Part2[1] = accelerationY + accelerationYVar * random11(++seed);
+    u.Part2[2] = centripetalAcc + centripetalAccVar * random11(++seed);
     u.Part2[3] = tangentialAcc + tangentialAccVar * random11(++seed);
 
     if (rotatedForward != 0) {
@@ -357,20 +325,20 @@ void update(inout Render r, inout Update u, inout uint seed) {
 
     float posX = r.Part0[0];
     float posY = r.Part0[1];
-    float centerX = u.Part0[1];
-    float centerY = u.Part0[2];
+    float gravityCenterX = u.Part0[1];
+    float gravityCenterY = u.Part0[2];
 
     float deltaX = u.Part1[2];
     float deltaY = u.Part1[3];
 
     float centripetalDirX, centripetalDirY;
-    if (centerX == posX && centerY == posY) {
+    if (gravityCenterX == posX && gravityCenterY == posY) {
         float direction = -atan(deltaY, deltaX);
         centripetalDirX = cos(direction);
         centripetalDirY = -sin(direction);
     } else {
-        centripetalDirX = centerX - posX;
-        centripetalDirY = centerY - posY;
+        centripetalDirX = gravityCenterX - posX;
+        centripetalDirY = gravityCenterY - posY;
         float distance = sqrt(centripetalDirX * centripetalDirX + centripetalDirY * centripetalDirY);
         centripetalDirX = centripetalDirX / distance;
         centripetalDirY = centripetalDirY / distance;
@@ -433,12 +401,12 @@ void main(void) {
 	
 	Render r = renderInput[index];
 	Update u = updateInput[index];
-	uint seed = wang_hash(randomSeed + index);
+	uint seed = pcg_hash(randomSeed + index);
 
 	if(index >= particlesInGpu) {
 	    u.Part0[0] = 0;
-	    applyPositionParameters(r, u, seed);
-        applyParameters(r, u, seed);
+	    float spawnAngle = applyPositionParameters(r, u, seed);
+        applyParameters(r, u, spawnAngle, seed);
     }
 
     update(r, u, seed);

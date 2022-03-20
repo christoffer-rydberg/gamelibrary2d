@@ -29,10 +29,10 @@ public class DemoFrame extends AbstractFrame {
     }
 
     private PositionParameters createPositionParameters() {
-        PositionParameters spawnSettings = new PositionParameters();
-        spawnSettings.setSpawnAreaWidthVar(150f);
-        spawnSettings.setSpawnAreaHeightVar(50f);
-        return spawnSettings;
+        PositionParameters positionParameters = new PositionParameters();
+        positionParameters.setOffsetXVar(75f);
+        positionParameters.setOffsetYVar(25f);
+        return positionParameters;
     }
 
     private ParticleParameters createParticleParameters() {
@@ -43,8 +43,8 @@ public class DemoFrame extends AbstractFrame {
         updateSettings.setDelayVar(0.25f);
         updateSettings.setSpeed(250f);
         updateSettings.setSpeedVar(100f);
-        updateSettings.setHorizontalAcceleration(150f);
-        updateSettings.setHorizontalAccelerationVar(100f);
+        updateSettings.setAccelerationX(150f);
+        updateSettings.setAccelerationXVar(100f);
         updateSettings.setScale(2.5f);
         updateSettings.setScaleVar(2.4f);
         updateSettings.setColor(175f, 50f, 30f);
@@ -61,7 +61,7 @@ public class DemoFrame extends AbstractFrame {
         try {
             // Example of particle system settings created from code:
             EmitterParameters emitterParameters = new EmitterParameters();
-            emitterParameters.setEmissionRate(1f / 350f);
+            emitterParameters.setEmissionRate(350f);
 
             ParticleSystemParameters fireSystemSettings = new ParticleSystemParameters(
                     emitterParameters,

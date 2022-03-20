@@ -45,6 +45,10 @@ public class FloatArrayList {
         this.size = size;
     }
 
+    public void clear() {
+        size = 0;
+    }
+
     public float get(int index) {
         rangeCheck(index);
         return data[index];

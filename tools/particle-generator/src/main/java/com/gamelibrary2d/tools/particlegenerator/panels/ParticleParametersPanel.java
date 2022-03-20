@@ -20,15 +20,17 @@ public class ParticleParametersPanel extends AbstractPanel<GameObject> implement
         PanelUtil.stack(this, delay());
         PanelUtil.stack(this, speed());
         PanelUtil.stack(this, endSpeedFactor());
-        PanelUtil.stack(this, moveFromCenter());
         PanelUtil.stack(this, direction());
+        PanelUtil.stack(this, moveFromCenter());
+        PanelUtil.stack(this, accelerationX());
+        PanelUtil.stack(this, accelerationY());
         PanelUtil.stack(this, centripetalAcceleration());
-        PanelUtil.stack(this, tangentalAcceleration());
-        PanelUtil.stack(this, horizontalAcceleration());
-        PanelUtil.stack(this, verticalAcceleration());
+        PanelUtil.stack(this, tangentialAcceleration());
+        PanelUtil.stack(this, individualGravityCenter());
         PanelUtil.stack(this, scale());
         PanelUtil.stack(this, endScale());
         PanelUtil.stack(this, rotation());
+        PanelUtil.stack(this, rotatedForward());
         PanelUtil.stack(this, colors());
         PanelUtil.stack(this, endColors());
         PanelUtil.stack(this, alpha());
@@ -74,7 +76,7 @@ public class ParticleParametersPanel extends AbstractPanel<GameObject> implement
     private GameObject moveFromCenter() {
         return new PanelElement.Boolean(
                 "Move From Center",
-                new BooleanProperty(() -> params().isMovingFromCenter(), v -> params().setMoveFromCenter(v))
+                new BooleanProperty(() -> params().isMovingFromCenter(), v -> params().setMovingFromCenter(v))
         );
     }
 
@@ -86,6 +88,13 @@ public class ParticleParametersPanel extends AbstractPanel<GameObject> implement
         );
     }
 
+    private GameObject individualGravityCenter() {
+        return new PanelElement.Boolean(
+                "Individual Gravity Center",
+                new BooleanProperty(() -> params().isIndividualGravityCenter(), v -> params().setIndividualGravityCenter(v))
+        );
+    }
+
     private GameObject centripetalAcceleration() {
         return new PanelElement.Float(
                 "Centripetal Acceleration",
@@ -94,27 +103,27 @@ public class ParticleParametersPanel extends AbstractPanel<GameObject> implement
         );
     }
 
-    private GameObject tangentalAcceleration() {
+    private GameObject tangentialAcceleration() {
         return new PanelElement.Float(
-                "Tangental Acceleration",
-                new FloatProperty(() -> params().getTangentalAcceleration(), v -> params().setTangentalAcceleration(v)),
-                new FloatProperty(() -> params().getTangentalAccelerationVar(), v -> params().setTangentalAccelerationVar(v))
+                "Tangential Acceleration",
+                new FloatProperty(() -> params().getTangentialAcceleration(), v -> params().setTangentialAcceleration(v)),
+                new FloatProperty(() -> params().getTangentialAccelerationVar(), v -> params().setTangentialAccelerationVar(v))
         );
     }
 
-    private GameObject horizontalAcceleration() {
+    private GameObject accelerationX() {
         return new PanelElement.Float(
-                "Horizontal Acceleration",
-                new FloatProperty(() -> params().getHorizontalAcceleration(), v -> params().setHorizontalAcceleration(v)),
-                new FloatProperty(() -> params().getHorizontalAccelerationVar(), v -> params().setHorizontalAccelerationVar(v))
+                "Acceleration X",
+                new FloatProperty(() -> params().getAccelerationX(), v -> params().setAccelerationX(v)),
+                new FloatProperty(() -> params().getAccelerationXVar(), v -> params().setAccelerationXVar(v))
         );
     }
 
-    private GameObject verticalAcceleration() {
+    private GameObject accelerationY() {
         return new PanelElement.Float(
-                "Vertical Acceleration",
-                new FloatProperty(() -> params().getVerticalAcceleration(), v -> params().setVerticalAcceleration(v)),
-                new FloatProperty(() -> params().getVerticalAccelerationVar(), v -> params().setVerticalAccelerationVar(v))
+                "Acceleration Y",
+                new FloatProperty(() -> params().getAccelerationY(), v -> params().setAccelerationY(v)),
+                new FloatProperty(() -> params().getAccelerationYVar(), v -> params().setAccelerationYVar(v))
         );
     }
 
@@ -134,6 +143,13 @@ public class ParticleParametersPanel extends AbstractPanel<GameObject> implement
         );
 
         return new PanelElement.Optional(endScale, new BooleanProperty(() -> params().isUpdatingScale(), v -> params().setUpdateScale(v)));
+    }
+
+    private GameObject rotatedForward() {
+        return new PanelElement.Boolean(
+                "Rotated Forward",
+                new BooleanProperty(() -> params().isRotatedForward(), v -> params().setRotatedForward(v))
+        );
     }
 
     private GameObject rotation() {

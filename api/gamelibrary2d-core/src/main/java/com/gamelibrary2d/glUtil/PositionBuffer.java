@@ -39,6 +39,10 @@ public class PositionBuffer extends AbstractMirroredVertexArrayBuffer<MirroredFl
         return data;
     }
 
+    public void clear() {
+        data.clear();
+    }
+
     public void add(float x, float y) {
         data.add(x);
         data.add(y);

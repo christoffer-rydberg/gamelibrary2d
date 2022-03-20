@@ -1,12 +1,12 @@
 package com.gamelibrary2d.particles;
 
 public class Particle {
+    private final ParticleRenderBuffer renderBuffer;
+    private final ParticleUpdateBuffer updateBuffer;
+
     private int index = -1;
     private int renderOffset;
     private int updateOffset;
-
-    private ParticleRenderBuffer renderBuffer;
-    private ParticleUpdateBuffer updateBuffer;
 
     Particle(ParticleRenderBuffer renderBuffer, ParticleUpdateBuffer updateBuffer, int index) {
         this.renderBuffer = renderBuffer;
@@ -20,14 +20,6 @@ public class Particle {
 
     public void setTime(float time) {
         updateBuffer.setTime(updateOffset, time);
-    }
-
-    public float getCustom() {
-        return updateBuffer.getCustom(updateOffset);
-    }
-
-    public void setCustom(float value) {
-        updateBuffer.setCustom(updateOffset, value);
     }
 
     public float getDelay() {
@@ -54,28 +46,28 @@ public class Particle {
         return renderBuffer.getPosY(renderOffset);
     }
 
-    public float getCenterX() {
-        return updateBuffer.getCenterX(updateOffset);
+    public float getGravityCenterX() {
+        return updateBuffer.getGravityCenterX(updateOffset);
     }
 
-    public float getCenterY() {
-        return updateBuffer.getCenterY(updateOffset);
+    public float getGravityCenterY() {
+        return updateBuffer.getGravityCenterY(updateOffset);
     }
 
-    public float getHorizontalAcceleration() {
-        return updateBuffer.getHorizontalAcceleration(updateOffset);
+    public float getAccelerationX() {
+        return updateBuffer.getAccelerationX(updateOffset);
     }
 
-    public void setHorizontalAcceleration(float horizontalAcceleration) {
-        updateBuffer.setHorizontalAcceleration(updateOffset, horizontalAcceleration);
+    public void setAccelerationX(float accelerationX) {
+        updateBuffer.setAccelerationX(updateOffset, accelerationX);
     }
 
-    public float getVerticalAcceleration() {
-        return updateBuffer.getVerticalAcceleration(updateOffset);
+    public float getAccelerationY() {
+        return updateBuffer.getAccelerationY(updateOffset);
     }
 
-    public void setVerticalAcceleration(float verticalAcceleration) {
-        updateBuffer.setVerticalAcceleration(updateOffset, verticalAcceleration);
+    public void setAccelerationY(float accelerationY) {
+        updateBuffer.setAccelerationY(updateOffset, accelerationY);
     }
 
     public float getCentripetalAcceleration() {
@@ -178,14 +170,6 @@ public class Particle {
         return isInitialized() && getTime() >= getLife();
     }
 
-    void setRenderBuffer(ParticleRenderBuffer renderBuffer) {
-        this.renderBuffer = renderBuffer;
-    }
-
-    void setUpdateBuffer(ParticleUpdateBuffer updateBuffer) {
-        this.updateBuffer = updateBuffer;
-    }
-
     void setIndex(int index) {
         if (this.index != index) {
             this.index = index;
@@ -199,9 +183,9 @@ public class Particle {
         renderBuffer.setPosY(renderOffset, y);
     }
 
-    public void setCenter(float x, float y) {
-        updateBuffer.setCenterX(updateOffset, x);
-        updateBuffer.setCenterY(updateOffset, y);
+    public void setGravityCenter(float x, float y) {
+        updateBuffer.setGravityCenterX(updateOffset, x);
+        updateBuffer.setGravityCenterY(updateOffset, y);
     }
 
     public void setColor(float r, float g, float b, float a) {
@@ -303,20 +287,20 @@ public class Particle {
 
         float posX = getPosX();
         float posY = getPosY();
-        float centerX = getCenterX();
-        float centerY = getCenterY();
+        float gravityCenterX = getGravityCenterX();
+        float gravityCenterY = getGravityCenterY();
 
         float deltaX = getDeltaX();
         float deltaY = getDeltaY();
 
         float centripetalDirX, centripetalDirY;
-        if (centerX == posX && centerY == posY) {
+        if (gravityCenterX == posX && gravityCenterY == posY) {
             double direction = -Math.atan2(deltaY, deltaX);
             centripetalDirX = (float) Math.cos(direction);
             centripetalDirY = (float) -Math.sin(direction);
         } else {
-            centripetalDirX = centerX - posX;
-            centripetalDirY = centerY - posY;
+            centripetalDirX = gravityCenterX - posX;
+            centripetalDirY = gravityCenterY - posY;
             float distance = (float) Math.sqrt(centripetalDirX * centripetalDirX + centripetalDirY * centripetalDirY);
             centripetalDirX /= distance;
             centripetalDirY /= distance;
@@ -333,8 +317,8 @@ public class Particle {
         float accSumY = centripetalDirY * centripetalAcc + tangentialDirY * tangentialAcc;
 
         // Update velocity
-        deltaX += (accSumX + externalAcceleration[0] + getHorizontalAcceleration()) * deltaTime;
-        deltaY += (accSumY + externalAcceleration[1] + getVerticalAcceleration()) * deltaTime;
+        deltaX += (accSumX + externalAcceleration[0] + getAccelerationX()) * deltaTime;
+        deltaY += (accSumY + externalAcceleration[1] + getAccelerationY()) * deltaTime;
         setDeltaX(deltaX);
         setDeltaY(deltaY);
 
