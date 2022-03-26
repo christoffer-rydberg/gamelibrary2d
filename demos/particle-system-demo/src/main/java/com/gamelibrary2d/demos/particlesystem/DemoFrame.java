@@ -4,10 +4,10 @@ import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.particles.parameters.EmitterParameters;
-import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.ParticleEmissionParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
+import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
 import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particles.parameters.PositionParameters;
 import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.updaters.DurationUpdater;
 import com.gamelibrary2d.updaters.InstantUpdater;
@@ -28,15 +28,15 @@ public class DemoFrame extends AbstractFrame {
         this.game = game;
     }
 
-    private PositionParameters createPositionParameters() {
-        PositionParameters positionParameters = new PositionParameters();
-        positionParameters.setOffsetXVar(75f);
-        positionParameters.setOffsetYVar(25f);
-        return positionParameters;
+    private ParticleSpawnParameters createSpawnParameters() {
+        ParticleSpawnParameters spawnParameters = new ParticleSpawnParameters();
+        spawnParameters.setOffsetXVar(75f);
+        spawnParameters.setOffsetYVar(25f);
+        return spawnParameters;
     }
 
-    private ParticleParameters createParticleParameters() {
-        ParticleParameters updateSettings = new ParticleParameters();
+    private ParticleUpdateParameters createUpdateParameters() {
+        ParticleUpdateParameters updateSettings = new ParticleUpdateParameters();
         updateSettings.setLife(1.5f);
         updateSettings.setLifeVar(0.5f);
         updateSettings.setDelay(0.25f);
@@ -60,13 +60,13 @@ public class DemoFrame extends AbstractFrame {
     protected void onInitialize(InitializationContext context) {
         try {
             // Example of particle system settings created from code:
-            EmitterParameters emitterParameters = new EmitterParameters();
-            emitterParameters.setEmissionRate(350f);
+            ParticleEmissionParameters emissionParameters = new ParticleEmissionParameters();
+            emissionParameters.setEmissionRate(350f);
 
             ParticleSystemParameters fireSystemSettings = new ParticleSystemParameters(
-                    emitterParameters,
-                    createPositionParameters(),
-                    createParticleParameters());
+                    emissionParameters,
+                    createSpawnParameters(),
+                    createUpdateParameters());
 
             fireSystem = DefaultParticleSystem.create(fireSystemSettings, this);
 

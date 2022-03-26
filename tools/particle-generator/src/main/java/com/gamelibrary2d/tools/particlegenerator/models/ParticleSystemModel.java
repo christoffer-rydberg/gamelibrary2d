@@ -9,10 +9,10 @@ import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.particles.AcceleratedParticleSystem;
 import com.gamelibrary2d.particles.DefaultParticleSystem;
-import com.gamelibrary2d.particles.parameters.EmitterParameters;
-import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.ParticleEmissionParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
+import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
 import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particles.parameters.PositionParameters;
 import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
 import com.gamelibrary2d.resources.Animation;
 import com.gamelibrary2d.resources.BlendMode;
@@ -45,9 +45,9 @@ public class ParticleSystemModel {
         efficientRenderer = new EfficientParticleRenderer();
 
         settings = new ParticleSystemParameters(
-                new EmitterParameters(),
-                new PositionParameters(),
-                new ParticleParameters());
+                new ParticleEmissionParameters(),
+                new ParticleSpawnParameters(),
+                new ParticleUpdateParameters());
 
         defaultParticleSystem = DefaultParticleSystem.create(settings, efficientRenderer, frame);
         acceleratedParticleSystem = AcceleratedParticleSystem.create(settings, efficientRenderer, 10000000, frame);
@@ -75,9 +75,9 @@ public class ParticleSystemModel {
 
     public void reset() {
         setSettings(new ParticleSystemParameters(
-                new EmitterParameters(),
-                new PositionParameters(),
-                new ParticleParameters()));
+                new ParticleEmissionParameters(),
+                new ParticleSpawnParameters(),
+                new ParticleUpdateParameters()));
     }
 
     public void removeTexture() {
@@ -125,16 +125,16 @@ public class ParticleSystemModel {
         return settings;
     }
 
-    public void setParameters(ParticleParameters updateSettings) {
-        settings.setParticleParameters(updateSettings);
+    public void setParameters(ParticleUpdateParameters updateSettings) {
+        settings.setUpdateParameters(updateSettings);
     }
 
-    public PositionParameters getPositionParameters() {
-        return settings.getPositionParameters();
+    public ParticleSpawnParameters getSpawnParameters() {
+        return settings.getSpawnParameters();
     }
 
-    public void setPositionParameters(PositionParameters positionParameters) {
-        settings.setPositionParameters(positionParameters);
+    public void setSpawnParameters(ParticleSpawnParameters spawnParameters) {
+        settings.setSpawnParameters(spawnParameters);
     }
 
     public float emit(float deltaTime) {

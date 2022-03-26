@@ -5,10 +5,7 @@ import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.particles.Particle;
 
-/**
- * Parameters for setting the initial state and behaviour of emitted particles.
- */
-public class ParticleParameters implements Serializable {
+public class ParticleUpdateParameters implements Serializable {
     private final static int STRIDE = 52;
 
     private final static int LIFE = 0;
@@ -80,7 +77,7 @@ public class ParticleParameters implements Serializable {
     /**
      * Default constructor
      */
-    public ParticleParameters() {
+    public ParticleUpdateParameters() {
         internalState[LIFE] = 1;
         internalState[COLOR_R] = 255;
         internalState[COLOR_G] = 255;
@@ -93,7 +90,7 @@ public class ParticleParameters implements Serializable {
     /**
      * Copies settings from the serialized buffer.
      */
-    public ParticleParameters(DataBuffer buffer) {
+    public ParticleUpdateParameters(DataBuffer buffer) {
         for (int i = 0; i < STRIDE; ++i) {
             internalState[i] = buffer.getFloat();
         }

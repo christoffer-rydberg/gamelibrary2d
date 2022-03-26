@@ -3,15 +3,15 @@ package com.gamelibrary2d.tools.particlegenerator.panels;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.denotations.Parent;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.particles.parameters.PositionParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
 
-public class PositionParametersPanel extends AbstractPanel<GameObject> implements Parent<GameObject> {
+public class SpawnParametersPanel extends AbstractPanel<GameObject> implements Parent<GameObject> {
 
     private final ParticleSystemModel particleSystem;
 
-    public PositionParametersPanel(ParticleSystemModel particleSystem) {
+    public SpawnParametersPanel(ParticleSystemModel particleSystem) {
         this.particleSystem = particleSystem;
         PanelUtil.stack(this, angle());
         PanelUtil.stack(this, radiusX());
@@ -20,8 +20,8 @@ public class PositionParametersPanel extends AbstractPanel<GameObject> implement
         PanelUtil.stack(this, varY());
     }
 
-    private PositionParameters params() {
-        return particleSystem.getSettings().getPositionParameters();
+    private ParticleSpawnParameters params() {
+        return particleSystem.getSettings().getSpawnParameters();
     }
 
     private GameObject angle() {

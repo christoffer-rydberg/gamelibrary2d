@@ -7,7 +7,7 @@ import com.gamelibrary2d.components.denotations.Clearable;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.particles.parameters.EmitterParameters;
+import com.gamelibrary2d.particles.parameters.ParticleEmissionParameters;
 import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
 import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
 import com.gamelibrary2d.particles.renderers.ParticleRenderer;
@@ -154,14 +154,14 @@ public class DefaultParticleSystem implements Updatable, Renderable, Clearable {
 
     /**
      * Emits particles at the specified position.
-     * The number of particles is decided by the count-parameters of the particle system's {@link EmitterParameters}.
+     * The number of particles is decided by the count-parameters of the particle system's {@link ParticleEmissionParameters}.
      *
      * @param x The X-position of the particles.
      * @param y The Y-position of the particles.
      */
     public void emit(float x, float y) {
-        EmitterParameters emitterParameters = parameters.getEmitterParameters();
-        int count = Math.round(emitterParameters.getParticleCount() + emitterParameters.getParticleCountVar() * RandomInstance.random11());
+        ParticleEmissionParameters emissionParameters = parameters.getEmissionParameters();
+        int count = Math.round(emissionParameters.getParticleCount() + emissionParameters.getParticleCountVar() * RandomInstance.random11());
         emit(x, y, count);
     }
 
@@ -172,7 +172,7 @@ public class DefaultParticleSystem implements Updatable, Renderable, Clearable {
     /**
      * Emits particles at the specified position.
      * The number of particles is decided by the deltaTime parameter
-     * in conjunction with the emission rate of the particle system's {@link EmitterParameters}.
+     * in conjunction with the emission rate of the particle system's {@link ParticleEmissionParameters}.
      *
      * @param x         The X-position of the emitted particles.
      * @param y         The Y-position of the emitted particles.
@@ -182,7 +182,7 @@ public class DefaultParticleSystem implements Updatable, Renderable, Clearable {
      * This value should be added to the update cycle's deltaTime the next time this method is invoked.
      */
     public float emit(float x, float y, float deltaTime) {
-        float rate = parameters.getEmitterParameters().getEmissionRate();
+        float rate = parameters.getEmissionParameters().getEmissionRate();
         if (rate > 0) {
             int numberOfEmissions = (int) (deltaTime * rate);
             for (int i = 0; i < numberOfEmissions; ++i) {
@@ -203,8 +203,8 @@ public class DefaultParticleSystem implements Updatable, Renderable, Clearable {
         particle.setIndex(particleCount++);
 
         particle.setInitialized(false);
-        double spawnAngle = parameters.getPositionParameters().apply(particle, x, y);
-        parameters.getParticleParameters().apply(particle, x, y, spawnAngle);
+        double spawnAngle = parameters.getSpawnParameters().apply(particle, x, y);
+        parameters.getUpdateParameters().apply(particle, x, y, spawnAngle);
 
         particle.setExternalSpeedX(externalSpeed[0]);
         particle.setExternalSpeedY(externalSpeed[1]);

@@ -9,8 +9,8 @@ import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.denotations.Parent;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.particles.parameters.ParticleParameters;
-import com.gamelibrary2d.particles.parameters.PositionParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
+import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
 import com.gamelibrary2d.renderers.ContentRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
 import com.gamelibrary2d.resources.Quad;
@@ -24,9 +24,9 @@ public class ParticleSystemSettingsPanel extends AbstractPanel<GameObject> imple
     private static final DataBuffer ioBuffer = new DynamicByteBuffer();
 
     public ParticleSystemSettingsPanel(ParticleSystemModel particleSystem, Disposer disposer) {
-        PanelUtil.stack(this, new ParticleParametersPanel(particleSystem), 0f);
-        PanelUtil.stack(this, new PositionParametersPanel(particleSystem), PanelUtil.DEFAULT_STACK_MARGIN * 5);
-        PanelUtil.stack(this, new EmitterParametersPanel(particleSystem), PanelUtil.DEFAULT_STACK_MARGIN * 5);
+        PanelUtil.stack(this, new UpdateParametersPanel(particleSystem), 0f);
+        PanelUtil.stack(this, new SpawnParametersPanel(particleSystem), PanelUtil.DEFAULT_STACK_MARGIN * 5);
+        PanelUtil.stack(this, new EmissionParametersPanel(particleSystem), PanelUtil.DEFAULT_STACK_MARGIN * 5);
 
         ResizeSlider slider = ResizeSlider.create(particleSystem, disposer);
         PanelUtil.stack(this, slider, PanelUtil.DEFAULT_STACK_MARGIN * 5);
@@ -40,27 +40,27 @@ public class ParticleSystemSettingsPanel extends AbstractPanel<GameObject> imple
     }
 
     private static class ResizeSlider extends Slider {
-        private PositionParameters originalPositionParameters;
-        private ParticleParameters originalParticleParameters;
+        private ParticleSpawnParameters originalParticleSpawnParameters;
+        private ParticleUpdateParameters originalParticleUpdateParameters;
 
         private ResizeSlider(ContentRenderer handle, ParticleSystemModel particleSystem) {
             super(handle, SliderDirection.HORIZONTAL, -50, 50, 2);
             addDragBeginListener(value -> {
-                originalPositionParameters = createCopy(particleSystem.getPositionParameters(), PositionParameters::new);
-                originalParticleParameters = createCopy(particleSystem.getParameters().getParticleParameters(), ParticleParameters::new);
+                originalParticleSpawnParameters = createCopy(particleSystem.getSpawnParameters(), ParticleSpawnParameters::new);
+                originalParticleUpdateParameters = createCopy(particleSystem.getParameters().getUpdateParameters(), ParticleUpdateParameters::new);
             });
             addValueChangedListener(value -> {
                 float resizeValue = ((value < 0 ? value : value * 2) + 100f) * 0.01f;
-                PositionParameters updatedPositionParameters
-                        = createCopy(originalPositionParameters, PositionParameters::new);
-                ParticleParameters updatedParticleParameters =
-                        createCopy(originalParticleParameters, ParticleParameters::new);
+                ParticleSpawnParameters updatedSpawnParameters
+                        = createCopy(originalParticleSpawnParameters, ParticleSpawnParameters::new);
+                ParticleUpdateParameters updatedUpdateParameters =
+                        createCopy(originalParticleUpdateParameters, ParticleUpdateParameters::new);
 
-                updatedPositionParameters.scale(resizeValue);
-                updatedParticleParameters.scale(resizeValue);
+                updatedSpawnParameters.scale(resizeValue);
+                updatedUpdateParameters.scale(resizeValue);
 
-                particleSystem.setPositionParameters(updatedPositionParameters);
-                particleSystem.setParameters(updatedParticleParameters);
+                particleSystem.setSpawnParameters(updatedSpawnParameters);
+                particleSystem.setParameters(updatedUpdateParameters);
             });
             addDragStopListener(v -> setValue(0, false));
 

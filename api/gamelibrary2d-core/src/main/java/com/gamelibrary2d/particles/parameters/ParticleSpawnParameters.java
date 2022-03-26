@@ -5,10 +5,7 @@ import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.particles.Particle;
 
-/**
- * Parameters for positioning emitted particles.
- */
-public class PositionParameters implements Serializable {
+public class ParticleSpawnParameters implements Serializable {
     private static final int STRIDE = 8;
 
     private static final int ANGLE = 0;
@@ -28,11 +25,11 @@ public class PositionParameters implements Serializable {
 
     private int updateCounter;
 
-    public PositionParameters() {
+    public ParticleSpawnParameters() {
         internalState[ANGLE_VAR] = 180;
     }
 
-    public PositionParameters(DataBuffer buffer) {
+    public ParticleSpawnParameters(DataBuffer buffer) {
         for (int i = 0; i < STRIDE; ++i) {
             internalState[i] = buffer.getFloat();
         }

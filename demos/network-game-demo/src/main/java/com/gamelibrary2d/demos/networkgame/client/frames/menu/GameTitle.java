@@ -71,8 +71,8 @@ public class GameTitle extends AbstractGameObject implements Updatable {
                 s -> new ResourceReader().read(s, ParticleSystemParameters::new));
 
         DefaultParticleSystem portalSystem = DefaultParticleSystem.create(params, ParticleRendererFactory.create(disposer), disposer);
-        portalSystem.getParameters().getPositionParameters().scale(0.0005f * window.getWidth());
-        portalSystem.getParameters().getParticleParameters().scale(0.0005f * window.getWidth());
+        portalSystem.getParameters().getSpawnParameters().scale(0.0005f * window.getWidth());
+        portalSystem.getParameters().getUpdateParameters().scale(0.0005f * window.getWidth());
 
         return new GameTitle(bounds, part1, part2, part3, new Portal(portalSystem, part2.getPosition()));
     }

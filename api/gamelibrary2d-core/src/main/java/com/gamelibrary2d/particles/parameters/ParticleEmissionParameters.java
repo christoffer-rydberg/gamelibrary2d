@@ -3,20 +3,17 @@ package com.gamelibrary2d.particles.parameters;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.Serializable;
 
-/**
- * Parameters for particle emission.
- */
-public class EmitterParameters implements Serializable {
+public class ParticleEmissionParameters implements Serializable {
     private int particleCount;
     private int particleCountVar;
     private float emissionRate;
 
-    public EmitterParameters() {
+    public ParticleEmissionParameters() {
         particleCount = 1;
         emissionRate = 1;
     }
 
-    public EmitterParameters(DataBuffer buffer) {
+    public ParticleEmissionParameters(DataBuffer buffer) {
         particleCount = buffer.getInt();
         particleCountVar = buffer.getInt();
         emissionRate = buffer.getFloat();

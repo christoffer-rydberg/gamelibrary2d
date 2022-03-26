@@ -5,16 +5,16 @@ import com.gamelibrary2d.components.containers.DefaultPanel;
 import com.gamelibrary2d.components.containers.Panel;
 import com.gamelibrary2d.components.denotations.Parent;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.properties.BooleanProperty;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
 
-public class ParticleParametersPanel extends AbstractPanel<GameObject> implements Parent<GameObject> {
+public class UpdateParametersPanel extends AbstractPanel<GameObject> implements Parent<GameObject> {
 
     private final ParticleSystemModel particleSystem;
 
-    public ParticleParametersPanel(ParticleSystemModel particleSystem) {
+    public UpdateParametersPanel(ParticleSystemModel particleSystem) {
         this.particleSystem = particleSystem;
         PanelUtil.stack(this, life(), 0f);
         PanelUtil.stack(this, delay());
@@ -37,8 +37,8 @@ public class ParticleParametersPanel extends AbstractPanel<GameObject> implement
         PanelUtil.stack(this, endAlpha());
     }
 
-    private ParticleParameters params() {
-        return particleSystem.getSettings().getParticleParameters();
+    private ParticleUpdateParameters params() {
+        return particleSystem.getSettings().getUpdateParameters();
     }
 
     private GameObject life() {

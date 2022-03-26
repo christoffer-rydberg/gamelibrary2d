@@ -4,38 +4,38 @@ import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.Serializable;
 
 public final class ParticleSystemParameters implements Serializable {
-    private EmitterParameters emitterParameters;
-    private PositionParameters positionParameters;
-    private ParticleParameters particleParameters;
+    private ParticleEmissionParameters emissionParameters;
+    private ParticleSpawnParameters spawnParameters;
+    private ParticleUpdateParameters updateParameters;
 
     public ParticleSystemParameters(
-            EmitterParameters emitterParameters,
-            PositionParameters positionParameters,
-            ParticleParameters particleParameters) {
-        this.emitterParameters = emitterParameters;
-        this.positionParameters = positionParameters;
-        this.particleParameters = particleParameters;
+            ParticleEmissionParameters emissionParameters,
+            ParticleSpawnParameters spawnParameters,
+            ParticleUpdateParameters updateParameters) {
+        this.emissionParameters = emissionParameters;
+        this.spawnParameters = spawnParameters;
+        this.updateParameters = updateParameters;
     }
 
     public ParticleSystemParameters(DataBuffer buffer) {
-        this.particleParameters = new ParticleParameters(buffer);
-        this.positionParameters = new PositionParameters(buffer);
-        this.emitterParameters = new EmitterParameters(buffer);
+        this.updateParameters = new ParticleUpdateParameters(buffer);
+        this.spawnParameters = new ParticleSpawnParameters(buffer);
+        this.emissionParameters = new ParticleEmissionParameters(buffer);
     }
 
     public int estimateCapacityFromCount() {
-        EmitterParameters emitterParameters = getEmitterParameters();
-        return emitterParameters.getParticleCount() + emitterParameters.getParticleCountVar();
+        ParticleEmissionParameters emissionParameters = getEmissionParameters();
+        return emissionParameters.getParticleCount() + emissionParameters.getParticleCountVar();
     }
 
     public int estimateCapacityFromInterval() {
-        float maxLife = getParticleParameters().getLife() + getParticleParameters().getLifeVar();
+        float maxLife = getUpdateParameters().getLife() + getUpdateParameters().getLifeVar();
 
-        EmitterParameters emitterParameters = getEmitterParameters();
+        ParticleEmissionParameters emissionParameters = getEmissionParameters();
 
-        int particleCount = emitterParameters.getParticleCount() + emitterParameters.getParticleCountVar();
+        int particleCount = emissionParameters.getParticleCount() + emissionParameters.getParticleCountVar();
 
-        return (int) Math.ceil(1.2f * maxLife * particleCount / emitterParameters.getEmissionRate());
+        return (int) Math.ceil(1.2f * maxLife * particleCount / emissionParameters.getEmissionRate());
     }
 
     public int estimateCapacity() {
@@ -44,34 +44,34 @@ public final class ParticleSystemParameters implements Serializable {
                 estimateCapacityFromInterval());
     }
 
-    public EmitterParameters getEmitterParameters() {
-        return emitterParameters;
+    public ParticleEmissionParameters getEmissionParameters() {
+        return emissionParameters;
     }
 
-    public void setEmitterParameters(EmitterParameters emitterParameters) {
-        this.emitterParameters = emitterParameters;
+    public void setEmissionParameters(ParticleEmissionParameters emissionParameters) {
+        this.emissionParameters = emissionParameters;
     }
 
-    public PositionParameters getPositionParameters() {
-        return positionParameters;
+    public ParticleSpawnParameters getSpawnParameters() {
+        return spawnParameters;
     }
 
-    public void setPositionParameters(PositionParameters positionParameters) {
-        this.positionParameters = positionParameters;
+    public void setSpawnParameters(ParticleSpawnParameters spawnParameters) {
+        this.spawnParameters = spawnParameters;
     }
 
-    public ParticleParameters getParticleParameters() {
-        return particleParameters;
+    public ParticleUpdateParameters getUpdateParameters() {
+        return updateParameters;
     }
 
-    public void setParticleParameters(ParticleParameters particleParameters) {
-        this.particleParameters = particleParameters;
+    public void setUpdateParameters(ParticleUpdateParameters updateParameters) {
+        this.updateParameters = updateParameters;
     }
 
     @Override
     public void serialize(DataBuffer buffer) {
-        particleParameters.serialize(buffer);
-        positionParameters.serialize(buffer);
-        emitterParameters.serialize(buffer);
+        updateParameters.serialize(buffer);
+        spawnParameters.serialize(buffer);
+        emissionParameters.serialize(buffer);
     }
 }

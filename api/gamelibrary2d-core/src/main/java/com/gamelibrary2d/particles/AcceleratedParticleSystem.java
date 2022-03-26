@@ -9,10 +9,10 @@ import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.framework.OpenGL;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.glUtil.*;
-import com.gamelibrary2d.particles.parameters.EmitterParameters;
-import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.ParticleEmissionParameters;
+import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
+import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
 import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particles.parameters.PositionParameters;
 import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
 
 import java.nio.FloatBuffer;
@@ -82,10 +82,10 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
             atomicBuffer = MirroredIntBuffer.create(new int[1], OpenGL.GL_ATOMIC_COUNTER_BUFFER, OpenGL.GL_DYNAMIC_DRAW, disposer);
 
             this.positionBuffer = positionBuffer;
-            positionUpdateCounter = parameters.getPositionParameters().getUpdateCounter();
+            positionUpdateCounter = parameters.getSpawnParameters().getUpdateCounter();
 
             this.parametersBuffer = parametersBuffer;
-            parameterUpdateCounter = parameters.getParticleParameters().getUpdateCounter();
+            parameterUpdateCounter = parameters.getUpdateParameters().getUpdateCounter();
 
             glUniformPosition = updateProgram.getUniformLocation("position");
             glUniformExternalAcceleration = updateProgram.getUniformLocation("externalAcceleration");
@@ -106,13 +106,13 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
             Disposer disposer) {
 
         MirroredFloatBuffer positionBuffer = MirroredFloatBuffer.create(
-                parameters.getPositionParameters().getInternalStateArray(),
+                parameters.getSpawnParameters().getInternalStateArray(),
                 OpenGL.GL_SHADER_STORAGE_BUFFER,
                 OpenGL.GL_DYNAMIC_DRAW,
                 disposer);
 
         MirroredFloatBuffer parametersBuffer = MirroredFloatBuffer.create(
-                parameters.getParticleParameters().getInternalStateArray(),
+                parameters.getUpdateParameters().getInternalStateArray(),
                 OpenGL.GL_SHADER_STORAGE_BUFFER,
                 OpenGL.GL_DYNAMIC_DRAW,
                 disposer);
@@ -174,11 +174,11 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
 
     /**
      * Emits all particles.
-     * The number of particles is decided by the count-parameters of the particle system's {@link EmitterParameters}.
+     * The number of particles is decided by the count-parameters of the particle system's {@link ParticleEmissionParameters}.
      */
     public void emit() {
-        EmitterParameters emitterParameters = parameters.getEmitterParameters();
-        emit(Math.round(emitterParameters.getParticleCount() + emitterParameters.getParticleCountVar() * RandomInstance.random11()));
+        ParticleEmissionParameters emissionParameters = parameters.getEmissionParameters();
+        emit(Math.round(emissionParameters.getParticleCount() + emissionParameters.getParticleCountVar() * RandomInstance.random11()));
     }
 
     /**
@@ -198,7 +198,7 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
     /**
      * Emits particles.
      * The number of particles is decided by the deltaTime parameter
-     * in conjunction with the emission rate of the particle system's {@link EmitterParameters}.
+     * in conjunction with the emission rate of the particle system's {@link ParticleEmissionParameters}.
      *
      * @param deltaTime The time, in seconds, since the last particle was emitted.
      * @return The time, in seconds, since the last particle was emitted.
@@ -206,7 +206,7 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
      * This value should be added to the update cycle's deltaTime the next time this method is invoked.
      */
     public float emit(float deltaTime) {
-        float rate = parameters.getEmitterParameters().getEmissionRate();
+        float rate = parameters.getEmissionParameters().getEmissionRate();
         if (rate > 0) {
             int numberOfEmissions = (int) (deltaTime * rate);
             for (int i = 0; i < numberOfEmissions; ++i) {
@@ -257,25 +257,25 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
 
         openGL.glUniform1i(glUniformParticlesInGpu, particlesInGpuBuffer);
 
-        PositionParameters positionParameters = parameters.getPositionParameters();
+        ParticleSpawnParameters spawnParameters = parameters.getSpawnParameters();
 
         openGL.glUniform2f(
                 glUniformPosition,
-                position[0] + positionParameters.getOffsetX(),
-                position[1] + positionParameters.getOffsetY());
+                position[0] + spawnParameters.getOffsetX(),
+                position[1] + spawnParameters.getOffsetY());
         openGL.glUniform2fv(glUniformExternalAcceleration, externalAcceleration);
 
-        if (!positionBuffer.allocate(positionParameters.getInternalStateArray())) {
-            if (positionUpdateCounter != positionParameters.getUpdateCounter()) {
-                positionUpdateCounter = positionParameters.getUpdateCounter();
+        if (!positionBuffer.allocate(spawnParameters.getInternalStateArray())) {
+            if (positionUpdateCounter != spawnParameters.getUpdateCounter()) {
+                positionUpdateCounter = spawnParameters.getUpdateCounter();
                 positionBuffer.updateGPU(0, positionBuffer.getCapacity());
             }
         }
 
-        ParticleParameters particleParameters = parameters.getParticleParameters();
-        if (!parametersBuffer.allocate(particleParameters.getInternalStateArray())) {
-            if (parameterUpdateCounter != particleParameters.getUpdateCounter()) {
-                parameterUpdateCounter = particleParameters.getUpdateCounter();
+        ParticleUpdateParameters updateParameters = parameters.getUpdateParameters();
+        if (!parametersBuffer.allocate(updateParameters.getInternalStateArray())) {
+            if (parameterUpdateCounter != updateParameters.getUpdateCounter()) {
+                parameterUpdateCounter = updateParameters.getUpdateCounter();
                 parametersBuffer.updateGPU(0, parametersBuffer.getCapacity());
             }
         }

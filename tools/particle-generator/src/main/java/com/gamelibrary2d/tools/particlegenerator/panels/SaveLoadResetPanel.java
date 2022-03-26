@@ -11,11 +11,11 @@ import com.gamelibrary2d.common.random.RandomGenerator;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.objects.GameObject;
+import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
 import com.gamelibrary2d.renderers.Label;
-import com.gamelibrary2d.particles.parameters.EmitterParameters;
-import com.gamelibrary2d.particles.parameters.ParticleParameters;
+import com.gamelibrary2d.particles.parameters.ParticleEmissionParameters;
+import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
 import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particles.parameters.PositionParameters;
 import com.gamelibrary2d.resources.HorizontalTextAlignment;
 import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
@@ -78,15 +78,15 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
                 settings = resourceReader.read(file, ParticleSystemParameters::new);
             } else {
                 settings = new ParticleSystemParameters(
-                        new EmitterParameters(),
-                        new PositionParameters(),
-                        new ParticleParameters());
+                        new ParticleEmissionParameters(),
+                        new ParticleSpawnParameters(),
+                        new ParticleUpdateParameters());
             }
         } catch (IOException e) {
             settings = new ParticleSystemParameters(
-                    new EmitterParameters(),
-                    new PositionParameters(),
-                    new ParticleParameters());
+                    new ParticleEmissionParameters(),
+                    new ParticleSpawnParameters(),
+                    new ParticleUpdateParameters());
         }
 
         particleSystem.setSettings(settings);
@@ -95,137 +95,137 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
     private void randomizeParticleSystem() {
         RandomGenerator random = RandomInstance.get();
 
-        ParticleParameters particleParameters = particleSystem.getParameters().getParticleParameters();
-        PositionParameters positionParameters = particleSystem.getParameters().getPositionParameters();
+        ParticleUpdateParameters updateParameters = particleSystem.getParameters().getUpdateParameters();
+        ParticleSpawnParameters spawnParameters = particleSystem.getParameters().getSpawnParameters();
 
         float life = round(random.nextFloat() * 5, 1);
-        particleParameters.setLife(life);
-        particleParameters.setLifeVar(round(random.nextFloat() * life, 1));
+        updateParameters.setLife(life);
+        updateParameters.setLifeVar(round(random.nextFloat() * life, 1));
 
-        particleParameters.setMovingFromCenter(random.nextInt(2) == 1);
-        particleParameters.setSpeed(random.nextInt(10));
-        particleParameters.setSpeedVar(random.nextInt(10));
+        updateParameters.setMovingFromCenter(random.nextInt(2) == 1);
+        updateParameters.setSpeed(random.nextInt(10));
+        updateParameters.setSpeedVar(random.nextInt(10));
 
-        particleParameters.setDirection(round(random.nextFloat() * 360 - 180, 1));
-        particleParameters.setDirectionVar(round(random.nextFloat() * 180, 1));
+        updateParameters.setDirection(round(random.nextFloat() * 360 - 180, 1));
+        updateParameters.setDirectionVar(round(random.nextFloat() * 180, 1));
 
         boolean downScale = random.nextInt(2) == 1;
         float scale = random.nextFloat() * 5;
-        particleParameters.setScale(round(downScale ? 1f / scale : scale, 2));
+        updateParameters.setScale(round(downScale ? 1f / scale : scale, 2));
 
         boolean downScaleVar = random.nextInt(2) == 1;
         float scaleVar = random.nextFloat() * 2;
-        particleParameters.setScaleVar(round(downScaleVar ? 1f / scaleVar : scaleVar, 2));
+        updateParameters.setScaleVar(round(downScaleVar ? 1f / scaleVar : scaleVar, 2));
 
-        particleParameters.setUpdateScale(random.nextInt(2) == 1);
+        updateParameters.setUpdateScale(random.nextInt(2) == 1);
 
         boolean downScaleEnd = random.nextInt(2) == 1;
         float scaleEnd = random.nextFloat() * 5;
-        particleParameters.setEndScale(round(downScaleEnd ? 1f / scaleEnd : scaleEnd, 2));
+        updateParameters.setEndScale(round(downScaleEnd ? 1f / scaleEnd : scaleEnd, 2));
 
         boolean downScaleEndVar = random.nextInt(2) == 1;
         float endScaleVar = random.nextFloat() * 2;
-        particleParameters.setEndScaleVar(round(downScaleEndVar ? 1f / endScaleVar : endScaleVar, 2));
+        updateParameters.setEndScaleVar(round(downScaleEndVar ? 1f / endScaleVar : endScaleVar, 2));
 
-        particleParameters.setAcceleration(
+        updateParameters.setAcceleration(
                 round(random.nextFloat() * 100 - 50, 1),
                 round(random.nextFloat() * 100 - 50, 1));
 
-        particleParameters.setAccelerationVar(
+        updateParameters.setAccelerationVar(
                 round(random.nextFloat() * 100 - 50, 1),
                 round(random.nextFloat() * 100 - 50, 1));
 
-        particleParameters.setCentripetalAcceleration(round(random.nextFloat() * 100, 1));
-        particleParameters.setCentripetalAccelerationVar(round(random.nextFloat() * 100, 1));
+        updateParameters.setCentripetalAcceleration(round(random.nextFloat() * 100, 1));
+        updateParameters.setCentripetalAccelerationVar(round(random.nextFloat() * 100, 1));
 
-        particleParameters.setTangentialAcceleration(round(random.nextFloat() * 100, 1));
-        particleParameters.setTangentialAccelerationVar(round(random.nextFloat() * 100, 1));
+        updateParameters.setTangentialAcceleration(round(random.nextFloat() * 100, 1));
+        updateParameters.setTangentialAccelerationVar(round(random.nextFloat() * 100, 1));
 
-        particleParameters.setColor(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-        particleParameters.setUpdateColor(random.nextInt(2) == 1);
+        updateParameters.setColor(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+        updateParameters.setUpdateColor(random.nextInt(2) == 1);
 
-        particleParameters.setEndColor(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+        updateParameters.setEndColor(random.nextInt(255), random.nextInt(255), random.nextInt(255));
 
         boolean varColor = random.nextInt(2) == 1;
-        particleParameters.setColorVar(varColor ? random.nextInt(255) : 0, varColor ? random.nextInt(255) : 0,
+        updateParameters.setColorVar(varColor ? random.nextInt(255) : 0, varColor ? random.nextInt(255) : 0,
                 varColor ? random.nextInt(255) : 0);
 
         boolean varEndColor = random.nextInt(2) == 1;
-        particleParameters.setEndColorVar(varEndColor ? random.nextInt(255) : 0, varEndColor ? random.nextInt(255) : 0,
+        updateParameters.setEndColorVar(varEndColor ? random.nextInt(255) : 0, varEndColor ? random.nextInt(255) : 0,
                 varEndColor ? random.nextInt(255) : 0);
 
         boolean varEndSpeed = random.nextInt(2) == 1;
-        particleParameters.setEndSpeedFactor(varEndSpeed ? round(random.nextFloat(), 2) : 1);
+        updateParameters.setEndSpeedFactor(varEndSpeed ? round(random.nextFloat(), 2) : 1);
 
-        particleParameters.setAlpha(round(random.nextFloat(), 2));
-        particleParameters.setAlphaVar(round(random.nextFloat(), 2));
-        particleParameters.setEndAlpha(round(random.nextFloat(), 2));
-        particleParameters.setEndAlphaVar(round(random.nextFloat(), 2));
-        particleParameters.setUpdateAlpha(random.nextInt(2) == 1);
+        updateParameters.setAlpha(round(random.nextFloat(), 2));
+        updateParameters.setAlphaVar(round(random.nextFloat(), 2));
+        updateParameters.setEndAlpha(round(random.nextFloat(), 2));
+        updateParameters.setEndAlphaVar(round(random.nextFloat(), 2));
+        updateParameters.setUpdateAlpha(random.nextInt(2) == 1);
 
         boolean randomizeRotation = random.nextInt(2) == 1;
         if (randomizeRotation) {
             boolean rotatedForward = random.nextInt(2) == 1;
             if (rotatedForward) {
-                particleParameters.setRotatedForward(true);
-                particleParameters.setRotation(0);
-                particleParameters.setRotationVar(0);
-                particleParameters.setRotationSpeed(0);
-                particleParameters.setRotationSpeedVar(0);
-                particleParameters.setRotationAcceleration(0);
-                particleParameters.setRotationAccelerationVar(0);
+                updateParameters.setRotatedForward(true);
+                updateParameters.setRotation(0);
+                updateParameters.setRotationVar(0);
+                updateParameters.setRotationSpeed(0);
+                updateParameters.setRotationSpeedVar(0);
+                updateParameters.setRotationAcceleration(0);
+                updateParameters.setRotationAccelerationVar(0);
             } else {
-                particleParameters.setRotatedForward(false);
-                particleParameters.setRotation(round(random.nextFloat() * 360 - 180, 2));
-                particleParameters.setRotationVar(round(random.nextFloat() * 180, 2));
-                particleParameters.setRotationSpeed(round(random.nextFloat() * 100, 2));
-                particleParameters.setRotationSpeedVar(round(random.nextFloat() * 100, 2));
-                particleParameters.setRotationAcceleration(round(random.nextFloat() * 100, 2));
-                particleParameters.setRotationAccelerationVar(round(random.nextFloat() * 100, 2));
+                updateParameters.setRotatedForward(false);
+                updateParameters.setRotation(round(random.nextFloat() * 360 - 180, 2));
+                updateParameters.setRotationVar(round(random.nextFloat() * 180, 2));
+                updateParameters.setRotationSpeed(round(random.nextFloat() * 100, 2));
+                updateParameters.setRotationSpeedVar(round(random.nextFloat() * 100, 2));
+                updateParameters.setRotationAcceleration(round(random.nextFloat() * 100, 2));
+                updateParameters.setRotationAccelerationVar(round(random.nextFloat() * 100, 2));
             }
         } else {
-            particleParameters.setRotation(0);
-            particleParameters.setRotationVar(0);
-            particleParameters.setRotationSpeed(0);
-            particleParameters.setRotationSpeedVar(0);
-            particleParameters.setRotationAcceleration(0);
-            particleParameters.setRotationAccelerationVar(0);
+            updateParameters.setRotation(0);
+            updateParameters.setRotationVar(0);
+            updateParameters.setRotationSpeed(0);
+            updateParameters.setRotationSpeedVar(0);
+            updateParameters.setRotationAcceleration(0);
+            updateParameters.setRotationAccelerationVar(0);
         }
 
-        particleParameters.setIndividualGravityCenter(random.nextInt(2) == 1);
+        updateParameters.setIndividualGravityCenter(random.nextInt(2) == 1);
 
-        EmitterParameters emitterParameters = particleSystem.getSettings().getEmitterParameters();
-        emitterParameters.setEmissionRate(round(random.nextFloat() * 750, 1));
-        emitterParameters.setParticleCount(1);
-        emitterParameters.setParticleCountVar(1);
+        ParticleEmissionParameters emissionParameters = particleSystem.getSettings().getEmissionParameters();
+        emissionParameters.setEmissionRate(round(random.nextFloat() * 750, 1));
+        emissionParameters.setParticleCount(1);
+        emissionParameters.setParticleCountVar(1);
 
         final float windowWidth = game.getWindow().getWidth();
         final float windowHeight = game.getWindow().getHeight();
 
-        positionParameters.setOffsetX(0f);
-        positionParameters.setOffsetY(0f);
+        spawnParameters.setOffsetX(0f);
+        spawnParameters.setOffsetY(0f);
 
-        positionParameters.setOffsetXVar(
+        spawnParameters.setOffsetXVar(
                 round(random.nextFloat() * windowWidth / 8f, 0));
 
-        positionParameters.setOffsetYVar(
+        spawnParameters.setOffsetYVar(
                 round(random.nextFloat() * windowHeight / 8f, 0));
 
-        positionParameters.setRadiusX(
+        spawnParameters.setRadiusX(
                 round(random.nextFloat() * windowWidth / 8f, 0));
 
-        positionParameters.setRadiusXVar(
+        spawnParameters.setRadiusXVar(
                 round(random.nextFloat() * windowHeight / 8f, 0));
 
-        positionParameters.setRadiusY(
+        spawnParameters.setRadiusY(
                 round(random.nextFloat() * windowWidth / 8f, 0));
 
-        positionParameters.setRadiusYVar(
+        spawnParameters.setRadiusYVar(
                 round(random.nextFloat() * windowHeight / 8f, 0));
 
-        positionParameters
+        spawnParameters
                 .setAngle(round(random.nextFloat() * 360 - 180, 1));
-        positionParameters
+        spawnParameters
                 .setAngleVar(round(random.nextFloat() * 180, 1));
     }
 
