@@ -26,8 +26,10 @@ public class DefaultLightRenderer implements LightRenderer {
     private final int windowWidth;
     private final int windowHeight;
 
-    private int textureId;
-    private SurfaceRenderer renderer;
+    private final int textureId;
+    private final SurfaceRenderer<Quad> renderer;
+    private final DefaultDisposer resolutionChangedDisposer;
+
     private ByteBuffer transparencyTexture;
     private int alphaMapCols;
     private int alphaMapRows;
@@ -41,11 +43,6 @@ public class DefaultLightRenderer implements LightRenderer {
     private float gameCellHeight;
     private int gameColSpan;
     private int gameRowSpan;
-
-    /**
-     * Disposes obsolete objects when the resolution changes.
-     */
-    private DefaultDisposer resolutionChangedDisposer;
 
     private DefaultLightRenderer(int windowWidth, int windowHeight, Disposer disposer) {
         this.windowWidth = windowWidth;

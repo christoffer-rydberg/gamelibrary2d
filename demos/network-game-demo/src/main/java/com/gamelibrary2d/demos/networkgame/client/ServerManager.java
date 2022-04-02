@@ -121,7 +121,7 @@ public class ServerManager implements Disposable {
     }
 
     private Future<Communicator> startServer(Factory<ServerResult> serverFactory) {
-        CompletableFuture futureCommunicator = new CompletableFuture<Communicator>();
+        CompletableFuture<Communicator> futureCommunicator = new CompletableFuture<>();
         serverThread = new Thread(() -> {
             ServerResult serverResult = serverFactory.create();
 

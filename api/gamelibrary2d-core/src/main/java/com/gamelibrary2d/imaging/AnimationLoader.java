@@ -25,7 +25,7 @@ public class AnimationLoader {
 
     private static List<Path> getFilePaths(Path folderPath, Pattern pattern) throws IOException {
         List<Path> filePaths = new ArrayList<>();
-        try (Stream stream = Files.walk(folderPath, 1)) {
+        try (Stream<Path> stream = Files.walk(folderPath, 1)) {
             for (Iterator<Path> itr = stream.iterator(); itr.hasNext(); ) {
                 Path filePath = itr.next();
                 if (pattern.matcher(filePath.toString()).find()) {
@@ -40,12 +40,12 @@ public class AnimationLoader {
     }
 
     /**
-     * Registers an animation reader for the specified format.
+     * Sets the animation reader for the specified format.
      *
      * @param format The animation format.
      * @param reader The animation reader.
      */
-    public static void registerAnimationReader(String format, AnimationReader reader) {
+    public static void setAnimationReader(String format, AnimationReader reader) {
         animationReaders.put(format.toLowerCase(), reader);
     }
 
@@ -111,5 +111,4 @@ public class AnimationLoader {
 
         return new AnimationMetadata(frames);
     }
-
 }
