@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class SequentialRendererModel {
-    private final SurfaceRenderer surfaceRenderer;
+    private final SurfaceRenderer<Quad> surfaceRenderer;
     private final SequentialParticleRenderer renderer;
     private final Disposer resourceDisposer;
 
