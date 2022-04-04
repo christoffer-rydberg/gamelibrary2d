@@ -24,7 +24,7 @@ public class GlfwWindow implements Window {
     private final boolean fullScreen;
     private final int requestedWidth;
     private final int requestedHeight;
-    private final List<WindowHint> additionalWindowHints = new ArrayList<>();
+    private final List<WindowHint> windowHints = new ArrayList<>();
 
     private int actualWidth;
     private int actualHeight;
@@ -103,6 +103,8 @@ public class GlfwWindow implements Window {
                 throw new IllegalStateException("Unable to initialize GLFW");
             }
 
+            initialized = true;
+
             glfwDefaultWindowHints();
 
             monitor = glfwGetPrimaryMonitor();
@@ -122,7 +124,7 @@ public class GlfwWindow implements Window {
                     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
                     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
-                    boolean isTransparentFrameBuffer = additionalWindowHints.stream()
+                    boolean isTransparentFrameBuffer = windowHints.stream()
                             .filter(x -> x.hint == GLFW_TRANSPARENT_FRAMEBUFFER).reduce((first, second) -> second)
                             .map(x -> x.value == GLFW_TRUE).orElse(false);
 
@@ -145,188 +147,6 @@ public class GlfwWindow implements Window {
             }
 
             focus();
-
-            initialized = true;
-        }
-    }
-
-    private void readActualSize() {
-        IntBuffer x = BufferUtils.createIntBuffer(1);
-        IntBuffer y = BufferUtils.createIntBuffer(1);
-        glfwGetWindowSize(this.window, x, y);
-
-        actualWidth = x.get(0);
-        actualHeight = y.get(0);
-    }
-
-    private void readPhysicalSize() {
-        IntBuffer x = BufferUtils.createIntBuffer(1);
-        IntBuffer y = BufferUtils.createIntBuffer(1);
-        glfwGetMonitorPhysicalSize(this.monitor, x, y);
-
-        physicalWidth = x.get(0);
-        physicalHeight = y.get(0);
-    }
-
-    private void onCreate(String title, int width, int height, long monitor) {
-        for (WindowHint hint : additionalWindowHints)
-            glfwWindowHint(hint.hint, hint.value);
-
-        long windowId = glfwCreateWindow(width, height, title, monitor, NULL);
-        if (windowId == NULL) {
-            throw new RuntimeException("Failed to create the GLFW window");
-        }
-
-        window = windowId;
-        glfwMakeContextCurrent(windowId);
-
-        GL.createCapabilities();
-
-        if (SETUP_DEBUG_MESSAGE_CALLBACK)
-            debugProc = GLUtil.setupDebugMessageCallback();
-
-        // Enable v-sync
-        glfwSwapInterval(1);
-
-        readActualSize();
-        readPhysicalSize();
-    }
-
-    @Override
-    public void show() {
-        glfwShowWindow(window);
-    }
-
-    public void hide() {
-        glfwHideWindow(window);
-    }
-
-    @Override
-    public void setTitle(String title) {
-        this.title = title;
-        glfwSetWindowTitle(window, title);
-    }
-
-    @Override
-    public void render(Renderable content, float alpha) {
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-
-        if (content != null) {
-            content.render(alpha);
-        }
-
-        glfwSwapBuffers(window);
-    }
-
-    public MouseCursorMode getMouseCursorMode() {
-        return mouseCursorMode;
-    }
-
-    public void setMouseCursorMode(MouseCursorMode mouseCursorMode) {
-        if (this.mouseCursorMode == mouseCursorMode) {
-            return;
-        }
-
-        switch (mouseCursorMode) {
-            case DISABLED:
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-                break;
-            case HIDDEN:
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-                break;
-            case NORMAL:
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                break;
-        }
-
-        this.mouseCursorMode = mouseCursorMode;
-    }
-
-    public boolean isFullScreen() {
-        return fullScreen;
-    }
-
-    @Override
-    public int getWidth() {
-        return actualWidth;
-    }
-
-    @Override
-    public int getHeight() {
-        return actualHeight;
-    }
-
-    @Override
-    public double getPhysicalWidth() {
-        return physicalWidth;
-    }
-
-    @Override
-    public double getPhysicalHeight() {
-        return physicalHeight;
-    }
-
-    @Override
-    public int getMonitorWidth() {
-        return monitorWidth;
-    }
-
-    @Override
-    public int getMonitorHeight() {
-        return monitorHeight;
-    }
-
-    @Override
-    public boolean isCloseRequested() {
-        return glfwWindowShouldClose(window);
-    }
-
-    @Override
-    public void pollEvents() {
-        glfwPollEvents();
-    }
-
-    public void clearAdditionalWindowHints() {
-        additionalWindowHints.clear();
-    }
-
-    public void additionalWindowHint(int hint, int value) {
-        additionalWindowHints.add(new WindowHint(hint, value));
-    }
-
-    public void setWindowAttribute(int attribute, int value) {
-        glfwSetWindowAttrib(window, attribute, value);
-    }
-
-    public int getWindowAttribute(int attribute) {
-        return glfwGetWindowAttrib(window, attribute);
-    }
-
-    public void focus() {
-        glfwFocusWindow(window);
-    }
-
-    private KeyAction getKeyAction(int action) {
-        switch (action) {
-            case GLFW_PRESS:
-                return KeyAction.DOWN;
-            case GLFW_RELEASE:
-                return KeyAction.UP;
-            case GLFW_REPEAT:
-                return KeyAction.DOWN_REPEAT;
-            default:
-                throw new IllegalStateException("Unexpected value: " + action);
-        }
-    }
-
-    private PointerAction getPointerAction(int action) {
-        switch (action) {
-            case GLFW_PRESS:
-                return PointerAction.DOWN;
-            case GLFW_RELEASE:
-                return PointerAction.UP;
-            default:
-                throw new IllegalStateException("Unexpected value: " + action);
         }
     }
 
@@ -396,25 +216,228 @@ public class GlfwWindow implements Window {
     }
 
     @Override
+    public void setTitle(String title) {
+        this.title = title;
+        if (initialized) {
+            glfwSetWindowTitle(window, title);
+        }
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public boolean isFullScreen() {
+        return fullScreen;
+    }
+
+    @Override
+    public int getWidth() {
+        return actualWidth;
+    }
+
+    @Override
+    public int getHeight() {
+        return actualHeight;
+    }
+
+    @Override
+    public double getPhysicalWidth() {
+        return physicalWidth;
+    }
+
+    @Override
+    public double getPhysicalHeight() {
+        return physicalHeight;
+    }
+
+    @Override
+    public int getMonitorWidth() {
+        return monitorWidth;
+    }
+
+    @Override
+    public int getMonitorHeight() {
+        return monitorHeight;
+    }
+
+    public MouseCursorMode getMouseCursorMode() {
+        return mouseCursorMode;
+    }
+
+    public void setMouseCursorMode(MouseCursorMode mouseCursorMode) {
+        if (this.mouseCursorMode == mouseCursorMode) {
+            return;
+        }
+
+        if (initialized) {
+            setGlfwCursorMode(mouseCursorMode);
+        }
+
+        this.mouseCursorMode = mouseCursorMode;
+    }
+
+    public void setWindowHint(int hint, int value) {
+        if(initialized) {
+            throw new RuntimeException("Window has already been initialized");
+        }
+
+        windowHints.add(new WindowHint(hint, value));
+    }
+
+    private void assertInitialized() {
+        if(!initialized) {
+            throw new RuntimeException("Window has not been initialized");
+        }
+    }
+
+    @Override
+    public void focus() {
+        assertInitialized();
+        glfwFocusWindow(window);
+    }
+
+    @Override
+    public void show() {
+        assertInitialized();
+        glfwShowWindow(window);
+    }
+
+    public void hide() {
+        assertInitialized();
+        glfwHideWindow(window);
+    }
+
+    @Override
+    public void render(Renderable content, float alpha) {
+        assertInitialized();
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+
+        if (content != null) {
+            content.render(alpha);
+        }
+
+        glfwSwapBuffers(window);
+    }
+
+    @Override
+    public void pollEvents() {
+        assertInitialized();
+        glfwPollEvents();
+    }
+
+    @Override
+    public boolean isCloseRequested() {
+        return initialized && glfwWindowShouldClose(window);
+    }
+
+    @Override
     public void dispose() {
-        GL.setCapabilities(null);
+        if (initialized) {
+            GL.setCapabilities(null);
 
-        if (debugProc != null) {
-            debugProc.free();
+            if (debugProc != null) {
+                debugProc.free();
+            }
+
+            if (window != NULL) {
+                glfwFreeCallbacks(window);
+                glfwDestroyWindow(window);
+                window = NULL;
+            }
+
+            Objects.requireNonNull(glfwSetJoystickCallback(null)).free();
+            Objects.requireNonNull(glfwSetErrorCallback(null)).free();
+
+            glfwTerminate();
+
+            initialized = false;
+        }
+    }
+
+    private void readActualSize() {
+        IntBuffer x = BufferUtils.createIntBuffer(1);
+        IntBuffer y = BufferUtils.createIntBuffer(1);
+        glfwGetWindowSize(this.window, x, y);
+
+        actualWidth = x.get(0);
+        actualHeight = y.get(0);
+    }
+
+    private void readPhysicalSize() {
+        IntBuffer x = BufferUtils.createIntBuffer(1);
+        IntBuffer y = BufferUtils.createIntBuffer(1);
+        glfwGetMonitorPhysicalSize(this.monitor, x, y);
+
+        physicalWidth = x.get(0);
+        physicalHeight = y.get(0);
+    }
+
+    private void onCreate(String title, int width, int height, long monitor) {
+        setGlfwCursorMode(mouseCursorMode);
+
+        for (WindowHint hint : windowHints) {
+            glfwWindowHint(hint.hint, hint.value);
         }
 
-        if (window != NULL) {
-            glfwFreeCallbacks(window);
-            glfwDestroyWindow(window);
-            window = NULL;
+        long windowId = glfwCreateWindow(width, height, title, monitor, NULL);
+        if (windowId == NULL) {
+            throw new RuntimeException("Failed to create the GLFW window");
         }
 
-        Objects.requireNonNull(glfwSetJoystickCallback(null)).free();
-        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
+        window = windowId;
+        glfwMakeContextCurrent(windowId);
 
-        glfwTerminate();
+        GL.createCapabilities();
 
-        initialized = false;
+        if (SETUP_DEBUG_MESSAGE_CALLBACK)
+            debugProc = GLUtil.setupDebugMessageCallback();
+
+        // Enable v-sync
+        glfwSwapInterval(1);
+
+        readActualSize();
+        readPhysicalSize();
+    }
+
+    private void setGlfwCursorMode(MouseCursorMode mouseCursorMode) {
+        switch (mouseCursorMode) {
+            case DISABLED:
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                break;
+            case HIDDEN:
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+                break;
+            case NORMAL:
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                break;
+        }
+    }
+
+    private KeyAction getKeyAction(int action) {
+        switch (action) {
+            case GLFW_PRESS:
+                return KeyAction.DOWN;
+            case GLFW_RELEASE:
+                return KeyAction.UP;
+            case GLFW_REPEAT:
+                return KeyAction.DOWN_REPEAT;
+            default:
+                throw new IllegalStateException("Unexpected value: " + action);
+        }
+    }
+
+    private PointerAction getPointerAction(int action) {
+        switch (action) {
+            case GLFW_PRESS:
+                return PointerAction.DOWN;
+            case GLFW_RELEASE:
+                return PointerAction.UP;
+            default:
+                throw new IllegalStateException("Unexpected value: " + action);
+        }
     }
 
     private static class WindowHint {

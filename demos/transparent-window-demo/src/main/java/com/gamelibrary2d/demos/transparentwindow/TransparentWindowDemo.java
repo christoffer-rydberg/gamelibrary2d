@@ -1,8 +1,10 @@
 package com.gamelibrary2d.demos.transparentwindow;
 
 import com.gamelibrary2d.exceptions.InitializationException;
-import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
+
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 
 public class TransparentWindowDemo {
     private static final String title = "Transparent Window Demo";
@@ -15,7 +17,7 @@ public class TransparentWindowDemo {
         return mode.equalsIgnoreCase("f") || mode.equalsIgnoreCase("fullscreen");
     }
 
-    private static Window createWindow(String[] args) {
+    private static GlfwWindow createWindow(String[] args) {
         if (args.length == 0) {
             return GlfwWindow.createWindowed(title);
         } else if (args.length == 1) {
@@ -46,6 +48,9 @@ public class TransparentWindowDemo {
     }
 
     public static void main(String[] args) throws InitializationException {
-        new DemoGame().start(createWindow(args));
+        GlfwWindow window = createWindow(args);
+        window.setWindowHint(GLFW_DECORATED, GLFW_FALSE);
+        window.setWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+        new DemoGame().start(window);
     }
 }

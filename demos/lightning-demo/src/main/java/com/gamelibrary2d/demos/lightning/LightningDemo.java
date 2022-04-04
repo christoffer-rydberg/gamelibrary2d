@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.lightning;
 
 import com.gamelibrary2d.exceptions.InitializationException;
-import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
+import com.gamelibrary2d.framework.lwjgl.MouseCursorMode;
 
 public class LightningDemo {
     private static final String title = "Lightning Demo";
@@ -15,7 +15,7 @@ public class LightningDemo {
         return mode.equalsIgnoreCase("f") || mode.equalsIgnoreCase("fullscreen");
     }
 
-    private static Window createWindow(String[] args) {
+    private static GlfwWindow createWindow(String[] args) {
         if (args.length == 0) {
             return GlfwWindow.createWindowed(title);
         } else if (args.length == 1) {
@@ -46,6 +46,8 @@ public class LightningDemo {
     }
 
     public static void main(String[] args) throws InitializationException {
-        new DemoGame().start(createWindow(args));
+        GlfwWindow window = createWindow(args);
+        window.setMouseCursorMode(MouseCursorMode.HIDDEN);
+        new DemoGame().start(window);
     }
 }

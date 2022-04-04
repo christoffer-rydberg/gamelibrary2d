@@ -61,6 +61,11 @@ class Android_Window extends GLSurfaceView implements Window {
     }
 
     @Override
+    public String getTitle() {
+        return activity.getTitle().toString();
+    }
+
+    @Override
     public void render(Renderable content, float alpha) {
         GLES20.glClear(GL_COLOR_BUFFER_BIT);
         if (content != null) {

@@ -13,6 +13,8 @@ public interface Window {
 
     void setTitle(String string);
 
+    String getTitle();
+
     void pollEvents();
 
     void render(Renderable content, float alpha);
