@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-public class DefaultSoundManager extends AbstractDisposer implements SoundManager<DefaultSoundBuffer> {
+public class DefaultSoundManager extends AbstractDisposer implements SoundManager {
     private final HashMap<Object, DefaultSoundBuffer> soundBuffers = new HashMap<>();
     private final HashMap<String, AudioDecoder> decoders = new HashMap<>();
     private final AudioDecoder defaultDecoder = new DefaultAudioDecoder();
@@ -35,7 +35,7 @@ public class DefaultSoundManager extends AbstractDisposer implements SoundManage
     }
 
     @Override
-    public SoundSource<DefaultSoundBuffer>[] createSources(int size) {
+    public SoundSource[] createSources(int size) {
         DefaultSoundSource[] sources = new DefaultSoundSource[size];
         for (int i = 0; i < size; ++i) {
             DefaultSoundSource source = DefaultSoundSource.create(this);

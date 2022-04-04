@@ -1,13 +1,14 @@
 package com.example.sound.android;
 
 import android.media.*;
+import com.gamelibrary2d.sound.SoundBuffer;
 import com.gamelibrary2d.sound.SoundSource;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DefaultSoundSource implements SoundSource<DefaultSoundBuffer> {
+public class DefaultSoundSource implements SoundSource {
     private static final int channelConfig = AudioFormat.CHANNEL_OUT_STEREO;
     private static final int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private final AudioTrack track;
@@ -127,8 +128,14 @@ public class DefaultSoundSource implements SoundSource<DefaultSoundBuffer> {
     }
 
     @Override
-    public void setSoundBuffer(DefaultSoundBuffer soundBuffer) {
-        this.soundBuffer = soundBuffer;
+    public void setSoundBuffer(SoundBuffer soundBuffer) {
+        if(soundBuffer == null) {
+            this.soundBuffer = null;
+        } else if(soundBuffer instanceof DefaultSoundBuffer) {
+            this.soundBuffer = (DefaultSoundBuffer) soundBuffer;
+        } else {
+            throw new RuntimeException("Invalid sound buffer");
+        }
     }
 
     @Override

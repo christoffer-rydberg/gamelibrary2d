@@ -19,7 +19,7 @@ import static org.lwjgl.openal.AL10.alDistanceModel;
 import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class DefaultSoundManager extends AbstractDisposer implements SoundManager<DefaultSoundBuffer> {
+public class DefaultSoundManager extends AbstractDisposer implements SoundManager {
     private final long device;
     private final long context;
     private final HashMap<Object, DefaultSoundBuffer> soundBuffers = new HashMap<>();
@@ -61,7 +61,7 @@ public class DefaultSoundManager extends AbstractDisposer implements SoundManage
     }
 
     @Override
-    public SoundSource<DefaultSoundBuffer>[] createSources(int size) {
+    public SoundSource[] createSources(int size) {
         Disposer disposer = new DefaultDisposer(this);
         DefaultSoundSource[] sources = new DefaultSoundSource[size];
         for (int i = 0; i < size; ++i) {
@@ -73,12 +73,9 @@ public class DefaultSoundManager extends AbstractDisposer implements SoundManage
         return sources;
     }
 
+    @Override
     public DefaultSoundBuffer getBuffer(Object key) {
         return soundBuffers.get(key);
-    }
-
-    public void putBuffer(Object key, DefaultSoundBuffer soundBuffer) {
-        soundBuffers.put(key, soundBuffer);
     }
 
     @Override
@@ -88,7 +85,7 @@ public class DefaultSoundManager extends AbstractDisposer implements SoundManage
             throw new IOException(String.format("No decoder has been registered for the format '%s'", format));
         }
 
-        putBuffer(key, decoder.decode(stream, this));
+        soundBuffers.put(key, decoder.decode(stream, this));
     }
 
     /**

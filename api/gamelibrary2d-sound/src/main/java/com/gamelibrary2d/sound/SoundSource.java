@@ -2,7 +2,7 @@ package com.gamelibrary2d.sound;
 
 import com.gamelibrary2d.common.disposal.Disposable;
 
-public interface SoundSource<T extends SoundBuffer> extends Disposable {
+public interface SoundSource extends Disposable {
 
     boolean isStopped();
 
@@ -16,9 +16,9 @@ public interface SoundSource<T extends SoundBuffer> extends Disposable {
 
     void setVolume(float volume);
 
-    T getSoundBuffer();
+    SoundBuffer getSoundBuffer();
 
-    void setSoundBuffer(T soundBuffer);
+    void setSoundBuffer(SoundBuffer soundBuffer);
 
     void setLooping(boolean looping);
 

@@ -3,6 +3,7 @@ package com.gamelibrary2d.sound.lwjgl;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.disposal.AbstractDisposable;
 import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.sound.SoundBuffer;
 import com.gamelibrary2d.sound.SoundSource;
 
 import static org.lwjgl.openal.AL10.*;
@@ -13,7 +14,7 @@ import static org.lwjgl.openal.AL10.*;
  * {@link DefaultSoundBuffer}. Speed and position are taken into account only if the
  * {@link DefaultSoundManager} has an attached {@link SoundListener}.
  */
-public class DefaultSoundSource extends AbstractDisposable implements SoundSource<DefaultSoundBuffer> {
+public class DefaultSoundSource extends AbstractDisposable implements SoundSource {
 
     private final int sourceId;
 
@@ -39,7 +40,7 @@ public class DefaultSoundSource extends AbstractDisposable implements SoundSourc
 
     @Override
     public boolean isLooping() {
-        return alGetSourcei(sourceId, AL_LOOPING) == AL_TRUE ? true : false;
+        return alGetSourcei(sourceId, AL_LOOPING) == AL_TRUE;
     }
 
     /**
@@ -70,9 +71,16 @@ public class DefaultSoundSource extends AbstractDisposable implements SoundSourc
      * Setter for the {@link #getSoundBuffer() sound buffer}.
      */
     @Override
-    public void setSoundBuffer(DefaultSoundBuffer soundBuffer) {
-        this.soundBuffer = soundBuffer;
-        alSourcei(sourceId, AL_BUFFER, soundBuffer != null ? soundBuffer.getBufferId() : 0);
+    public void setSoundBuffer(SoundBuffer soundBuffer) {
+        if(soundBuffer == null) {
+            this.soundBuffer = null;
+            alSourcei(sourceId, AL_BUFFER, 0);
+        } else if(soundBuffer instanceof DefaultSoundBuffer) {
+            this.soundBuffer = (DefaultSoundBuffer) soundBuffer;
+            alSourcei(sourceId, AL_BUFFER, this.soundBuffer.getBufferId());
+        } else {
+            throw new RuntimeException("Invalid sound buffer");
+        }
     }
 
     /**
@@ -98,11 +106,6 @@ public class DefaultSoundSource extends AbstractDisposable implements SoundSourc
         return volume;
     }
 
-    /**
-     * Sets the volume of the sound source.
-     *
-     * @param volume
-     */
     @Override
     public void setVolume(float volume) {
         this.volume = volume;

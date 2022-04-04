@@ -7,24 +7,24 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * Manages the creation and disposal of sound resources needed by the framework.
+ * Manages creation and disposal of sound resources.
  * It also acts as a repository for {@link SoundBuffer sound buffers}.
  */
-public interface SoundManager<T extends SoundBuffer> extends Disposer {
+public interface SoundManager extends Disposer {
 
     /**
      * Creates an array of {@link SoundSource sound sources}.
      *
      * @param size The number of sources to create.
      */
-    SoundSource<T>[] createSources(int size);
+    SoundSource[] createSources(int size);
 
     /**
-     * Gets the {@link SoundBuffer} registered with the specified key.
+     * Gets the {@link SoundBuffer} that was loaded with the specified key.
      *
      * @param key The key for the {@link SoundBuffer}.
      */
-    T getBuffer(Object key);
+    SoundBuffer getBuffer(Object key);
 
     /**
      * Loads a sound resource into a {@link SoundBuffer}.
