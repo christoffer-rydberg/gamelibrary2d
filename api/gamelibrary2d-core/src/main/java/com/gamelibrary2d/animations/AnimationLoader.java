@@ -1,9 +1,10 @@
-package com.gamelibrary2d.imaging;
+package com.gamelibrary2d.animations;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.framework.Image;
 import com.gamelibrary2d.framework.ImageReader;
 import com.gamelibrary2d.framework.Runtime;
+import com.gamelibrary2d.animations.formats.gif.GifAnimationReader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +20,7 @@ public class AnimationLoader {
 
     private static Map<String, AnimationReader> initializeAnimationReaders() {
         HashMap<String, AnimationReader> animationLoaders = new HashMap<>();
-        animationLoaders.put(StandardAnimationFormats.GIF, new InternalGifReader());
+        animationLoaders.put(StandardAnimationFormats.GIF, new GifAnimationReader());
         return animationLoaders;
     }
 

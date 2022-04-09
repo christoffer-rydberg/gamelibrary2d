@@ -1,5 +1,9 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
+import com.gamelibrary2d.resources.DefaultTexture;
+import com.gamelibrary2d.resources.HorizontalTextAlignment;
+import com.gamelibrary2d.resources.StackOrientation;
+import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.containers.*;
 import com.gamelibrary2d.components.denotations.KeyDownAware;

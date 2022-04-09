@@ -1,4 +1,4 @@
-package com.gamelibrary2d.imaging;
+package com.gamelibrary2d.resources;
 
 import com.gamelibrary2d.framework.Image;
 

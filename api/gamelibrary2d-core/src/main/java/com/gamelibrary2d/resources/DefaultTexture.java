@@ -11,7 +11,6 @@ import com.gamelibrary2d.glUtil.DefaultFrameBuffer;
 import com.gamelibrary2d.glUtil.FrameBuffer;
 import com.gamelibrary2d.glUtil.ModelMatrix;
 import com.gamelibrary2d.glUtil.OpenGLState;
-import com.gamelibrary2d.imaging.DefaultImage;
 
 import java.io.IOException;
 import java.io.InputStream;

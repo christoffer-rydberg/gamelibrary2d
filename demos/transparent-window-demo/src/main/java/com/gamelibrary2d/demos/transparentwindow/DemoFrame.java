@@ -7,12 +7,12 @@ import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.components.objects.AnimatedGameObject;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.imaging.AnimationFrameMetadata;
-import com.gamelibrary2d.imaging.AnimationLoader;
-import com.gamelibrary2d.imaging.AnimationMetadata;
-import com.gamelibrary2d.imaging.StandardAnimationFormats;
+import com.gamelibrary2d.animations.AnimationFrameMetadata;
+import com.gamelibrary2d.animations.AnimationLoader;
+import com.gamelibrary2d.animations.AnimationMetadata;
+import com.gamelibrary2d.animations.StandardAnimationFormats;
 import com.gamelibrary2d.renderers.AnimationRenderer;
-import com.gamelibrary2d.resources.Animation;
+import com.gamelibrary2d.animations.Animation;
 
 import java.io.IOException;
 import java.util.ArrayList;

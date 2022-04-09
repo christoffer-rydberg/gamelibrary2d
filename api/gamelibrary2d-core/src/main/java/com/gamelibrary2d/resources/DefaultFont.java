@@ -8,8 +8,6 @@ import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.framework.Image;
 import com.gamelibrary2d.glUtil.ModelMatrix;
 import com.gamelibrary2d.glUtil.ShaderProgram;
-import com.gamelibrary2d.imaging.BufferedImageParser;
-import com.gamelibrary2d.imaging.DefaultImage;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

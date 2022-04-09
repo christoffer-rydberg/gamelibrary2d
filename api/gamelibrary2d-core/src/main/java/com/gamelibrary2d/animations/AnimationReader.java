@@ -1,4 +1,4 @@
-package com.gamelibrary2d.imaging;
+package com.gamelibrary2d.animations;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -32,11 +32,6 @@
             <version>0.11.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-imaging</artifactId>
-            <version>1.0-alpha2</version>
-        </dependency>
     </dependencies>
 
     <build>

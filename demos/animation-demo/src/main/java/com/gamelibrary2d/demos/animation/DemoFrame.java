@@ -1,6 +1,11 @@
 package com.gamelibrary2d.demos.animation;
 
 import com.gamelibrary2d.Game;
+import com.gamelibrary2d.animations.Animation;
+import com.gamelibrary2d.resources.DefaultFont;
+import com.gamelibrary2d.resources.Font;
+import com.gamelibrary2d.resources.HorizontalTextAlignment;
+import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
@@ -10,12 +15,11 @@ import com.gamelibrary2d.components.frames.InitializationContext;
 import com.gamelibrary2d.components.objects.AnimatedGameObject;
 import com.gamelibrary2d.components.objects.DefaultObservableGameObject;
 import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.imaging.AnimationLoader;
-import com.gamelibrary2d.imaging.AnimationMetadata;
-import com.gamelibrary2d.imaging.StandardAnimationFormats;
+import com.gamelibrary2d.animations.AnimationLoader;
+import com.gamelibrary2d.animations.AnimationMetadata;
+import com.gamelibrary2d.animations.StandardAnimationFormats;
 import com.gamelibrary2d.renderers.AnimationRenderer;
 import com.gamelibrary2d.renderers.Label;
-import com.gamelibrary2d.resources.*;
 
 import java.io.File;
 import java.io.IOException;

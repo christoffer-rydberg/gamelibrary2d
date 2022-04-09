@@ -1,4 +1,4 @@
-package com.gamelibrary2d.imaging;
+package com.gamelibrary2d.animations;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.denotations.Bounded;

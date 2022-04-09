@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class DefaultShader implements Shader, Disposable {
-
     private final int id;
     private boolean disposed;
 

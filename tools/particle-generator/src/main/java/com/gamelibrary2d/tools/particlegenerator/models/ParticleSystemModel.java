@@ -14,7 +14,7 @@ import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
 import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
 import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
 import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
-import com.gamelibrary2d.resources.Animation;
+import com.gamelibrary2d.animations.Animation;
 import com.gamelibrary2d.resources.BlendMode;
 import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.resources.Texture;

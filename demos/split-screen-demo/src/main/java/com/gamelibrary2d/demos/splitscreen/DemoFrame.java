@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.splitscreen;
 
 import com.gamelibrary2d.Game;
+import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomGenerator;

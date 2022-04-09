@@ -376,7 +376,7 @@ public class GlfwWindow implements Window {
     }
 
     private void onCreate(String title, int width, int height, long monitor) {
-        setGlfwCursorMode(mouseCursorMode);
+        //setGlfwCursorMode(mouseCursorMode); // TODO
 
         for (WindowHint hint : windowHints) {
             glfwWindowHint(hint.hint, hint.value);

@@ -1,5 +1,8 @@
 package com.gamelibrary2d.renderers;
 
+import com.gamelibrary2d.animations.Animation;
+import com.gamelibrary2d.animations.AnimationFrame;
+import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;

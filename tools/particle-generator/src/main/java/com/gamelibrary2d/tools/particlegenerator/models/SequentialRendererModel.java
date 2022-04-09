@@ -1,12 +1,13 @@
 package com.gamelibrary2d.tools.particlegenerator.models;
 
+import com.gamelibrary2d.animations.Animation;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.animations.AnimationLoader;
+import com.gamelibrary2d.animations.AnimationMetadata;
+import com.gamelibrary2d.animations.StandardAnimationFormats;
 import com.gamelibrary2d.common.io.Read;
-import com.gamelibrary2d.imaging.AnimationLoader;
-import com.gamelibrary2d.imaging.AnimationMetadata;
-import com.gamelibrary2d.imaging.StandardAnimationFormats;
 import com.gamelibrary2d.particles.renderers.SequentialParticleRenderer;
 import com.gamelibrary2d.renderers.AnimationRenderer;
 import com.gamelibrary2d.renderers.SurfaceRenderer;
@@ -93,7 +94,7 @@ public class SequentialRendererModel {
         AnimationMetadata animationMetadata = AnimationLoader.load(
                 new ByteArrayInputStream(animationData),
                 StandardAnimationFormats.GIF);
-
+        
         Animation animation = Animation.create(
                 animationMetadata,
                 bounds,
