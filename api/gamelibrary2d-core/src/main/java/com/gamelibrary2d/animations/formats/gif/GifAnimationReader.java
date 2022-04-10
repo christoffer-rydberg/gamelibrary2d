@@ -13,6 +13,7 @@ import java.util.List;
 
 public class GifAnimationReader implements AnimationReader {
     private static final Rectangle IMAGE_COORDINATES = new Rectangle(0, 0, 1, 1);
+    private static final int NO_DISPOSAL_SPECIFIED = 0;
     private static final int DO_NOT_DISPOSE = 1;
     private static final int RESTORE_TO_BACKGROUND = 2;
 
@@ -28,11 +29,14 @@ public class GifAnimationReader implements AnimationReader {
         int transparentColorIndex;
         if (gce != null) {
             duration = gce.delayTime / 100f;
+
             transparentColorIndex = gce.transparentColor
                 ? gce.transparentColorIndex
                 : -1;
-            restoreBackground = gifFrame.graphicControlExtension.disposalMethod == RESTORE_TO_BACKGROUND;
-            renderToBackground = gifFrame.graphicControlExtension.disposalMethod == DO_NOT_DISPOSE;
+
+            int disposalMethod = gifFrame.graphicControlExtension.disposalMethod;
+            restoreBackground = disposalMethod == RESTORE_TO_BACKGROUND;
+            renderToBackground = disposalMethod == NO_DISPOSAL_SPECIFIED || disposalMethod == DO_NOT_DISPOSE;
         } else {
             duration = 0f;
             restoreBackground = false;
