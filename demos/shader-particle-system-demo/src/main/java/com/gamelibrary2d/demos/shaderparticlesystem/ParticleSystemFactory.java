@@ -2,18 +2,23 @@ package com.gamelibrary2d.demos.shaderparticlesystem;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.framework.OpenGL;
-import com.gamelibrary2d.glUtil.ShaderProgram;
-import com.gamelibrary2d.glUtil.ShaderType;
-import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
-import com.gamelibrary2d.particles.renderers.ParticleShape;
+import com.gamelibrary2d.opengl.renderers.BlendMode;
+import com.gamelibrary2d.opengl.renderers.PointSmoothing;
+import com.gamelibrary2d.opengl.shaders.DefaultShader;
+import com.gamelibrary2d.opengl.shaders.DefaultShaderProgram;
+import com.gamelibrary2d.opengl.shaders.ShaderProgram;
+import com.gamelibrary2d.opengl.shaders.ShaderType;
 import com.gamelibrary2d.particles.CustomParticleSystem;
-import com.gamelibrary2d.resources.DefaultShader;
-import com.gamelibrary2d.resources.BlendMode;
-import com.gamelibrary2d.resources.PointSmoothing;
+import com.gamelibrary2d.particles.EfficientParticleRenderer;
+import com.gamelibrary2d.particles.ParticleShape;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 class ParticleSystemFactory {
     private final static float DISTANCE_FACTOR = 50;
@@ -41,8 +46,8 @@ class ParticleSystemFactory {
                 initialColors,
                 goalColors);
 
-        ShaderProgram updateProgram = ShaderProgram.create(disposer);
-        updateProgram.attachShader(DefaultShader.fromFile("shaders/ParticleUpdater.compute", ShaderType.COMPUTE, disposer));
+        DefaultShaderProgram updateProgram = DefaultShaderProgram.create(disposer);
+        updateProgram.attachShader(loadShader("shaders/ParticleUpdater.compute", ShaderType.COMPUTE, disposer));
         updateProgram.initialize();
         setUniforms(updateProgram);
 
@@ -53,6 +58,16 @@ class ParticleSystemFactory {
         renderer.setBounds(new Rectangle(0, 0, 1f, 1f));
 
         return CustomParticleSystem.create(state, update, 8, updateProgram, renderer, disposer);
+    }
+
+    private static DefaultShader loadShader(String path, ShaderType shaderType, Disposer disposer) {
+        try(InputStream stream = DefaultShader.class.getClassLoader().getResourceAsStream(path)) {
+            String src = Read.text(stream, StandardCharsets.UTF_8);
+            return DefaultShader.create(src, shaderType, disposer);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Failed to load a shader file!"
+                    + System.lineSeparator() + ex.getMessage());
+        }
     }
 
     private static void setUniforms(ShaderProgram computeProgram) {

@@ -2,6 +2,7 @@ package com.example.framework.android;
 
 import android.graphics.Bitmap;
 import com.gamelibrary2d.framework.Image;
+import com.gamelibrary2d.framework.DefaultImage;
 
 public class BitmapParser {
     private static int[] getArgb(Bitmap bitmap) {
@@ -47,35 +48,5 @@ public class BitmapParser {
         int[] argb = getArgb(bitmap);
         int[] argbFlipped = flipYAxis(argb, bitmap.getWidth(), bitmap.getHeight());
         return parseImage(argbFlipped, bitmap.getWidth(), bitmap.getHeight(), bitmap.hasAlpha());
-    }
-
-    private static class DefaultImage implements Image {
-        private final byte[] data;
-        private final int width;
-        private final int height;
-        private final int channels;
-
-        DefaultImage(byte[] data, int width, int height, int channels) {
-            this.data = data;
-            this.width = width;
-            this.height = height;
-            this.channels = channels;
-        }
-
-        public byte[] getData() {
-            return data;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
-
-        public int getChannels() {
-            return channels;
-        }
     }
 }

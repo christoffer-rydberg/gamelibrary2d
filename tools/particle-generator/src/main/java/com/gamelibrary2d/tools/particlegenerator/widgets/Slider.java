@@ -1,20 +1,19 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
-import com.gamelibrary2d.Projection;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.components.AbstractGameObject;
+import com.gamelibrary2d.components.DefaultObservableGameObject;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
-import com.gamelibrary2d.components.objects.AbstractGameObject;
-import com.gamelibrary2d.components.objects.DefaultObservableGameObject;
 import com.gamelibrary2d.framework.Renderable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Slider extends AbstractGameObject implements PointerDownAware, PointerMoveAware, PointerUpAware {
-    private final Point projectionOutput = new Point();
+    private final Point pointerProjection = new Point();
     private final List<DragBeginListener> dragBeginListeners = new CopyOnWriteArrayList<>();
     private final List<DragStopListener> dragStopListeners = new CopyOnWriteArrayList<>();
     private final List<ValueChangedListener> valueChangedListeners = new CopyOnWriteArrayList<>();
@@ -111,8 +110,9 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     @Override
     public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
         if (isEnabled()) {
-            Projection.projectTo(this, projectedX, projectedY, projectionOutput);
-            return handle.pointerDown(id, button, x, y, projectionOutput.getX(), projectionOutput.getY());
+            pointerProjection.set(projectedX, projectedY);
+            pointerProjection.projectTo(this);
+            return handle.pointerDown(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
         }
 
         return false;
@@ -121,8 +121,9 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     @Override
     public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
         if (isEnabled()) {
-            Projection.projectTo(this, projectedX, projectedY, projectionOutput);
-            return handle.pointerMove(id, x, y, projectionOutput.getX(), projectionOutput.getY());
+            pointerProjection.set(projectedX, projectedY);
+            pointerProjection.projectTo(this);
+            return handle.pointerMove(id, x, y, pointerProjection.getX(), pointerProjection.getY());
         }
 
         return false;
@@ -131,8 +132,9 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     @Override
     public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
         if (isEnabled()) {
-            Projection.projectTo(this, projectedX, projectedY, projectionOutput);
-            handle.pointerUp(id, button, x, y, projectionOutput.getX(), projectionOutput.getY());
+            pointerProjection.set(projectedX, projectedY);
+            pointerProjection.projectTo(this);
+            handle.pointerUp(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
         }
     }
 

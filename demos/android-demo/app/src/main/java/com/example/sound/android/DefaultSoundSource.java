@@ -129,9 +129,9 @@ public class DefaultSoundSource implements SoundSource {
 
     @Override
     public void setSoundBuffer(SoundBuffer soundBuffer) {
-        if(soundBuffer == null) {
+        if (soundBuffer == null) {
             this.soundBuffer = null;
-        } else if(soundBuffer instanceof DefaultSoundBuffer) {
+        } else if (soundBuffer instanceof DefaultSoundBuffer) {
             this.soundBuffer = (DefaultSoundBuffer) soundBuffer;
         } else {
             throw new RuntimeException("Invalid sound buffer");

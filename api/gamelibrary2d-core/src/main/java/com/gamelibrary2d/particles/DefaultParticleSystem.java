@@ -6,11 +6,7 @@ import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.denotations.Clearable;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.particles.parameters.ParticleEmissionParameters;
-import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
-import com.gamelibrary2d.particles.renderers.ParticleRenderer;
+import com.gamelibrary2d.opengl.ModelMatrix;
 
 public class DefaultParticleSystem implements Updatable, Renderable, Clearable {
     private final float[] externalSpeed = new float[2];

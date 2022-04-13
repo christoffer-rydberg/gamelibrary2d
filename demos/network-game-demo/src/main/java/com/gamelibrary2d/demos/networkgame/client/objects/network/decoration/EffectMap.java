@@ -12,10 +12,10 @@ import com.gamelibrary2d.demos.networkgame.client.objects.network.ClientObject;
 import com.gamelibrary2d.demos.networkgame.client.urls.Particles;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particles.renderers.ParticleRenderer;
+import com.gamelibrary2d.opengl.renderers.BlendMode;
 import com.gamelibrary2d.particles.DefaultParticleSystem;
-import com.gamelibrary2d.resources.BlendMode;
+import com.gamelibrary2d.particles.ParticleRenderer;
+import com.gamelibrary2d.particles.ParticleSystemParameters;
 import com.gamelibrary2d.sound.SoundPlayer;
 
 import java.io.IOException;

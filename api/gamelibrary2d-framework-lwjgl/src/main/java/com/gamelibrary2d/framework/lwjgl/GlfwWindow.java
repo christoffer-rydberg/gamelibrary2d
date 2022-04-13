@@ -150,8 +150,13 @@ public class GlfwWindow implements Window {
         }
     }
 
+    private WindowEventListener eventListener;
+
     @Override
     public void setEventListener(WindowEventListener eventListener) {
+        this.firstPoll = true;
+        this.eventListener = eventListener;
+
         glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
 
         glfwSetKeyCallback(window, new GLFWKeyCallback() {
@@ -280,7 +285,7 @@ public class GlfwWindow implements Window {
     }
 
     public void setWindowHint(int hint, int value) {
-        if(initialized) {
+        if (initialized) {
             throw new RuntimeException("Window has already been initialized");
         }
 
@@ -288,7 +293,7 @@ public class GlfwWindow implements Window {
     }
 
     private void assertInitialized() {
-        if(!initialized) {
+        if (!initialized) {
             throw new RuntimeException("Window has not been initialized");
         }
     }
@@ -322,9 +327,29 @@ public class GlfwWindow implements Window {
         glfwSwapBuffers(window);
     }
 
+    private boolean firstPoll = false;
+
     @Override
     public void pollEvents() {
+        if (firstPoll && eventListener != null) {
+            double[] posX = new double[1];
+            double[] posY = new double[1];
+            glfwGetCursorPos(window, posX, posY);
+            double cursorPosX = posX[0];
+            double cursorPosY = posY[0];
+
+            if(cursorPosX < actualWidth && cursorPosY < actualHeight) {
+                this.cursorPosX = (float) cursorPosX;
+                this.cursorPosY = (float) (actualHeight - cursorPosY);
+                eventListener.onPointerEnter(0);
+                eventListener.onPointerMove(0, this.cursorPosX, this.cursorPosY);
+            }
+
+            firstPoll = false;
+        }
+
         assertInitialized();
+
         glfwPollEvents();
     }
 
@@ -376,19 +401,18 @@ public class GlfwWindow implements Window {
     }
 
     private void onCreate(String title, int width, int height, long monitor) {
-        //setGlfwCursorMode(mouseCursorMode); // TODO
-
         for (WindowHint hint : windowHints) {
             glfwWindowHint(hint.hint, hint.value);
         }
 
-        long windowId = glfwCreateWindow(width, height, title, monitor, NULL);
-        if (windowId == NULL) {
+        window = glfwCreateWindow(width, height, title, monitor, NULL);
+        if (window == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
-        window = windowId;
-        glfwMakeContextCurrent(windowId);
+        glfwMakeContextCurrent(window);
+
+        setGlfwCursorMode(mouseCursorMode);
 
         GL.createCapabilities();
 

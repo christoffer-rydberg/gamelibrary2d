@@ -4,9 +4,9 @@ import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.glUtil.ShaderParameter;
-import com.gamelibrary2d.renderers.Label;
+import com.gamelibrary2d.opengl.ModelMatrix;
+import com.gamelibrary2d.opengl.shaders.ShaderParameter;
+import com.gamelibrary2d.text.Label;
 
 public class ShadowedLabel implements Renderable {
     private final Label label;

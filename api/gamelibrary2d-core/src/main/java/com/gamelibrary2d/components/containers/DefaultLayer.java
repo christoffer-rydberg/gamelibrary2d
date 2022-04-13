@@ -44,7 +44,7 @@ public class DefaultLayer<T extends Renderable> extends AbstractLayer<T> {
     }
 
     /**
-     * Does not clear the foreground or background layers.
+     * Does not clear the foreground or background containers.
      */
     public void clearPrimary() {
         super.clear();

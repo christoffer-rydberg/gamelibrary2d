@@ -3,8 +3,8 @@ package com.gamelibrary2d.demos.networkgame.client.resources;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.Surface;
+import com.gamelibrary2d.opengl.resources.Quad;
+import com.gamelibrary2d.opengl.resources.Surface;
 
 public final class Surfaces {
     private static Surface button;

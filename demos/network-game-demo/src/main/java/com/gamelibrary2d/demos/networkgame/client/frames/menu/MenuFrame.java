@@ -1,17 +1,13 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
-import com.gamelibrary2d.resources.DefaultTexture;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.StackOrientation;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.*;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.denotations.KeyUpAware;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.components.objects.GameObject;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.Button;
@@ -24,11 +20,15 @@ import com.gamelibrary2d.demos.networkgame.client.urls.Music;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.renderers.Label;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.*;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.opengl.resources.DefaultTexture;
+import com.gamelibrary2d.opengl.resources.Surface;
+import com.gamelibrary2d.opengl.resources.Texture;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
+import com.gamelibrary2d.text.HorizontalTextAlignment;
+import com.gamelibrary2d.text.Label;
+import com.gamelibrary2d.text.VerticalTextAlignment;
 import com.gamelibrary2d.updaters.DurationUpdater;
 import com.gamelibrary2d.updaters.InstantUpdater;
 import com.gamelibrary2d.updaters.SequentialUpdater;
@@ -100,10 +100,10 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         panel.setPosition(game.getWindow().getWidth() / 2f, game.getWindow().getHeight());
 
         float titleOffset = Math.max(0f, (game.getWindow().getHeight() - menuPanel.getBounds().getHeight()) / 4f);
-        panel.stack(gameTitle, StackOrientation.DOWN, titleOffset);
+        panel.stack(gameTitle, Panel.StackOrientation.DOWN, titleOffset);
 
         float menuOffset = Math.max(0f, titleOffset - gameTitle.getBounds().getHeight() / 2f);
-        panel.stack(menuPanel, StackOrientation.DOWN, menuOffset);
+        panel.stack(menuPanel, Panel.StackOrientation.DOWN, menuOffset);
 
         menuLayer.add(panel);
         menuLayer.add(creditsButton);
@@ -112,19 +112,19 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) throws IOException {
+    protected void onInitialize(FrameInitializationContext context) throws IOException {
         backgroundLayer = createBackgroundLayer();
         menuLayer = createMenuLayer();
         credits = new Credits(game.getWindow(), resourceManager);
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
         hideCredits();
         add(backgroundLayer);
         add(menuLayer);

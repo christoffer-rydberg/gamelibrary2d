@@ -23,7 +23,7 @@
                 </os>
             </activation>
             <properties>
-        <platform>windows</platform>
+                <platform>windows</platform>
             </properties>
         </profile>
         <profile>
@@ -52,7 +52,7 @@
                 </os>
             </activation>
             <properties>
-        <platform>linux</platform>
+                <platform>linux</platform>
             </properties>
         </profile>
         <profile>
@@ -81,7 +81,7 @@
                 </os>
             </activation>
             <properties>
-        <platform>macos</platform>
+                <platform>macos</platform>
             </properties>
         </profile>
     </profiles>

@@ -2,13 +2,13 @@ package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.objects.AbstractGameObject;
+import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
-import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.renderers.Label;
-import com.gamelibrary2d.resources.Font;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
+import com.gamelibrary2d.opengl.ModelMatrix;
+import com.gamelibrary2d.text.Font;
+import com.gamelibrary2d.text.HorizontalTextAlignment;
+import com.gamelibrary2d.text.Label;
+import com.gamelibrary2d.text.VerticalTextAlignment;
 
 public class TimeLabel extends AbstractGameObject {
 

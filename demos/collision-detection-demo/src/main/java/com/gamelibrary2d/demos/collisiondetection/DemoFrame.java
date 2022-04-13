@@ -10,13 +10,13 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.renderers.ContentRenderer;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.DefaultTexture;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.Surface;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.opengl.renderers.ContentRenderer;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.opengl.resources.DefaultTexture;
+import com.gamelibrary2d.opengl.resources.Quad;
+import com.gamelibrary2d.opengl.resources.Surface;
+import com.gamelibrary2d.opengl.resources.Texture;
 import com.gamelibrary2d.updaters.InfiniteUpdater;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) throws IOException {
+    protected void onInitialize(FrameInitializationContext context) throws IOException {
         Texture ballTexture = DefaultTexture.create(Ball.class.getResource("/ball.png"), this);
         ballSurface = Quad.create(Rectangle.create(32, 32), this);
         ballRenderer = new SurfaceRenderer<>(ballSurface, ballTexture);
@@ -47,7 +47,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
@@ -61,7 +61,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
         final float ballWidth = ballSurface.getBounds().getWidth();
         final float ballHeight = ballSurface.getBounds().getHeight();
         final float pyramidCenterX = gameArea.getWidth() / 2f;

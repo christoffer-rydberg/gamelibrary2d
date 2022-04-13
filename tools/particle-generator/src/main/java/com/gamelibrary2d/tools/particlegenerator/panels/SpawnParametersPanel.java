@@ -1,9 +1,9 @@
 package com.gamelibrary2d.tools.particlegenerator.panels;
 
+import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.denotations.Parent;
-import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
+import com.gamelibrary2d.particles.ParticleSpawnParameters;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
 

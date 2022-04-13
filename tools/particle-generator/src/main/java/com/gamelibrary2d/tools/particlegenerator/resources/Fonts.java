@@ -1,8 +1,9 @@
 package com.gamelibrary2d.tools.particlegenerator.resources;
 
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.resources.DefaultFont;
-import com.gamelibrary2d.resources.Font;
+import com.gamelibrary2d.framework.lwjgl.FontMetadataFactory;
+import com.gamelibrary2d.text.DefaultFont;
+import com.gamelibrary2d.text.Font;
 
 public class Fonts {
     private static Font smallFont;
@@ -11,10 +12,21 @@ public class Fonts {
     private static Font menuFont;
 
     public static void create(Disposer disposer) {
-        smallFont = DefaultFont.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 12), disposer);
-        defaultFont = DefaultFont.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 16), disposer);
-        largeFont = DefaultFont.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 20), disposer);
-        menuFont = DefaultFont.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 32), disposer);
+        smallFont = DefaultFont.create(
+                FontMetadataFactory.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 12)),
+                disposer);
+
+        defaultFont = DefaultFont.create(
+                FontMetadataFactory.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 16)),
+                disposer);
+
+        largeFont = DefaultFont.create(
+                FontMetadataFactory.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 20)),
+                disposer);
+
+        menuFont = DefaultFont.create(
+                FontMetadataFactory.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 32)),
+                disposer);
     }
 
     public static Font getSmallFont() {

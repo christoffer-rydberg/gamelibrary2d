@@ -9,11 +9,11 @@ import com.gamelibrary2d.demos.networkgame.client.objects.network.RemotePlayer;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.renderers.ContentRenderer;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.Surface;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.opengl.renderers.ContentRenderer;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.opengl.resources.Quad;
+import com.gamelibrary2d.opengl.resources.Surface;
+import com.gamelibrary2d.opengl.resources.Texture;
 
 import java.util.HashMap;
 import java.util.Map;

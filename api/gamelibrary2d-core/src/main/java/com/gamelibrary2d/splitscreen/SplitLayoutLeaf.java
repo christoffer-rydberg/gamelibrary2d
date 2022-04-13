@@ -3,9 +3,9 @@ package com.gamelibrary2d.splitscreen;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.glUtil.ModelMatrix;
-import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.renderers.RenderCache;
+import com.gamelibrary2d.components.GameObject;
+import com.gamelibrary2d.opengl.ModelMatrix;
+import com.gamelibrary2d.opengl.renderers.RenderCache;
 
 public class SplitLayoutLeaf<T> implements SplitLayout {
     private final InternalTargetSettings internalTargetSettings;

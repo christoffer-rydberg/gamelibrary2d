@@ -2,8 +2,7 @@ package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.resources.StackOrientation;
+import com.gamelibrary2d.components.GameObject;
 
 import java.util.List;
 

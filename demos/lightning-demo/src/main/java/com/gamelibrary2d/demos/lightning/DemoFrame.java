@@ -5,18 +5,18 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.lightning.*;
-import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
+import com.gamelibrary2d.opengl.renderers.ContentRenderer;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.opengl.resources.DefaultTexture;
+import com.gamelibrary2d.opengl.resources.Quad;
+import com.gamelibrary2d.opengl.resources.Surface;
+import com.gamelibrary2d.opengl.resources.Texture;
 import com.gamelibrary2d.particles.DefaultParticleSystem;
-import com.gamelibrary2d.renderers.ContentRenderer;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.DefaultTexture;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.Surface;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.particles.ParticleSystemParameters;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,7 +48,7 @@ class DemoFrame extends AbstractFrame {
     private Renderable createTorch(DefaultParticleSystem particleSystem, DefaultDynamicLightMap lightMap) throws IOException {
         Rectangle bounds = Rectangle.create(32, 64).move(11, -22);
         ContentRenderer renderer = createRenderer(bounds, "torch.png");
-        return new Cursor(game, renderer, lightMap, particleSystem);
+        return new Torch(game, renderer, lightMap, particleSystem);
     }
 
     private LightRenderer createLightRenderer(Window window, LightMap lightMap) {
@@ -64,7 +64,7 @@ class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) {
+    protected void onInitialize(FrameInitializationContext context) {
         try {
             Window window = game.getWindow();
             DefaultParticleSystem particleSystem = createParticleSystem();
@@ -86,12 +86,12 @@ class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
 
     }
 

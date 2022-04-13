@@ -3,21 +3,25 @@ package com.gamelibrary2d;
 import com.gamelibrary2d.common.disposal.AbstractDisposer;
 import com.gamelibrary2d.common.event.DefaultEventPublisher;
 import com.gamelibrary2d.common.event.EventPublisher;
+import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.components.denotations.InputAware;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.denotations.KeyUpAware;
 import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.components.frames.FrameDisposal;
-import com.gamelibrary2d.components.frames.InitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.LoadingFrame;
 import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.Runtime;
 import com.gamelibrary2d.framework.*;
-import com.gamelibrary2d.glUtil.ShaderProgram;
-import com.gamelibrary2d.glUtil.ShaderType;
-import com.gamelibrary2d.resources.DefaultShader;
+import com.gamelibrary2d.opengl.OpenGLState;
+import com.gamelibrary2d.opengl.shaders.DefaultShader;
+import com.gamelibrary2d.opengl.shaders.DefaultShaderProgram;
+import com.gamelibrary2d.opengl.shaders.ShaderType;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -106,36 +110,39 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         // OpenGL.instance().glCullFace(OpenGL.GL_BACK);
     }
 
+    private DefaultShader loadShader(String path, ShaderType shaderType) {
+        try(InputStream stream = DefaultShader.class.getClassLoader().getResourceAsStream(path)) {
+            String src = Read.text(stream, StandardCharsets.UTF_8);
+            return DefaultShader.create(src, shaderType, this);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Failed to load a shader file!"
+                    + System.lineSeparator() + ex.getMessage());
+        }
+    }
+
     private void createComputeShaderPrograms() {
-        ShaderProgram particleUpdaterProgram = ShaderProgram.create(this);
-        particleUpdaterProgram
-                .attachShader(DefaultShader.fromFile("shaders/ParticleUpdater.compute", ShaderType.COMPUTE, this));
+        DefaultShaderProgram particleUpdaterProgram = DefaultShaderProgram.create(this);
+        particleUpdaterProgram.attachShader(loadShader("shaders/ParticleUpdater.compute", ShaderType.COMPUTE));
         particleUpdaterProgram.initialize();
-        ShaderProgram.setDefaultParticleUpdaterProgram(particleUpdaterProgram);
+        OpenGLState.setPrimaryParticleUpdaterProgram(particleUpdaterProgram);
     }
 
     private void createGeometryShaderPrograms() {
-        ShaderProgram quadParticleShaderProgram = ShaderProgram.create(this);
-        quadParticleShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/QuadParticle.geometry", ShaderType.GEOMETRY, this));
-        quadParticleShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/QuadParticle.vertex", ShaderType.VERTEX, this));
-        quadParticleShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/QuadParticle.fragment", ShaderType.FRAGMENT, this));
+        DefaultShaderProgram quadParticleShaderProgram = DefaultShaderProgram.create(this);
+        quadParticleShaderProgram.attachShader(loadShader("shaders/QuadParticle.geometry", ShaderType.GEOMETRY));
+        quadParticleShaderProgram.attachShader(loadShader("shaders/QuadParticle.vertex", ShaderType.VERTEX));
+        quadParticleShaderProgram.attachShader(loadShader("shaders/QuadParticle.fragment", ShaderType.FRAGMENT));
         quadParticleShaderProgram.initialize();
         quadParticleShaderProgram.initializeMvp(window.getWidth(), window.getHeight());
-        ShaderProgram.setQuadParticleShaderProgram(quadParticleShaderProgram);
+        OpenGLState.setQuadParticleShaderProgram(quadParticleShaderProgram);
 
-        ShaderProgram quadShaderProgram = ShaderProgram.create(this);
-        quadShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/Quad.geometry", ShaderType.GEOMETRY, this));
-        quadShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/Quad.vertex", ShaderType.VERTEX, this));
-        quadShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/Quad.fragment", ShaderType.FRAGMENT, this));
+        DefaultShaderProgram quadShaderProgram = DefaultShaderProgram.create(this);
+        quadShaderProgram.attachShader(loadShader("shaders/Quad.geometry", ShaderType.GEOMETRY));
+        quadShaderProgram.attachShader(loadShader("shaders/Quad.vertex", ShaderType.VERTEX));
+        quadShaderProgram.attachShader(loadShader("shaders/Quad.fragment", ShaderType.FRAGMENT));
         quadShaderProgram.initialize();
         quadShaderProgram.initializeMvp(window.getWidth(), window.getHeight());
-        ShaderProgram.setQuadShaderProgram(quadShaderProgram);
+        OpenGLState.setQuadShaderProgram(quadShaderProgram);
     }
 
     private void createVersionSpecificShaderPrograms() {
@@ -161,30 +168,30 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     }
 
     private void createDefaultShaderPrograms() {
-        ShaderProgram defaultShaderProgram = ShaderProgram.create(this);
-        defaultShaderProgram.attachShader(DefaultShader.fromFile("shaders/Default.vertex", ShaderType.VERTEX, this));
-        defaultShaderProgram.attachShader(DefaultShader.fromFile("shaders/Default.fragment", ShaderType.FRAGMENT, this));
+        DefaultShaderProgram defaultShaderProgram = DefaultShaderProgram.create(this);
+        defaultShaderProgram.attachShader(loadShader("shaders/Default.vertex", ShaderType.VERTEX));
+        defaultShaderProgram.attachShader(loadShader("shaders/Default.fragment", ShaderType.FRAGMENT));
         defaultShaderProgram.initialize();
         defaultShaderProgram.initializeMvp(window.getWidth(), window.getHeight());
-        ShaderProgram.setDefaultShaderProgram(defaultShaderProgram);
+        OpenGLState.setPrimaryShaderProgram(defaultShaderProgram);
 
-        ShaderProgram pointParticleShaderProgram = ShaderProgram.create(this);
+        DefaultShaderProgram pointParticleShaderProgram = DefaultShaderProgram.create(this);
         pointParticleShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/PointParticle.vertex", ShaderType.VERTEX, this));
+                .attachShader(loadShader("shaders/PointParticle.vertex", ShaderType.VERTEX));
         pointParticleShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/PointParticle.fragment", ShaderType.FRAGMENT, this));
+                .attachShader(loadShader("shaders/PointParticle.fragment", ShaderType.FRAGMENT));
         pointParticleShaderProgram.initialize();
         pointParticleShaderProgram.initializeMvp(window.getWidth(), window.getHeight());
-        ShaderProgram.setPointParticleShaderProgram(pointParticleShaderProgram);
+        OpenGLState.setPointParticleShaderProgram(pointParticleShaderProgram);
 
-        ShaderProgram pointShaderProgram = ShaderProgram.create(this);
+        DefaultShaderProgram pointShaderProgram = DefaultShaderProgram.create(this);
         pointShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/Point.vertex", ShaderType.VERTEX, this));
+                .attachShader(loadShader("shaders/Point.vertex", ShaderType.VERTEX));
         pointShaderProgram
-                .attachShader(DefaultShader.fromFile("shaders/Point.fragment", ShaderType.FRAGMENT, this));
+                .attachShader(loadShader("shaders/Point.fragment", ShaderType.FRAGMENT));
         pointShaderProgram.initialize();
         pointShaderProgram.initializeMvp(window.getWidth(), window.getHeight());
-        ShaderProgram.setPointShaderProgram(pointShaderProgram);
+        OpenGLState.setPointShaderProgram(pointShaderProgram);
 
         createVersionSpecificShaderPrograms();
     }
@@ -277,7 +284,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
 
             if (!frame.isLoaded()) {
                 try {
-                    InitializationContext context = frame.load();
+                    FrameInitializationContext context = frame.load();
                     frame.loaded(context);
                 } catch (InitializationException e) {
                     frame.dispose(FrameDisposal.UNLOAD);

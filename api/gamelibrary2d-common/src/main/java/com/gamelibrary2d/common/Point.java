@@ -272,4 +272,38 @@ public class Point {
     public float getDistance(float x, float y) {
         return getLength(this.x - x, this.y - y);
     }
+
+    public void projectTo(Projection projection) {
+        float rotationAndScaleCenterX = projection.getPosX() + projection.getScaleAndRotationCenterX();
+        float rotationAndScaleCenterY = projection.getPosY() + projection.getScaleAndRotationCenterY();
+
+        if (projection.getRotation() != 0) {
+            rotate(-projection.getRotation(), rotationAndScaleCenterX, rotationAndScaleCenterY);
+        }
+
+        if (projection.getScaleX() != 1 || projection.getScaleX() != 1) {
+            setX(rotationAndScaleCenterX + ((getX() - rotationAndScaleCenterX) / projection.getScaleX()));
+            setY(rotationAndScaleCenterY + ((getY() - rotationAndScaleCenterY) / projection.getScaleY()));
+        }
+
+        setX(getX() - projection.getPosX());
+        setY(getY() - projection.getPosY());
+    }
+
+    public void projectFrom(Projection projection) {
+        setX(getX() + projection.getPosX());
+        setY(getY() + projection.getPosY());
+
+        float rotationAndScaleCenterX = projection.getPosX() + projection.getScaleAndRotationCenterX();
+        float rotationAndScaleCenterY = projection.getPosY() + projection.getScaleAndRotationCenterY();
+
+        if (projection.getScaleX() != 1 || projection.getScaleY() != 1) {
+            setX(rotationAndScaleCenterX + ((getX() - rotationAndScaleCenterX) * projection.getScaleX()));
+            setY(rotationAndScaleCenterY + ((getY() - rotationAndScaleCenterY) * projection.getScaleY()));
+        }
+
+        if (projection.getRotation() != 0) {
+            rotate(projection.getRotation(), rotationAndScaleCenterX, rotationAndScaleCenterY);
+        }
+    }
 }

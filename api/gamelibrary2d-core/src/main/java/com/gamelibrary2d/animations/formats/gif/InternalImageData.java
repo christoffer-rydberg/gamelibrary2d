@@ -1,12 +1,13 @@
 package com.gamelibrary2d.animations.formats.gif;
 
-import static com.gamelibrary2d.animations.formats.gif.InternalInputStreamExtensions.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
+
+import static com.gamelibrary2d.animations.formats.gif.InternalInputStreamExtensions.readBytesOrThrow;
+import static com.gamelibrary2d.animations.formats.gif.InternalInputStreamExtensions.readOrThrow;
 
 class InternalImageData {
     final byte[] data;

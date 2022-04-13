@@ -2,7 +2,7 @@ package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.functional.ParameterizedAction;
-import com.gamelibrary2d.components.objects.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
 import com.gamelibrary2d.framework.Renderable;
 
 public class Button extends AbstractPointerAwareGameObject {

@@ -1,7 +1,7 @@
 package com.gamelibrary2d.updaters;
 
-import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.components.frames.Frame;
 
 /**
  * The {@link Updater} is used to apply one or more {@link Updatable updates}. You

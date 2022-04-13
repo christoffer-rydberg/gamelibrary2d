@@ -7,8 +7,8 @@ public class FloatUtils {
     /**
      * Returns the floor modulus of the float arguments.
      */
-    public static float floorMod(float x, float y){
-        return (float) (x - Math.floor(x/y) * y);
+    public static float floorMod(float x, float y) {
+        return (float) (x - Math.floor(x / y) * y);
     }
 
     /**

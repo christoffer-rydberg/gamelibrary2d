@@ -9,9 +9,9 @@ import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.MutableQuad;
-import com.gamelibrary2d.resources.Quad;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.opengl.resources.MutableQuad;
+import com.gamelibrary2d.opengl.resources.Quad;
 
 public class QuadTool implements Renderable, PointerDownAware, PointerMoveAware, PointerUpAware {
     private final EventPublisher<Quad> onCreated = new DefaultEventPublisher<>();

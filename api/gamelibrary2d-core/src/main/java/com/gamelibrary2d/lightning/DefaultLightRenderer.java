@@ -5,14 +5,22 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.io.BufferUtils;
+import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.framework.OpenGL;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.glUtil.*;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.DefaultShader;
-import com.gamelibrary2d.resources.Quad;
+import com.gamelibrary2d.opengl.ModelMatrix;
+import com.gamelibrary2d.opengl.OpenGLState;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.opengl.resources.Quad;
+import com.gamelibrary2d.opengl.shaders.DefaultShader;
+import com.gamelibrary2d.opengl.shaders.DefaultShaderProgram;
+import com.gamelibrary2d.opengl.shaders.ShaderParameter;
+import com.gamelibrary2d.opengl.shaders.ShaderType;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,9 +57,9 @@ public class DefaultLightRenderer implements LightRenderer {
         this.windowHeight = windowHeight;
         resolutionChangedDisposer = new DefaultDisposer(disposer);
 
-        ShaderProgram shaderProgram = ShaderProgram.create(disposer);
-        shaderProgram.attachShader(DefaultShader.fromFile("shaders/LightMap.vertex", ShaderType.VERTEX, disposer));
-        shaderProgram.attachShader(DefaultShader.fromFile("shaders/LightMap.fragment", ShaderType.FRAGMENT, disposer));
+        DefaultShaderProgram shaderProgram = DefaultShaderProgram.create(disposer);
+        shaderProgram.attachShader(loadShader("shaders/LightMap.vertex", ShaderType.VERTEX, disposer));
+        shaderProgram.attachShader(loadShader("shaders/LightMap.fragment", ShaderType.FRAGMENT, disposer));
 
         // variable
         shaderProgram.initialize();
@@ -73,6 +81,16 @@ public class DefaultLightRenderer implements LightRenderer {
         renderer = new SurfaceRenderer<>(new float[ShaderParameter.MIN_PARAMETERS + 2]);
         renderer.setColor(0, 0, 0, 1f);
         renderer.setShaderProgram(shaderProgram);
+    }
+
+    private static DefaultShader loadShader(String path, ShaderType shaderType, Disposer disposer) {
+        try(InputStream stream = DefaultShader.class.getClassLoader().getResourceAsStream(path)) {
+            String src = Read.text(stream, StandardCharsets.UTF_8);
+            return DefaultShader.create(src, shaderType, disposer);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Failed to load a shader file!"
+                    + System.lineSeparator() + ex.getMessage());
+        }
     }
 
     public static DefaultLightRenderer create(int windowWidth, int windowHeight, Disposer disposer) {

@@ -1,9 +1,10 @@
 package com.gamelibrary2d.animations.formats.gif;
 
+import com.gamelibrary2d.common.io.BitInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
-import com.gamelibrary2d.common.io.BitInputStream;
 
 class InternalLzwDecompressor {
     private final ByteOrder byteOrder;
@@ -26,7 +27,7 @@ class InternalLzwDecompressor {
         int previousCode = -1;
         while (output.getSize() < length) {
             int code = input.readBits(table.codeSize);
-            if(code == eoi) {
+            if (code == eoi) {
                 break;
             } else if (code == clearCode) {
                 table.clear();
@@ -70,12 +71,12 @@ class InternalLzwDecompressor {
             this.initialCodeSize = initialCodeSize;
             int initialPhrases = 1 << initialCodeSize + 2;
             for (int i = 0; i < initialPhrases; ++i) {
-                table[i] = new byte[] { (byte) i };
+                table[i] = new byte[]{(byte) i};
             }
         }
 
         private byte[] getPhrase(int code) throws IOException {
-            if ( code < 0 || code >= codes) {
+            if (code < 0 || code >= codes) {
                 throw new IOException("Invalid lzw code: " + code);
             }
 
@@ -108,7 +109,7 @@ class InternalLzwDecompressor {
         }
 
         private void write(byte[] bytes) {
-            for (int i = 0 ; i < bytes.length; ++i) {
+            for (int i = 0; i < bytes.length; ++i) {
                 data[++prevIndex] = bytes[i];
             }
         }

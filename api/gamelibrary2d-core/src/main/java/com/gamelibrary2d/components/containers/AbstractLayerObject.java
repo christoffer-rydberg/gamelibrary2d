@@ -2,17 +2,16 @@ package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.Bounded;
-import com.gamelibrary2d.components.objects.AbstractGameObject;
-import com.gamelibrary2d.Projection;
+import com.gamelibrary2d.framework.Renderable;
 
 import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractLayerObject<T extends Renderable> extends AbstractGameObject implements LayerObject<T> {
     private final Layer<T> layer;
-    private final Point projectionOutput = new Point();
+    private final Point pointerProjection = new Point();
 
     private Rectangle bounds;
 
@@ -85,8 +84,9 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
     }
 
     protected boolean onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        Projection.projectTo(this, projectedX, projectedY, projectionOutput);
-        return layer.pointerDown(id, button, x, y, projectionOutput.getX(), projectionOutput.getY());
+        pointerProjection.set(projectedX, projectedY);
+        pointerProjection.projectTo(this);
+        return layer.pointerDown(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
     }
 
     @Override
@@ -95,8 +95,9 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
     }
 
     protected boolean onPointerMove(int id, float x, float y, float projectedX, float projectedY) {
-        Projection.projectTo(this, projectedX, projectedY, projectionOutput);
-        return layer.pointerMove(id, x, y, projectionOutput.getX(), projectionOutput.getY());
+        pointerProjection.set(projectedX, projectedY);
+        pointerProjection.projectTo(this);
+        return layer.pointerMove(id, x, y, pointerProjection.getX(), pointerProjection.getY());
     }
 
     @Override
@@ -107,8 +108,9 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
     }
 
     protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
-        Projection.projectTo(this, projectedX, projectedY, projectionOutput);
-        layer.pointerUp(id, button, x, y, projectionOutput.getX(), projectionOutput.getY());
+        pointerProjection.set(projectedX, projectedY);
+        pointerProjection.projectTo(this);
+        layer.pointerUp(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
     }
 
     @Override

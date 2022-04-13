@@ -4,7 +4,6 @@ import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 
 public class TransparentWindowDemo {
     private static final String title = "Transparent Window Demo";

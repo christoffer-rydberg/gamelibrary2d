@@ -1,7 +1,7 @@
 package com.gamelibrary2d.interpolation;
 
-import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.denotations.Transformable;
+import com.gamelibrary2d.components.denotations.Updatable;
 
 public class RotationInterpolator implements Updatable {
     private final Transformable target;

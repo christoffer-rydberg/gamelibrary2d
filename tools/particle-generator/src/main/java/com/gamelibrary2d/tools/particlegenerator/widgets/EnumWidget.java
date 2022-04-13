@@ -1,8 +1,8 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.objects.AbstractPointerAwareGameObject;
-import com.gamelibrary2d.renderers.Label;
+import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.text.Label;
 import com.gamelibrary2d.tools.particlegenerator.properties.GenericProperty;
 
 public class EnumWidget<T extends Enum<T>> extends AbstractPointerAwareGameObject {

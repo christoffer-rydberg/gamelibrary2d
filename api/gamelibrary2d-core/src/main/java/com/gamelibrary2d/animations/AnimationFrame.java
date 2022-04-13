@@ -1,12 +1,12 @@
 package com.gamelibrary2d.animations;
 
-import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.denotations.Bounded;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.Surface;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.opengl.resources.DefaultTexture;
+import com.gamelibrary2d.opengl.resources.Quad;
+import com.gamelibrary2d.opengl.resources.Surface;
+import com.gamelibrary2d.opengl.resources.Texture;
 
 public class AnimationFrame implements Bounded {
     private final Surface surface;

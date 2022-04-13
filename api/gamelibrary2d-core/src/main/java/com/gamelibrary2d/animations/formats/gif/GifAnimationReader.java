@@ -1,9 +1,9 @@
 package com.gamelibrary2d.animations.formats.gif;
 
-import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.animations.AnimationFrameMetadata;
 import com.gamelibrary2d.animations.AnimationMetadata;
 import com.gamelibrary2d.animations.AnimationReader;
+import com.gamelibrary2d.common.Rectangle;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +31,8 @@ public class GifAnimationReader implements AnimationReader {
             duration = gce.delayTime / 100f;
 
             transparentColorIndex = gce.transparentColor
-                ? gce.transparentColorIndex
-                : -1;
+                    ? gce.transparentColorIndex
+                    : -1;
 
             int disposalMethod = gifFrame.graphicControlExtension.disposalMethod;
             restoreBackground = disposalMethod == RESTORE_TO_BACKGROUND;
@@ -54,8 +54,8 @@ public class GifAnimationReader implements AnimationReader {
                 : globalColorTable;
 
         int bufferIndex = -1;
-        for(int y = 0; y < gifFrame.imageDescriptor.imageHeight; ++y) {
-            for(int x = 0; x < gifFrame.imageDescriptor.imageWidth; ++x) {
+        for (int y = 0; y < gifFrame.imageDescriptor.imageHeight; ++y) {
+            for (int x = 0; x < gifFrame.imageDescriptor.imageWidth; ++x) {
                 int colorIndex = 0xff & gifFrame.imageData.data[++bufferIndex];
                 if (colorIndex == transparentColorIndex) {
                     image.setRgb(x, y, 0x00);

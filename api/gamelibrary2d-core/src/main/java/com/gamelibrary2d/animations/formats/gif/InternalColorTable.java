@@ -1,8 +1,9 @@
 package com.gamelibrary2d.animations.formats.gif;
 
-import static com.gamelibrary2d.animations.formats.gif.InternalInputStreamExtensions.*;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static com.gamelibrary2d.animations.formats.gif.InternalInputStreamExtensions.readBytesOrThrow;
 
 class InternalColorTable {
     private final byte[] colorTable;
@@ -20,7 +21,7 @@ class InternalColorTable {
     }
 
     private static int pow2(int pow) {
-        int result =1;
+        int result = 1;
         for (int i = 0; i < pow; ++i) {
             result *= 2;
         }

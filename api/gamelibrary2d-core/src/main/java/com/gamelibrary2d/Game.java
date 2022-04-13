@@ -1,16 +1,15 @@
 package com.gamelibrary2d;
 
-import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.event.EventListener;
-import com.gamelibrary2d.exceptions.InitializationException;
+import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.components.frames.FrameDisposal;
 import com.gamelibrary2d.components.frames.LoadingFrame;
+import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.GameLoop;
 import com.gamelibrary2d.framework.Runtime;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.components.denotations.Updatable;
 
 public interface Game extends Disposer, Updatable {
 

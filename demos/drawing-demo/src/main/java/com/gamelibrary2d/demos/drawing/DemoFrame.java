@@ -7,14 +7,14 @@ import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.framework.Mouse;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.glUtil.PositionBuffer;
-import com.gamelibrary2d.renderers.*;
-import com.gamelibrary2d.resources.MutableQuad;
-import com.gamelibrary2d.resources.Quad;
+import com.gamelibrary2d.opengl.buffers.PositionBuffer;
+import com.gamelibrary2d.opengl.renderers.*;
+import com.gamelibrary2d.opengl.resources.MutableQuad;
+import com.gamelibrary2d.opengl.resources.Quad;
 
 public class DemoFrame extends AbstractFrame {
     private final Game game;
@@ -24,7 +24,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) {
+    protected void onInitialize(FrameInitializationContext context) {
         Window window = game.getWindow();
 
         Rectangle windowBounds = new Rectangle(0, 0, window.getWidth(), window.getHeight());
@@ -69,12 +69,12 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
 
     }
 

@@ -1,7 +1,7 @@
 package com.gamelibrary2d.components.denotations;
 
 public interface KeyUpAware {
-    
+
     /**
      * Handles key up events.
      *

@@ -1,6 +1,8 @@
 package com.gamelibrary2d.common.io;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public class ResourceWriter {
     private final DataBuffer buffer;

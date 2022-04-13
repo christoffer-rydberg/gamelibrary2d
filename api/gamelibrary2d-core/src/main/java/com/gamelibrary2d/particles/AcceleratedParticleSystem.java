@@ -8,12 +8,13 @@ import com.gamelibrary2d.components.denotations.Clearable;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.framework.OpenGL;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.glUtil.*;
-import com.gamelibrary2d.particles.parameters.ParticleEmissionParameters;
-import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
-import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
-import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
+import com.gamelibrary2d.opengl.ModelMatrix;
+import com.gamelibrary2d.opengl.OpenGLState;
+import com.gamelibrary2d.opengl.buffers.DefaultOpenGLBuffer;
+import com.gamelibrary2d.opengl.buffers.DefaultVertexArrayBuffer;
+import com.gamelibrary2d.opengl.buffers.MirroredFloatBuffer;
+import com.gamelibrary2d.opengl.buffers.MirroredIntBuffer;
+import com.gamelibrary2d.opengl.shaders.ShaderProgram;
 
 import java.nio.FloatBuffer;
 
@@ -60,43 +61,31 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
                                       EfficientParticleRenderer renderer,
                                       int capacity,
                                       Disposer disposer) {
+        updateProgram.bind();
 
-        boolean updateProgramInUse = updateProgram.inUse();
+        this.updateProgram = updateProgram;
 
-        try {
-            if (!updateProgramInUse) {
-                updateProgram.bind();
-            }
+        // Cache uniforms
+        glUniformDeltaTime = updateProgram.getUniformLocation("deltaTime");
+        glUniformParticleCount = updateProgram.getUniformLocation("particleCount");
 
-            this.updateProgram = updateProgram;
+        this.updateBuffer = updateBuffer;
+        this.renderBuffer = renderBuffer;
+        this.parameters = parameters;
+        this.renderer = renderer;
+        this.capacity = capacity;
+        atomicBuffer = MirroredIntBuffer.create(new int[1], OpenGL.GL_ATOMIC_COUNTER_BUFFER, OpenGL.GL_DYNAMIC_DRAW, disposer);
 
-            // Cache uniforms
-            glUniformDeltaTime = updateProgram.getUniformLocation("deltaTime");
-            glUniformParticleCount = updateProgram.getUniformLocation("particleCount");
+        this.positionBuffer = positionBuffer;
+        positionUpdateCounter = parameters.getSpawnParameters().getUpdateCounter();
 
-            this.updateBuffer = updateBuffer;
-            this.renderBuffer = renderBuffer;
-            this.parameters = parameters;
-            this.renderer = renderer;
-            this.capacity = capacity;
-            atomicBuffer = MirroredIntBuffer.create(new int[1], OpenGL.GL_ATOMIC_COUNTER_BUFFER, OpenGL.GL_DYNAMIC_DRAW, disposer);
+        this.parametersBuffer = parametersBuffer;
+        parameterUpdateCounter = parameters.getUpdateParameters().getUpdateCounter();
 
-            this.positionBuffer = positionBuffer;
-            positionUpdateCounter = parameters.getSpawnParameters().getUpdateCounter();
-
-            this.parametersBuffer = parametersBuffer;
-            parameterUpdateCounter = parameters.getUpdateParameters().getUpdateCounter();
-
-            glUniformPosition = updateProgram.getUniformLocation("position");
-            glUniformExternalAcceleration = updateProgram.getUniformLocation("externalAcceleration");
-            glUniformParticlesInGpu = updateProgram.getUniformLocation("particlesInGpu");
-            glUniformRandomSeed = updateProgram.getUniformLocation("randomSeed");
-
-        } finally {
-            if (!updateProgramInUse) {
-                updateProgram.unbind();
-            }
-        }
+        glUniformPosition = updateProgram.getUniformLocation("position");
+        glUniformExternalAcceleration = updateProgram.getUniformLocation("externalAcceleration");
+        glUniformParticlesInGpu = updateProgram.getUniformLocation("particlesInGpu");
+        glUniformRandomSeed = updateProgram.getUniformLocation("randomSeed");
     }
 
     public static AcceleratedParticleSystem create(
@@ -144,7 +133,7 @@ public class AcceleratedParticleSystem implements Updatable, Renderable, Clearab
             updateBuffer[i] = buffer;
         }
 
-        return new AcceleratedParticleSystem(ShaderProgram.getDefaultParticleUpdaterProgram(),
+        return new AcceleratedParticleSystem(OpenGLState.getPrimaryParticleUpdaterProgram(),
                 positionBuffer, parametersBuffer, updateBuffer, renderBuffer, parameters, renderer, capacity, disposer);
     }
 

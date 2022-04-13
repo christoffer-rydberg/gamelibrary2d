@@ -1,25 +1,17 @@
 package com.gamelibrary2d.demos.animation;
 
 import com.gamelibrary2d.Game;
-import com.gamelibrary2d.animations.Animation;
-import com.gamelibrary2d.resources.DefaultFont;
-import com.gamelibrary2d.resources.Font;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
+import com.gamelibrary2d.animations.*;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.components.DefaultObservableGameObject;
+import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.components.objects.AnimatedGameObject;
-import com.gamelibrary2d.components.objects.DefaultObservableGameObject;
-import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.animations.AnimationLoader;
-import com.gamelibrary2d.animations.AnimationMetadata;
-import com.gamelibrary2d.animations.StandardAnimationFormats;
-import com.gamelibrary2d.renderers.AnimationRenderer;
-import com.gamelibrary2d.renderers.Label;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.framework.lwjgl.FontMetadataFactory;
+import com.gamelibrary2d.text.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,14 +27,16 @@ public class DemoFrame extends AbstractFrame {
     private final Game game;
     private final Disposer animationDisposer = new DefaultDisposer(this);
     private Future<AnimationMetadata> loadingAnimation;
-    private AnimatedGameObject<AnimationRenderer> animatedObject;
+    private AnimatedGameObject animatedObject;
 
     DemoFrame(Game game) {
         this.game = game;
     }
 
     private GameObject createLoadButton() {
-        Font font = DefaultFont.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 48), this);
+        Font font = DefaultFont.create(
+                FontMetadataFactory.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 48)),
+                this);
 
         Label label = new Label(font, "Click here to load an animation");
         label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.CENTER);
@@ -57,14 +51,14 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) {
+    protected void onInitialize(FrameInitializationContext context) {
         final float windowWidth = game.getWindow().getWidth();
         final float windowHeight = game.getWindow().getHeight();
 
         GameObject loadButton = createLoadButton();
         loadButton.setPosition(windowWidth / 2, windowHeight - windowHeight / 6);
 
-        animatedObject = new AnimatedGameObject<>(new AnimationRenderer(this));
+        animatedObject = new AnimatedGameObject(new AnimationRenderer(this));
         animatedObject.setPosition(windowWidth / 2, windowHeight / 2);
 
         add(animatedObject);
@@ -72,12 +66,12 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
 
     }
 
@@ -139,16 +133,16 @@ public class DemoFrame extends AbstractFrame {
                                     .restrict(game.getWindow().getWidth(), game.getWindow().getHeight()),
                             animationDisposer);
 
-                    animatedObject.getContent().setAnimation(animation, true);
+                    animatedObject.getRenderer().setAnimation(animation, true);
 
                     boolean hasInvalidFrameDurations = animation.getFrames()
                             .stream()
                             .anyMatch(frame -> frame.getDurationHint() <= 0);
 
                     if (hasInvalidFrameDurations) {
-                        animatedObject.getContent().setGlobalFrameDuration(0.1f);
+                        animatedObject.getRenderer().setGlobalFrameDuration(0.1f);
                     } else {
-                        animatedObject.getContent().disableGlobalFrameDuration();
+                        animatedObject.getRenderer().disableGlobalFrameDuration();
                     }
 
                     animatedObject.setEnabled(false);

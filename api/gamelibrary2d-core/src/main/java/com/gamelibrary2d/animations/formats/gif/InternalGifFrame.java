@@ -34,7 +34,7 @@ class InternalGifFrame {
         long remaining = blockSize;
         while (remaining > 0) {
             long result = is.skip(remaining);
-            if(result <= 0) {
+            if (result <= 0) {
                 throw new IOException("Failed to skip block of size " + blockSize + ". Bytes read: " + (blockSize - remaining));
             }
             remaining -= result;
@@ -44,7 +44,8 @@ class InternalGifFrame {
     }
 
     private static void skipSubBlocks(InputStream is) throws IOException {
-        while (skipSubBlock(is) > 0) { }
+        while (skipSubBlock(is) > 0) {
+        }
     }
 
     public static InternalGifFrame read(InputStream is, ByteOrder byteOrder) throws IOException {

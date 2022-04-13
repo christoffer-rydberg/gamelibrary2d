@@ -1,36 +1,36 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
- 
-  <groupId>com.gamelibrary2d</groupId>
-  <artifactId>gamelibrary2d</artifactId>
-  <version>0.11.0</version>
-  <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
 
-  <modules>
-      <module>api/gamelibrary2d-common</module>
-	  <module>api/gamelibrary2d-collision</module>
-	  <module>api/gamelibrary2d-framework</module>
-	  <module>api/gamelibrary2d-framework-lwjgl</module>
-	  <module>api/gamelibrary2d-core</module>
-	  <module>api/gamelibrary2d-network-common</module>
-	  <module>api/gamelibrary2d-network</module>
-	  <module>api/gamelibrary2d-sound</module>
-	  <module>api/gamelibrary2d-sound-lwjgl</module>
-	  <module>tools/particle-generator</module>
-	  <module>demos/animation-demo</module>
-	  <module>demos/drawing-demo</module>
-	  <module>demos/particle-system-demo</module>
-	  <module>demos/shader-particle-system-demo</module>
-	  <module>demos/transparent-window-demo</module>
-	  <module>demos/network-demo</module>
-	  <module>demos/network-game-demo</module>
-	  <module>demos/network-game-demo-desktop</module>
-	  <module>demos/lightning-demo</module>
-	  <module>demos/split-screen-demo</module>
-	  <module>demos/collision-detection-demo</module>
-  </modules>
+    <groupId>com.gamelibrary2d</groupId>
+    <artifactId>gamelibrary2d</artifactId>
+    <version>0.11.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>api/gamelibrary2d-common</module>
+        <module>api/gamelibrary2d-collision</module>
+        <module>api/gamelibrary2d-framework</module>
+        <module>api/gamelibrary2d-framework-lwjgl</module>
+        <module>api/gamelibrary2d-core</module>
+        <module>api/gamelibrary2d-network-common</module>
+        <module>api/gamelibrary2d-network</module>
+        <module>api/gamelibrary2d-sound</module>
+        <module>api/gamelibrary2d-sound-lwjgl</module>
+        <module>tools/particle-generator</module>
+        <module>demos/animation-demo</module>
+        <module>demos/drawing-demo</module>
+        <module>demos/particle-system-demo</module>
+        <module>demos/shader-particle-system-demo</module>
+        <module>demos/transparent-window-demo</module>
+        <module>demos/network-demo</module>
+        <module>demos/network-game-demo</module>
+        <module>demos/network-game-demo-desktop</module>
+        <module>demos/lightning-demo</module>
+        <module>demos/split-screen-demo</module>
+        <module>demos/collision-detection-demo</module>
+    </modules>
 
 </project>

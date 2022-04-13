@@ -1,10 +1,11 @@
 package com.gamelibrary2d.animations.formats.gif;
 
-import static com.gamelibrary2d.animations.formats.gif.InternalInputStreamExtensions.*;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
+
+import static com.gamelibrary2d.animations.formats.gif.InternalInputStreamExtensions.read2BytesOrThrow;
+import static com.gamelibrary2d.animations.formats.gif.InternalInputStreamExtensions.readOrThrow;
 
 class InternalGraphicControlExtension {
     final int blockSize;

@@ -3,7 +3,7 @@ package com.gamelibrary2d.demos.networkgame.client.frames;
 import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 
 public class SplashFrame extends AbstractFrame {
@@ -13,17 +13,17 @@ public class SplashFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) {
+    protected void onInitialize(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
 
     }
 

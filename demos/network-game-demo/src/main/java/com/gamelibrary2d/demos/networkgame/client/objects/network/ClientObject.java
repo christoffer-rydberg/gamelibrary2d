@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network;
 
 import com.gamelibrary2d.common.Point;
+import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.ContentMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.EffectMap;
 

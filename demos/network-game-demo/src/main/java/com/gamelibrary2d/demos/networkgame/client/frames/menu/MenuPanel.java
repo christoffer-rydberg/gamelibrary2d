@@ -1,11 +1,11 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
 import com.gamelibrary2d.common.functional.ParameterizedAction;
+import com.gamelibrary2d.components.AbstractPointerAwareComposedGameObject;
+import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.DefaultPanel;
 import com.gamelibrary2d.components.containers.NavigationPanel;
 import com.gamelibrary2d.components.containers.Panel;
-import com.gamelibrary2d.components.objects.AbstractPointerAwareComposedGameObject;
-import com.gamelibrary2d.components.objects.GameObject;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.Button;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.InputField;
@@ -17,12 +17,11 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Surfaces;
 import com.gamelibrary2d.demos.networkgame.client.resources.Textures;
 import com.gamelibrary2d.demos.networkgame.client.settings.Colors;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
-import com.gamelibrary2d.renderers.ContentRenderer;
-import com.gamelibrary2d.renderers.Label;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.StackOrientation;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
+import com.gamelibrary2d.opengl.renderers.ContentRenderer;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.text.HorizontalTextAlignment;
+import com.gamelibrary2d.text.Label;
+import com.gamelibrary2d.text.VerticalTextAlignment;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -47,7 +46,7 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
     }
 
     private static <T extends GameObject> void stack(Panel<T> panel, T obj) {
-        panel.stack(obj, StackOrientation.DOWN, Dimensions.getDefaultVerticalOffset());
+        panel.stack(obj, Panel.StackOrientation.DOWN, Dimensions.getDefaultVerticalOffset());
     }
 
     private static Button createButton(String text, ParameterizedAction<Button> onClick) {

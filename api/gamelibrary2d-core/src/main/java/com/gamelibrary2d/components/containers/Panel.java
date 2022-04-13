@@ -1,8 +1,7 @@
 package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.resources.StackOrientation;
+import com.gamelibrary2d.components.GameObject;
 
 /**
  * A panel is a {@link LayerObject} with dynamically updated bounds. By
@@ -74,4 +73,11 @@ public interface Panel<T extends GameObject> extends LayerObject<T> {
      *                    panel will be updated (extended if needed).
      */
     void stack(T obj, StackOrientation orientation, float offset, boolean reposition);
+
+    enum StackOrientation {
+        LEFT,
+        UP,
+        RIGHT,
+        DOWN
+    }
 }

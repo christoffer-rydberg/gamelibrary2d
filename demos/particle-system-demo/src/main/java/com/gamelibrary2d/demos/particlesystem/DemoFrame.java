@@ -3,12 +3,8 @@ package com.gamelibrary2d.demos.particlesystem;
 import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.particles.parameters.ParticleEmissionParameters;
-import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
-import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
-import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particles.DefaultParticleSystem;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.particles.*;
 import com.gamelibrary2d.updaters.DurationUpdater;
 import com.gamelibrary2d.updaters.InstantUpdater;
 import com.gamelibrary2d.updaters.SequentialUpdater;
@@ -57,7 +53,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) {
+    protected void onInitialize(FrameInitializationContext context) {
         try {
             // Example of particle system settings created from code:
             ParticleEmissionParameters emissionParameters = new ParticleEmissionParameters();
@@ -86,12 +82,12 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
 
     }
 

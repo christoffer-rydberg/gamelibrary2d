@@ -41,7 +41,7 @@ class InternalLogicalScreenDescriptor {
 
     public static InternalLogicalScreenDescriptor read(final InputStream is, ByteOrder byteOrder) throws IOException {
         final int logicalScreenWidth = read2BytesOrThrow(is, byteOrder);
-        final int logicalScreenHeight = read2BytesOrThrow(is,byteOrder);
+        final int logicalScreenHeight = read2BytesOrThrow(is, byteOrder);
 
         final int packedFields = readOrThrow(is);
         final int backgroundColorIndex = readOrThrow(is);

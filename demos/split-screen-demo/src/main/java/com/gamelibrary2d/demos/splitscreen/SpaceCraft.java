@@ -3,9 +3,9 @@ package com.gamelibrary2d.demos.splitscreen;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomInstance;
+import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.Updatable;
-import com.gamelibrary2d.components.objects.AbstractGameObject;
-import com.gamelibrary2d.renderers.ContentRenderer;
+import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 
 public class SpaceCraft extends AbstractGameObject implements Updatable {
     private final Rectangle area;

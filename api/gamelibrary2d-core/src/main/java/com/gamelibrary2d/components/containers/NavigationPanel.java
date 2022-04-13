@@ -1,18 +1,17 @@
 package com.gamelibrary2d.components.containers;
 
-import com.gamelibrary2d.Projection;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.components.AbstractGameObject;
+import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.denotations.*;
-import com.gamelibrary2d.components.objects.AbstractGameObject;
-import com.gamelibrary2d.components.objects.GameObject;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
 public class NavigationPanel extends AbstractGameObject
         implements Clearable, PointerDownAware, PointerMoveAware, PointerUpAware {
-    private final Point projectionOutput = new Point();
+    private final Point pointerProjection = new Point();
     private final Deque<GameObject> previous = new ArrayDeque<>();
 
     private GameObject current;
@@ -60,8 +59,9 @@ public class NavigationPanel extends AbstractGameObject
     @Override
     public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
         if (current instanceof PointerDownAware) {
-            Projection.projectTo(this, projectedX, projectedY, projectionOutput);
-            return ((PointerDownAware) current).pointerDown(id, button, x, y, projectionOutput.getX(), projectionOutput.getY());
+            pointerProjection.set(projectedX, projectedY);
+            pointerProjection.projectTo(this);
+            return ((PointerDownAware) current).pointerDown(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
         }
 
         return false;
@@ -70,8 +70,9 @@ public class NavigationPanel extends AbstractGameObject
     @Override
     public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
         if (current instanceof PointerMoveAware) {
-            Projection.projectTo(this, projectedX, projectedY, projectionOutput);
-            return ((PointerMoveAware) current).pointerMove(id, x, y, projectionOutput.getX(), projectionOutput.getY());
+            pointerProjection.set(projectedX, projectedY);
+            pointerProjection.projectTo(this);
+            return ((PointerMoveAware) current).pointerMove(id, x, y, pointerProjection.getX(), pointerProjection.getY());
         }
 
         return false;
@@ -80,8 +81,9 @@ public class NavigationPanel extends AbstractGameObject
     @Override
     public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
         if (current instanceof PointerUpAware) {
-            Projection.projectTo(this, projectedX, projectedY, projectionOutput);
-            ((PointerUpAware) current).pointerUp(id, button, x, y, projectionOutput.getX(), projectionOutput.getY());
+            pointerProjection.set(projectedX, projectedY);
+            pointerProjection.projectTo(this);
+            ((PointerUpAware) current).pointerUp(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
         }
     }
 

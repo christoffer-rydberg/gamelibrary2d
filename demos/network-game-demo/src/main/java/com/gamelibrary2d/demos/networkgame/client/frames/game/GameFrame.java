@@ -6,7 +6,7 @@ import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.Updatable;
-import com.gamelibrary2d.components.frames.InitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
@@ -28,11 +28,11 @@ import com.gamelibrary2d.demos.networkgame.common.GameSettings;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.network.AbstractNetworkFrame;
-import com.gamelibrary2d.renderers.ContentRenderer;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.DefaultTexture;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.opengl.renderers.ContentRenderer;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.opengl.resources.DefaultTexture;
+import com.gamelibrary2d.opengl.resources.Quad;
+import com.gamelibrary2d.opengl.resources.Texture;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
 import com.gamelibrary2d.updaters.DurationUpdater;
@@ -90,7 +90,7 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) throws IOException {
+    protected void onInitialize(FrameInitializationContext context) throws IOException {
         backgroundTexture = resourceManager.load(Images.GAME_BACKGROUND, this::createTexture);
 
         soundMap.initialize();
@@ -105,12 +105,12 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
         effects.onLoaded(backgroundEffects, foregroundEffects);
 
         gameLayer.add(backgroundEffects);

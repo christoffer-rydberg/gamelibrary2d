@@ -69,8 +69,8 @@ public class BitInputStream extends InputStream {
             }
 
             cache = byteOrder == ByteOrder.LITTLE_ENDIAN
-                ? (nextByte << bitsInCache) | cache
-                : (cache << 8) | nextByte;
+                    ? (nextByte << bitsInCache) | cache
+                    : (cache << 8) | nextByte;
 
             bitsInCache += 8;
         }

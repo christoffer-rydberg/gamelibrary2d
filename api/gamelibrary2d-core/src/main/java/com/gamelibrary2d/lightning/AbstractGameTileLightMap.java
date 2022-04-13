@@ -90,6 +90,7 @@ public abstract class AbstractGameTileLightMap implements GameTileLightMap {
      */
     private final int[] lightSourceBuffer;
     /**
+     *
      */
     private final long[][] lightReflectionBuffer;
     /**

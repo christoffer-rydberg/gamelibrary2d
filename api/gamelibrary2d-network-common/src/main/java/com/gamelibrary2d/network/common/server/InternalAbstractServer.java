@@ -171,7 +171,7 @@ abstract class InternalAbstractServer implements Server {
 
         if (result == InitializationResult.FINISHED) {
             initialized(context, communicator);
-            handleMesages(communicator);
+            handleMessages(communicator);
         }
     }
 
@@ -215,11 +215,11 @@ abstract class InternalAbstractServer implements Server {
 
     private void readAndHandleMessages(Communicator communicator) {
         if (communicator.readIncoming(incomingBuffer)) {
-            handleMesages(communicator);
+            handleMessages(communicator);
         }
     }
 
-    private void handleMesages(Communicator communicator) {
+    private void handleMessages(Communicator communicator) {
         try {
             while (incomingBuffer.remaining() > 0) {
                 onMessage(communicator, incomingBuffer);

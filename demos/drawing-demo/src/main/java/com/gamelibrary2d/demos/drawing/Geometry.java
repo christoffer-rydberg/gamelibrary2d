@@ -1,9 +1,9 @@
 package com.gamelibrary2d.demos.drawing;
 
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.glUtil.PositionBuffer;
-import com.gamelibrary2d.components.objects.AbstractGameObject;
-import com.gamelibrary2d.renderers.ArrayRenderer;
+import com.gamelibrary2d.components.AbstractGameObject;
+import com.gamelibrary2d.opengl.buffers.PositionBuffer;
+import com.gamelibrary2d.opengl.renderers.ArrayRenderer;
 
 public class Geometry extends AbstractGameObject {
     private final PositionBuffer nodes;

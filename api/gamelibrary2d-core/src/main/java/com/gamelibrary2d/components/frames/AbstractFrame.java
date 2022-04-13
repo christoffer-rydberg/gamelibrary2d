@@ -17,7 +17,7 @@ import java.util.Map;
 
 public abstract class AbstractFrame extends AbstractLayer<Renderable> implements Frame {
     private final Deque<Runnable> invokeLater = new ArrayDeque<>();
-    private final DefaultInitializationContext initializationContext = new DefaultInitializationContext();
+    private final DefaultFrameInitializationContext initializationContext = new DefaultFrameInitializationContext();
     private final Deque<Updater> updaters = new ArrayDeque<>();
     private final DisposerStack disposerStack = new DisposerStack();
 
@@ -47,7 +47,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
 
         disposer.registerDisposal(this);
 
-        DefaultInitializationContext context = new DefaultInitializationContext();
+        DefaultFrameInitializationContext context = new DefaultFrameInitializationContext();
         try {
             onInitialize(context);
         } catch (IOException e) {
@@ -65,7 +65,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     }
 
     @Override
-    public final InitializationContext load() throws InitializationException {
+    public final FrameInitializationContext load() throws InitializationException {
         if (isLoaded()) {
             throw new InitializationException("Frame has already been loaded");
         }
@@ -74,18 +74,18 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
             throw new InitializationException("Frame has not been initialized");
         }
 
-        DefaultInitializationContext context = new DefaultInitializationContext(this.initializationContext);
+        DefaultFrameInitializationContext context = new DefaultFrameInitializationContext(this.initializationContext);
         handleLoad(context);
         return context;
     }
 
-    protected void handleLoad(InitializationContext context) throws InitializationException {
+    protected void handleLoad(FrameInitializationContext context) throws InitializationException {
         onLoad(context);
         loaded = true;
     }
 
     @Override
-    public void loaded(InitializationContext context) throws InitializationException {
+    public void loaded(FrameInitializationContext context) throws InitializationException {
         try {
             onLoaded(context);
         } catch (IOException e) {
@@ -203,11 +203,11 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         invokeLater.clear();
     }
 
-    protected abstract void onInitialize(InitializationContext context) throws IOException, InitializationException;
+    protected abstract void onInitialize(FrameInitializationContext context) throws IOException, InitializationException;
 
-    protected abstract void onLoad(InitializationContext context) throws InitializationException;
+    protected abstract void onLoad(FrameInitializationContext context) throws InitializationException;
 
-    protected abstract void onLoaded(InitializationContext context) throws IOException, InitializationException;
+    protected abstract void onLoaded(FrameInitializationContext context) throws IOException, InitializationException;
 
     protected abstract void onBegin();
 
@@ -245,14 +245,14 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         }
     }
 
-    private static class DefaultInitializationContext implements InitializationContext {
+    private static class DefaultFrameInitializationContext implements FrameInitializationContext {
         private final Map<Object, Object> register;
 
-        public DefaultInitializationContext() {
+        public DefaultFrameInitializationContext() {
             register = new HashMap<>();
         }
 
-        public DefaultInitializationContext(DefaultInitializationContext other) {
+        public DefaultFrameInitializationContext(DefaultFrameInitializationContext other) {
             register = new HashMap<>(other.register);
         }
 
@@ -281,7 +281,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         /**
          * Registers all objects from the specified context.
          */
-        public void registerAll(DefaultInitializationContext other) {
+        public void registerAll(DefaultFrameInitializationContext other) {
             register.putAll(other.register);
         }
     }

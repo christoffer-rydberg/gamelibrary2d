@@ -1,27 +1,25 @@
 package com.gamelibrary2d.demos.splitscreen;
 
 import com.gamelibrary2d.Game;
-import com.gamelibrary2d.resources.DefaultTexture;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomGenerator;
 import com.gamelibrary2d.common.random.RandomInstance;
+import com.gamelibrary2d.components.DefaultGameObject;
+import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.components.objects.DefaultGameObject;
-import com.gamelibrary2d.components.objects.GameObject;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.glUtil.PositionBuffer;
-import com.gamelibrary2d.renderers.ContentRenderer;
-import com.gamelibrary2d.renderers.QuadsRenderer;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.*;
+import com.gamelibrary2d.opengl.buffers.PositionBuffer;
+import com.gamelibrary2d.opengl.renderers.ContentRenderer;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.opengl.resources.*;
 import com.gamelibrary2d.splitscreen.*;
 
 import java.io.IOException;
@@ -172,7 +170,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) {
+    protected void onInitialize(FrameInitializationContext context) {
         try {
             spacecraftLayer.getBackground().add(createBackground());
 
@@ -194,12 +192,12 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
 
     }
 

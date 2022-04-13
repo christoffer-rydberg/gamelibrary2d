@@ -2,9 +2,9 @@ package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.glUtil.PositionBuffer;
 import com.gamelibrary2d.components.denotations.Bounded;
-import com.gamelibrary2d.renderers.LineRenderer;
+import com.gamelibrary2d.opengl.buffers.PositionBuffer;
+import com.gamelibrary2d.opengl.renderers.LineRenderer;
 
 public class Box implements Bounded {
     private final Rectangle bounds;

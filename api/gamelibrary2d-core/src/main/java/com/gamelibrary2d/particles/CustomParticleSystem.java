@@ -4,8 +4,11 @@ import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.framework.OpenGL;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.glUtil.*;
-import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
+import com.gamelibrary2d.opengl.buffers.AbstractMirroredVertexArrayBuffer;
+import com.gamelibrary2d.opengl.buffers.MirroredBuffer;
+import com.gamelibrary2d.opengl.buffers.MirroredFloatBuffer;
+import com.gamelibrary2d.opengl.buffers.OpenGLBuffer;
+import com.gamelibrary2d.opengl.shaders.ShaderProgram;
 
 public class CustomParticleSystem implements Updatable, Renderable {
     private final static int WORK_GROUP_SIZE = 512;
@@ -24,27 +27,17 @@ public class CustomParticleSystem implements Updatable, Renderable {
             OpenGLBuffer renderBuffer,
             EfficientParticleRenderer renderer) {
 
-        boolean updateProgramInUse = updateProgram.inUse();
+        updateProgram.bind();
 
-        try {
-            if (!updateProgramInUse) {
-                updateProgram.bind();
-            }
+        this.updateProgram = updateProgram;
 
-            this.updateProgram = updateProgram;
+        // Cache uniforms
+        glUniformDeltaTime = updateProgram.getUniformLocation("deltaTime");
+        glUniformParticleCount = updateProgram.getUniformLocation("particleCount");
 
-            // Cache uniforms
-            glUniformDeltaTime = updateProgram.getUniformLocation("deltaTime");
-            glUniformParticleCount = updateProgram.getUniformLocation("particleCount");
-
-            this.updateBuffer = updateBuffer;
-            this.renderBuffer = renderBuffer;
-            this.renderer = renderer;
-        } finally {
-            if (!updateProgramInUse) {
-                updateProgram.unbind();
-            }
-        }
+        this.updateBuffer = updateBuffer;
+        this.renderBuffer = renderBuffer;
+        this.renderer = renderer;
     }
 
     public static CustomParticleSystem create(

@@ -72,10 +72,10 @@ public class DefaultSoundSource extends AbstractDisposable implements SoundSourc
      */
     @Override
     public void setSoundBuffer(SoundBuffer soundBuffer) {
-        if(soundBuffer == null) {
+        if (soundBuffer == null) {
             this.soundBuffer = null;
             alSourcei(sourceId, AL_BUFFER, 0);
-        } else if(soundBuffer instanceof DefaultSoundBuffer) {
+        } else if (soundBuffer instanceof DefaultSoundBuffer) {
             this.soundBuffer = (DefaultSoundBuffer) soundBuffer;
             alSourcei(sourceId, AL_BUFFER, this.soundBuffer.getBufferId());
         } else {

@@ -1,16 +1,16 @@
 package com.gamelibrary2d.tools.particlegenerator.panels;
 
 import com.gamelibrary2d.common.Color;
+import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.containers.DefaultPanel;
 import com.gamelibrary2d.components.containers.Panel;
-import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.renderers.Label;
-import com.gamelibrary2d.particles.renderers.ParticleShape;
-import com.gamelibrary2d.resources.BlendMode;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.PointSmoothing;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
+import com.gamelibrary2d.opengl.renderers.BlendMode;
+import com.gamelibrary2d.opengl.renderers.PointSmoothing;
+import com.gamelibrary2d.particles.ParticleShape;
+import com.gamelibrary2d.text.HorizontalTextAlignment;
+import com.gamelibrary2d.text.Label;
+import com.gamelibrary2d.text.VerticalTextAlignment;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
 import com.gamelibrary2d.tools.particlegenerator.properties.GenericProperty;

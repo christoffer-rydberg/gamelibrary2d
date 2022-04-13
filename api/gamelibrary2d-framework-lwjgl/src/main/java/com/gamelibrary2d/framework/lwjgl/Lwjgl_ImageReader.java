@@ -1,5 +1,6 @@
 package com.gamelibrary2d.framework.lwjgl;
 
+import com.gamelibrary2d.framework.DefaultImage;
 import com.gamelibrary2d.framework.Image;
 import com.gamelibrary2d.framework.ImageReader;
 import org.lwjgl.BufferUtils;
@@ -54,36 +55,6 @@ public final class Lwjgl_ImageReader implements ImageReader {
             image.get(data);
 
             return new DefaultImage(data, width.get(0), height.get(0), channels.get(0));
-        }
-    }
-
-    private static class DefaultImage implements Image {
-        private final byte[] data;
-        private final int width;
-        private final int height;
-        private final int channels;
-
-        DefaultImage(byte[] data, int width, int height, int channels) {
-            this.data = data;
-            this.width = width;
-            this.height = height;
-            this.channels = channels;
-        }
-
-        public byte[] getData() {
-            return data;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
-
-        public int getChannels() {
-            return channels;
         }
     }
 }

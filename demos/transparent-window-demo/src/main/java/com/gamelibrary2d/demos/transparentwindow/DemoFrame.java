@@ -1,18 +1,12 @@
 package com.gamelibrary2d.demos.transparentwindow;
 
 import com.gamelibrary2d.Game;
+import com.gamelibrary2d.animations.*;
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.InitializationContext;
-import com.gamelibrary2d.components.objects.AnimatedGameObject;
+import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.animations.AnimationFrameMetadata;
-import com.gamelibrary2d.animations.AnimationLoader;
-import com.gamelibrary2d.animations.AnimationMetadata;
-import com.gamelibrary2d.animations.StandardAnimationFormats;
-import com.gamelibrary2d.renderers.AnimationRenderer;
-import com.gamelibrary2d.animations.Animation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +16,7 @@ import java.util.List;
 public class DemoFrame extends AbstractFrame {
 
     private final Game game;
-    private AnimatedGameObject<AnimationRenderer> animationObj;
+    private AnimatedGameObject animationObj;
 
     DemoFrame(Game game) {
         this.game = game;
@@ -47,11 +41,11 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(InitializationContext context) {
+    protected void onInitialize(FrameInitializationContext context) {
         Window window = game.getWindow();
         try {
             Animation animation = createAnimation();
-            animationObj = new AnimatedGameObject<>(new AnimationRenderer(animation, false, this));
+            animationObj = new AnimatedGameObject(new AnimationRenderer(animation, false, this));
             animationObj.setPosition(window.getWidth() / 2f, window.getHeight() / 2f);
             add(animationObj);
         } catch (IOException e) {
@@ -60,12 +54,12 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(InitializationContext context) {
+    protected void onLoad(FrameInitializationContext context) {
 
     }
 
     @Override
-    protected void onLoaded(InitializationContext context) {
+    protected void onLoaded(FrameInitializationContext context) {
 
     }
 
@@ -82,7 +76,7 @@ public class DemoFrame extends AbstractFrame {
     @Override
     protected void onUpdate(float deltaTime) {
         super.onUpdate(deltaTime);
-        if (animationObj.getContent().isAnimationFinished()) {
+        if (animationObj.getRenderer().isAnimationFinished()) {
             game.exit();
         }
     }

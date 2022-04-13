@@ -1,5 +1,6 @@
 package com.gamelibrary2d.tools.particlegenerator.models;
 
+import com.gamelibrary2d.animations.Animation;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
@@ -7,17 +8,10 @@ import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.particles.AcceleratedParticleSystem;
-import com.gamelibrary2d.particles.DefaultParticleSystem;
-import com.gamelibrary2d.particles.parameters.ParticleEmissionParameters;
-import com.gamelibrary2d.particles.parameters.ParticleSpawnParameters;
-import com.gamelibrary2d.particles.parameters.ParticleUpdateParameters;
-import com.gamelibrary2d.particles.parameters.ParticleSystemParameters;
-import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
-import com.gamelibrary2d.animations.Animation;
-import com.gamelibrary2d.resources.BlendMode;
-import com.gamelibrary2d.resources.DefaultTexture;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.opengl.renderers.BlendMode;
+import com.gamelibrary2d.opengl.resources.DefaultTexture;
+import com.gamelibrary2d.opengl.resources.Texture;
+import com.gamelibrary2d.particles.*;
 
 import java.io.IOException;
 import java.net.URL;

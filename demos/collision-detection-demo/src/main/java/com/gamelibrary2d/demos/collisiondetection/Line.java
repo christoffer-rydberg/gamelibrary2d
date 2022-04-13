@@ -3,8 +3,8 @@ package com.gamelibrary2d.demos.collisiondetection;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.glUtil.PositionBuffer;
-import com.gamelibrary2d.renderers.LineRenderer;
+import com.gamelibrary2d.opengl.buffers.PositionBuffer;
+import com.gamelibrary2d.opengl.renderers.LineRenderer;
 
 public class Line implements Renderable {
     private final Point start = new Point();

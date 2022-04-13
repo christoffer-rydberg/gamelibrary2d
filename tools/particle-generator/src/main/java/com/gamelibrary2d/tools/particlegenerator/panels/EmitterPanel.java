@@ -1,12 +1,12 @@
 package com.gamelibrary2d.tools.particlegenerator.panels;
 
 import com.gamelibrary2d.common.Color;
+import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.AbstractPanel;
-import com.gamelibrary2d.components.objects.GameObject;
-import com.gamelibrary2d.renderers.Label;
-import com.gamelibrary2d.resources.Font;
-import com.gamelibrary2d.resources.HorizontalTextAlignment;
-import com.gamelibrary2d.resources.VerticalTextAlignment;
+import com.gamelibrary2d.text.Font;
+import com.gamelibrary2d.text.HorizontalTextAlignment;
+import com.gamelibrary2d.text.Label;
+import com.gamelibrary2d.text.VerticalTextAlignment;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.resources.Fonts;
 import com.gamelibrary2d.tools.particlegenerator.widgets.Button;

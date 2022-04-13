@@ -1,6 +1,7 @@
 package com.gamelibrary2d.animations.formats.gif;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteOrder;
 
 final class InternalInputStreamExtensions {

@@ -3,14 +3,14 @@ package com.gamelibrary2d.demos.networkgame.client;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.framework.OpenGL;
-import com.gamelibrary2d.particles.renderers.EfficientParticleRenderer;
-import com.gamelibrary2d.particles.renderers.ParticleRenderer;
-import com.gamelibrary2d.particles.renderers.SequentialParticleRenderer;
-import com.gamelibrary2d.renderers.SurfaceRenderer;
-import com.gamelibrary2d.resources.BlendMode;
-import com.gamelibrary2d.resources.Quad;
-import com.gamelibrary2d.resources.QuadShape;
-import com.gamelibrary2d.resources.Texture;
+import com.gamelibrary2d.opengl.renderers.BlendMode;
+import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
+import com.gamelibrary2d.opengl.resources.Quad;
+import com.gamelibrary2d.opengl.resources.QuadShape;
+import com.gamelibrary2d.opengl.resources.Texture;
+import com.gamelibrary2d.particles.EfficientParticleRenderer;
+import com.gamelibrary2d.particles.ParticleRenderer;
+import com.gamelibrary2d.particles.SequentialParticleRenderer;
 
 public class ParticleRendererFactory {
     public static ParticleRenderer create(Disposer disposer) {
