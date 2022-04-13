@@ -1,6 +1,7 @@
 package com.gamelibrary2d.text;
 
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 
@@ -15,6 +16,7 @@ public class Label implements ContentRenderer {
     private float rowHeight;
     private float maxWidth = Float.MAX_VALUE;
     private float maxHeight = Float.MAX_VALUE;
+    private Renderable background;
 
     public Label() {
         this.textRenderer = new DefaultTextRenderer();
@@ -42,6 +44,14 @@ public class Label implements ContentRenderer {
         } else {
             return 0;
         }
+    }
+
+    public Renderable getBackground() {
+        return background;
+    }
+
+    public void setBackground(Renderable background) {
+        this.background = background;
     }
 
     public String getText() {
@@ -92,6 +102,10 @@ public class Label implements ContentRenderer {
 
     @Override
     public void render(float alpha) {
+        if (background != null) {
+            background.render(alpha);
+        }
+
         if (text != null) {
             render(alpha, 0, text.length());
         }
