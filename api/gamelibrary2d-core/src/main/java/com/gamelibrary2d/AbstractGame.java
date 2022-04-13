@@ -38,14 +38,14 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     private final Deque<Runnable> invokeLater;
 
     /**
+     * True whenever the game window has cursor focus, each index represents a pointer id.
+     */
+    private final boolean[] pointerFocus = new boolean[10];
+
+    /**
      * The OpenGL window used for rendering.
      */
     private Window window;
-
-    /**
-     * True whenever the game window has cursor focus, each index represents a pointer id.
-     */
-    private boolean[] pointerFocus = new boolean[10];
 
     /**
      * True while inside an update cycle. Used to determine if some actions, such as
@@ -373,18 +373,21 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
             Frame frame = getFrame();
             switch (action) {
                 case DOWN:
-                    if (frame instanceof KeyDownAware)
+                    if (frame instanceof KeyDownAware) {
                         ((KeyDownAware) frame).keyDown(key, false);
+                    }
                     FocusManager.keyDownEvent(key, false);
                     break;
                 case DOWN_REPEAT:
-                    if (frame instanceof KeyDownAware)
+                    if (frame instanceof KeyDownAware) {
                         ((KeyDownAware) frame).keyDown(key, true);
+                    }
                     FocusManager.keyDownEvent(key, true);
                     break;
                 case UP:
-                    if (frame instanceof KeyUpAware)
+                    if (frame instanceof KeyUpAware) {
                         ((KeyUpAware) frame).keyUp(key);
+                    }
                     FocusManager.keyUpEvent(key);
                     break;
             }
@@ -426,20 +429,23 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
 
         @Override
         public void onPointerAction(int id, int button, float posX, float posY, PointerAction action) {
-            try {
-                FocusManager.onPointerActive();
-                switch (action) {
-                    case DOWN:
-                        getFrame().pointerDown(id, button, posX, posY, posX, posY);
-                        FocusManager.pointerDownFinished(id, button);
-                        break;
-                    case UP:
-                        getFrame().pointerUp(id, button, posX, posY, posX, posY);
-                        FocusManager.pointerUpFinished(id, button);
-                        break;
+            Frame frame = getFrame();
+            if (frame != null) {
+                try {
+                    FocusManager.onPointerActive();
+                    switch (action) {
+                        case DOWN:
+                            frame.pointerDown(id, button, posX, posY, posX, posY);
+                            FocusManager.pointerDownFinished(id, button);
+                            break;
+                        case UP:
+                            frame.pointerUp(id, button, posX, posY, posX, posY);
+                            FocusManager.pointerUpFinished(id, button);
+                            break;
+                    }
+                } finally {
+                    FocusManager.onPointerInactive();
                 }
-            } finally {
-                FocusManager.onPointerInactive();
             }
         }
 
