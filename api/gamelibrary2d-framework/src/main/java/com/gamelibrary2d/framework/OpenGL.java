@@ -29,7 +29,7 @@ public interface OpenGL {
     int GL_RGBA8 = 32856;
     int GL_TEXTURE_WRAP_S = 10242;
     int GL_TEXTURE_WRAP_T = 10243;
-
+    int GL_COLOR_CLEAR_VALUE = 3106;
     int GL_CLAMP_TO_EDGE = 33071;
     int GL_TEXTURE_MIN_FILTER = 10241;
     int GL_TEXTURE_MAG_FILTER = 10240;
@@ -39,18 +39,14 @@ public interface OpenGL {
     int GL_RED = 6403;
     int GL_R8 = 33321;
     int GL_DEPTH_TEST = 2929;
-
     int GL_ATOMIC_COUNTER_BUFFER = 37568;
     int GL_SHADER_STORAGE_BUFFER = 37074;
-
     int GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT = 1;
     int GL_SHADER_STORAGE_BARRIER_BIT = 8192;
     int GL_POINT_SMOOTH = 2832;
     int GL_POINT_SMOOTH_HINT = 3153;
-
     int GL_FASTEST = 4353;
     int GL_NICEST = 4354;
-
     int GL_BLEND = 3042;
     int GL_ZERO = 0;
     int GL_ONE = 1;
@@ -90,6 +86,8 @@ public interface OpenGL {
     void glGetBufferSubData(int target, int offset, FloatBuffer data);
 
     void glGetBufferSubData(int target, int offset, IntBuffer data);
+
+    void glGetFloatv(int pname, FloatBuffer params);
 
     int glGenVertexArrays();
 

@@ -1,14 +1,15 @@
 package com.gamelibrary2d.opengl.resources;
 
+import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.framework.OpenGL;
-
 import java.nio.ByteBuffer;
 
 public class DefaultFrameBuffer implements FrameBuffer {
     private final int id;
     private final Texture texture;
     private final ByteBuffer pixelReadBuffer = ByteBuffer.allocateDirect(4);
+    private Color backgroundColor = Color.TRANSPARENT;
 
     private DefaultFrameBuffer(int id, Texture texture) {
         this.id = id;
@@ -39,6 +40,14 @@ public class DefaultFrameBuffer implements FrameBuffer {
         disposer.registerDisposal(frameBuffer);
 
         return frameBuffer;
+    }
+
+    public Color getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
     }
 
     @Override
@@ -75,6 +84,7 @@ public class DefaultFrameBuffer implements FrameBuffer {
 
     @Override
     public void clear() {
+        OpenGL.instance().glClearColor(backgroundColor.getR(), backgroundColor.getG(), backgroundColor.getB(), backgroundColor.getA());
         OpenGL.instance().glClear(OpenGL.GL_COLOR_BUFFER_BIT);
     }
 

@@ -65,7 +65,11 @@ public class DefaultTexture extends AbstractDisposable implements Texture {
     }
 
     public static DefaultTexture create(int width, int height, Disposer disposer) {
-        DefaultTexture texture = new DefaultTexture(null, width, height, 4);
+        return create(width, height, 4, disposer);
+    }
+
+    public static DefaultTexture create(int width, int height, int channels, Disposer disposer) {
+        DefaultTexture texture = new DefaultTexture(null, width, height, channels);
         disposer.registerDisposal(texture);
         return texture;
     }

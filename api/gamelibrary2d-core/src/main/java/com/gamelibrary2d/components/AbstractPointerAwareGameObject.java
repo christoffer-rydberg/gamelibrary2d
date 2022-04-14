@@ -19,7 +19,7 @@ public abstract class AbstractPointerAwareGameObject
     private final Point pointerProjection = new Point();
     private final PointerInteractionsArray pointerInteractions = new PointerInteractionsArray(10);
     private FrameBufferRenderer frameBufferRenderer;
-    private DefaultDisposer disposer;
+    private DefaultDisposer frameBufferDisposer;
 
     protected AbstractPointerAwareGameObject() {
 
@@ -33,22 +33,24 @@ public abstract class AbstractPointerAwareGameObject
     }
 
     public void disablePixelDetection() {
-        if (this.disposer != null) {
-            this.disposer.dispose();
-            this.disposer = null;
+        if (this.frameBufferDisposer != null) {
+            this.frameBufferDisposer.dispose();
+            this.frameBufferDisposer = null;
             frameBufferRenderer = null;
         }
     }
 
     public void enablePixelDetection(Disposer disposer) {
-        if (this.disposer == null || this.disposer.getParent() != disposer) {
+        if (!pixelDetectionEnabled()) {
+            this.frameBufferDisposer = new DefaultDisposer(disposer);
+        } else if (disposer != this.frameBufferDisposer.getParent()) {
             disablePixelDetection();
-            this.disposer = new DefaultDisposer(disposer);
+            this.frameBufferDisposer = new DefaultDisposer(disposer);
         }
     }
 
     public boolean pixelDetectionEnabled() {
-        return disposer != null;
+        return frameBufferDisposer != null;
     }
 
     private boolean isPixelVisible(float x, float y) {
@@ -56,15 +58,16 @@ public abstract class AbstractPointerAwareGameObject
         if (bounds.contains(x, y)) {
             if (pixelDetectionEnabled()) {
                 if (frameBufferRenderer == null || !frameBufferRenderer.getArea().equals(bounds)) {
-                    disposer.dispose();
+                    frameBufferDisposer.dispose();
 
                     FrameBuffer frameBuffer = DefaultFrameBuffer.create(
                             (int) bounds.getWidth(),
                             (int) bounds.getHeight(),
-                            disposer);
+                            frameBufferDisposer);
 
                     frameBufferRenderer = new FrameBufferRenderer(bounds, frameBuffer);
                 }
+
                 frameBufferRenderer.render(this::onRender, 1f);
                 return frameBufferRenderer.isVisible(x, y);
             } else {
@@ -81,9 +84,7 @@ public abstract class AbstractPointerAwareGameObject
             pointerProjection.set(projectedX, projectedY);
             pointerProjection.projectTo(this);
             if (isPixelVisible(pointerProjection.getX(), pointerProjection.getY()) && pointerInteractions.setActive(id, id)) {
-                pointerActionStarted(projectedX, projectedY);
                 onPointerDown(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
-                pointerActionFinished(projectedX, projectedY);
                 return true;
             }
 
@@ -99,17 +100,13 @@ public abstract class AbstractPointerAwareGameObject
             if (pointerInteractions.hasActiveButtons(id) && isListeningToPointDragEvents()) {
                 pointerProjection.set(projectedX, projectedY);
                 pointerProjection.projectTo(this);
-                pointerActionStarted(projectedX, projectedY);
                 onPointerDrag(id, x, y, pointerProjection.getX(), pointerProjection.getY());
-                pointerActionFinished(projectedX, projectedY);
                 return true;
             } else if (isListeningToPointHoverEvents()) {
                 pointerProjection.set(projectedX, projectedY);
                 pointerProjection.projectTo(this);
                 if (isPixelVisible(pointerProjection.getX(), pointerProjection.getY())) {
-                    pointerActionStarted(projectedX, projectedY);
                     onPointerHover(id, x, y, pointerProjection.getX(), pointerProjection.getY());
-                    pointerActionFinished(projectedX, projectedY);
                     return true;
                 }
             }
@@ -124,9 +121,7 @@ public abstract class AbstractPointerAwareGameObject
             pointerInteractions.setInactive(id, id);
             pointerProjection.set(projectedX, projectedY);
             pointerProjection.projectTo(this);
-            pointerActionStarted(projectedX, projectedY);
             onPointerUp(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
-            pointerActionFinished(projectedX, projectedY);
         }
     }
 
@@ -135,26 +130,6 @@ public abstract class AbstractPointerAwareGameObject
         if (isEnabled() && !pointerInteractions.isActive(id, id)) {
             FocusManager.unfocus(this, false);
         }
-    }
-
-    /**
-     * Invoked before a pointer action is handled.
-     *
-     * @param x The x-coordinate of the pointer projected to the parent container.
-     * @param y The y-coordinate of the pointer projected to the parent container.
-     */
-    protected void pointerActionStarted(float x, float y) {
-
-    }
-
-    /**
-     * Invoked after after a pointer action is handled.
-     *
-     * @param x The x-coordinate of the pointer projected to the parent container.
-     * @param y The y-coordinate of the pointer projected to the parent container.
-     */
-    protected void pointerActionFinished(float x, float y) {
-
     }
 
     protected boolean isListeningToPointHoverEvents() {
@@ -296,7 +271,7 @@ public abstract class AbstractPointerAwareGameObject
         }
 
         void clear() {
-            for (int i = 0; i < 10; ++i) {
+            for (int i = 0; i < pointerInteractions.length; ++i) {
                 PointerInteractions interactions = pointerInteractions[i];
                 if (interactions != null) {
                     interactions.clear();

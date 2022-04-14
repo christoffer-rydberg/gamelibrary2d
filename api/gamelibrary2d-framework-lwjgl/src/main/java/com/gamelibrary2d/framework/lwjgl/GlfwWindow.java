@@ -1,5 +1,6 @@
 package com.gamelibrary2d.framework.lwjgl;
 
+import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.io.BufferUtils;
 import com.gamelibrary2d.framework.*;
 import org.lwjgl.glfw.*;
@@ -52,6 +53,8 @@ public class GlfwWindow implements Window {
      * Last known Y coordinate of mouse cursor.
      */
     private float cursorPosY;
+    private WindowEventListener eventListener;
+    private boolean firstEventPoll;
 
     protected GlfwWindow(String title, int width, int height, boolean fullScreen) {
         this.title = title;
@@ -109,6 +112,9 @@ public class GlfwWindow implements Window {
 
             monitor = glfwGetPrimaryMonitor();
             GLFWVidMode videoMode = glfwGetVideoMode(monitor);
+            if (videoMode == null) {
+                throw new IllegalStateException("Error getting GLFWVidMode");
+            }
 
             this.monitorWidth = videoMode.width();
             this.monitorHeight = videoMode.height();
@@ -150,11 +156,13 @@ public class GlfwWindow implements Window {
         }
     }
 
-    private WindowEventListener eventListener;
-
     @Override
     public void setEventListener(WindowEventListener eventListener) {
-        this.firstPoll = true;
+        if (eventListener == null) {
+            throw new IllegalStateException("Event listener cannot be null");
+        }
+
+        this.firstEventPoll = true;
         this.eventListener = eventListener;
 
         glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
@@ -221,16 +229,16 @@ public class GlfwWindow implements Window {
     }
 
     @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
     public void setTitle(String title) {
         this.title = title;
         if (initialized) {
             glfwSetWindowTitle(window, title);
         }
-    }
-
-    @Override
-    public String getTitle() {
-        return title;
     }
 
     @Override
@@ -316,8 +324,15 @@ public class GlfwWindow implements Window {
     }
 
     @Override
-    public void render(Renderable content, float alpha) {
+    public void render(Color backgroundColor, Renderable content, float alpha) {
         assertInitialized();
+
+        GL11.glClearColor(
+                backgroundColor.getR(),
+                backgroundColor.getG(),
+                backgroundColor.getB(),
+                backgroundColor.getA());
+
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
         if (content != null) {
@@ -327,25 +342,23 @@ public class GlfwWindow implements Window {
         glfwSwapBuffers(window);
     }
 
-    private boolean firstPoll = false;
-
     @Override
     public void pollEvents() {
-        if (firstPoll && eventListener != null) {
+        if (firstEventPoll && eventListener != null) {
             double[] posX = new double[1];
             double[] posY = new double[1];
             glfwGetCursorPos(window, posX, posY);
             double cursorPosX = posX[0];
             double cursorPosY = posY[0];
 
-            if(cursorPosX < actualWidth && cursorPosY < actualHeight) {
+            if (cursorPosX < actualWidth && cursorPosY < actualHeight) {
                 this.cursorPosX = (float) cursorPosX;
                 this.cursorPosY = (float) (actualHeight - cursorPosY);
                 eventListener.onPointerEnter(0);
                 eventListener.onPointerMove(0, this.cursorPosX, this.cursorPosY);
             }
 
-            firstPoll = false;
+            firstEventPoll = false;
         }
 
         assertInitialized();

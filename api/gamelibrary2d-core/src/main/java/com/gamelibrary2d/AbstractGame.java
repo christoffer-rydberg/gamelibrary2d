@@ -257,7 +257,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     }
 
     private void render(Frame frame) {
-        window.render(frame, 1.0f);
+        window.render(frame.getBackgroundColor(), frame, 1.0f);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.gamelibrary2d.framework;
 
+import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 
@@ -17,7 +18,7 @@ public interface Window {
 
     void pollEvents();
 
-    void render(Renderable content, float alpha);
+    void render(Color backgroundColor, Renderable content, float alpha);
 
     void dispose();
 

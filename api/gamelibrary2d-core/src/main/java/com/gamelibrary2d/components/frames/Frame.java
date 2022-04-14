@@ -1,5 +1,6 @@
 package com.gamelibrary2d.components.frames;
 
+import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.exceptions.InitializationException;
@@ -94,4 +95,6 @@ public interface Frame extends Layer<Renderable>, Disposer {
     }
 
     void invokeLater(Runnable runnable);
+
+    Color getBackgroundColor();
 }

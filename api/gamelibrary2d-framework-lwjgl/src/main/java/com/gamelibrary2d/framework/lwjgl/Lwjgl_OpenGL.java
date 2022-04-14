@@ -80,6 +80,11 @@ public class Lwjgl_OpenGL implements OpenGL {
     }
 
     @Override
+    public void glGetFloatv(int pname, FloatBuffer params) {
+        GL20.glGetFloatv(pname, params);
+    }
+
+    @Override
     public int glGenVertexArrays() {
         return GL30.glGenVertexArrays();
     }
