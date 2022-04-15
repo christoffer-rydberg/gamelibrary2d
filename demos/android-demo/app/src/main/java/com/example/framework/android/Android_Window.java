@@ -6,6 +6,7 @@ import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.framework.*;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
@@ -63,14 +64,6 @@ class Android_Window extends GLSurfaceView implements Window {
     @Override
     public String getTitle() {
         return activity.getTitle().toString();
-    }
-
-    @Override
-    public void render(Renderable content, float alpha) {
-        GLES20.glClear(GL_COLOR_BUFFER_BIT);
-        if (content != null) {
-            content.render(alpha);
-        }
     }
 
     @Override
@@ -142,6 +135,21 @@ class Android_Window extends GLSurfaceView implements Window {
     public void pollEvents() {
         motionEventStash.pollEvents();
         motionEventStash.triggerEvents(eventListener);
+    }
+
+    @Override
+    public void render(Color backgroundColor, Renderable content, float alpha) {
+        GLES20.glClearColor(
+                backgroundColor.getR(),
+                backgroundColor.getG(),
+                backgroundColor.getB(),
+                backgroundColor.getA());
+
+        GLES20.glClear(GL_COLOR_BUFFER_BIT);
+
+        if (content != null) {
+            content.render(alpha);
+        }
     }
 
     private class MotionEventStash {

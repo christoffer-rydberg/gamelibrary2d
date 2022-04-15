@@ -93,6 +93,11 @@ public class Android_OpenGL implements OpenGL {
     }
 
     @Override
+    public void glGetFloatv(int i, FloatBuffer floatBuffer) {
+        GLES20.glGetFloatv(i, floatBuffer);
+    }
+
+    @Override
     public void glMemoryBarrier(int barriers) {
         throw new RuntimeException("Not implemented");
     }
