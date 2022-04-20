@@ -5,6 +5,7 @@ import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
@@ -19,43 +20,31 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     private final ParticleGenerator game;
     private int dragging = -1;
     private ParticleSystemModel particleSystem;
-
     private Layer<Renderable> screenLayer;
-    private Layer<Renderable> particleLayer;
-    private Layer<Renderable> backgroundLayer;
-
     private EmitterPanel emitterPanel;
-
-    private ParticleSystemSettingsPanel settingsPanel;
-
-    private RenderingPanel renderingPanel;
-
-    private SaveLoadResetPanel saveLoadResetPanel;
-
     private boolean interfaceHidden = false;
-
     private float particleEmitterTime;
 
     ParticleFrame(ParticleGenerator game) {
+        super(game);
         this.game = game;
     }
 
-    @Override
-    protected void onInitialize(FrameInitializationContext context) {
+    protected void onInitialize(FrameInitializer initializer) {
         screenLayer = new BasicLayer<>();
-        particleLayer = new BasicLayer<>();
+        Layer<Renderable> particleLayer = new BasicLayer<>();
 
         particleSystem = ParticleSystemModel.create(this);
         particleSystem.addToLayer(particleLayer);
 
-        backgroundLayer = new BasicLayer<>();
+        Layer<Renderable> backgroundLayer = new BasicLayer<>();
 
-        settingsPanel = new ParticleSystemSettingsPanel(particleSystem, this);
+        ParticleSystemSettingsPanel settingsPanel = new ParticleSystemSettingsPanel(particleSystem, this);
         settingsPanel.setPosition(180f, game.getWindow().getHeight() - 20f);
 
         Window window = game.getWindow();
 
-        renderingPanel = new RenderingPanel(particleSystem);
+        RenderingPanel renderingPanel = new RenderingPanel(particleSystem);
         renderingPanel.setPosition(
                 window.getWidth() - renderingPanel.getBounds().getWidth() - WINDOW_MARGIN,
                 window.getHeight() - WINDOW_MARGIN);
@@ -65,12 +54,9 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
                 window.getWidth() - WINDOW_MARGIN,
                 emitterPanel.getBounds().getHeight() + WINDOW_MARGIN);
 
-        saveLoadResetPanel = new SaveLoadResetPanel(particleSystem, game);
+        SaveLoadResetPanel saveLoadResetPanel = new SaveLoadResetPanel(particleSystem, game);
         saveLoadResetPanel.setPosition(WINDOW_MARGIN, WINDOW_MARGIN);
-    }
 
-    @Override
-    protected void onLoad(FrameInitializationContext context) {
         particleSystem.setPosition(
                 game.getWindow().getWidth() / 2f,
                 game.getWindow().getHeight() / 2f
@@ -85,7 +71,7 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onLoaded(FrameInitializationContext context) {
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
 
     }
 
@@ -96,6 +82,11 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
 
     @Override
     protected void onEnd() {
+
+    }
+
+    @Override
+    protected void onDispose() {
 
     }
 

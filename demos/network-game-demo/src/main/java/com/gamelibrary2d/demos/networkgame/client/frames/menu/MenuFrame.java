@@ -8,6 +8,7 @@ import com.gamelibrary2d.components.denotations.KeyUpAware;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.Button;
@@ -51,9 +52,11 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     private LayerObject<Renderable> backgroundLayer;
 
     private boolean menuLayerIsHidden = true;
+    private boolean prepared;
 
     public MenuFrame(DemoGame game, ResourceManager resourceManager,
                      MusicPlayer musicPlayer, SoundPlayer soundPlayer) {
+        super(game);
         this.game = game;
         this.resourceManager = resourceManager;
         this.musicPlayer = musicPlayer;
@@ -111,20 +114,27 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         return menuLayer;
     }
 
-    @Override
-    protected void onInitialize(FrameInitializationContext context) throws IOException {
-        backgroundLayer = createBackgroundLayer();
-        menuLayer = createMenuLayer();
-        credits = new Credits(game.getWindow(), resourceManager);
+    public void prepare() throws IOException {
+        if (!prepared) {
+            backgroundLayer = createBackgroundLayer();
+            menuLayer = createMenuLayer();
+            credits = new Credits(game.getWindow(), resourceManager);
+            prepared = true;
+        }
     }
 
     @Override
-    protected void onLoad(FrameInitializationContext context) {
-
+    protected void onInitialize(FrameInitializer initializer) throws IOException {
+        prepare();
     }
 
     @Override
-    protected void onLoaded(FrameInitializationContext context) {
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
+        if (error != null) {
+            error.printStackTrace();
+            return;
+        }
+
         hideCredits();
         add(backgroundLayer);
         add(menuLayer);
@@ -174,6 +184,11 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     @Override
     protected void onEnd() {
         musicPlayer.stop(2f);
+    }
+
+    @Override
+    protected void onDispose() {
+        prepared = false;
     }
 
     private void showCredits() {

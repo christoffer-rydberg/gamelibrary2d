@@ -10,6 +10,7 @@ import com.gamelibrary2d.components.DefaultObservableGameObject;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.framework.lwjgl.FontMetadataFactory;
 import com.gamelibrary2d.text.*;
 
@@ -30,6 +31,7 @@ public class DemoFrame extends AbstractFrame {
     private AnimatedGameObject animatedObject;
 
     DemoFrame(Game game) {
+        super(game);
         this.game = game;
     }
 
@@ -51,7 +53,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializationContext context) {
+    protected void onInitialize(FrameInitializer initializer) {
         final float windowWidth = game.getWindow().getWidth();
         final float windowHeight = game.getWindow().getHeight();
 
@@ -66,12 +68,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(FrameInitializationContext context) {
-
-    }
-
-    @Override
-    protected void onLoaded(FrameInitializationContext context) {
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
 
     }
 
@@ -82,6 +79,11 @@ public class DemoFrame extends AbstractFrame {
 
     @Override
     protected void onEnd() {
+
+    }
+
+    @Override
+    protected void onDispose() {
 
     }
 

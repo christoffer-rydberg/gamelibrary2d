@@ -1,8 +1,9 @@
 package com.gamelibrary2d.network;
 
+import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.exceptions.InitializationException;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.network.common.client.Client;
 import com.gamelibrary2d.network.common.exceptions.NetworkAuthenticationException;
 import com.gamelibrary2d.network.common.exceptions.NetworkConnectionException;
@@ -14,11 +15,12 @@ public abstract class AbstractNetworkFrame<T extends Client> extends AbstractFra
 
     private T client;
 
-    protected AbstractNetworkFrame() {
-
+    protected AbstractNetworkFrame(Disposer disposer) {
+        super(disposer);
     }
 
-    protected AbstractNetworkFrame(T client) {
+    protected AbstractNetworkFrame(Disposer disposer, T client) {
+        super(disposer);
         this.client = client;
     }
 
@@ -37,25 +39,16 @@ public abstract class AbstractNetworkFrame<T extends Client> extends AbstractFra
     }
 
     @Override
-    protected void handleLoad(FrameInitializationContext context) throws InitializationException {
-        initializeClient(client, context);
-        super.handleLoad(context);
+    protected void initialize(FrameInitializer initializer) throws Throwable {
+        initializer.addTaskAsync(context -> initializeClient(client, context));
+        super.initialize(initializer);
+        initializer.addTask(context -> client.initialized(context.get(CommunicationContext.class, clientContextKey)));
     }
 
-    private void initializeClient(Client client, FrameInitializationContext context) throws InitializationException {
-        try {
-            client.clearInbox();
-            CommunicationContext clientContext = client.initialize();
-            context.register(clientContextKey, clientContext);
-        } catch (NetworkInitializationException | NetworkConnectionException | NetworkAuthenticationException e) {
-            throw new InitializationException("Failed to initialize client", e);
-        }
-    }
-
-    @Override
-    public void loaded(FrameInitializationContext context) throws InitializationException {
-        super.loaded(context);
-        client.initialized(context.get(CommunicationContext.class, clientContextKey));
+    private void initializeClient(Client client, FrameInitializationContext context) throws NetworkAuthenticationException, NetworkConnectionException, NetworkInitializationException {
+        client.clearInbox();
+        CommunicationContext clientContext = client.initialize();
+        context.register(clientContextKey, clientContext);
     }
 
     @Override

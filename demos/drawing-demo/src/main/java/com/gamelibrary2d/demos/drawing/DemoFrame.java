@@ -8,6 +8,7 @@ import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.framework.Mouse;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
@@ -20,11 +21,12 @@ public class DemoFrame extends AbstractFrame {
     private final Game game;
 
     public DemoFrame(Game game) {
+        super(game);
         this.game = game;
     }
 
     @Override
-    protected void onInitialize(FrameInitializationContext context) {
+    protected void onInitialize(FrameInitializer initializer) {
         Window window = game.getWindow();
 
         Rectangle windowBounds = new Rectangle(0, 0, window.getWidth(), window.getHeight());
@@ -59,6 +61,11 @@ public class DemoFrame extends AbstractFrame {
         add(quadTool);
     }
 
+    @Override
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
+
+    }
+
     private void randomizeColor(Renderer renderer) {
         RandomGenerator random = RandomInstance.get();
         renderer.setColor(
@@ -69,22 +76,17 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(FrameInitializationContext context) {
-
-    }
-
-    @Override
-    protected void onLoaded(FrameInitializationContext context) {
-
-    }
-
-    @Override
     protected void onBegin() {
 
     }
 
     @Override
     protected void onEnd() {
+
+    }
+
+    @Override
+    protected void onDispose() {
 
     }
 }

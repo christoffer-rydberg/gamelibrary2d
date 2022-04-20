@@ -1,7 +1,8 @@
 package com.gamelibrary2d.demos.transparentwindow;
 
-import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
+
+import java.io.IOException;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -46,7 +47,7 @@ public class TransparentWindowDemo {
         }
     }
 
-    public static void main(String[] args) throws InitializationException {
+    public static void main(String[] args) throws IOException {
         GlfwWindow window = createWindow(args);
         window.setWindowHint(GLFW_DECORATED, GLFW_FALSE);
         window.setWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);

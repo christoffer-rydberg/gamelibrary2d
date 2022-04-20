@@ -1,9 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
 import com.gamelibrary2d.AbstractGame;
-import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.components.frames.FrameDisposal;
-import com.gamelibrary2d.demos.networkgame.client.frames.LoadingFrame;
 import com.gamelibrary2d.demos.networkgame.client.frames.SplashFrame;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrame;
 import com.gamelibrary2d.demos.networkgame.client.frames.menu.MenuFrame;
@@ -15,7 +12,6 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Surfaces;
 import com.gamelibrary2d.demos.networkgame.client.resources.Textures;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
 import com.gamelibrary2d.demos.networkgame.client.urls.Music;
-import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.Framework;
 import com.gamelibrary2d.network.common.client.CommunicatorFactory;
 import com.gamelibrary2d.sound.MusicPlayer;
@@ -32,8 +28,7 @@ public class DemoGame extends AbstractGame {
     private final ResourceManager resourceManager;
     private final Options options = new Options();
 
-    private Frame menuFrame;
-    private LoadingFrame loadingFrame;
+    private MenuFrame menuFrame;
     private GameFrame gameFrame;
 
     public DemoGame(Framework framework, ControllerFactory controllerFactory, ResourceManager resourceManager, ServerManager serverManager, SoundManager soundManager) {
@@ -45,29 +40,21 @@ public class DemoGame extends AbstractGame {
     }
 
     @Override
-    protected void onStart() throws InitializationException, IOException {
+    protected void onStart() throws IOException {
         showSplashScreen();
         createGlobalResources();
-        initializeFrames();
-        setLoadingFrame(loadingFrame);
-        setFrame(menuFrame, FrameDisposal.DISPOSE);
+        prepareFrames();
+        setFrame(menuFrame);
     }
 
     private void loadDemoFrame(CommunicatorFactory communicatorFactory) {
         gameFrame.getClient().setCommunicatorFactory(communicatorFactory);
-        try {
-            loadFrame(gameFrame, FrameDisposal.NONE);
-        } catch (InitializationException e) {
-            e.printStackTrace();
-        }
+        setFrame(gameFrame);
     }
 
     public void goToMenu() {
         try {
-            setFrame(menuFrame, FrameDisposal.UNLOAD);
-        } catch (InitializationException e) {
-            e.printStackTrace();
-            gameFrame.end();
+            setFrame(menuFrame);
         } finally {
             serverManager.stopHostedServer();
         }
@@ -85,7 +72,7 @@ public class DemoGame extends AbstractGame {
         loadDemoFrame(() -> serverManager.connectToServer(host, port, localUdpPort));
     }
 
-    private void showSplashScreen() throws InitializationException {
+    private void showSplashScreen() {
         SplashFrame splashFrame = new SplashFrame(this, resourceManager);
         setFrame(splashFrame);
         getWindow().show();
@@ -105,7 +92,7 @@ public class DemoGame extends AbstractGame {
         }
     }
 
-    private void initializeFrames() throws InitializationException, IOException {
+    private void prepareFrames() throws IOException {
         loadSoundBuffer(Music.MENU, "ogg");
         loadSoundBuffer(Music.GAME, "ogg");
 
@@ -118,14 +105,11 @@ public class DemoGame extends AbstractGame {
                 soundManager,
                 10);
 
-        loadingFrame = new LoadingFrame(this, resourceManager);
-        loadingFrame.initialize(this);
-
         menuFrame = new MenuFrame(this, resourceManager, musicPlayer, soundPlayer);
-        menuFrame.initialize(this);
+        menuFrame.prepare();
 
         gameFrame = new GameFrame(this, controllerFactory, resourceManager, musicPlayer, soundPlayer, new SoundMap(soundManager, resourceManager));
-        gameFrame.initialize(this);
+        gameFrame.prepare();
     }
 
     @Override

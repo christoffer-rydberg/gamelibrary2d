@@ -1,8 +1,9 @@
 package com.gamelibrary2d.demos.particlesystem;
 
-import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
+
+import java.io.IOException;
 
 public class ParticleSystemDemo {
     private static final String title = "Particle System Demo";
@@ -45,7 +46,7 @@ public class ParticleSystemDemo {
         }
     }
 
-    public static void main(String[] args) throws InitializationException {
+    public static void main(String[] args) throws IOException {
         new DemoGame().start(createWindow(args));
     }
 }

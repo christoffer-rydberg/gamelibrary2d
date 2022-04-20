@@ -3,12 +3,12 @@ package com.gamelibrary2d.demos.networkgame;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ServerManager;
-import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
 import com.gamelibrary2d.framework.lwjgl.Lwjgl_Framework;
 import com.gamelibrary2d.sound.lwjgl.DefaultSoundManager;
 
+import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -60,7 +60,7 @@ public class NetworkGameDemo {
         return keyGen.generateKeyPair();
     }
 
-    public static void main(String[] args) throws InitializationException, NoSuchAlgorithmException {
+    public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
         try (DefaultDisposer disposer = new DefaultDisposer()) {
             new DemoGame(
                     new Lwjgl_Framework(),

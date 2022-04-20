@@ -4,8 +4,6 @@ import com.gamelibrary2d.AbstractGame;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.components.frames.FrameDisposal;
-import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
 import com.gamelibrary2d.framework.lwjgl.Lwjgl_Framework;
 import com.gamelibrary2d.tools.particlegenerator.resources.Fonts;
@@ -25,7 +23,7 @@ public class ParticleGenerator extends AbstractGame {
         registerDisposal(GLOBAL_DISPOSER);
     }
 
-    public static void main(String[] args) throws InitializationException {
+    public static void main(String[] args) throws IOException {
         new ParticleGenerator().start(GlfwWindow.createWindowed("Particle Generator", 1280, 900));
     }
 
@@ -37,11 +35,11 @@ public class ParticleGenerator extends AbstractGame {
     }
 
     @Override
-    protected void onStart() throws InitializationException, IOException {
+    protected void onStart() throws IOException {
         Fonts.create(this);
         Textures.create(this);
         Surfaces.create(this);
-        setFrame(frame, FrameDisposal.NONE);
+        setFrame(frame);
     }
 
     @Override

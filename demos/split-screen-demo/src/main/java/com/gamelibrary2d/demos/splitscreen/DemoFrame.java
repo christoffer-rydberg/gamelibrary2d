@@ -13,6 +13,7 @@ import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.framework.Keyboard;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
@@ -41,6 +42,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     private List<SpaceCraft> spaceCrafts;
 
     DemoFrame(Game game) {
+        super(game);
         this.game = game;
         spacecraftLayer = new DefaultLayerObject<>();
         setBackgroundColor(SPLIT_COLOR);
@@ -118,7 +120,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
         return createSplitLayoutHelper(spaceCrafts, SplitOrientation.HORIZONTAL);
     }
 
-    private DefaultGameObject createBackgroundColor() {
+    private GameObject createBackgroundColor() {
         Surface quad = Quad.create(GAME_BOUNDS, this);
         ContentRenderer renderer = new SurfaceRenderer<>(quad);
         renderer.setColor(
@@ -170,7 +172,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onInitialize(FrameInitializationContext context) {
+    protected void onInitialize(FrameInitializer initializer) {
         try {
             spacecraftLayer.getBackground().add(createBackground());
 
@@ -192,12 +194,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onLoad(FrameInitializationContext context) {
-
-    }
-
-    @Override
-    protected void onLoaded(FrameInitializationContext context) {
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
 
     }
 
@@ -208,6 +205,11 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
 
     @Override
     protected void onEnd() {
+
+    }
+
+    @Override
+    protected void onDispose() {
 
     }
 

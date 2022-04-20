@@ -6,6 +6,7 @@ import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.framework.Window;
 
 import java.io.IOException;
@@ -14,11 +15,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class DemoFrame extends AbstractFrame {
-
     private final Game game;
     private AnimatedGameObject animationObj;
 
     DemoFrame(Game game) {
+        super(game);
         this.game = game;
         setBackgroundColor(Color.TRANSPARENT);
     }
@@ -41,7 +42,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializationContext context) {
+    protected void onInitialize(FrameInitializer initializer) {
         Window window = game.getWindow();
         try {
             Animation animation = createAnimation();
@@ -54,12 +55,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(FrameInitializationContext context) {
-
-    }
-
-    @Override
-    protected void onLoaded(FrameInitializationContext context) {
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
 
     }
 
@@ -70,6 +66,11 @@ public class DemoFrame extends AbstractFrame {
 
     @Override
     protected void onEnd() {
+
+    }
+
+    @Override
+    protected void onDispose() {
 
     }
 

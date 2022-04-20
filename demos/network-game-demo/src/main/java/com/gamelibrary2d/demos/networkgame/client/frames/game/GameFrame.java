@@ -7,6 +7,7 @@ import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
@@ -67,6 +68,7 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
     private TimeLabel timeLabel;
     private GameSettings gameSettings;
     private Rectangle renderedGameBounds;
+    private boolean prepared;
 
     public GameFrame(
             DemoGame game,
@@ -75,7 +77,7 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
             MusicPlayer musicPlayer,
             SoundPlayer soundPlayer,
             SoundMap soundMap) {
-
+        super(game);
         this.game = game;
         this.resourceManager = resourceManager;
         this.musicPlayer = musicPlayer;
@@ -89,36 +91,46 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
         return DefaultTexture.create(s, this);
     }
 
-    @Override
-    protected void onInitialize(FrameInitializationContext context) throws IOException {
-        backgroundTexture = resourceManager.load(Images.GAME_BACKGROUND, this::createTexture);
+    public void prepare() throws IOException {
+        if (!prepared) {
+            backgroundTexture = resourceManager.load(Images.GAME_BACKGROUND, this::createTexture);
 
-        soundMap.initialize();
-        textures.initialize(this);
-        effects.initialize(textures, this);
+            soundMap.initialize();
+            textures.initialize(this);
+            effects.initialize(textures, this);
 
-        Window window = game.getWindow();
-        timeLabel = new TimeLabel(Fonts.timer());
-        timeLabel.setPosition(
-                window.getWidth() / 2f,
-                9 * window.getHeight() / 10f);
+            Window window = game.getWindow();
+            timeLabel = new TimeLabel(Fonts.timer());
+            timeLabel.setPosition(
+                    window.getWidth() / 2f,
+                    9 * window.getHeight() / 10f);
+
+            effects.onLoaded(backgroundEffects, foregroundEffects);
+
+            gameLayer.add(backgroundEffects);
+            gameLayer.add(objectLayer);
+            gameLayer.add(foregroundEffects);
+
+            screenLayer.add(controllerLayer);
+            screenLayer.add(timeLabel);
+
+
+            prepared = true;
+        }
     }
 
     @Override
-    protected void onLoad(FrameInitializationContext context) {
-
+    protected void onInitialize(FrameInitializer initializer) throws IOException {
+        prepare();
     }
 
     @Override
-    protected void onLoaded(FrameInitializationContext context) {
-        effects.onLoaded(backgroundEffects, foregroundEffects);
-
-        gameLayer.add(backgroundEffects);
-        gameLayer.add(objectLayer);
-        gameLayer.add(foregroundEffects);
-
-        screenLayer.add(controllerLayer);
-        screenLayer.add(timeLabel);
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
+        if (error != null) {
+            error.printStackTrace();
+            game.goToMenu();
+            return;
+        }
 
         add(backgroundLayer);
         add(gameLayer);
@@ -156,6 +168,11 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
     @Override
     protected void onEnd() {
         musicPlayer.stop(2f);
+    }
+
+    @Override
+    protected void onDispose() {
+        prepared = false;
     }
 
     private Renderable createBackground(Rectangle windowBounds, Rectangle gameBounds) {

@@ -1,8 +1,9 @@
 package com.gamelibrary2d.demos.lightning;
 
-import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
 import com.gamelibrary2d.framework.lwjgl.MouseCursorMode;
+
+import java.io.IOException;
 
 public class LightningDemo {
     private static final String title = "Lightning Demo";
@@ -45,7 +46,7 @@ public class LightningDemo {
         }
     }
 
-    public static void main(String[] args) throws InitializationException {
+    public static void main(String[] args) throws IOException {
         GlfwWindow window = createWindow(args);
         window.setMouseCursorMode(MouseCursorMode.HIDDEN);
         new DemoGame().start(window);

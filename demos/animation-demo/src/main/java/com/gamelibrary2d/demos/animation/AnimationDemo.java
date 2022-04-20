@@ -1,8 +1,9 @@
 package com.gamelibrary2d.demos.animation;
 
-import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
+
+import java.io.IOException;
 
 public class AnimationDemo {
     private static final String title = "Animation Demo";
@@ -17,7 +18,7 @@ public class AnimationDemo {
 
     private static Window createWindow(String[] args) {
         if (args.length == 0) {
-            return GlfwWindow.createWindowed(title, 800, 600);
+            return GlfwWindow.createWindowed(title);
         } else if (args.length == 1) {
             if (isWindowed(args[0])) {
                 return GlfwWindow.createWindowed(title);
@@ -45,7 +46,7 @@ public class AnimationDemo {
         }
     }
 
-    public static void main(String[] args) throws InitializationException {
+    public static void main(String[] args) throws IOException {
         new DemoGame().start(createWindow(args));
     }
 }

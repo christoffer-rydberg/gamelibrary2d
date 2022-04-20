@@ -4,6 +4,7 @@ import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.particles.*;
 import com.gamelibrary2d.updaters.DurationUpdater;
 import com.gamelibrary2d.updaters.InstantUpdater;
@@ -21,6 +22,7 @@ public class DemoFrame extends AbstractFrame {
     private DefaultParticleSystem explosionSystem;
 
     DemoFrame(Game game) {
+        super(game);
         this.game = game;
     }
 
@@ -53,7 +55,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializationContext context) {
+    protected void onInitialize(FrameInitializer initializer) {
         try {
             // Example of particle system settings created from code:
             ParticleEmissionParameters emissionParameters = new ParticleEmissionParameters();
@@ -82,12 +84,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(FrameInitializationContext context) {
-
-    }
-
-    @Override
-    protected void onLoaded(FrameInitializationContext context) {
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
 
     }
 
@@ -98,6 +95,11 @@ public class DemoFrame extends AbstractFrame {
 
     @Override
     protected void onEnd() {
+
+    }
+
+    @Override
+    protected void onDispose() {
 
     }
 

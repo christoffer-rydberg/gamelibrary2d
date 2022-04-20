@@ -1,8 +1,9 @@
 package com.gamelibrary2d.demos.splitscreen;
 
-import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
+
+import java.io.IOException;
 
 public class SplitScreenDemo {
     private static final String title = "Split Screen Demo";
@@ -45,7 +46,7 @@ public class SplitScreenDemo {
         }
     }
 
-    public static void main(String[] args) throws InitializationException {
+    public static void main(String[] args) throws IOException {
         new DemoGame().start(createWindow(args));
     }
 }

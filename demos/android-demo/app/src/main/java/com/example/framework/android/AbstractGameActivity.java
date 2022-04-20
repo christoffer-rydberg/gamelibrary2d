@@ -7,10 +7,10 @@ import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.functional.Action;
-import com.gamelibrary2d.exceptions.InitializationException;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import java.io.IOException;
 
 public abstract class AbstractGameActivity extends Activity {
     protected final DefaultDisposer disposer = new DefaultDisposer();
@@ -70,10 +70,10 @@ public abstract class AbstractGameActivity extends Activity {
 
         @Override
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+            Android_OpenGL.createInstance(window.getSupportedOpenGLVersion());
             try {
-                Android_OpenGL.createInstance(window.getSupportedOpenGLVersion());
                 game.start(window, gameLoop);
-            } catch (InitializationException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

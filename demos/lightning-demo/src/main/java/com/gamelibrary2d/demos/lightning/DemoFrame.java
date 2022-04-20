@@ -6,6 +6,7 @@ import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.lightning.*;
@@ -26,6 +27,7 @@ class DemoFrame extends AbstractFrame {
     private final Game game;
 
     DemoFrame(Game game) {
+        super(game);
         this.game = game;
     }
 
@@ -33,7 +35,7 @@ class DemoFrame extends AbstractFrame {
         return getClass().getClassLoader().getResource(resource);
     }
 
-    private SurfaceRenderer createRenderer(Rectangle bounds, String image) throws IOException {
+    private ContentRenderer createRenderer(Rectangle bounds, String image) throws IOException {
         URL backgroundUrl = getUrl(image);
         Texture backgroundTexture = DefaultTexture.create(backgroundUrl, this);
         Surface backgroundQuad = Quad.create(bounds, this);
@@ -64,34 +66,25 @@ class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializationContext context) {
-        try {
-            Window window = game.getWindow();
-            DefaultParticleSystem particleSystem = createParticleSystem();
-            DefaultDynamicLightMap lightMap = new DefaultDynamicLightMap(new DefaultLightSpreadMatrix(20));
-            DefaultLayerObject<Renderable> frameLayer = new DefaultLayerObject<>();
-            frameLayer.getBackground().add(createBackground(window));
-            frameLayer.add(createTorch(particleSystem, lightMap));
-            frameLayer.getForeground().add(particleSystem);
-            LightRenderer lightRenderer = createLightRenderer(window, lightMap);
-            frameLayer.setOverlay(alpha -> {
-                lightRenderer.apply();
-                lightRenderer.render(alpha);
-                lightRenderer.reset();
-            });
-            add(frameLayer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected void onInitialize(FrameInitializer initializer) throws IOException {
+        Window window = game.getWindow();
+        DefaultParticleSystem particleSystem = createParticleSystem();
+        DefaultDynamicLightMap lightMap = new DefaultDynamicLightMap(new DefaultLightSpreadMatrix(20));
+        DefaultLayerObject<Renderable> frameLayer = new DefaultLayerObject<>();
+        frameLayer.getBackground().add(createBackground(window));
+        frameLayer.add(createTorch(particleSystem, lightMap));
+        frameLayer.getForeground().add(particleSystem);
+        LightRenderer lightRenderer = createLightRenderer(window, lightMap);
+        frameLayer.setOverlay(alpha -> {
+            lightRenderer.apply();
+            lightRenderer.render(alpha);
+            lightRenderer.reset();
+        });
+        add(frameLayer);
     }
 
     @Override
-    protected void onLoad(FrameInitializationContext context) {
-
-    }
-
-    @Override
-    protected void onLoaded(FrameInitializationContext context) {
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
 
     }
 
@@ -102,6 +95,11 @@ class DemoFrame extends AbstractFrame {
 
     @Override
     protected void onEnd() {
+
+    }
+
+    @Override
+    protected void onDispose() {
 
     }
 }

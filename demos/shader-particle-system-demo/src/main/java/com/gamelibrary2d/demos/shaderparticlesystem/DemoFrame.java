@@ -5,6 +5,7 @@ import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.containers.LayerObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
 
@@ -17,11 +18,12 @@ public class DemoFrame extends AbstractFrame {
     private final Game game;
 
     DemoFrame(Game game) {
+        super(game);
         this.game = game;
     }
 
     @Override
-    protected void onInitialize(FrameInitializationContext context) {
+    protected void onInitialize(FrameInitializer initializer) {
         try {
             Window window = game.getWindow();
             float windowWidth = window.getWidth();
@@ -48,12 +50,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onLoad(FrameInitializationContext context) {
-
-    }
-
-    @Override
-    protected void onLoaded(FrameInitializationContext context) {
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
 
     }
 
@@ -64,6 +61,11 @@ public class DemoFrame extends AbstractFrame {
 
     @Override
     protected void onEnd() {
+
+    }
+
+    @Override
+    protected void onDispose() {
 
     }
 }

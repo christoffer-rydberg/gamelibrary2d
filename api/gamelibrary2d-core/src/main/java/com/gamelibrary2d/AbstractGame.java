@@ -3,22 +3,18 @@ package com.gamelibrary2d;
 import com.gamelibrary2d.common.disposal.AbstractDisposer;
 import com.gamelibrary2d.common.event.DefaultEventPublisher;
 import com.gamelibrary2d.common.event.EventPublisher;
+import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.components.denotations.InputAware;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.denotations.KeyUpAware;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.components.frames.FrameDisposal;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.LoadingFrame;
-import com.gamelibrary2d.exceptions.InitializationException;
 import com.gamelibrary2d.framework.Runtime;
 import com.gamelibrary2d.framework.*;
 import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.shaders.DefaultShader;
 import com.gamelibrary2d.opengl.shaders.DefaultShaderProgram;
 import com.gamelibrary2d.opengl.shaders.ShaderType;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -35,7 +31,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     /**
      * Queue for code that will be invoked after the current update.
      */
-    private final Deque<Runnable> invokeLater;
+    private final Deque<Action> invokeLater;
 
     /**
      * True whenever the game window has cursor focus, each index represents a pointer id.
@@ -67,11 +63,6 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     private boolean frameNotUpdated;
 
     /**
-     * The loading frame is displayed when loading a new frame.
-     */
-    private LoadingFrame loadingFrame;
-
-    /**
      * The game loop is responsible for maintaining a steady frame rate.
      */
     private GameLoop gameLoop;
@@ -87,7 +78,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     }
 
     @Override
-    public void start(Window window, GameLoop gameLoop) throws InitializationException {
+    public void start(Window window, GameLoop gameLoop) throws IOException {
         this.gameLoop = gameLoop;
         this.window = window;
         window.initialize();
@@ -95,11 +86,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         initializeOpenGLSettings();
         createDefaultShaderPrograms();
         gameLoop.initialize(this::update, this::dispose, window);
-        try {
-            onStart();
-        } catch (IOException e) {
-            throw new InitializationException(e);
-        }
+        onStart();
         window.show();
         gameLoop.start(this::onExit);
     }
@@ -240,7 +227,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         updating = false;
 
         while (!invokeLater.isEmpty()) {
-            invokeLater.pollFirst().run();
+            invokeLater.pollFirst().perform();
         }
     }
 
@@ -261,53 +248,31 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     }
 
     @Override
-    public void loadFrame(Frame frame, FrameDisposal previousFrameDisposal) throws InitializationException {
-        if (loadingFrame == null) {
-            throw new InitializationException("No loading frame has been set.");
-        }
-
-        if (!frame.isInitialized()) {
-            frame.initialize(this);
-        }
-
-        Frame previousFrame = this.frame;
-        setFrame(loadingFrame, FrameDisposal.NONE);
-        loadingFrame.load(frame, previousFrame, previousFrameDisposal);
-    }
-
-    @Override
-    public void setFrame(Frame frame, FrameDisposal previousFrameDisposal) throws InitializationException {
-        if (frame != null) {
-            if (!frame.isInitialized()) {
-                frame.initialize(this);
-            }
-
-            if (!frame.isLoaded()) {
-                try {
-                    FrameInitializationContext context = frame.load();
-                    frame.loaded(context);
-                } catch (InitializationException e) {
-                    frame.dispose(FrameDisposal.UNLOAD);
-                    throw e;
-                }
-            }
-        }
-
-        disposeFrame(previousFrameDisposal);
-
+    public void setFrame(Frame frame, boolean disposePrevious) {
         if (updating) {
-            invokeLater(() -> beginFrame(frame));
+            invokeLater(() -> beginFrame(frame, disposePrevious));
         } else {
-            beginFrame(frame);
+            beginFrame(frame, disposePrevious);
         }
     }
 
-    private void beginFrame(Frame frame) {
+    private void beginFrame(Frame frame, boolean disposePrevious) {
+        Frame previousFrame = this.frame;
+        if (previousFrame != null) {
+            previousFrame.end();
+            if (disposePrevious) {
+                previousFrame.dispose();
+            }
+        }
+
         this.frame = frame;
         frameNotUpdated = true;
+        if (frame != null) {
+            frameChangedPublisher.publish(frame);
+        }
 
         if (frame != null) {
-            onFrameBegin(frame);
+            frame.begin();
         }
     }
 
@@ -321,35 +286,13 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         frameChangedPublisher.removeListener(listener);
     }
 
-    private void onFrameBegin(Frame frame) {
-        frameChangedPublisher.publish(frame);
-        frame.begin();
-    }
-
-    private void disposeFrame(FrameDisposal frameDisposal) {
-        if (frame == null)
-            return;
-        frame.end();
-        frame.dispose(frameDisposal);
-    }
-
     @Override
     public Frame getFrame() {
         return frame;
     }
 
-    public void setFrame(Frame frame) throws InitializationException {
-        setFrame(frame, FrameDisposal.NONE);
-    }
-
-    @Override
-    public LoadingFrame getLoadingFrame() {
-        return loadingFrame;
-    }
-
-    @Override
-    public void setLoadingFrame(LoadingFrame frame) {
-        loadingFrame = frame;
+    public void setFrame(Frame frame) {
+        setFrame(frame, false);
     }
 
     @Override
@@ -358,11 +301,11 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     }
 
     @Override
-    public void invokeLater(Runnable runnable) {
-        invokeLater.addLast(runnable);
+    public void invokeLater(Action action) {
+        invokeLater.addLast(action);
     }
 
-    protected abstract void onStart() throws InitializationException, IOException;
+    protected abstract void onStart() throws IOException;
 
     protected abstract void onExit();
 

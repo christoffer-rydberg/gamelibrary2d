@@ -11,6 +11,7 @@ import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.DefaultTexture;
@@ -27,41 +28,23 @@ public class DemoFrame extends AbstractFrame {
     private final UpdatedHandler<Ball> restrictedAreaHandler;
     private final CollisionHandler<Ball, Ball> bounceHandler = new BounceHandler<>(Ball.class);
     private final Layer<Ball> ballLayer = new BasicLayer<>();
-    private Surface ballSurface;
     private ContentRenderer ballRenderer;
-    private BallTool tool;
 
     DemoFrame(Game game) {
+        super(game);
         gameArea = new Rectangle(0, 0, game.getWindow().getWidth(), game.getWindow().getHeight());
         restrictedAreaHandler = new RestrictedAreaHandler<>(gameArea, Ball::accelerate);
         collisionDetection = new CollisionDetection(gameArea, 128, 10);
     }
 
     @Override
-    protected void onInitialize(FrameInitializationContext context) throws IOException {
+    protected void onInitialize(FrameInitializer initializer) throws IOException {
         Texture ballTexture = DefaultTexture.create(Ball.class.getResource("/ball.png"), this);
-        ballSurface = Quad.create(Rectangle.create(32, 32), this);
+        Surface ballSurface = Quad.create(Rectangle.create(32, 32), this);
         ballRenderer = new SurfaceRenderer<>(ballSurface, ballTexture);
         ballRenderer.setColor(152f / 255f, 251f / 255f, 152f / 255f);
-        tool = BallTool.create(this, ballRenderer, this::addBall);
-    }
+        BallTool tool = BallTool.create(this, ballRenderer, this::addBall);
 
-    @Override
-    protected void onLoad(FrameInitializationContext context) {
-
-    }
-
-    private void addBall(Ball ball) {
-        ballLayer.add(ball);
-        collisionDetection.add(ball, restrictedAreaHandler, bounceHandler);
-    }
-
-    private void addBall(float x, float y) {
-        addBall(new Ball(ballRenderer, x, y));
-    }
-
-    @Override
-    protected void onLoaded(FrameInitializationContext context) {
         final float ballWidth = ballSurface.getBounds().getWidth();
         final float ballHeight = ballSurface.getBounds().getHeight();
         final float pyramidCenterX = gameArea.getWidth() / 2f;
@@ -99,12 +82,31 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
+    protected void onInitialized(FrameInitializationContext context, Throwable error) {
+
+    }
+
+    private void addBall(Ball ball) {
+        ballLayer.add(ball);
+        collisionDetection.add(ball, restrictedAreaHandler, bounceHandler);
+    }
+
+    private void addBall(float x, float y) {
+        addBall(new Ball(ballRenderer, x, y));
+    }
+
+    @Override
     protected void onBegin() {
 
     }
 
     @Override
     protected void onEnd() {
+
+    }
+
+    @Override
+    protected void onDispose() {
 
     }
 }
