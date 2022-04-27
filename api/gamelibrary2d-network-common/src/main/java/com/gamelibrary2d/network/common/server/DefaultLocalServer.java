@@ -38,7 +38,9 @@ public class DefaultLocalServer extends AbstractLocalServer {
 
     @Override
     protected void onUpdate(float deltaTime) {
-        serverContext.update(deltaTime);
+        if (serverContext != null) {
+            serverContext.update(deltaTime);
+        }
     }
 
     @Override

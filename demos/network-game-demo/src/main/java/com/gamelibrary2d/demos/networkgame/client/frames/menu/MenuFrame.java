@@ -159,7 +159,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         introUpdater.add(new DurationUpdater(4f, new EmptyUpdate()));
         introUpdater.add(gameTitle.createIntro());
 
-        runUpdater(introUpdater);
+        startUpdater(introUpdater);
     }
 
     private void showMenu() {
@@ -171,7 +171,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
                     true,
                     new OpacityUpdate<>(menuLayer, 1f)
             ));
-            runUpdater(updater);
+            startUpdater(updater);
             menuLayerIsHidden = false;
         }
     }

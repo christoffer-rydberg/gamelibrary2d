@@ -37,7 +37,7 @@ public interface Game extends Disposer, Updatable {
     void update(float delta);
 
     /**
-     * Used to invoke code at the end of the update cycle.
+     * Performs the specified action after the current update cycle.
      */
     void invokeLater(Action action);
 

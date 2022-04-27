@@ -107,7 +107,7 @@ public class DemoFrame extends AbstractFrame {
         SequentialUpdater updater = new SequentialUpdater();
         updater.add(new DurationUpdater(delay, new EmptyUpdate()));
         updater.add(new InstantUpdater(dt -> emitters.add(new ParticleEmitter(posX, posY, fireSystem))));
-        runUpdater(updater);
+        startUpdater(updater);
     }
 
     @Override

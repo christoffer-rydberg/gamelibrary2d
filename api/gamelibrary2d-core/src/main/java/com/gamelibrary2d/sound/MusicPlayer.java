@@ -37,7 +37,7 @@ public class MusicPlayer {
             if (frame != null) {
                 for (Updater updater : updaters) {
                     if (!updater.isFinished()) {
-                        frame.runUpdater(updater, false);
+                        frame.startUpdater(updater);
                     }
                 }
             }
@@ -67,7 +67,7 @@ public class MusicPlayer {
 
         updater.add(SoundUpdaterFactory.createFadeOutUpdater(sources[channel], fadeOutTime, false));
 
-        frame.runUpdater(updater, false);
+        frame.startUpdater(updater);
 
         return true;
     }
@@ -87,7 +87,7 @@ public class MusicPlayer {
 
         updater.add(SoundUpdaterFactory.createFadeOutUpdater(sources[channel], fadeOutTime, true));
 
-        frame.runUpdater(updater, false);
+        frame.startUpdater(updater);
 
         moveToNextChannel();
 
@@ -123,7 +123,7 @@ public class MusicPlayer {
 
         updater.add(SoundUpdaterFactory.createFadeInUpdater(source, volume, fadeInTime));
 
-        frame.runUpdater(updater, false);
+        frame.startUpdater(updater);
 
         return true;
     }
@@ -141,7 +141,7 @@ public class MusicPlayer {
         updater.add(SoundUpdaterFactory.createFadeInUpdater(sources[channel], volume,
                 stopped ? fadeInTime / 2 : fadeInTime));
 
-        frame.runUpdater(updater, false);
+        frame.startUpdater(updater);
     }
 
     private boolean canResume() {
@@ -184,7 +184,7 @@ public class MusicPlayer {
             SequentialUpdater updater = getUpdater();
             abort(updater);
             updater.add(SoundUpdaterFactory.createVolumeUpdater(source, volume, fadeInTime));
-            frame.runUpdater(updater, false);
+            frame.startUpdater(updater);
         }
     }
 

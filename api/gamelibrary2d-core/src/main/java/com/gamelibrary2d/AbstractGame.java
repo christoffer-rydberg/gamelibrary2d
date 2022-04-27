@@ -15,6 +15,7 @@ import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.shaders.DefaultShader;
 import com.gamelibrary2d.opengl.shaders.DefaultShaderProgram;
 import com.gamelibrary2d.opengl.shaders.ShaderType;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -98,7 +99,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     }
 
     private DefaultShader loadShader(String path, ShaderType shaderType) {
-        try(InputStream stream = DefaultShader.class.getClassLoader().getResourceAsStream(path)) {
+        try (InputStream stream = DefaultShader.class.getClassLoader().getResourceAsStream(path)) {
             String src = Read.text(stream, StandardCharsets.UTF_8);
             return DefaultShader.create(src, shaderType, this);
         } catch (IOException ex) {
@@ -212,19 +213,15 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     }
 
     public void update(float deltaTime) {
-        // Update cycle begins
-        updating = true;
-
-        window.pollEvents();
-
-        Frame currentFrame = frame;
-
-        update(currentFrame, deltaTime * speedFactor);
-
-        render(currentFrame);
-
-        // Update cycle ends
-        updating = false;
+        try {
+            updating = true;
+            window.pollEvents();
+            Frame currentFrame = frame;
+            update(currentFrame, deltaTime * speedFactor);
+            render(currentFrame);
+        } finally {
+            updating = false;
+        }
 
         while (!invokeLater.isEmpty()) {
             invokeLater.pollFirst().perform();

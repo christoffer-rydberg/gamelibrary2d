@@ -83,7 +83,8 @@ public abstract class AbstractClientObject
     @Override
     public void spawn(Frame frame) {
         setScale(0f);
-        frame.runUpdater(spawnUpdater);
+        spawnUpdater.reset();
+        frame.startUpdater(spawnUpdater);
     }
 
     @Override

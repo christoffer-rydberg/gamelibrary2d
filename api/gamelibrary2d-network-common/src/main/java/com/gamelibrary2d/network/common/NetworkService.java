@@ -58,14 +58,20 @@ public class NetworkService {
     public DatagramChannel openDatagramChannel(Communicator communicator, ConnectionType operations,
                                                ChannelDisconnectedHandler disconnectedHandler, int localPort, int hostPort) throws IOException {
         UdpConnection udpConnection = new UdpConnection(communicator, operations, disconnectedHandler);
+
         DatagramChannel channel = DatagramChannel.open();
-        channel.bind(new InetSocketAddress(localPort));
-        channel.connect(new InetSocketAddress(communicator.getEndpoint(), hostPort));
-        channel.configureBlocking(false);
-        if (operations != ConnectionType.WRITE)
-            channel.register(selector, SelectionKey.OP_READ, udpConnection);
-        udpConnections.put(channel, udpConnection);
-        return channel;
+        try {
+            channel.bind(new InetSocketAddress(localPort));
+            channel.connect(new InetSocketAddress(communicator.getEndpoint(), hostPort));
+            channel.configureBlocking(false);
+            if (operations != ConnectionType.WRITE)
+                channel.register(selector, SelectionKey.OP_READ, udpConnection);
+            udpConnections.put(channel, udpConnection);
+            return channel;
+        } catch (IOException e) {
+            close(channel);
+            throw e;
+        }
     }
 
     public ServerSocketChannelRegistration registerConnectionListener(
@@ -73,9 +79,8 @@ public class NetworkService {
             SocketChannelFailedConnectionHandler onConnectionFailed)
             throws IOException {
 
-        ServerSocketChannel socketChannel = null;
+        ServerSocketChannel socketChannel = ServerSocketChannel.open();
         try {
-            socketChannel = ServerSocketChannel.open();
             socketChannel.configureBlocking(false);
             socketChannel.socket().bind(new InetSocketAddress(hostName, port));
             connectionListeners.put(socketChannel, new ConnectionListener(onConnected, onConnectionFailed));

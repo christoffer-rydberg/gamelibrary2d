@@ -4,6 +4,7 @@ import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposable;
 import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.components.containers.AbstractLayer;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.updaters.Updater;
@@ -12,19 +13,18 @@ import java.util.Deque;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-
 public abstract class AbstractFrame extends AbstractLayer<Renderable> implements Frame {
-    private final Deque<Runnable> invokeLater = new ArrayDeque<>();
+    private final Deque<Action> invokeLater = new ArrayDeque<>();
     private final Deque<Updater> updaters = new ArrayDeque<>();
     private final DefaultDisposer disposer;
 
-    private boolean paused;
     private boolean initialized;
     private boolean requiresInitialization = true;
     private Color backgroundColor = Color.BLACK;
     private CompletableFuture<FrameInitializationContext> initializationContextFuture;
 
-    public void invokeLater(Runnable runnable) {
+    @Override
+    public void invokeLater(Action runnable) {
         invokeLater.addLast(runnable);
     }
 
@@ -90,12 +90,15 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     }
 
     @Override
-    public void runUpdater(Updater updater, boolean reset) {
-        if (!updaters.contains(updater))
+    public void startUpdater(Updater updater) {
+        if (!updaters.contains(updater)) {
             updaters.addLast(updater);
-        if (reset) {
-            updater.reset();
         }
+    }
+
+    @Override
+    public void stopUpdater(Updater updater) {
+        updaters.remove(updater);
     }
 
     private void tryCompleteInitialization() {
@@ -118,39 +121,22 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     @Override
     protected void onUpdate(float deltaTime) {
         while (!invokeLater.isEmpty()) {
-            invokeLater.pollFirst().run();
+            invokeLater.pollFirst().perform();
         }
 
         if (initializationContextFuture != null) {
             tryCompleteInitialization();
         }
 
-        if (!isPaused()) {
-            super.onUpdate(deltaTime);
+        super.onUpdate(deltaTime);
 
-            for (int i = 0; i < updaters.size(); ++i) {
-                Updater updater = updaters.pollFirst();
-                updater.update(deltaTime);
-                if (!updater.isFinished()) {
-                    updaters.addLast(updater);
-                }
+        for (int i = 0; i < updaters.size(); ++i) {
+            Updater updater = updaters.pollFirst();
+            updater.update(deltaTime);
+            if (!updater.isFinished()) {
+                updaters.addLast(updater);
             }
         }
-    }
-
-    @Override
-    public void pause() {
-        paused = true;
-    }
-
-    @Override
-    public void resume() {
-        paused = false;
-    }
-
-    @Override
-    public boolean isPaused() {
-        return paused;
     }
 
     @Override

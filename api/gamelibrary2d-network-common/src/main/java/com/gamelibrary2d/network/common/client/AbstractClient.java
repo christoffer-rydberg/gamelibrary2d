@@ -23,7 +23,6 @@ public abstract class AbstractClient implements Client {
     private Communicator communicator;
     private int initializationRetries = 100;
     private int initializationRetryDelay = 100;
-    private boolean updateLocalServer;
 
     private volatile CommunicatorFactory communicatorFactory;
 
@@ -44,14 +43,6 @@ public abstract class AbstractClient implements Client {
     @Override
     public void setCommunicatorFactory(CommunicatorFactory communicatorFactory) {
         this.communicatorFactory = communicatorFactory;
-    }
-
-    public boolean isUpdatingLocalServer() {
-        return updateLocalServer;
-    }
-
-    public void setUpdateLocalServer(boolean updateLocalServer) {
-        this.updateLocalServer = updateLocalServer;
     }
 
     @Override
@@ -156,8 +147,6 @@ public abstract class AbstractClient implements Client {
         Communicator communicator = getCommunicator();
         if (communicator != null && communicator.isConnected()) {
             try {
-                triggerLocalServerUpdate(communicator, deltaTime);
-
                 readMessages();
 
                 if (updateAction != null) {
@@ -243,9 +232,7 @@ public abstract class AbstractClient implements Client {
 
                 sendOutgoing(communicator);
 
-                if (!triggerLocalServerUpdate(communicator, 0f)) {
-                    Thread.sleep(getInitializationRetryDelay());
-                }
+                Thread.sleep(getInitializationRetryDelay());
             } else {
                 retries = 0;
             }
@@ -275,15 +262,6 @@ public abstract class AbstractClient implements Client {
         } else {
             throw new IllegalStateException("Unknown communication step: " + step.getClass().getName());
         }
-    }
-
-    private boolean triggerLocalServerUpdate(Communicator communicator, float deltaTime) {
-        if (updateLocalServer && communicator instanceof LocalCommunicator) {
-            ((LocalCommunicator) communicator).getLocalServer().update(deltaTime);
-            return true;
-        }
-
-        return false;
     }
 
     private void configureInitialization(CommunicationSteps steps) {

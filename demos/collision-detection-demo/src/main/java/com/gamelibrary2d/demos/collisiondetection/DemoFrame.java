@@ -78,7 +78,7 @@ public class DemoFrame extends AbstractFrame {
         add(ballLayer);
         add(tool);
 
-        runUpdater(new InfiniteUpdater(collisionDetection::update));
+        startUpdater(new InfiniteUpdater(collisionDetection::update));
     }
 
     @Override

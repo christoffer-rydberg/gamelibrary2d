@@ -5,7 +5,7 @@ import com.gamelibrary2d.components.frames.Frame;
 
 /**
  * The {@link Updater} is used to apply one or more {@link Updatable updates}. You
- * can run an updater by invoking {@link Frame#runUpdater}.
+ * can run an updater by invoking {@link Frame#startUpdater}.
  */
 public interface Updater {
 

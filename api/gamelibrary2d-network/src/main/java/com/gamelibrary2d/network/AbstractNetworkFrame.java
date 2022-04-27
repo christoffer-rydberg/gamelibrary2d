@@ -41,8 +41,8 @@ public abstract class AbstractNetworkFrame<T extends Client> extends AbstractFra
     @Override
     protected void initialize(FrameInitializer initializer) throws Throwable {
         initializer.addTaskAsync(context -> initializeClient(client, context));
-        super.initialize(initializer);
         initializer.addTask(context -> client.initialized(context.get(CommunicationContext.class, clientContextKey)));
+        super.initialize(initializer);
     }
 
     private void initializeClient(Client client, FrameInitializationContext context) throws NetworkAuthenticationException, NetworkConnectionException, NetworkInitializationException {

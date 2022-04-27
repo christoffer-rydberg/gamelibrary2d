@@ -303,7 +303,7 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
         sequentialUpdater.add(new DurationUpdater(5f, new EmptyUpdate()));
         sequentialUpdater.add(new InstantUpdater(dt -> getClient().requestNewGame()));
 
-        runUpdater(sequentialUpdater);
+        startUpdater(sequentialUpdater);
     }
 
     public void gameEnded() {
