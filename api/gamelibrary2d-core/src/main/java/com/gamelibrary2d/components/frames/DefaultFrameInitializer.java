@@ -28,24 +28,18 @@ public class DefaultFrameInitializer implements FrameInitializer {
         if (task.isAsync) {
             CompletableFuture.runAsync(() -> {
                 performTask(task.step);
-                performNextTask(true);
+                performNextTask();
             });
         } else {
-            frame.invokeLater(() -> {
-                performTask(task.step);
-                performNextTask(false);
-            });
+            performTask(task.step);
+            performNextTask();
         }
     }
 
-    private void performNextTask(boolean invokeLater) {
-        InitializationTaskWrapper nextStage = tasks.poll();
-        if (nextStage != null) {
-            if (invokeLater) {
-                frame.invokeLater(() -> performTask(nextStage));
-            } else {
-                performTask(nextStage);
-            }
+    private void performNextTask() {
+        InitializationTaskWrapper task = tasks.poll();
+        if (task != null) {
+            frame.invokeLater(() -> performTask(task));
         } else {
             completableFuture.complete(context);
         }
@@ -62,11 +56,11 @@ public class DefaultFrameInitializer implements FrameInitializer {
     }
 
     CompletableFuture<FrameInitializationContext> run() {
-        performNextTask(true);
+        performNextTask();
         return completableFuture;
     }
 
-    private class InitializationTaskWrapper {
+    private static class InitializationTaskWrapper {
         InitializationTask step;
         boolean isAsync;
 

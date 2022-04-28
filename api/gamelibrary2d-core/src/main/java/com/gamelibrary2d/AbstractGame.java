@@ -29,10 +29,7 @@ import java.util.Deque;
 public abstract class AbstractGame extends AbstractDisposer implements Game {
 
     private final EventPublisher<Frame> frameChangedPublisher = new DefaultEventPublisher<>();
-    /**
-     * Queue for code that will be invoked after the current update.
-     */
-    private final Deque<Action> invokeLater;
+    private final DelayedActionMonitor delayedActionMonitor = new DelayedActionMonitor();
 
     /**
      * True whenever the game window has cursor focus, each index represents a pointer id.
@@ -75,7 +72,6 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
 
     protected AbstractGame(Framework framework) {
         Runtime.initialize(framework);
-        invokeLater = new ArrayDeque<>();
     }
 
     @Override
@@ -223,9 +219,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
             updating = false;
         }
 
-        while (!invokeLater.isEmpty()) {
-            invokeLater.pollFirst().perform();
-        }
+        delayedActionMonitor.run();
     }
 
     private void update(Frame frame, float deltaTime) {
@@ -299,7 +293,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
 
     @Override
     public void invokeLater(Action action) {
-        invokeLater.addLast(action);
+        delayedActionMonitor.add(action);
     }
 
     protected abstract void onStart() throws IOException;
@@ -392,6 +386,20 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         @Override
         public void onScroll(int id, float xOffset, float yOffset) {
 
+        }
+    }
+
+    private static class DelayedActionMonitor {
+        private final Deque<Action> actions = new ArrayDeque<>();
+
+        synchronized void add(Action action) {
+            actions.add(action);
+        }
+
+        synchronized void run() {
+            while (!actions.isEmpty()) {
+                actions.pollFirst().perform();
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractFrame extends AbstractLayer<Renderable> implements Frame {
-    private final Deque<Action> invokeLater = new ArrayDeque<>();
+    private final DelayedActionMonitor delayedActionMonitor = new DelayedActionMonitor();
     private final Deque<Updater> updaters = new ArrayDeque<>();
     private final DefaultDisposer disposer;
 
@@ -24,8 +24,8 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     private CompletableFuture<FrameInitializationContext> initializationContextFuture;
 
     @Override
-    public void invokeLater(Action runnable) {
-        invokeLater.addLast(runnable);
+    public void invokeLater(Action action) {
+        delayedActionMonitor.add(action);
     }
 
     @Override
@@ -63,7 +63,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     @Override
     public void end() {
         onEnd();
-        invokeLater.clear();
+        delayedActionMonitor.clear();
     }
 
     protected void initialize(FrameInitializer initializer) throws Throwable {
@@ -82,7 +82,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         disposer.dispose();
         disposer.clear();
         updaters.clear();
-        invokeLater.clear();
+        delayedActionMonitor.clear();
         initialized = false;
         requiresInitialization = true;
 
@@ -120,9 +120,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
 
     @Override
     protected void onUpdate(float deltaTime) {
-        while (!invokeLater.isEmpty()) {
-            invokeLater.pollFirst().perform();
-        }
+        delayedActionMonitor.run();
 
         if (initializationContextFuture != null) {
             tryCompleteInitialization();
@@ -165,4 +163,22 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     protected abstract void onEnd();
 
     protected abstract void onDispose();
+
+    private static class DelayedActionMonitor {
+        private final Deque<Action> actions = new ArrayDeque<>();
+
+        synchronized void add(Action action) {
+            actions.add(action);
+        }
+
+        synchronized void run() {
+            while (!actions.isEmpty()) {
+                actions.pollFirst().perform();
+            }
+        }
+
+        synchronized void clear() {
+            actions.clear();
+        }
+    }
 }
