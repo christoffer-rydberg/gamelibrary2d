@@ -29,6 +29,10 @@ public interface Layer<T extends Renderable>
 
     void setEnabled(boolean enabled);
 
+    boolean isUpdatesEnabled();
+
+    void setUpdatesEnabled(boolean enabled);
+
     /**
      * @return The comparator used to sort game objects before rendering.
      */

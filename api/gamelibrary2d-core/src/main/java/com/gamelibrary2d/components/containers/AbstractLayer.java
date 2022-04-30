@@ -23,6 +23,7 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
 
     private boolean autoClearing = true;
     private boolean enabled = true;
+    private boolean updatesEnabled = true;
     private float opacity = 1f;
 
     @Override
@@ -207,7 +208,7 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
 
     @Override
     public final void update(float deltaTime) {
-        if (isEnabled()) {
+        if (isEnabled() && isUpdatesEnabled()) {
             onUpdate(deltaTime);
         }
     }
@@ -219,12 +220,24 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         }
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    @Override
+    public boolean isUpdatesEnabled() {
+        return updatesEnabled;
+    }
+
+    @Override
+    public void setUpdatesEnabled(boolean updatesEnabled) {
+        this.updatesEnabled = updatesEnabled;
     }
 
     @Override

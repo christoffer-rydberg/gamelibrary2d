@@ -14,6 +14,7 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
     private final Point pointerProjection = new Point();
 
     private Rectangle bounds;
+    private boolean updatesEnabled = true;
 
     protected AbstractLayerObject() {
         layer = new BasicLayer<>();
@@ -115,7 +116,7 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
 
     @Override
     public final void update(float deltaTime) {
-        if (isEnabled()) {
+        if (isEnabled() && isUpdatesEnabled()) {
             onUpdate(deltaTime);
         }
     }
@@ -143,5 +144,15 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
             return ((Bounded) layer).getBounds();
         else
             return Rectangle.EMPTY;
+    }
+
+    @Override
+    public boolean isUpdatesEnabled() {
+        return updatesEnabled;
+    }
+
+    @Override
+    public void setUpdatesEnabled(boolean updatesEnabled) {
+        this.updatesEnabled = updatesEnabled;
     }
 }
