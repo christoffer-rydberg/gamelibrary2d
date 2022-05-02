@@ -9,13 +9,13 @@ import com.gamelibrary2d.common.io.Write;
 import com.gamelibrary2d.common.updating.UpdateLoop;
 import com.gamelibrary2d.demos.networkgame.server.DemoGameServer;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.ConnectionType;
-import com.gamelibrary2d.network.common.NetworkCommunicator;
 import com.gamelibrary2d.network.common.client.ClientSideCommunicator;
 import com.gamelibrary2d.network.common.client.LocalClientSideCommunicator;
 import com.gamelibrary2d.network.common.client.TcpConnectionSettings;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
-import com.gamelibrary2d.network.common.security.ClientHandshake;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.common.initialization.UdpConfiguration;
+import com.gamelibrary2d.network.common.security.ClientHandshakeConfiguration;
 import com.gamelibrary2d.network.common.server.DefaultLocalServer;
 import com.gamelibrary2d.network.common.server.DefaultNetworkServer;
 import com.gamelibrary2d.network.common.server.LocalServer;
@@ -28,7 +28,6 @@ import java.util.concurrent.Future;
 
 public class ServerManager implements Disposable {
     private final KeyPair keyPair;
-
     private Thread serverThread;
 
     private ServerManager(KeyPair keyPair) {
@@ -45,8 +44,8 @@ public class ServerManager implements Disposable {
         return startServer(this::createLocalServer);
     }
 
-    public Future<Communicator> hostNetworkServer(String host, int port, int localUdpPort) {
-        return startServer(() -> createNetworkServer(host, port, localUdpPort));
+    public Future<Communicator> hostNetworkServer(String host, int tcpPort) {
+        return startServer(() -> createNetworkServer(host, tcpPort));
     }
 
     public void stopHostedServer() {
@@ -60,10 +59,16 @@ public class ServerManager implements Disposable {
         }
     }
 
-    public Future<Communicator> connectToServer(String host, int port, int localUpdPort) {
+    public Future<Communicator> connectToServer(String host, int tcpPort) {
         return ClientSideCommunicator.connect(
-                new TcpConnectionSettings(host, port),
-                steps -> authenticate(steps, localUpdPort));
+                new TcpConnectionSettings(host, tcpPort),
+                this::configureAuthentication);
+    }
+
+    private void configureAuthentication(CommunicatorInitializer initializer) {
+        initializer.addConfig(new ClientHandshakeConfiguration());
+        initializer.addProducer(this::sendPassword);
+        initializer.addConfig(new UdpConfiguration());
     }
 
     private Future<Communicator> connectToLocalServer(LocalServer server) {
@@ -83,14 +88,14 @@ public class ServerManager implements Disposable {
         }
     }
 
-    private ServerResult createNetworkServer(String hostname, int port, int localUpdPort) {
-        DefaultNetworkServer server = new DefaultNetworkServer(hostname, port, s -> new DemoGameServer(s, keyPair));
+    private ServerResult createNetworkServer(String hostname, int tcpPort) {
+        DefaultNetworkServer server = new DefaultNetworkServer(hostname, tcpPort, s -> new DemoGameServer(s, keyPair));
 
         try {
             server.start();
             server.listenForConnections(true);
             return new ServerResult(server, () -> {
-                Future<Communicator> comFuture = connectToServer(hostname, port, localUpdPort);
+                Future<Communicator> comFuture = connectToServer(hostname, tcpPort);
                 return new ResultHandlingFuture<>(
                         comFuture,
                         com -> {
@@ -110,14 +115,8 @@ public class ServerManager implements Disposable {
         }
     }
 
-    private void authenticate(CommunicationSteps steps, int localUpdPort) {
-        ClientHandshake clientHandshake = new ClientHandshake();
-        clientHandshake.configure(steps);
-        steps.add((__, com) -> com.writeEncrypted(b -> Write.textWithSizeHeader("serverPassword123", b)));
-        steps.add((__, com) -> {
-            ((NetworkCommunicator) com).enableUdp(ConnectionType.READ, localUpdPort, 0);
-            com.writeEncrypted(b -> b.putInt(localUpdPort));
-        });
+    private void sendPassword(CommunicatorInitializationContext ctx, Communicator com) throws IOException {
+        com.writeEncrypted(b -> Write.textWithSizeHeader("serverPassword123", b));
     }
 
     private Future<Communicator> startServer(Factory<ServerResult> serverFactory) {

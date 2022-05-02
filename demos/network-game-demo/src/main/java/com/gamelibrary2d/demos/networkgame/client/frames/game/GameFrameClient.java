@@ -1,5 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
+import com.gamelibrary2d.common.functional.Factory;
 import com.gamelibrary2d.common.io.BitParser;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
@@ -8,13 +9,12 @@ import com.gamelibrary2d.demos.networkgame.common.*;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.client.AbstractClient;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
-import com.gamelibrary2d.network.common.initialization.CommunicationContext;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import static com.gamelibrary2d.demos.networkgame.common.ServerMessages.*;
 
@@ -22,9 +22,10 @@ public class GameFrameClient extends AbstractClient {
     private final GameFrame frame;
     private final ControllerFactory controllerFactory;
     private final BitParser bitParser = new BitParser();
-    private final Map<Integer, ClientObject> objects = new HashMap<>();
-
+    private State state;
+    private GameSettings gameSettings;
     private float serverUpdatesPerSecond;
+    private Factory<Future<Communicator>> communicatorFactory;
 
     public GameFrameClient(GameFrame frame, ControllerFactory controllerFactory) {
         this.frame = frame;
@@ -32,28 +33,44 @@ public class GameFrameClient extends AbstractClient {
     }
 
     @Override
-    public void onConfigureInitialization(CommunicationSteps steps) {
-        steps.read("updateRate", DataBuffer::getFloat);
-        steps.read(GameSettings.class, GameSettings::new);
-        steps.add(this::requestPlayers);
-        steps.add(this::readState);
-    }
-
-    private void requestPlayers(CommunicationContext context, Communicator communicator) {
-        communicator.getOutgoing().putInt(1);
-    }
-
-    private boolean readState(CommunicationContext context, Communicator communicator, DataBuffer buffer) {
-        context.register(InitialState.class, new InitialState(buffer));
-        return true;
+    protected Future<Communicator> connectCommunicator() {
+        return communicatorFactory.create();
     }
 
     @Override
-    protected void onInitialized(CommunicationContext context, Communicator communicator) {
+    protected void initialize(CommunicatorInitializer initializer) {
+        initializer.addConsumer((ctx, com, inbox) -> {
+            serverUpdatesPerSecond = inbox.getFloat();
+            return true;
+        });
+
+        initializer.addConsumer((ctx, com, inbox) -> {
+            this.gameSettings = new GameSettings(inbox);
+            return true;
+        });
+
+        initializer.addProducer(this::requestPlayers);
+        initializer.addConsumer(this::readState);
+        initializer.addProducer(this::onInitialized);
+    }
+
+    private void requestPlayers(CommunicatorInitializationContext context, Communicator communicator) {
+        communicator.getOutgoing().putInt(1);
+    }
+
+    private boolean readState(CommunicatorInitializationContext context, Communicator communicator, DataBuffer buffer) {
+        this.state = new State(buffer);
+        return true;
+    }
+
+    private void onInitialized(CommunicatorInitializationContext context, Communicator communicator) {
         communicator.addDisconnectedListener(this::onDisconnected);
-        serverUpdatesPerSecond = context.get(Float.class, "updateRate");
-        frame.applySettings(context.get(GameSettings.class));
-        addObjects(context.get(InitialState.class).getObjects());
+        frame.invokeLater(() -> {
+            frame.applySettings(gameSettings);
+            for (ClientObject obj : state.getObjects().values()) {
+                frame.spawn(obj);
+            }
+        });
     }
 
     private void onDisconnected(CommunicatorDisconnectedEvent event) {
@@ -90,12 +107,12 @@ public class GameFrameClient extends AbstractClient {
     }
 
     private void gameOver() {
-        objects.clear();
+        state.objects.clear();
         frame.gameOver();
     }
 
     private void gameEnded() {
-        objects.clear();
+        state.clear();
         frame.gameEnded();
     }
 
@@ -118,19 +135,13 @@ public class GameFrameClient extends AbstractClient {
     }
 
     private void destroy(int id) {
-        ClientObject obj = objects.remove(id);
+        ClientObject obj = state.getObjects().remove(id);
         frame.destroy(obj);
     }
 
     private void spawn(ClientObject obj) {
-        objects.put(obj.getId(), obj);
+        state.getObjects().put(obj.getId(), obj);
         frame.spawn(obj);
-    }
-
-    private <T extends ClientObject> void addObjects(List<T> objects) {
-        for (ClientObject obj : objects) {
-            spawn(obj);
-        }
     }
 
     private void update(DataBuffer buffer) {
@@ -161,7 +172,7 @@ public class GameFrameClient extends AbstractClient {
                     : 0f;
 
             float direction = bitParser.getInt(NetworkConstants.DIRECTION_BIT_SIZE);
-            ClientObject obj = objects.get(id);
+            ClientObject obj = state.getObjects().get(id);
             if (obj != null) {
                 obj.setAccelerating(isAccelerating);
                 obj.setGoalPosition(x, y);
@@ -185,20 +196,28 @@ public class GameFrameClient extends AbstractClient {
         getCommunicator().getOutgoing().put(ClientMessages.PLAY_AGAIN);
     }
 
-    private class InitialState {
-        private final List<ClientObject> objects;
+    public void setCommunicatorFactory(Factory<Future<Communicator>> communicatorFactory) {
+        this.communicatorFactory = communicatorFactory;
+    }
 
-        InitialState(DataBuffer buffer) {
+    private class State {
+        private final Map<Integer, ClientObject> objects;
+
+        State(DataBuffer buffer) {
             int size = buffer.getInt();
-            objects = new ArrayList<>(size);
+            objects = new HashMap<>(size);
             for (int i = 0; i < size; ++i) {
                 ClientObject obj = readObject(buffer.get(), buffer);
-                objects.add(obj);
+                objects.put(obj.getId(), obj);
             }
         }
 
-        List<ClientObject> getObjects() {
+        Map<Integer, ClientObject> getObjects() {
             return objects;
+        }
+
+        public void clear() {
+            objects.clear();
         }
     }
 }

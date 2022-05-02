@@ -3,8 +3,8 @@ package com.gamelibrary2d.network.common.server;
 import com.gamelibrary2d.common.functional.Func;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.initialization.CommunicationContext;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 public class DefaultLocalServer extends AbstractLocalServer {
     private final Func<Server, ServerContext> serverContextFactory;
@@ -27,12 +27,12 @@ public class DefaultLocalServer extends AbstractLocalServer {
     }
 
     @Override
-    public void configureClientAuthentication(CommunicationSteps steps) {
-        serverContext.configureClientAuthentication(steps);
+    public void configureClientAuthentication(CommunicatorInitializer initializer) {
+        serverContext.configureClientAuthentication(initializer);
     }
 
     @Override
-    protected void onClientAuthenticated(CommunicationContext context, Communicator communicator) {
+    protected void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
         serverContext.onClientAuthenticated(context, communicator);
     }
 
@@ -49,12 +49,12 @@ public class DefaultLocalServer extends AbstractLocalServer {
     }
 
     @Override
-    protected void configureClientInitialization(CommunicationSteps steps) {
-        serverContext.configureClientInitialization(steps);
+    protected void initializeClient(CommunicatorInitializer initializer) {
+        serverContext.configureClientInitialization(initializer);
     }
 
     @Override
-    protected void onClientInitialized(CommunicationContext context, Communicator communicator) {
+    protected void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
         serverContext.onClientInitialized(context, communicator);
     }
 

@@ -4,39 +4,48 @@ import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.updating.UpdateLoop;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.client.AbstractClient;
-import com.gamelibrary2d.network.common.client.CommunicatorFactory;
+import com.gamelibrary2d.network.common.client.ClientSideCommunicator;
+import com.gamelibrary2d.network.common.client.TcpConnectionSettings;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
-import com.gamelibrary2d.network.common.exceptions.NetworkAuthenticationException;
-import com.gamelibrary2d.network.common.exceptions.NetworkConnectionException;
-import com.gamelibrary2d.network.common.exceptions.NetworkInitializationException;
-import com.gamelibrary2d.network.common.initialization.CommunicationContext;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
+import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
+import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
+import com.gamelibrary2d.network.common.exceptions.ConnectionException;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Future;
 
 public class DemoClient extends AbstractClient {
     private final UpdateLoop updateLoop;
-
     private volatile boolean disconnected;
 
     DemoClient() {
         updateLoop = new UpdateLoop(this::update, 10);
     }
 
-    void run(CommunicatorFactory communicatorFactory) {
+    @Override
+    protected Future<Communicator> connectCommunicator() {
+        TcpConnectionSettings connectionSettings = new TcpConnectionSettings(
+                "localhost",
+                4444);
+
+        return ClientSideCommunicator.connect(connectionSettings);
+    }
+
+    void run() {
         try {
-            setCommunicatorFactory(communicatorFactory);
-            CommunicationContext context = initialize();
-            initialized(context);
-        } catch (NetworkConnectionException e) {
-            System.err.println("Failed to connect client");
+            connect();
+            getCommunicator().addDisconnectedListener(this::onDisconnected);
+            sendMessage("What do you call a guy with a rubber toe?");
+        } catch (ConnectionException e) {
+            System.err.println("Failed to connect communicator");
             e.printStackTrace();
             return;
-        } catch (NetworkAuthenticationException e) {
+        } catch (ClientAuthenticationException e) {
             System.err.println("Failed to authenticate client");
             e.printStackTrace();
             return;
-        } catch (NetworkInitializationException e) {
+        } catch (ClientInitializationException e) {
             System.err.println("Failed to initialize client");
             e.printStackTrace();
             return;
@@ -45,12 +54,13 @@ public class DemoClient extends AbstractClient {
         updateLoop.run();
     }
 
-    @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
+    private void update(float deltaTime) {
         if (disconnected) {
-            readMessages(); // Read and handle any last messages
+            readIncoming(); // Read and handle any last messages
             updateLoop.stop();
+        } else {
+            readIncoming();
+            sendOutgoing();
         }
     }
 
@@ -62,7 +72,7 @@ public class DemoClient extends AbstractClient {
     }
 
     @Override
-    protected void onConfigureInitialization(CommunicationSteps steps) {
+    protected void initialize(CommunicatorInitializer initializer) {
 
     }
 
@@ -72,14 +82,8 @@ public class DemoClient extends AbstractClient {
         byte[] bytes = new byte[length];
         buffer.get(bytes, 0, length);
         String message = new String(bytes, StandardCharsets.UTF_8);
-        System.out.println(String.format("Server: %s", message));
+        System.out.printf("Server: %s%n", message);
         sendMessage("Roberto.");
-    }
-
-    @Override
-    protected void onInitialized(CommunicationContext context, Communicator communicator) {
-        communicator.addDisconnectedListener(this::onDisconnected);
-        sendMessage("What do you call a guy with a rubber toe?");
     }
 
     private void onDisconnected(CommunicatorDisconnectedEvent event) {

@@ -135,12 +135,12 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
 
     @Override
     public final boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        return isEnabled() ? onPointerDown(id, button, x, y, projectedX, projectedY) : false;
+        return isEnabled() && onPointerDown(id, button, x, y, projectedX, projectedY);
     }
 
     @Override
     public final boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
-        return isEnabled() ? onPointerMove(id, x, y, projectedX, projectedY) : false;
+        return isEnabled() && onPointerMove(id, x, y, projectedX, projectedY);
     }
 
     @Override
@@ -209,11 +209,11 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     @Override
     public final void update(float deltaTime) {
         if (isEnabled() && isUpdatesEnabled()) {
-            onUpdate(deltaTime);
+            handleUpdate(deltaTime);
         }
     }
 
-    protected void onUpdate(float deltaTime) {
+    protected void handleUpdate(float deltaTime) {
         int size = updatableObjects.size();
         for (int i = 0; i < size; ++i) {
             updatableObjects.get(i).update(deltaTime);

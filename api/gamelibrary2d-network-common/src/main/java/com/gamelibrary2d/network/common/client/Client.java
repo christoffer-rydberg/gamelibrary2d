@@ -1,41 +1,33 @@
 package com.gamelibrary2d.network.common.client;
 
-import com.gamelibrary2d.common.updating.UpdateAction;
+import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.exceptions.NetworkAuthenticationException;
-import com.gamelibrary2d.network.common.exceptions.NetworkConnectionException;
-import com.gamelibrary2d.network.common.exceptions.NetworkInitializationException;
-import com.gamelibrary2d.network.common.initialization.CommunicationContext;
+import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
+import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
+import com.gamelibrary2d.network.common.exceptions.ConnectionException;
 
 public interface Client {
 
     /**
-     * @return The client communicator, or null if the client has not been initialized.
+     * Connects the client.
+     *
+     * @throws ConnectionException           Failed to connect the {@link Communicator}.
+     * @throws ClientAuthenticationException Client authentication failed.
+     * @throws ClientInitializationException Client initialization failed.
+     */
+    void connect() throws ConnectionException, ClientAuthenticationException, ClientInitializationException;
+
+    /**
+     * @return The client's {@link Communicator}, or null if the client hasn't been {@link #connect connected}.
      */
     Communicator getCommunicator();
 
     /**
-     * Sets a {@link CommunicatorFactory} used when connecting the client.
+     * @return The {@link Communicator#getOutgoing() outgoing buffer} of the {@link #getCommunicator client communicator}.
      */
-    void setCommunicatorFactory(CommunicatorFactory communicatorFactory);
-
-    /**
-     * Connects, authenticates and initializes the client.
-     * This method can be invoked from an arbitrary thread, and when it has finished, {@link #initialized} should
-     * be invoked from the main thread.
-     */
-    CommunicationContext initialize()
-            throws NetworkConnectionException, NetworkAuthenticationException, NetworkInitializationException;
-
-    /**
-     * Invoked from the main thread when the client has been {@link #initialize initialized).
-     */
-    void initialized(CommunicationContext context);
-
-    /**
-     * Checks if the client is connected.
-     */
-    boolean isConnected();
+    default DataBuffer getOutgoing() {
+        return getCommunicator().getOutgoing();
+    }
 
     /**
      * Disconnects the client.
@@ -43,22 +35,17 @@ public interface Client {
     void disconnect();
 
     /**
-     * Updates the client.
-     *
-     * @param deltaTime Time since last update in seconds.
+     * @return True if the client is connected.
      */
-    void update(float deltaTime);
+    boolean isConnected();
 
     /**
-     * Updates the client with the specified update action.
-     *
-     * @param deltaTime Time since last update in seconds.
-     * @param onUpdate  Time update action.
+     * Attempts to read incoming messages from the {@link #getCommunicator client communicator}.
      */
-    void update(float deltaTime, UpdateAction onUpdate);
+    void readIncoming();
 
     /**
-     * Clears all received data.
+     * Attempts to send outgoing messages of the {@link #getCommunicator client communicator}.
      */
-    void clearInbox();
+    void sendOutgoing();
 }

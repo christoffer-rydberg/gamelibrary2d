@@ -1,8 +1,6 @@
 package com.gamelibrary2d.demos.network;
 
 import com.gamelibrary2d.common.updating.UpdateLoop;
-import com.gamelibrary2d.network.common.client.ClientSideCommunicator;
-import com.gamelibrary2d.network.common.client.TcpConnectionSettings;
 
 import java.io.IOException;
 
@@ -35,9 +33,7 @@ public class NetworkDemo {
             DemoClient client = new DemoClient();
 
             // Run update loop that will send outgoing messages and listen for incoming messages once connected (blocking).
-            client.run(() -> ClientSideCommunicator.connect(
-                    new TcpConnectionSettings("localhost", 4444)
-            ));
+            client.run();
         });
         thread.start();
         return thread;

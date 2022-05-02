@@ -8,7 +8,7 @@ public abstract class AbstractLocalServer extends InternalAbstractServer impleme
 
     @Override
     public void connectCommunicator(Communicator communicator) {
-        super.addConnectedCommunicator(communicator);
+        super.addPendingCommunicator(communicator);
         this.communicator = communicator;
     }
 

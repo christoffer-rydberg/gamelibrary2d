@@ -3,7 +3,7 @@ package com.gamelibrary2d.network.common;
 import com.gamelibrary2d.common.functional.ParameterizedAction;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedListener;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.network.common.security.EncryptionReader;
 import com.gamelibrary2d.network.common.security.EncryptionWriter;
 
@@ -68,9 +68,9 @@ public interface Communicator {
     void sendOutgoing() throws IOException;
 
     /**
-     * Reallocates the outgoing buffer.
+     * Clears the {@link #getOutgoing() outgoing buffer}.
      */
-    void reallocateOutgoing();
+    void clearOutgoing();
 
     /**
      * Sends the content of the specified buffer.
@@ -90,9 +90,9 @@ public interface Communicator {
     void removeDisconnectedListener(CommunicatorDisconnectedListener listener);
 
     /**
-     * Configures authentication steps.
+     * Configures authentication tasks.
      */
-    void configureAuthentication(CommunicationSteps steps);
+    void configureAuthentication(CommunicatorInitializer initializer);
 
     /**
      * @return True if the communicator has been authenticated, false otherwise.

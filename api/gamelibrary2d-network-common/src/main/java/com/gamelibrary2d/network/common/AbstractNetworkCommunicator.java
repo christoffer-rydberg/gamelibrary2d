@@ -3,6 +3,7 @@ package com.gamelibrary2d.network.common;
 import com.gamelibrary2d.common.io.DataBuffer;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SocketChannel;
 
@@ -62,11 +63,20 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
         networkService.send(socketChannel, buffer);
     }
 
-
     @Override
     public void sendUpdate(DataBuffer buffer) throws IOException {
-        if (udpConnection != null && udpConnection.connectionType != ConnectionType.READ) {
-            getNetworkService().send(udpConnection.channel, buffer);
+        if (udpConnection != null) {
+            switch (udpConnection.connectionType) {
+                case WRITE:
+                case READ_WRITE:
+                    getNetworkService().send(udpConnection.channel, buffer);
+                    break;
+                case READ:
+                    super.sendUpdate(buffer);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown UDP connection type: " + udpConnection.connectionType);
+            }
         } else {
             super.sendUpdate(buffer);
         }
@@ -81,23 +91,38 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
     }
 
     @Override
-    public void enableUdp(ConnectionType connectionType, int localPort, int hostPort) throws IOException {
+    public int enableUdp(ConnectionType connectionType, int localPort) throws IOException {
         if (!isConnected()) {
             throw new IOException("Communicator is not connected");
         }
 
         disableUdp();
 
-        DatagramChannel channel = networkService.openDatagramChannel(this, connectionType,
-                this::onDatagramChannelDisconnected, localPort, hostPort);
-
+        DatagramChannel channel = DatagramChannel.open();
+        channel.bind(new InetSocketAddress(localPort));
+        InetSocketAddress socketAddress = (InetSocketAddress) channel.getLocalAddress();
         this.udpConnection = new UdpConnection(channel, connectionType);
+        return socketAddress.getPort();
+    }
+
+    @Override
+    public void connectUdp(int hostPort) throws IOException {
+        if (udpConnection == null) {
+            throw new IOException("UDP has not been enabled");
+        }
+
+        networkService.connect(
+                this.udpConnection.channel,
+                this,
+                this.udpConnection.connectionType,
+                hostPort,
+                this::onDatagramChannelDisconnected);
     }
 
     @Override
     public void disableUdp() {
-        if (this.udpConnection != null) {
-            UdpConnection connection = this.udpConnection;
+        UdpConnection connection = this.udpConnection;
+        if (connection != null) {
             this.udpConnection = null;
             networkService.disconnect(connection.channel);
         }
@@ -107,7 +132,7 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
         return socketChannel != null;
     }
 
-    private class UdpConnection {
+    private static class UdpConnection {
         private final DatagramChannel channel;
         private final ConnectionType connectionType;
 

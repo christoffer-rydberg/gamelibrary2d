@@ -16,12 +16,6 @@
     <dependencies>
         <dependency>
             <groupId>com.gamelibrary2d</groupId>
-            <artifactId>gamelibrary2d-core</artifactId>
-            <version>0.12.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.gamelibrary2d</groupId>
             <artifactId>gamelibrary2d-network-common</artifactId>
             <version>0.12.0</version>
             <scope>compile</scope>

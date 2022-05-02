@@ -149,12 +149,10 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
 
         InputField ipField = createInputField(ip);
         InputField tcpField = createInputField("4444");
-        InputField udpField = createInputField("4444");
         stack(panel, ipField);
         stack(panel, tcpField);
-        stack(panel, udpField);
         stack(panel, createButton("Start game", b ->
-                game.hostNetworkGame(ipField.getStringValue(), tcpField.getIntValue(), udpField.getIntValue())));
+                game.hostNetworkGame(ipField.getStringValue(), tcpField.getIntValue())));
         stack(panel, createButton("Go back", b -> navigationPanel.goBack()));
         centerPanel(panel);
         return panel;
@@ -165,16 +163,14 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
 
         InputField ipField = createInputField("192.168.0.32");
         InputField tcpField = createInputField("4444");
-        InputField udpField = createInputField("4444");
 
         Button startButton = createButton("Start game",
-                b -> game.joinNetworkGame(ipField.getStringValue(), tcpField.getIntValue(), udpField.getIntValue()));
+                b -> game.joinNetworkGame(ipField.getStringValue(), tcpField.getIntValue()));
 
         Button backButton = createButton("Go back", b -> navigationPanel.goBack());
 
         stack(panel, ipField);
         stack(panel, tcpField);
-        stack(panel, udpField);
         stack(panel, startButton);
         stack(panel, backButton);
         centerPanel(panel);

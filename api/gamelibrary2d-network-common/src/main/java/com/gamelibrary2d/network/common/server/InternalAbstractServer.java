@@ -9,11 +9,9 @@ import com.gamelibrary2d.network.common.Message;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedListener;
 import com.gamelibrary2d.network.common.initialization.*;
-import com.gamelibrary2d.network.common.internal.CommunicationStep;
-import com.gamelibrary2d.network.common.internal.CommunicatorInitializer;
-import com.gamelibrary2d.network.common.internal.CommunicatorInitializer.InitializationResult;
-import com.gamelibrary2d.network.common.internal.ConditionalCommunicationStep;
-import com.gamelibrary2d.network.common.internal.DefaultCommunicationSteps;
+import com.gamelibrary2d.network.common.server.InternalInitializationTaskManager.InitializationTaskResult;
+import com.gamelibrary2d.network.common.initialization.ConditionalInitializationTask;
+import com.gamelibrary2d.network.common.initialization.InitializationTask;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -40,18 +38,18 @@ abstract class InternalAbstractServer implements Server {
         pendingCommunicators = new ArrayList<>();
     }
 
-    void addConnectedCommunicator(Communicator communicator) {
-        DefaultCommunicationSteps steps = new DefaultCommunicationSteps();
-        steps.add((__, com) -> writeIdentifier(com, communicatorIdFactory));
-        steps.add(this::connectedStep);
-        communicator.configureAuthentication(steps);
-        steps.add(this::authenticatedStep);
-        configureClientInitialization(steps);
+    void addPendingCommunicator(Communicator communicator) {
+        InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
+        initializer.addProducer((__, com) -> writeIdentifier(com, communicatorIdFactory));
+        initializer.addProducer(this::connectedTask);
+        communicator.configureAuthentication(initializer);
+        initializer.addProducer(this::authenticatedTask);
+        initializeClient(initializer);
 
         pendingCommunicators.add(new PendingCommunicator(
                 communicator,
-                new DefaultCommunicationContext(),
-                new CommunicatorInitializer(steps.getAll())));
+                new CommunicatorInitializationContext(),
+                new InternalInitializationTaskManager(initializer.getAll())));
 
         communicator.addDisconnectedListener(disconnectedEventListener);
     }
@@ -62,30 +60,29 @@ abstract class InternalAbstractServer implements Server {
         communicator.getOutgoing().putInt(id);
     }
 
-    private void connectedStep(CommunicationContext context, Communicator communicator) {
+    private void connectedTask(CommunicatorInitializationContext context, Communicator communicator) {
         onConnected(communicator);
     }
 
-    private void authenticatedStep(CommunicationContext context, Communicator communicator) {
+    private void authenticatedTask(CommunicatorInitializationContext context, Communicator communicator) {
         communicator.setAuthenticated();
         onClientAuthenticated(context, communicator);
     }
 
-    @Override
-    public void deinitialize(Communicator communicator) {
+    protected void reinitialize(Communicator communicator) {
         communicators.remove(communicator);
-        DefaultCommunicationSteps steps = new DefaultCommunicationSteps();
+        InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
         try {
-            configureClientInitialization(steps);
+            initializeClient(initializer);
         } finally {
             pendingCommunicators.add(new PendingCommunicator(
                     communicator,
-                    new DefaultCommunicationContext(),
-                    new CommunicatorInitializer(steps.getAll())));
+                    new CommunicatorInitializationContext(),
+                    new InternalInitializationTaskManager(initializer.getAll())));
         }
     }
 
-    private void initialized(CommunicationContext context, Communicator communicator) {
+    private void initialized(CommunicatorInitializationContext context, Communicator communicator) {
         removePending(communicator);
         communicators.add(communicator);
         communicator.setAuthenticated();
@@ -152,44 +149,44 @@ abstract class InternalAbstractServer implements Server {
         for (int i = pendingCommunicators.size() - 1; i >= 0; --i) {
             PendingCommunicator pending = pendingCommunicators.get(i);
             try {
-                runCommunicationSteps(pending.communicator, pending.context, pending.initializer);
+                runInitializationTasks(pending.communicator, pending.context, pending.initializer);
             } catch (IOException e) {
                 pending.communicator.disconnect(e);
             }
         }
     }
 
-    private void runCommunicationSteps(Communicator communicator, CommunicationContext context, CommunicatorInitializer initializer)
+    private void runInitializationTasks(Communicator communicator, CommunicatorInitializationContext context, InternalInitializationTaskManager initializer)
             throws IOException {
-        InitializationResult result;
+        InitializationTaskResult result;
         do {
-            result = initializer.runCommunicationStep(context, communicator, this::runCommunicationStep);
-            if (result == InitializationResult.AWAITING_DATA && communicator.readIncoming(incomingBuffer)) {
-                result = initializer.runCommunicationStep(context, communicator, this::runCommunicationStep);
+            result = initializer.runTask(context, communicator, this::runInitializationTask);
+            if (result == InitializationTaskResult.AWAITING_DATA && communicator.readIncoming(incomingBuffer)) {
+                result = initializer.runTask(context, communicator, this::runInitializationTask);
             }
-        } while (result == InitializationResult.PENDING);
+        } while (result == InitializationTaskResult.PENDING);
 
-        if (result == InitializationResult.FINISHED) {
+        if (result == InitializationTaskResult.FINISHED) {
             initialized(context, communicator);
             handleMessages(communicator);
         }
     }
 
-    private boolean runCommunicationStep(CommunicationContext context, Communicator communicator,
-                                         ConditionalCommunicationStep conditionalStep) throws IOException {
-        if (!conditionalStep.condition.evaluate(context, communicator)) {
+    private boolean runInitializationTask(CommunicatorInitializationContext context, Communicator communicator,
+                                      ConditionalInitializationTask conditionalTask) throws IOException {
+        if (!conditionalTask.condition.evaluate(context, communicator)) {
             return true;
         }
 
-        CommunicationStep step = conditionalStep.step;
-        if (step instanceof ConsumerStep) {
+        InitializationTask task = conditionalTask.task;
+        if (task instanceof ConsumerTask) {
             while (true) {
                 int remaining = incomingBuffer.remaining();
                 if (remaining <= 0) {
                     return false;
                 }
 
-                boolean hasCompleted = ((ConsumerStep) step).run(context, communicator, incomingBuffer);
+                boolean hasCompleted = ((ConsumerTask) task).run(context, communicator, incomingBuffer);
                 if (hasCompleted) {
                     return true;
                 }
@@ -198,11 +195,11 @@ abstract class InternalAbstractServer implements Server {
                     throw new IOException("Unexpected message");
                 }
             }
-        } else if (step instanceof ProducerStep) {
-            ((ProducerStep) step).run(context, communicator);
+        } else if (task instanceof ProducerTask) {
+            ((ProducerTask) task).run(context, communicator);
             return true;
         } else {
-            throw new IOException("Unknown communication step");
+            throw new IOException("Unknown  task");
         }
     }
 
@@ -390,11 +387,11 @@ abstract class InternalAbstractServer implements Server {
 
     protected abstract void onConnected(Communicator communicator);
 
-    protected abstract void configureClientInitialization(CommunicationSteps steps);
+    protected abstract void initializeClient(CommunicatorInitializer initializer);
 
-    protected abstract void onClientAuthenticated(CommunicationContext context, Communicator communicator);
+    protected abstract void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator);
 
-    protected abstract void onClientInitialized(CommunicationContext context, Communicator communicator);
+    protected abstract void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator);
 
     protected abstract void onDisconnected(Communicator communicator, boolean pending);
 
@@ -416,10 +413,10 @@ abstract class InternalAbstractServer implements Server {
 
     private static class PendingCommunicator {
         final Communicator communicator;
-        final CommunicationContext context;
-        final CommunicatorInitializer initializer;
+        final CommunicatorInitializationContext context;
+        final InternalInitializationTaskManager initializer;
 
-        PendingCommunicator(Communicator communicator, CommunicationContext context, CommunicatorInitializer initializer) {
+        PendingCommunicator(Communicator communicator, CommunicatorInitializationContext context, InternalInitializationTaskManager initializer) {
             this.communicator = communicator;
             this.context = context;
             this.initializer = initializer;

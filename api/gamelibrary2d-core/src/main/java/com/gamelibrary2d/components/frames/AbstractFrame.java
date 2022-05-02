@@ -8,6 +8,7 @@ import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.components.containers.AbstractLayer;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.updaters.Updater;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.CompletableFuture;
@@ -23,6 +24,10 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     private Color backgroundColor = Color.BLACK;
     private CompletableFuture<FrameInitializationContext> initializationContextFuture;
 
+    protected AbstractFrame(Disposer parentDisposer) {
+        this.disposer = new DefaultDisposer(parentDisposer);
+    }
+
     @Override
     public void invokeLater(Action action) {
         delayedActionMonitor.add(action);
@@ -33,16 +38,14 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         disposer.registerDisposal(disposable);
     }
 
-    protected AbstractFrame(Disposer parentDisposer) {
-        this.disposer = new DefaultDisposer(parentDisposer);
-    }
-
     @Override
     public void begin() {
         if (requiresInitialization) {
             requiresInitialization = false;
 
-            DefaultFrameInitializer frameInitializer = new DefaultFrameInitializer(this);
+            delayedActionMonitor.clear();
+
+            FrameInitializer frameInitializer = new FrameInitializer(this);
 
             try {
                 initialize(frameInitializer);
@@ -64,10 +67,6 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     public void end() {
         onEnd();
         delayedActionMonitor.clear();
-    }
-
-    protected void initialize(FrameInitializer initializer) throws Throwable {
-        onInitialize(initializer);
     }
 
     @Override
@@ -119,14 +118,18 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     }
 
     @Override
-    protected void onUpdate(float deltaTime) {
+    protected final void handleUpdate(float deltaTime) {
         delayedActionMonitor.run();
 
         if (initializationContextFuture != null) {
             tryCompleteInitialization();
         }
 
-        super.onUpdate(deltaTime);
+        onUpdate(deltaTime);
+    }
+
+    protected void onUpdate(float deltaTime) {
+        super.handleUpdate(deltaTime);
 
         for (int i = 0; i < updaters.size(); ++i) {
             Updater updater = updaters.pollFirst();
@@ -154,8 +157,14 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         return initialized;
     }
 
-    protected abstract void onInitialize(FrameInitializer initializer) throws Throwable;
+    protected abstract void initialize(FrameInitializer initializer) throws Throwable;
 
+    /**
+     * Invoked when all initialization tasks of the {@link FrameInitializer} has completed.
+     *
+     * @param context The context from the initialization pipeline.
+     * @param error   The exception, in case of failed initialization, otherwise null.
+     */
     protected abstract void onInitialized(FrameInitializationContext context, Throwable error);
 
     protected abstract void onBegin();

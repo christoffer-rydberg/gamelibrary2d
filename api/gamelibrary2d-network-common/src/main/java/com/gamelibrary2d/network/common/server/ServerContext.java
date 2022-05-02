@@ -2,8 +2,8 @@ package com.gamelibrary2d.network.common.server;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.initialization.CommunicationContext;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 public interface ServerContext {
 
@@ -17,13 +17,13 @@ public interface ServerContext {
 
     void onConnected(Communicator communicator);
 
-    void configureClientAuthentication(CommunicationSteps steps);
+    void configureClientAuthentication(CommunicatorInitializer initializer);
 
-    void configureClientInitialization(CommunicationSteps steps);
+    void configureClientInitialization(CommunicatorInitializer initializer);
 
-    void onClientAuthenticated(CommunicationContext context, Communicator communicator);
+    void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator);
 
-    void onClientInitialized(CommunicationContext context, Communicator communicator);
+    void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator);
 
     void update(float deltaTime);
 

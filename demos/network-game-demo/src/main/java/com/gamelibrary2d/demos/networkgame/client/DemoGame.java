@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
 import com.gamelibrary2d.AbstractGame;
+import com.gamelibrary2d.common.functional.Factory;
 import com.gamelibrary2d.demos.networkgame.client.frames.SplashFrame;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrame;
 import com.gamelibrary2d.demos.networkgame.client.frames.menu.MenuFrame;
@@ -13,13 +14,14 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Textures;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
 import com.gamelibrary2d.demos.networkgame.client.urls.Music;
 import com.gamelibrary2d.framework.Framework;
-import com.gamelibrary2d.network.common.client.CommunicatorFactory;
+import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundManager;
 import com.gamelibrary2d.sound.SoundPlayer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.Future;
 
 public class DemoGame extends AbstractGame {
     private final ControllerFactory controllerFactory;
@@ -47,7 +49,7 @@ public class DemoGame extends AbstractGame {
         setFrame(menuFrame);
     }
 
-    private void loadDemoFrame(CommunicatorFactory communicatorFactory) {
+    private void startGame(Factory<Future<Communicator>> communicatorFactory) {
         gameFrame.getClient().setCommunicatorFactory(communicatorFactory);
         setFrame(gameFrame);
     }
@@ -61,15 +63,15 @@ public class DemoGame extends AbstractGame {
     }
 
     public void startLocalGame() {
-        loadDemoFrame(serverManager::hostLocalServer);
+        startGame(serverManager::hostLocalServer);
     }
 
-    public void hostNetworkGame(String host, int port, int localUdpPort) {
-        loadDemoFrame(() -> serverManager.hostNetworkServer(host, port, localUdpPort));
+    public void hostNetworkGame(String host, int port) {
+        startGame(() -> serverManager.hostNetworkServer(host, port));
     }
 
-    public void joinNetworkGame(String host, int port, int localUdpPort) {
-        loadDemoFrame(() -> serverManager.connectToServer(host, port, localUdpPort));
+    public void joinNetworkGame(String host, int port) {
+        startGame(() -> serverManager.connectToServer(host, port));
     }
 
     private void showSplashScreen() {
@@ -114,7 +116,7 @@ public class DemoGame extends AbstractGame {
 
     @Override
     protected void onExit() {
-        gameFrame.disconnect();
+        gameFrame.getClient().disconnect();
     }
 
     public Options getOptions() {

@@ -124,7 +124,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) throws IOException {
+    protected void initialize(FrameInitializer initializer) throws IOException {
         prepare();
     }
 

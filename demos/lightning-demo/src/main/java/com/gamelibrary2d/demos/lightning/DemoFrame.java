@@ -66,7 +66,7 @@ class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) throws IOException {
+    protected void initialize(FrameInitializer initializer) throws IOException {
         Window window = game.getWindow();
         DefaultParticleSystem particleSystem = createParticleSystem();
         DefaultDynamicLightMap lightMap = new DefaultDynamicLightMap(new DefaultLightSpreadMatrix(20));

@@ -13,17 +13,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class NetworkService {
-
     private final Map<SelectableChannel, ConnectionListener> connectionListeners = new Hashtable<>();
-
     private final Map<SocketChannel, TcpConnection> tcpConnections = new Hashtable<>();
-
     private final Map<DatagramChannel, UdpConnection> udpConnections = new Hashtable<>();
-
     private final ByteBuffer readBuffer;
-
     private final Thread thread;
-
     private Selector selector;
 
     public NetworkService() {
@@ -52,25 +46,6 @@ public class NetworkService {
             if (!Thread.currentThread().equals(thread)) {
                 thread.join();
             }
-        }
-    }
-
-    public DatagramChannel openDatagramChannel(Communicator communicator, ConnectionType operations,
-                                               ChannelDisconnectedHandler disconnectedHandler, int localPort, int hostPort) throws IOException {
-        UdpConnection udpConnection = new UdpConnection(communicator, operations, disconnectedHandler);
-
-        DatagramChannel channel = DatagramChannel.open();
-        try {
-            channel.bind(new InetSocketAddress(localPort));
-            channel.connect(new InetSocketAddress(communicator.getEndpoint(), hostPort));
-            channel.configureBlocking(false);
-            if (operations != ConnectionType.WRITE)
-                channel.register(selector, SelectionKey.OP_READ, udpConnection);
-            udpConnections.put(channel, udpConnection);
-            return channel;
-        } catch (IOException e) {
-            close(channel);
-            throw e;
         }
     }
 
@@ -162,6 +137,20 @@ public class NetworkService {
             socketChannel.register(selector, SelectionKey.OP_READ, tcpConnection);
         } catch (IOException e) {
             disconnect(socketChannel, e);
+        }
+    }
+
+    public void connect(DatagramChannel datagramChannel, Communicator communicator, ConnectionType connectionType, int hostPort, ChannelDisconnectedHandler disconnectedHandler) {
+        UdpConnection udpConnection = new UdpConnection(communicator, connectionType, disconnectedHandler);
+        udpConnections.put(datagramChannel, udpConnection);
+        try {
+            datagramChannel.connect(new InetSocketAddress(communicator.getEndpoint(), hostPort));
+            datagramChannel.configureBlocking(false);
+            if (connectionType != ConnectionType.WRITE) {
+                datagramChannel.register(selector, SelectionKey.OP_READ, udpConnection);
+            }
+        } catch (IOException e) {
+            disconnect(datagramChannel);
         }
     }
 
@@ -388,27 +377,17 @@ public class NetworkService {
 
     private void disconnect(SocketChannel socketChannel, IOException e) {
         TcpConnection tcpConnection = tcpConnections.remove(socketChannel);
-        try {
-            socketChannel.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        } finally {
-            if (tcpConnection != null) {
-                tcpConnection.onDisconnected(e);
-            }
+        close(socketChannel);
+        if (tcpConnection != null) {
+            tcpConnection.onDisconnected(e);
         }
     }
 
     private void disconnect(DatagramChannel datagramChannel, IOException e) {
         UdpConnection udpConnection = udpConnections.remove(datagramChannel);
-        try {
-            datagramChannel.close();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        } finally {
-            if (udpConnection != null) {
-                udpConnection.onDisconnected(e);
-            }
+        close(datagramChannel);
+        if (udpConnection != null) {
+            udpConnection.onDisconnected(e);
         }
     }
 

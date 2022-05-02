@@ -6,6 +6,7 @@ import com.gamelibrary2d.components.containers.BasicLayer;
 import com.gamelibrary2d.components.containers.DefaultLayerObject;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
@@ -28,7 +29,6 @@ import com.gamelibrary2d.demos.networkgame.client.urls.Music;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
-import com.gamelibrary2d.network.AbstractNetworkFrame;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.DefaultTexture;
@@ -45,7 +45,7 @@ import com.gamelibrary2d.updates.EmptyUpdate;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
+public class GameFrame extends AbstractFrame {
     private final DemoGame game;
     private final ResourceManager resourceManager;
 
@@ -63,6 +63,7 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
     private final ContentMap content = new ContentMap();
 
     private final MusicPlayer musicPlayer;
+    private final GameFrameClient client;
 
     private Texture backgroundTexture;
     private TimeLabel timeLabel;
@@ -84,7 +85,7 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
         this.soundMap = soundMap;
         this.effects = new EffectMap(resourceManager, soundMap, soundPlayer);
         textures = new TextureMap(resourceManager);
-        setClient(new GameFrameClient(this, controllerFactory));
+        client = new GameFrameClient(this, controllerFactory);
     }
 
     private DefaultTexture createTexture(InputStream s) throws IOException {
@@ -114,14 +115,14 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
             screenLayer.add(controllerLayer);
             screenLayer.add(timeLabel);
 
-
             prepared = true;
         }
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) throws IOException {
+    protected void initialize(FrameInitializer initializer) throws IOException {
         prepare();
+        initializer.addAsyncTask(ctx -> client.connect());
     }
 
     @Override
@@ -135,6 +136,17 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
         add(backgroundLayer);
         add(gameLayer);
         add(screenLayer);
+    }
+
+    @Override
+    protected void onUpdate(float deltaTime) {
+        if (isInitialized()) {
+            client.readIncoming();
+            super.onUpdate(deltaTime);
+            client.sendOutgoing();
+        } else {
+            super.onUpdate(deltaTime);
+        }
     }
 
     void applySettings(GameSettings gameSettings) {
@@ -301,7 +313,7 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
         sequentialUpdater.add(parallelUpdater);
         sequentialUpdater.add(new InstantUpdater(dt -> objectLayer.clear()));
         sequentialUpdater.add(new DurationUpdater(5f, new EmptyUpdate()));
-        sequentialUpdater.add(new InstantUpdater(dt -> getClient().requestNewGame()));
+        sequentialUpdater.add(new InstantUpdater(dt -> client.requestNewGame()));
 
         startUpdater(sequentialUpdater);
     }
@@ -309,11 +321,15 @@ public class GameFrame extends AbstractNetworkFrame<GameFrameClient> {
     public void gameEnded() {
         objectLayer.clear();
         controllerLayer.clear();
-        getClient().requestNewGame();
+        client.requestNewGame();
     }
 
     public void setTime(int seconds) {
         timeLabel.setTimeFromSeconds(seconds);
+    }
+
+    public GameFrameClient getClient() {
+        return client;
     }
 
     private static class SuckedIntoPortalUpdate implements Updatable {

@@ -11,11 +11,8 @@ import com.gamelibrary2d.demos.networkgame.common.ServerMessages;
 import com.gamelibrary2d.demos.networkgame.server.objects.DemoServerObject;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.ConnectionType;
-import com.gamelibrary2d.network.common.NetworkCommunicator;
-import com.gamelibrary2d.network.common.initialization.CommunicationContext;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
-import com.gamelibrary2d.network.common.security.ServerHandshake;
+import com.gamelibrary2d.network.common.initialization.*;
+import com.gamelibrary2d.network.common.security.ServerHandshakeConfiguration;
 import com.gamelibrary2d.network.common.server.Server;
 import com.gamelibrary2d.network.common.server.ServerContext;
 
@@ -53,31 +50,22 @@ public class DemoGameServer implements ServerContext {
         this.server = server;
         this.keyPair = keyPair;
         this.gameLogic = new DemoGameLogic(this);
-
     }
 
     @Override
-    public void configureClientAuthentication(CommunicationSteps steps) {
+    public void configureClientAuthentication(CommunicatorInitializer initializer) {
         if (keyPair == null) {
             throw new NullPointerException("Key pair has not been set");
         }
 
-        steps.add((context, com) -> log(String.format("%s: Performing client/server handshake", com.getEndpoint())));
-        ServerHandshake serverHandshake = new ServerHandshake(keyPair);
-        serverHandshake.configure(steps);
-        steps.add(this::readPassword);
-        steps.add(this::readUdpPort);
+        initializer.addProducer((ctx, com) -> log(String.format("%s: Performing client/server handshake", com.getEndpoint())));
+
+        initializer.addConfig(new ServerHandshakeConfiguration(keyPair));
+        initializer.addConsumer(this::validatePassword);
+        initializer.addConfig(new UdpConfiguration());
     }
 
-    @Override
-    public void configureClientInitialization(CommunicationSteps steps) {
-        steps.add(this::sendUpdateRate);
-        steps.write(gameLogic::getGameSettings);
-        steps.read("requestedPlayers", DataBuffer::getInt);
-        steps.write(() -> state);
-    }
-
-    private boolean readPassword(CommunicationContext context, Communicator communicator, DataBuffer inbox) throws IOException {
+    private boolean validatePassword(CommunicatorInitializationContext context, Communicator communicator, DataBuffer inbox) throws IOException {
         decryptionBuffer.clear();
         communicator.readEncrypted(inbox, decryptionBuffer);
         decryptionBuffer.flip();
@@ -89,16 +77,12 @@ public class DemoGameServer implements ServerContext {
         return true;
     }
 
-    private boolean readUdpPort(CommunicationContext context, Communicator communicator, DataBuffer inbox) throws IOException {
-        decryptionBuffer.clear();
-        communicator.readEncrypted(inbox, decryptionBuffer);
-        decryptionBuffer.flip();
-
-        int udpPort = decryptionBuffer.getInt();
-        ((NetworkCommunicator) communicator).enableUdp(ConnectionType.WRITE, 0, udpPort);
-
-        log(String.format("%s: Client listens for UDP on port %d", communicator.getEndpoint(), udpPort));
-        return true;
+    @Override
+    public void configureClientInitialization(CommunicatorInitializer initializer) {
+        initializer.send(buffer -> buffer.putFloat(STREAMS_PER_SECOND));
+        initializer.send(gameLogic::getGameSettings);
+        initializer.receive("requestedPlayers", DataBuffer::getInt);
+        initializer.send(state);
     }
 
     @Override
@@ -113,7 +97,7 @@ public class DemoGameServer implements ServerContext {
     }
 
     @Override
-    public void onClientAuthenticated(CommunicationContext context, Communicator communicator) {
+    public void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
         log(String.format("%s: Client has authenticated", communicator.getEndpoint()));
     }
 
@@ -122,19 +106,15 @@ public class DemoGameServer implements ServerContext {
         log(String.format("%s: Client has connected", communicator.getEndpoint()));
     }
 
-    private void sendUpdateRate(CommunicationContext context, Communicator communicator) {
-        communicator.getOutgoing().putFloat(STREAMS_PER_SECOND);
-    }
-
     @Override
-    public void onClientInitialized(CommunicationContext context, Communicator communicator) {
+    public void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
         log(String.format("%s: Client has been initialized", communicator.getEndpoint()));
 
         GameSettings settings = gameLogic.getGameSettings();
 
         int requestedPlayers = context.get(Integer.class, "requestedPlayers");
 
-        ArrayList<ServerPlayer> players = new ArrayList<ServerPlayer>(requestedPlayers);
+        ArrayList<ServerPlayer> players = new ArrayList<>(requestedPlayers);
         for (int i = 0; i < requestedPlayers; ++i) {
             players.add(new ServerPlayer(gameLogic, communicator, settings.getSpaceCraftBounds()));
         }

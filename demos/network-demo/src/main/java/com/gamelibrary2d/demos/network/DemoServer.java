@@ -2,8 +2,8 @@ package com.gamelibrary2d.demos.network;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.initialization.CommunicationContext;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.network.common.server.AbstractNetworkServer;
 
 import java.io.IOException;
@@ -17,22 +17,22 @@ public class DemoServer extends AbstractNetworkServer {
     }
 
     @Override
-    protected void configureClientAuthentication(CommunicationSteps steps) {
+    protected void configureClientAuthentication(CommunicatorInitializer initializer) {
 
     }
 
     @Override
-    protected void configureClientInitialization(CommunicationSteps steps) {
+    protected void initializeClient(CommunicatorInitializer initializer) {
 
     }
 
     @Override
-    protected void onClientAuthenticated(CommunicationContext context, Communicator communicator) {
+    protected void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
         log(String.format("Client has been authenticated: %s", communicator.getEndpoint()));
     }
 
     @Override
-    protected void onClientInitialized(CommunicationContext context, Communicator communicator) {
+    protected void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
         log(String.format("Client has been initialized: %s", communicator.getEndpoint()));
     }
 

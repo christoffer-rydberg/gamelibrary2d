@@ -42,7 +42,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) {
+    protected void initialize(FrameInitializer initializer) {
         Window window = game.getWindow();
         try {
             Animation animation = createAnimation();

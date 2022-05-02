@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.common.client;
 
 import com.gamelibrary2d.common.functional.ParameterizedAction;
 import com.gamelibrary2d.network.common.*;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -10,12 +10,12 @@ import java.util.concurrent.Future;
 
 public class ClientSideCommunicator extends AbstractNetworkCommunicator {
 
-    private final ParameterizedAction<CommunicationSteps> configureAuthentication;
+    private final ParameterizedAction<CommunicatorInitializer> configureAuthentication;
     private final TcpConnectionSettings connectionSettings;
 
     private ClientSideCommunicator(
             TcpConnectionSettings connectionSettings,
-            ParameterizedAction<CommunicationSteps> configureAuthentication) {
+            ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
         super(connectionSettings.getNetworkService(), 2, connectionSettings.isOwningNetworkService());
         this.connectionSettings = connectionSettings;
         this.configureAuthentication = configureAuthentication;
@@ -27,7 +27,7 @@ public class ClientSideCommunicator extends AbstractNetworkCommunicator {
 
     public static Future<Communicator> connect(
             TcpConnectionSettings connectionSettings,
-            ParameterizedAction<CommunicationSteps> configureAuthentication) {
+            ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
 
         CompletableFuture<Communicator> future = new CompletableFuture<>();
 
@@ -67,9 +67,9 @@ public class ClientSideCommunicator extends AbstractNetworkCommunicator {
     }
 
     @Override
-    public void configureAuthentication(CommunicationSteps steps) {
+    public void configureAuthentication(CommunicatorInitializer initializer) {
         if (configureAuthentication != null) {
-            configureAuthentication.perform(steps);
+            configureAuthentication.perform(initializer);
         }
     }
 

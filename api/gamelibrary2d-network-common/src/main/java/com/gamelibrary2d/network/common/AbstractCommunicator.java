@@ -12,8 +12,8 @@ import com.gamelibrary2d.network.common.security.EncryptionWriter;
 import java.io.IOException;
 
 public abstract class AbstractCommunicator implements Communicator {
-
     private final IncomingBufferMonitor[] incomingBufferMonitor;
+    private final DataBuffer outgoingBuffer = new DynamicByteBuffer();
     private final EventPublisher<CommunicatorDisconnectedEvent> disconnectedPublisher = new DefaultEventPublisher<>();
 
     private volatile int id;
@@ -23,14 +23,12 @@ public abstract class AbstractCommunicator implements Communicator {
     private volatile EncryptionWriter encryptionWriter;
     private volatile EncryptionReader encryptionReader;
 
-    private DataBuffer outgoingBuffer;
-
     protected AbstractCommunicator(int incomingChannels) {
         incomingBufferMonitor = new IncomingBufferMonitor[incomingChannels];
         for (int i = 0; i < incomingChannels; ++i) {
             incomingBufferMonitor[i] = new IncomingBufferMonitor(new DynamicByteBuffer());
         }
-        reallocateOutgoing();
+        clearOutgoing();
     }
 
     @Override
@@ -69,8 +67,8 @@ public abstract class AbstractCommunicator implements Communicator {
     }
 
     @Override
-    public void reallocateOutgoing() {
-        outgoingBuffer = new DynamicByteBuffer();
+    public void clearOutgoing() {
+        outgoingBuffer.clear();
     }
 
     @Override

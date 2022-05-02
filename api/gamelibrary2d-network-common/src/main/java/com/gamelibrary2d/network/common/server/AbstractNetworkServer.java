@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.common.server;
 
 import com.gamelibrary2d.network.common.NetworkService;
 import com.gamelibrary2d.network.common.ServerSocketChannelRegistration;
-import com.gamelibrary2d.network.common.initialization.CommunicationSteps;
+import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
@@ -40,7 +40,7 @@ public abstract class AbstractNetworkServer extends InternalAbstractServer {
                 try {
                     // Disable Nagle's algorithm
                     channel.socket().setTcpNoDelay(true);
-                    addConnectedCommunicator(new ServerSideCommunicator(
+                    addPendingCommunicator(new ServerSideCommunicator(
                             networkService,
                             channel,
                             this::configureClientAuthentication));
@@ -96,7 +96,7 @@ public abstract class AbstractNetworkServer extends InternalAbstractServer {
         }
     }
 
-    protected abstract void configureClientAuthentication(CommunicationSteps steps);
+    protected abstract void configureClientAuthentication(CommunicatorInitializer initializer);
 
     protected abstract boolean acceptConnection(String endpoint);
 

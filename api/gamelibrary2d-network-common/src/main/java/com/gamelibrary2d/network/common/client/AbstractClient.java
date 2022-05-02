@@ -2,29 +2,23 @@ package com.gamelibrary2d.network.common.client;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.DynamicByteBuffer;
-import com.gamelibrary2d.common.updating.UpdateAction;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.exceptions.NetworkAuthenticationException;
-import com.gamelibrary2d.network.common.exceptions.NetworkConnectionException;
-import com.gamelibrary2d.network.common.exceptions.NetworkInitializationException;
+import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
+import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
+import com.gamelibrary2d.network.common.exceptions.ConnectionException;
 import com.gamelibrary2d.network.common.initialization.*;
-import com.gamelibrary2d.network.common.internal.CommunicationStep;
-import com.gamelibrary2d.network.common.internal.CommunicatorInitializer;
-import com.gamelibrary2d.network.common.internal.ConditionalCommunicationStep;
-import com.gamelibrary2d.network.common.internal.DefaultCommunicationSteps;
+import com.gamelibrary2d.network.common.initialization.ConditionalInitializationTask;
+import com.gamelibrary2d.network.common.initialization.InitializationTask;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public abstract class AbstractClient implements Client {
     private final DataBuffer inbox;
-    private final Object communicatorKey = new Object();
-
     private Communicator communicator;
     private int initializationRetries = 100;
     private int initializationRetryDelay = 100;
-
-    private volatile CommunicatorFactory communicatorFactory;
 
     protected AbstractClient() {
         this.inbox = new DynamicByteBuffer();
@@ -40,13 +34,7 @@ public abstract class AbstractClient implements Client {
         }
     }
 
-    @Override
-    public void setCommunicatorFactory(CommunicatorFactory communicatorFactory) {
-        this.communicatorFactory = communicatorFactory;
-    }
-
-    @Override
-    public void clearInbox() {
+    private void clearInbox() {
         inbox.clear();
         inbox.flip();
     }
@@ -63,107 +51,58 @@ public abstract class AbstractClient implements Client {
         }
     }
 
-    /**
-     * Reallocates the outgoing buffer in order to clear stale data and ensure
-     * that the state of the buffer isn't read from an obsolete thread-cache.
-     */
-    private void reallocateOutgoingBuffer(Communicator communicator) {
-        communicator.reallocateOutgoing();
-    }
-
     @Override
-    public CommunicationContext initialize()
-            throws NetworkConnectionException, NetworkAuthenticationException, NetworkInitializationException {
-        Communicator communicator = connectCommunicator();
+    public void connect() throws ConnectionException, ClientAuthenticationException, ClientInitializationException {
         try {
-            reallocateOutgoingBuffer(communicator);
-            CommunicationContext context = new DefaultCommunicationContext();
+            this.communicator = connectCommunicator().get();
+
+            if (!communicator.isConnected()) {
+                throw new ConnectionException("The communicator is not connected");
+            }
+
+            clearInbox();
+            communicator.clearOutgoing();
+            CommunicatorInitializationContext context = new CommunicatorInitializationContext();
             authenticate(context, communicator);
             initialize(context, communicator);
-            context.register(communicatorKey, communicator);
-            return context;
+        } catch (InterruptedException | ExecutionException e) {
+            communicator.disconnect(e);
+            this.communicator = null;
+            throw new ConnectionException("Failed to connect communicator", e);
         } catch (Exception e) {
             communicator.disconnect(e);
+            this.communicator = null;
             throw e;
         }
     }
 
-    private Communicator connectCommunicator() throws NetworkConnectionException {
-        if (isConnected()) {
-            return communicator;
-        }
-
-        try {
-            Communicator communicator = communicatorFactory.create().get();
-            if (!communicator.isConnected()) {
-                throw new NetworkConnectionException("Created communicator is not connected");
-            }
-            return communicator;
-        } catch (InterruptedException | ExecutionException e) {
-            throw new NetworkConnectionException("Failed to create communicator", e);
-        }
-    }
-
-    private void authenticate(CommunicationContext context, Communicator communicator) throws NetworkAuthenticationException {
+    private void authenticate(CommunicatorInitializationContext context, Communicator communicator) throws ClientAuthenticationException {
         if (!communicator.isAuthenticated()) {
-            DefaultCommunicationSteps steps = new DefaultCommunicationSteps();
-            configureAuthentication(communicator, steps);
+            InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
+            authenticateConnection(communicator, initializer);
             try {
-                runCommunicationSteps(context, communicator, new CommunicatorInitializer(steps.getAll()));
+                runInitializationTasks(context, communicator, new InternalInitializationTaskManager(initializer.getAll()));
             } catch (IOException | InterruptedException e) {
-                throw new NetworkAuthenticationException("Authentication failed", e);
+                throw new ClientAuthenticationException("Authentication failed", e);
             }
 
             communicator.setAuthenticated();
         }
     }
 
-    private void initialize(CommunicationContext context, Communicator communicator) throws NetworkInitializationException {
-        DefaultCommunicationSteps steps = new DefaultCommunicationSteps();
-        configureInitialization(steps);
+    private void initialize(CommunicatorInitializationContext context, Communicator communicator)
+            throws ClientInitializationException {
+        InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
+        initialize(initializer);
         try {
-            context.register(communicatorKey, communicator);
-            runCommunicationSteps(context, communicator, new CommunicatorInitializer(steps.getAll()));
+            runInitializationTasks(context, communicator, new InternalInitializationTaskManager(initializer.getAll()));
         } catch (IOException | InterruptedException e) {
-            throw new NetworkInitializationException("Initialization failed", e);
-        }
-    }
-
-    @Override
-    public final void initialized(CommunicationContext context) {
-        Communicator communicator = context.get(Communicator.class, communicatorKey);
-        reallocateOutgoingBuffer(communicator);
-        this.communicator = communicator;
-        onInitialized(context, communicator);
-    }
-
-    @Override
-    public void update(float deltaTime) {
-        update(deltaTime, null);
-    }
-
-    @Override
-    public void update(float deltaTime, UpdateAction updateAction) {
-        Communicator communicator = getCommunicator();
-        if (communicator != null && communicator.isConnected()) {
-            try {
-                readMessages();
-
-                if (updateAction != null) {
-                    updateAction.perform(deltaTime);
-                }
-
-                communicator.sendOutgoing();
-            } catch (Exception e) {
-                communicator.disconnect(e);
-            }
-        } else if (updateAction != null) {
-            updateAction.perform(deltaTime);
+            throw new ClientInitializationException("Initialization failed", e);
         }
     }
 
     /**
-     * The max number of retries for each communication step.
+     * The max number of retries for each task.
      */
     protected int getInitializationRetries() {
         return initializationRetries;
@@ -177,7 +116,7 @@ public abstract class AbstractClient implements Client {
     }
 
     /**
-     * The delay between retries of communication steps in milliseconds.
+     * The delay between retries of tasks in milliseconds.
      */
     protected int getInitializationRetryDelay() {
         return initializationRetryDelay;
@@ -195,10 +134,24 @@ public abstract class AbstractClient implements Client {
         return communicator;
     }
 
-    protected void readMessages() {
+    @Override
+    public void readIncoming() {
         handleMessages();
-        if (refreshInboxIfEmpty(getCommunicator())) {
+        Communicator com = getCommunicator();
+        if (com != null && refreshInboxIfEmpty(com)) {
             handleMessages();
+        }
+    }
+
+    @Override
+    public void sendOutgoing() {
+        if (isConnected()) {
+            Communicator com = getCommunicator();
+            try {
+                com.sendOutgoing();
+            } catch (IOException e) {
+                com.disconnect(e);
+            }
         }
     }
 
@@ -212,14 +165,14 @@ public abstract class AbstractClient implements Client {
         return inbox.remaining() > 0 || communicator.readIncoming(inbox);
     }
 
-    private void runCommunicationSteps(CommunicationContext context, Communicator communicator, CommunicatorInitializer initializer)
+    private void runInitializationTasks(CommunicatorInitializationContext context, Communicator communicator, InternalInitializationTaskManager connector)
             throws IOException, InterruptedException {
-        CommunicatorInitializer.InitializationResult result;
+        InternalInitializationTaskManager.InitializationTaskResult result;
 
         int retries = 0;
         do {
-            result = initializer.runCommunicationStep(context, communicator, this::runCommunicationStep);
-            if (result == CommunicatorInitializer.InitializationResult.AWAITING_DATA) {
+            result = connector.runTask(context, communicator, this::runInitializationTask);
+            if (result == InternalInitializationTaskManager.InitializationTaskResult.AWAITING_DATA) {
                 if (retries == getInitializationRetries()) {
                     throw new IOException("Reading server response timed out");
                 }
@@ -237,51 +190,47 @@ public abstract class AbstractClient implements Client {
                 retries = 0;
             }
 
-        } while (result != CommunicatorInitializer.InitializationResult.FINISHED);
+        } while (result != InternalInitializationTaskManager.InitializationTaskResult.FINISHED);
 
         sendOutgoing(communicator);
     }
 
-    private boolean runCommunicationStep(CommunicationContext context, Communicator communicator,
-                                         ConditionalCommunicationStep conditionalStep) throws IOException {
-        if (!conditionalStep.condition.evaluate(context, communicator)) {
+    private boolean runInitializationTask(CommunicatorInitializationContext context, Communicator communicator,
+                                      ConditionalInitializationTask conditionalTask) throws IOException {
+        if (!conditionalTask.condition.evaluate(context, communicator)) {
             return true;
         }
 
-        CommunicationStep step = conditionalStep.step;
-        if (step instanceof ConsumerStep) {
+        InitializationTask task = conditionalTask.task;
+        if (task instanceof ConsumerTask) {
             try {
-                return refreshInboxIfEmpty(communicator) && ((ConsumerStep) step).run(context, communicator, inbox);
+                return refreshInboxIfEmpty(communicator) && ((ConsumerTask) task).run(context, communicator, inbox);
             } catch (IOException e) {
                 communicator.disconnect(e);
                 throw (e);
             }
-        } else if (step instanceof ProducerStep) {
-            ((ProducerStep) step).run(context, communicator);
+        } else if (task instanceof ProducerTask) {
+            ((ProducerTask) task).run(context, communicator);
             return true;
         } else {
-            throw new IllegalStateException("Unknown communication step: " + step.getClass().getName());
+            throw new IllegalStateException("Unknown task: " + task.getClass().getName());
         }
     }
 
-    private void configureInitialization(CommunicationSteps steps) {
-        onConfigureInitialization(steps);
+    private void authenticateConnection(Communicator communicator, CommunicatorInitializer initializer) {
+        initializer.addConsumer(this::readCommunicatorId);
+        communicator.configureAuthentication(initializer);
     }
 
-    private void configureAuthentication(Communicator communicator, CommunicationSteps steps) {
-        steps.add(this::readIdentifier);
-        communicator.configureAuthentication(steps);
-    }
-
-    private boolean readIdentifier(CommunicationContext context, Communicator communicator, DataBuffer inbox) {
+    private boolean readCommunicatorId(CommunicatorInitializationContext context, Communicator communicator, DataBuffer inbox) {
         int communicatorId = inbox.getInt();
         communicator.setId(communicatorId);
         return true;
     }
 
-    protected abstract void onConfigureInitialization(CommunicationSteps steps);
+    protected abstract Future<Communicator> connectCommunicator();
 
-    protected abstract void onInitialized(CommunicationContext context, Communicator communicator);
+    protected abstract void initialize(CommunicatorInitializer initializer);
 
     protected abstract void onMessage(DataBuffer buffer);
 }

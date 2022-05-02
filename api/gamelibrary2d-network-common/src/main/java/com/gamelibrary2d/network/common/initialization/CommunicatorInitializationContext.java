@@ -1,10 +1,11 @@
-package com.gamelibrary2d.components.frames;
+package com.gamelibrary2d.network.common.initialization;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
-public class FrameInitializationContext {
+public class CommunicatorInitializationContext {
 
-    private final ConcurrentHashMap<Object, Object> register = new ConcurrentHashMap<>();
+    private final Map<Object, Object> register = new HashMap<>();
 
     /**
      * Registers an object with the specified key.
