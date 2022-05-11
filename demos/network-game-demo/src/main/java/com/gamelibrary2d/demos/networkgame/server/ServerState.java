@@ -2,7 +2,7 @@ package com.gamelibrary2d.demos.networkgame.server;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.demos.networkgame.server.objects.DemoServerObject;
-import com.gamelibrary2d.network.ServerObjectRegister;
+import com.gamelibrary2d.demos.networkgame.server.objects.ServerObjectRegister;
 import com.gamelibrary2d.network.common.Message;
 
 import java.util.Collection;

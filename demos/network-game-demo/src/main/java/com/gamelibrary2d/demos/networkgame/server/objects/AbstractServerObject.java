@@ -1,4 +1,4 @@
-package com.gamelibrary2d.network;
+package com.gamelibrary2d.demos.networkgame.server.objects;
 
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;

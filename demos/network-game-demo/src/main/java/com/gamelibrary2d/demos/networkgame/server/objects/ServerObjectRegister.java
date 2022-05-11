@@ -1,4 +1,4 @@
-package com.gamelibrary2d.network;
+package com.gamelibrary2d.demos.networkgame.server.objects;
 
 import java.util.Collection;
 import java.util.HashMap;

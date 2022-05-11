@@ -3,7 +3,6 @@ package com.gamelibrary2d.demos.networkgame.server.objects;
 import com.gamelibrary2d.collision.Collidable;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.network.AbstractServerObject;
 
 public abstract class AbstractDemoServerObject extends AbstractServerObject implements DemoServerObject, Collidable {
     private final byte primaryType;
