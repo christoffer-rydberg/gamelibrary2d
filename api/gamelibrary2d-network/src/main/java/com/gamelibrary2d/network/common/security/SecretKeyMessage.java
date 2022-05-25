@@ -1,13 +1,13 @@
 package com.gamelibrary2d.network.common.security;
 
 import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.common.io.Serializable;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
-public class SecretKeyMessage implements Message {
+public class SecretKeyMessage implements Serializable {
     private final SecretKey key;
     private final String cipherTransformation;
     private final int ivLength;
@@ -60,7 +60,7 @@ public class SecretKeyMessage implements Message {
     }
 
     @Override
-    public void serializeMessage(DataBuffer buffer) {
+    public void serialize(DataBuffer buffer) {
         writeString(buffer, key.getAlgorithm());
         writeString(buffer, cipherTransformation);
         writeBytes(buffer, key.getEncoded());

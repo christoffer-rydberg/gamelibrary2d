@@ -90,7 +90,7 @@ public class ClientHandshakeConfiguration implements TaskConfiguration {
         com.getOutgoing().putInt(encryptionHeader.length);
         com.getOutgoing().put(encryptionHeader);
 
-        secretKeyEncryptionWriter.write(com.getOutgoing(), secretKeyMessage::serializeMessage);
+        secretKeyEncryptionWriter.write(com.getOutgoing(), secretKeyMessage::serialize);
 
         Cipher cipher = createCipher(secretKeyMessage.getCipherTransformation());
 

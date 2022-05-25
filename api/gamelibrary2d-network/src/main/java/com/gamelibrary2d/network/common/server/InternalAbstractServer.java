@@ -5,7 +5,7 @@ import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.DynamicByteBuffer;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedListener;
 import com.gamelibrary2d.network.common.initialization.*;
@@ -322,9 +322,9 @@ abstract class InternalAbstractServer implements Server {
     }
 
     @Override
-    public void sendToAll(Message message, boolean stream) {
+    public void sendToAll(Serializable message, boolean stream) {
         if (stream) {
-            message.serializeMessage(outgoingBuffer);
+            message.serialize(outgoingBuffer);
         } else {
             for (int i = 0; i < communicators.size(); ++i) {
                 send(communicators.get(i), message);
@@ -358,8 +358,8 @@ abstract class InternalAbstractServer implements Server {
     }
 
     @Override
-    public void send(Communicator communicator, Message message) {
-        message.serializeMessage(communicator.getOutgoing());
+    public void send(Communicator communicator, Serializable message) {
+        message.serialize(communicator.getOutgoing());
     }
 
     @Override

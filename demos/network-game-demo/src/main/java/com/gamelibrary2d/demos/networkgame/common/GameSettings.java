@@ -2,9 +2,9 @@ package com.gamelibrary2d.demos.networkgame.common;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.common.io.Serializable;
 
-public class GameSettings implements Message {
+public class GameSettings implements Serializable {
     private final Rectangle gameBounds;
     private final Rectangle obstacleBounds;
     private final Rectangle spaceCraftBounds;
@@ -38,7 +38,7 @@ public class GameSettings implements Message {
     }
 
     @Override
-    public void serializeMessage(DataBuffer buffer) {
+    public void serialize(DataBuffer buffer) {
         SerializationUtil.serializeRectangle(gameBounds, buffer);
         SerializationUtil.serializeRectangle(obstacleBounds, buffer);
         SerializationUtil.serializeRectangle(spaceCraftBounds, buffer);

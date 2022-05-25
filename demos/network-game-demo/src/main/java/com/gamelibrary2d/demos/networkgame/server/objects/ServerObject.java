@@ -1,34 +1,15 @@
 package com.gamelibrary2d.demos.networkgame.server.objects;
 
+import com.gamelibrary2d.collision.CollisionDetection;
 import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.common.io.Serializable;
 
-/**
- * Server-side representation of a game object.
- */
-public interface ServerObject extends Message {
+public interface ServerObject extends Serializable {
 
-    /**
-     * @return The unique object identifier.
-     */
     int getId();
 
-    /**
-     * Invoked when the object has been registered.
-     *
-     * @param id The unique object identifier.
-     */
     void onRegistered(int id);
 
-    /**
-     * Invoked when the object has been de-registered.
-     * The object {@link #getId id} should not be reset when this method is called.
-     */
-    void onDeregister();
-
-    /**
-     * @return The object's position.
-     */
     Point getPosition();
 
     default void setPosition(Point position) {
@@ -38,4 +19,18 @@ public interface ServerObject extends Message {
     default void setPosition(float x, float y) {
         getPosition().set(x, y);
     }
+
+    byte getObjectIdentifier();
+
+    float getDirection();
+
+    float getRotation();
+
+    boolean isDestroyed();
+
+    void setDestroyed(boolean destroyed);
+
+    void addCollisionDetection(CollisionDetection collisionDetection);
+
+    boolean isAccelerating();
 }

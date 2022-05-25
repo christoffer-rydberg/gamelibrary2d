@@ -4,7 +4,7 @@ import com.gamelibrary2d.collision.CollisionDetection;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
-import com.gamelibrary2d.demos.networkgame.server.objects.DemoServerObject;
+import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPortal;
 
@@ -57,7 +57,7 @@ public class DemoGameLogic {
         collisionDetection.clear();
     }
 
-    public boolean gameOver() {
+    public boolean isGameOver() {
         return gameOver;
     }
 
@@ -69,13 +69,13 @@ public class DemoGameLogic {
         collisionDetection.update(deltaTime);
     }
 
-    public void spawn(DemoServerObject obj) {
+    public void spawn(ServerObject obj) {
         obj.setDestroyed(false);
         obj.addCollisionDetection(collisionDetection);
         server.spawn(obj);
     }
 
-    public void destroy(DemoServerObject obj) {
+    public void destroy(ServerObject obj) {
         if (!obj.isDestroyed()) {
             obj.setDestroyed(true);
             collisionDetection.remove(obj);

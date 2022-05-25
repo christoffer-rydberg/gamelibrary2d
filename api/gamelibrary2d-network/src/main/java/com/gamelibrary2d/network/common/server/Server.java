@@ -1,7 +1,7 @@
 package com.gamelibrary2d.network.common.server;
 
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.common.io.Serializable;
 
 import java.io.IOException;
 
@@ -24,7 +24,7 @@ public interface Server {
 
     void send(Communicator communicator, byte[] message, int off, int len);
 
-    void send(Communicator communicator, Message message);
+    void send(Communicator communicator, Serializable message);
 
     void sendToAll(int message, boolean stream);
 
@@ -36,6 +36,6 @@ public interface Server {
 
     void sendToAll(byte[] message, int off, int len, boolean stream);
 
-    void sendToAll(Message message, boolean stream);
+    void sendToAll(Serializable message, boolean stream);
 
 }

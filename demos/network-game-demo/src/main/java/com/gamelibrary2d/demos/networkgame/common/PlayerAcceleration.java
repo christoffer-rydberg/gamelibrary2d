@@ -1,10 +1,10 @@
 package com.gamelibrary2d.demos.networkgame.common;
 
 import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.network.common.client.Client;
 
-public class PlayerAcceleration implements Message {
+public class PlayerAcceleration implements Serializable {
     private final Client client;
     private final int playerId;
 
@@ -55,12 +55,12 @@ public class PlayerAcceleration implements Message {
     public void updateServer() {
         if (changed) {
             changed = false;
-            serializeMessage(client.getCommunicator().getOutgoing());
+            serialize(client.getCommunicator().getOutgoing());
         }
     }
 
     @Override
-    public void serializeMessage(DataBuffer buffer) {
+    public void serialize(DataBuffer buffer) {
         buffer.put(ClientMessages.PLAYER_ACCELERATION);
         buffer.putInt(playerId);
         buffer.putFloat(acceleration);

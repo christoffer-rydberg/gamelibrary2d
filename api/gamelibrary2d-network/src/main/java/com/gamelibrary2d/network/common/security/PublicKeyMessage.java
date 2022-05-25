@@ -1,7 +1,7 @@
 package com.gamelibrary2d.network.common.security;
 
 import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.common.io.Serializable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -11,7 +11,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
-public class PublicKeyMessage implements Message {
+public class PublicKeyMessage implements Serializable {
     private final PublicKey key;
 
     public PublicKeyMessage(PublicKey key) {
@@ -54,7 +54,7 @@ public class PublicKeyMessage implements Message {
     }
 
     @Override
-    public void serializeMessage(DataBuffer buffer) {
+    public void serialize(DataBuffer buffer) {
         writeString(buffer, key.getAlgorithm());
         writeBytes(buffer, key.getEncoded());
     }

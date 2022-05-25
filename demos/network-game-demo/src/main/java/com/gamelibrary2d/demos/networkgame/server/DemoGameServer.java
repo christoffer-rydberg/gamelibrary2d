@@ -8,7 +8,7 @@ import com.gamelibrary2d.demos.networkgame.common.ClientMessages;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
 import com.gamelibrary2d.demos.networkgame.common.NetworkConstants;
 import com.gamelibrary2d.demos.networkgame.common.ServerMessages;
-import com.gamelibrary2d.demos.networkgame.server.objects.DemoServerObject;
+import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.*;
@@ -122,7 +122,7 @@ public class DemoGameServer implements ServerContext {
         ClientState communicatorState = new ClientState(communicator, players);
         clientStateService.put(communicatorState);
 
-        if (gameLogic.gameOver()) {
+        if (gameLogic.isGameOver()) {
             communicator.getOutgoing().put(ServerMessages.GAME_ENDED);
         } else {
             communicatorState.setReady(true);
@@ -175,7 +175,7 @@ public class DemoGameServer implements ServerContext {
     @Override
     public void update(float deltaTime) {
         if (clientStateService.size() > 0) {
-            if (gameLogic.gameOver()) {
+            if (gameLogic.isGameOver()) {
                 startCountdown -= deltaTime;
                 if (startCountdown <= 0 || clientStateService.allReady()) {
                     startCountdown = 10f;
@@ -218,7 +218,7 @@ public class DemoGameServer implements ServerContext {
         server.sendToAll(ServerMessages.GAME_OVER, false);
     }
 
-    void spawn(DemoServerObject obj) {
+    void spawn(ServerObject obj) {
         state.register(obj);
         server.sendToAll(ServerMessages.SPAWN, false);
         server.sendToAll(obj.getObjectIdentifier(), false);
@@ -236,7 +236,7 @@ public class DemoGameServer implements ServerContext {
         return true;
     }
 
-    void destroy(DemoServerObject obj) {
+    void destroy(ServerObject obj) {
         state.deregister(obj);
         server.sendToAll(ServerMessages.DESTROY, false);
         server.sendToAll(obj.getId(), false);
@@ -255,8 +255,8 @@ public class DemoGameServer implements ServerContext {
 
         bitParser.putInt((int) timer);
 
-        Collection<DemoServerObject> objects = state.getAll();
-        for (DemoServerObject object : objects) {
+        Collection<ServerObject> objects = state.getAll();
+        for (ServerObject object : objects) {
             bitParser.putInt(object.getId(), NetworkConstants.OBJECT_ID_BIT_SIZE);
             bitParser.putInt(Math.round(object.getPosition().getX()), NetworkConstants.POS_X_BIT_SIZE);
             bitParser.putInt(Math.round(object.getPosition().getY()), NetworkConstants.POS_Y_BIT_SIZE);

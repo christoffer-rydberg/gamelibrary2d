@@ -9,7 +9,7 @@ import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.demos.networkgame.server.DemoGameLogic;
 
-public class ServerPortal extends AbstractDemoServerObject {
+public class ServerPortal extends AbstractServerObject {
     private static final float SPAWN_RATE = 1f;
     private static final int NUMBER_OF_OBJECTS = 7;
 

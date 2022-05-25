@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.common.initialization;
 
 import com.gamelibrary2d.common.functional.Factory;
 import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.common.io.Serializable;
 
 import java.io.IOException;
 
@@ -39,31 +39,31 @@ public interface CommunicatorInitializer {
     }
 
     /**
-     * Adds a {@link ProducerTask} to the pipeline that will send a {@link Message}.
+     * Adds a {@link ProducerTask} to the pipeline that will send a {@link Serializable} message.
      */
-    default void send(Message message) {
+    default void send(Serializable message) {
         send(TaskCondition.TRUE, () -> message);
     }
 
     /**
-     * Adds a {@link ProducerTask} to the pipeline that will send a {@link Message}.
+     * Adds a {@link ProducerTask} to the pipeline that will send a {@link Serializable} message.
      */
-    default void send(Factory<Message> factory) {
+    default void send(Factory<Serializable> factory) {
         send(TaskCondition.TRUE, factory);
     }
 
     /**
-     * Adds a {@link ProducerTask} to the pipeline that will send a {@link Message}. The task will run if the given condition is met.
+     * Adds a {@link ProducerTask} to the pipeline that will send a {@link Serializable} message. The task will run if the given condition is met.
      */
-    default void send(TaskCondition condition, Message message) {
+    default void send(TaskCondition condition, Serializable message) {
         send(condition, () -> message);
     }
 
     /**
-     * Adds a {@link ProducerTask} to the pipeline that will send a {@link Message}. The task will run if the given condition is met.
+     * Adds a {@link ProducerTask} to the pipeline that will send a {@link Serializable} message. The task will run if the given condition is met.
      */
-    default void send(TaskCondition condition, Factory<Message> factory) {
-        addProducer(condition, (ctx, com) -> factory.create().serializeMessage(com.getOutgoing()));
+    default void send(TaskCondition condition, Factory<Serializable> factory) {
+        addProducer(condition, (ctx, com) -> factory.create().serialize(com.getOutgoing()));
     }
 
     /**

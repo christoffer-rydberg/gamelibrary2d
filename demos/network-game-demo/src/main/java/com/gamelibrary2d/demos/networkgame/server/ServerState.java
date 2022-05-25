@@ -1,38 +1,43 @@
 package com.gamelibrary2d.demos.networkgame.server;
 
 import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.demos.networkgame.server.objects.DemoServerObject;
-import com.gamelibrary2d.demos.networkgame.server.objects.ServerObjectRegister;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
+import com.gamelibrary2d.common.io.Serializable;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ServerState implements Message {
-    private final ServerObjectRegister<DemoServerObject> objectRegister = new ServerObjectRegister<>();
+public class ServerState implements Serializable {
+    private final Map<Integer, ServerObject> objects = new HashMap<>();
+    private int lastObjectId = -1;
 
-    public void register(DemoServerObject obj) {
-        objectRegister.register(obj);
+    public void register(ServerObject obj) {
+        int key = ++lastObjectId;
+        objects.put(key, obj);
+        obj.onRegistered(key);
     }
 
-    public void deregister(DemoServerObject obj) {
-        objectRegister.remove(obj.getId());
+    public void deregister(ServerObject obj) {
+        objects.remove(obj.getId());
     }
 
-    public Collection<DemoServerObject> getAll() {
-        return objectRegister.getAll();
-    }
-
-    @Override
-    public void serializeMessage(DataBuffer buffer) {
-        Collection<DemoServerObject> objects = objectRegister.getAll();
-        buffer.putInt(objects.size());
-        for (DemoServerObject obj : objects) {
-            buffer.put(obj.getObjectIdentifier());
-            obj.serializeMessage(buffer);
-        }
+    public Collection<ServerObject> getAll() {
+        return objects.values();
     }
 
     public void clear() {
-        objectRegister.clear();
+        lastObjectId = -1;
+        objects.clear();
+    }
+
+    @Override
+    public void serialize(DataBuffer buffer) {
+        Collection<ServerObject> objects = this.objects.values();
+        buffer.putInt(objects.size());
+        for (ServerObject obj : objects) {
+            buffer.put(obj.getObjectIdentifier());
+            obj.serialize(buffer);
+        }
     }
 }

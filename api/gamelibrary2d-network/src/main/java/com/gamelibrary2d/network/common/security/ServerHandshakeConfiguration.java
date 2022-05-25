@@ -2,8 +2,9 @@ package com.gamelibrary2d.network.common.security;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.DynamicByteBuffer;
+import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.Message;
+import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.TaskConfiguration;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
@@ -57,8 +58,8 @@ public class ServerHandshakeConfiguration implements TaskConfiguration {
     }
 
     private void sharePublicKey(CommunicatorInitializationContext ctx, Communicator com) {
-        Message message = new PublicKeyMessage(keyPair.getPublic());
-        message.serializeMessage(com.getOutgoing());
+        Serializable message = new PublicKeyMessage(keyPair.getPublic());
+        message.serialize(com.getOutgoing());
     }
 
     private boolean readSecretKey(CommunicatorInitializationContext ctx, Communicator com, DataBuffer inbox) throws IOException {

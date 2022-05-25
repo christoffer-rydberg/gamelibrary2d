@@ -8,7 +8,7 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 
-public class ServerObstacle extends AbstractDemoServerObject implements Obstacle {
+public class ServerObstacle extends AbstractServerObject implements Obstacle {
 
     public ServerObstacle(byte secondaryType, Rectangle bounds) {
         super(ObjectTypes.OBSTACLE, secondaryType);

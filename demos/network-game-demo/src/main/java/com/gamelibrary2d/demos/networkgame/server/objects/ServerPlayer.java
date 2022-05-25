@@ -14,7 +14,7 @@ import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.demos.networkgame.server.DemoGameLogic;
 import com.gamelibrary2d.network.common.Communicator;
 
-public class ServerPlayer extends AbstractDemoServerObject implements Obstacle {
+public class ServerPlayer extends AbstractServerObject implements Obstacle {
     private final static float MAX_SPEED = 100f;
     private final static float MAX_ACCELERATION = 300f;
     private final static float MAX_ROTATION_ACCELERATION = 180f;
@@ -23,9 +23,10 @@ public class ServerPlayer extends AbstractDemoServerObject implements Obstacle {
     private final DemoGameLogic gameLogic;
     private final Communicator communicator;
     private final Color color;
+    private final Point accelerationVector = new Point();
+
     private float acceleration;
     private float rotationAcceleration;
-    private Point accelerationVector = new Point();
     private float goalRotation = NO_GOAL_ROTATION;
 
     public ServerPlayer(DemoGameLogic gameLogic, Communicator communicator, Rectangle bounds) {
@@ -57,10 +58,10 @@ public class ServerPlayer extends AbstractDemoServerObject implements Obstacle {
     }
 
     @Override
-    public void serializeMessage(DataBuffer buffer) {
+    public void serialize(DataBuffer buffer) {
         boolean isLocal = communicator.getOutgoing() == buffer;
         buffer.putBool(isLocal);
-        super.serializeMessage(buffer);
+        super.serialize(buffer);
         buffer.putFloat(color.getR());
         buffer.putFloat(color.getG());
         buffer.putFloat(color.getB());
@@ -169,6 +170,5 @@ public class ServerPlayer extends AbstractDemoServerObject implements Obstacle {
     public boolean isRotating() {
         return rotationAcceleration != 0f || goalRotation != NO_GOAL_ROTATION;
     }
-
 
 }
