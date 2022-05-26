@@ -4,19 +4,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Used to configure the frame initialization pipeline by adding {@link FrameInitializer#addTask synchronous}
- * or {@link FrameInitializer#addAsyncTask asynchronous} {@link InitializationTask tasks}.
+ * Used to configure the frame initialization pipeline by adding {@link InitializationTask initialization tasks}.
  * <br><br>
  * <p>
  * The initialization pipeline works as follows:
  * <br>- Each task runs sequentially in the order it was added.
  * <br>- Each update cycle will run at the most one task.
  * <br>- When a task has completed it will schedule the next task by invoking {@link Frame#invokeLater}
- * <br>- Synchronous tasks will block the update cycle, while asynchronous task are non-blocking.
- * <br>- Asynchronous tasks cannot access OpenGL context.
- * <br>- Asynchronous tasks are generally safe to have side effects. The underlying {@link CompletableFuture} assures
- * that the main thread will have visibility of changed fields when the task has completed. However, fields that are accessed
- * or modified in parallel with the task execution must be properly synchronized.
  */
 public class FrameInitializer {
     private final Frame frame;
@@ -39,7 +33,7 @@ public class FrameInitializer {
     }
 
     private void performTask(InitializationTaskWrapper task) {
-        if (task.isAsync) {
+        if (task.isBackgroundTask) {
             CompletableFuture.runAsync(() -> {
                 performTask(task.task);
                 performNextTask();
@@ -61,6 +55,8 @@ public class FrameInitializer {
 
     /**
      * Adds an initialization task to the pipeline.
+     * <p>
+     * The task will block the update cycle when it runs.
      *
      * @param task The initialization task
      */
@@ -69,11 +65,16 @@ public class FrameInitializer {
     }
 
     /**
-     * Adds an initialization task to the pipeline that will run asynchronously.
+     * Adds an initialization task to the pipeline that will run in the background.
+     * <br><br>The task will not block the update cycle when it runs, but since it's not running on the main thread
+     * it won't have access to the OpenGL context.
+     * <br><br>Background tasks are generally safe to have side effects.
+     * The underlying {@link CompletableFuture} assures that the main thread will have visibility of changed fields when
+     * the task has completed. Fields that are accessed or modified in parallel with the task must be properly synchronized.
      *
      * @param task The initialization task
      */
-    public void addAsyncTask(InitializationTask task) {
+    public void addBackgroundTask(InitializationTask task) {
         tasks.add(new InitializationTaskWrapper(task, true));
     }
 
@@ -88,11 +89,11 @@ public class FrameInitializer {
 
     private static class InitializationTaskWrapper {
         InitializationTask task;
-        boolean isAsync;
+        boolean isBackgroundTask;
 
-        InitializationTaskWrapper(InitializationTask task, boolean isAsync) {
+        InitializationTaskWrapper(InitializationTask task, boolean isBackgroundTask) {
             this.task = task;
-            this.isAsync = isAsync;
+            this.isBackgroundTask = isBackgroundTask;
         }
     }
 }

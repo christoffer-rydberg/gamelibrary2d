@@ -122,7 +122,7 @@ public class GameFrame extends AbstractFrame {
     @Override
     protected void initialize(FrameInitializer initializer) throws IOException {
         prepare();
-        initializer.addAsyncTask(ctx -> client.connect());
+        initializer.addBackgroundTask(ctx -> client.connect());
     }
 
     @Override
