@@ -172,7 +172,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void initialize(FrameInitializer initializer) {
+    protected void onBegin(FrameInitializer initializer) {
         try {
             spacecraftLayer.getBackground().add(createBackground());
 
@@ -194,12 +194,12 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onInitialized(FrameInitializationContext context, Throwable error) {
+    protected void onInitializationFailed(Throwable error) {
 
     }
 
     @Override
-    protected void onBegin() {
+    protected void onInitializationSuccessful(FrameInitializationContext context) {
 
     }
 

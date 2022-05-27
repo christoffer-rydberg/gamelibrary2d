@@ -38,7 +38,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void initialize(FrameInitializer initializer) throws IOException {
+    protected void onBegin(FrameInitializer initializer) throws IOException {
         Texture ballTexture = DefaultTexture.create(Ball.class.getResource("/ball.png"), this);
         Surface ballSurface = Quad.create(Rectangle.create(32, 32), this);
         ballRenderer = new SurfaceRenderer<>(ballSurface, ballTexture);
@@ -82,7 +82,12 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialized(FrameInitializationContext context, Throwable error) {
+    protected void onInitializationFailed(Throwable error) {
+
+    }
+
+    @Override
+    protected void onInitializationSuccessful(FrameInitializationContext context) {
 
     }
 
@@ -93,11 +98,6 @@ public class DemoFrame extends AbstractFrame {
 
     private void addBall(float x, float y) {
         addBall(new Ball(ballRenderer, x, y));
-    }
-
-    @Override
-    protected void onBegin() {
-
     }
 
     @Override

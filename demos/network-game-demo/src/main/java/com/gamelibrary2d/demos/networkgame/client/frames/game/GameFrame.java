@@ -70,6 +70,7 @@ public class GameFrame extends AbstractFrame {
     private GameSettings gameSettings;
     private Rectangle renderedGameBounds;
     private boolean prepared;
+    private boolean initialized;
 
     public GameFrame(
             DemoGame game,
@@ -120,27 +121,31 @@ public class GameFrame extends AbstractFrame {
     }
 
     @Override
-    protected void initialize(FrameInitializer initializer) throws IOException {
+    protected void onBegin(FrameInitializer initializer) throws IOException {
         prepare();
         initializer.addBackgroundTask(ctx -> client.connect());
     }
 
     @Override
-    protected void onInitialized(FrameInitializationContext context, Throwable error) {
-        if (error != null) {
-            error.printStackTrace();
-            game.goToMenu();
-            return;
-        }
+    protected void onInitializationFailed(Throwable error) {
+        error.printStackTrace();
+        game.goToMenu();
+    }
 
+    @Override
+    protected void onInitializationSuccessful(FrameInitializationContext context) {
         add(backgroundLayer);
         add(gameLayer);
         add(screenLayer);
+
+        musicPlayer.play(Music.GAME, 0.5f, true, 10f, false);
+
+        initialized = true;
     }
 
     @Override
     protected void onUpdate(float deltaTime) {
-        if (isInitialized()) {
+        if (initialized) {
             client.readIncoming();
             super.onUpdate(deltaTime);
             client.sendOutgoing();
@@ -173,11 +178,6 @@ public class GameFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onBegin() {
-        musicPlayer.play(Music.GAME, 0.5f, true, 10f, false);
-    }
-
-    @Override
     protected void onEnd() {
         musicPlayer.stop(2f);
     }
@@ -185,6 +185,7 @@ public class GameFrame extends AbstractFrame {
     @Override
     protected void onDispose() {
         prepared = false;
+        initialized = false;
     }
 
     private Renderable createBackground(Rectangle windowBounds, Rectangle gameBounds) {

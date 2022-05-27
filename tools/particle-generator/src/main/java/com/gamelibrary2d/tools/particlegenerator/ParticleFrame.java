@@ -30,7 +30,7 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
         this.game = game;
     }
 
-    protected void initialize(FrameInitializer initializer) {
+    protected void onBegin(FrameInitializer initializer) {
         screenLayer = new BasicLayer<>();
         Layer<Renderable> particleLayer = new BasicLayer<>();
 
@@ -71,12 +71,12 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onInitialized(FrameInitializationContext context, Throwable error) {
+    protected void onInitializationFailed(Throwable error) {
 
     }
 
     @Override
-    protected void onBegin() {
+    protected void onInitializationSuccessful(FrameInitializationContext context) {
 
     }
 

@@ -37,15 +37,15 @@ public interface Game extends Disposer, Updatable {
     void update(float delta);
 
     /**
-     * Performs the specified action after the current update cycle.
+     * Performs the specified action in the beginning of the next update cycle.
      */
     void invokeLater(Action action);
 
     /**
      * Sets the specified frame.
      *
-     * @param frame                 - The new frame.
-     * @param disposePrevious       - Disposal of previous frame.
+     * @param frame           - The new frame.
+     * @param disposePrevious - Disposal of previous frame.
      */
     void setFrame(Frame frame, boolean disposePrevious);
 

@@ -9,20 +9,20 @@ import com.gamelibrary2d.components.containers.AbstractLayer;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.updaters.Updater;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public abstract class AbstractFrame extends AbstractLayer<Renderable> implements Frame {
     private final DelayedActionMonitor delayedActionMonitor = new DelayedActionMonitor();
     private final Deque<Updater> updaters = new ArrayDeque<>();
     private final DefaultDisposer disposer;
 
-    private boolean initialized;
-    private boolean requiresInitialization = true;
     private Color backgroundColor = Color.BLACK;
-    private CompletableFuture<FrameInitializationContext> initializationContextFuture;
+    private Future<FrameInitializationContext> initializationContextFuture;
 
     protected AbstractFrame(Disposer parentDisposer) {
         this.disposer = new DefaultDisposer(parentDisposer);
@@ -40,27 +40,20 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
 
     @Override
     public void begin() {
-        if (requiresInitialization) {
-            requiresInitialization = false;
+        delayedActionMonitor.clear();
 
-            delayedActionMonitor.clear();
+        FrameInitializer frameInitializer = new FrameInitializer(this);
 
-            FrameInitializer frameInitializer = new FrameInitializer(this);
-
-            try {
-                initialize(frameInitializer);
-                initializationContextFuture = frameInitializer.run();
-            } catch (Throwable e) {
-                initializationContextFuture = new CompletableFuture<>();
-                initializationContextFuture.completeExceptionally(e);
-            }
-
-            if (initializationContextFuture != null) {
-                tryCompleteInitialization();
-            }
+        try {
+            onBegin(frameInitializer);
+            initializationContextFuture = frameInitializer.run();
+        } catch (Throwable e) {
+            CompletableFuture<FrameInitializationContext> completedFuture = new CompletableFuture<>();
+            completedFuture.completeExceptionally(e);
+            initializationContextFuture = completedFuture;
         }
 
-        onBegin();
+        tryCompleteInitialization();
     }
 
     @Override
@@ -82,8 +75,6 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         disposer.clear();
         updaters.clear();
         delayedActionMonitor.clear();
-        initialized = false;
-        requiresInitialization = true;
 
         onDispose();
     }
@@ -103,14 +94,9 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     private void tryCompleteInitialization() {
         if (initializationContextFuture.isDone()) {
             try {
-                onInitialized(initializationContextFuture.get(), null);
-                initialized = true;
-            } catch (InterruptedException e) {
-                requiresInitialization = true;
-                onInitialized(null, e);
-            } catch (ExecutionException e) {
-                requiresInitialization = true;
-                onInitialized(null, e.getCause());
+                onInitializationSuccessful(initializationContextFuture.get());
+            } catch (InterruptedException | ExecutionException e) {
+                onInitializationFailed(e);
             } finally {
                 initializationContextFuture = null;
             }
@@ -153,24 +139,40 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         this.backgroundColor = color;
     }
 
-    protected boolean isInitialized() {
-        return initialized;
-    }
-
-    protected abstract void initialize(FrameInitializer initializer) throws Throwable;
+    /**
+     * Invoked when the frame begins.
+     *
+     * @param initializer Used to configure the frame initialization pipeline.
+     *                    Either {@link #onInitializationSuccessful} or {@link #onInitializationFailed} will be invoked
+     *                    when the pipeline has finished.
+     * @throws IOException Throwing this exception will result in {@link #onInitializationFailed} being invoked.
+     */
+    protected abstract void onBegin(FrameInitializer initializer) throws IOException;
 
     /**
-     * Invoked when all initialization tasks of the {@link FrameInitializer} has completed.
+     * Invoked if a task of the {@link FrameInitializer} throws an exception.
+     * This method is always invoked from the main thread, even if the task ran as a background task.
+     *
+     * @param error The initialization exception.
+     */
+    protected abstract void onInitializationFailed(Throwable error);
+
+    /**
+     * Invoked when all tasks of the {@link FrameInitializer} has completed successfully,
+     * or directly after {@link #onBegin} if no {@link FrameInitializationTask initialization tasks} were added.
      *
      * @param context The context from the initialization pipeline.
-     * @param error   The exception, in case of failed initialization, otherwise null.
      */
-    protected abstract void onInitialized(FrameInitializationContext context, Throwable error);
+    protected abstract void onInitializationSuccessful(FrameInitializationContext context);
 
-    protected abstract void onBegin();
-
+    /**
+     * Invoked when the frame ends.
+     */
     protected abstract void onEnd();
 
+    /**
+     * Invoked when the frame is disposed.
+     */
     protected abstract void onDispose();
 
     private static class DelayedActionMonitor {
@@ -181,7 +183,8 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         }
 
         synchronized void run() {
-            while (!actions.isEmpty()) {
+            int size = actions.size();
+            for (int i = 0; i < size; ++i) {
                 actions.pollFirst().perform();
             }
         }

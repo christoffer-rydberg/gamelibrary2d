@@ -26,7 +26,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void initialize(FrameInitializer initializer) {
+    protected void onBegin(FrameInitializer initializer) {
         Window window = game.getWindow();
 
         Rectangle windowBounds = new Rectangle(0, 0, window.getWidth(), window.getHeight());
@@ -62,7 +62,12 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialized(FrameInitializationContext context, Throwable error) {
+    protected void onInitializationFailed(Throwable error) {
+
+    }
+
+    @Override
+    protected void onInitializationSuccessful(FrameInitializationContext context) {
 
     }
 
@@ -73,11 +78,6 @@ public class DemoFrame extends AbstractFrame {
                 random.nextFloat(),
                 random.nextFloat()
         );
-    }
-
-    @Override
-    protected void onBegin() {
-
     }
 
     @Override

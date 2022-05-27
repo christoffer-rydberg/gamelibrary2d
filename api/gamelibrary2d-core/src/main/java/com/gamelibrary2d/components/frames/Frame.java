@@ -35,7 +35,7 @@ public interface Frame extends Layer<Renderable>, Disposer {
     void stopUpdater(Updater updater);
 
     /**
-     * Performs the specified action after the current update cycle.
+     * Performs the specified action in the beginning of the next update cycle.
      */
     void invokeLater(Action runnable);
 }

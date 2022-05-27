@@ -1,10 +1,9 @@
 package com.gamelibrary2d.components.frames;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.*;
 
 /**
- * Used to configure the frame initialization pipeline by adding {@link InitializationTask initialization tasks}.
+ * Used to configure the frame initialization pipeline by adding {@link FrameInitializationTask initialization tasks}.
  * <br><br>
  * <p>
  * The initialization pipeline works as follows:
@@ -14,27 +13,27 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class FrameInitializer {
     private final Frame frame;
-    private final CompletableFuture<FrameInitializationContext> completableFuture = new CompletableFuture<>();
     private final ConcurrentLinkedQueue<InitializationTaskWrapper> tasks = new ConcurrentLinkedQueue<>();
     private final FrameInitializationContext context = new FrameInitializationContext();
+    private final InitializationFuture initializationFuture = new InitializationFuture();
 
     FrameInitializer(Frame frame) {
         this.frame = frame;
     }
 
-    private void performTask(InitializationTask task) {
-        if (!completableFuture.isDone()) {
+    private void performTask(FrameInitializationTask task) {
+        if (!initializationFuture.isDone()) {
             try {
                 task.perform(context);
             } catch (Throwable e) {
-                completableFuture.completeExceptionally(e);
+                initializationFuture.completeExceptionally(e);
             }
         }
     }
 
     private void performTask(InitializationTaskWrapper task) {
         if (task.isBackgroundTask) {
-            CompletableFuture.runAsync(() -> {
+            initializationFuture.runAsync(() -> {
                 performTask(task.task);
                 performNextTask();
             });
@@ -49,7 +48,7 @@ public class FrameInitializer {
         if (task != null) {
             frame.invokeLater(() -> performTask(task));
         } else {
-            completableFuture.complete(context);
+            initializationFuture.complete(context);
         }
     }
 
@@ -60,7 +59,7 @@ public class FrameInitializer {
      *
      * @param task The initialization task
      */
-    public void addTask(InitializationTask task) {
+    public void addTask(FrameInitializationTask task) {
         tasks.add(new InitializationTaskWrapper(task, false));
     }
 
@@ -74,26 +73,67 @@ public class FrameInitializer {
      *
      * @param task The initialization task
      */
-    public void addBackgroundTask(InitializationTask task) {
+    public void addBackgroundTask(FrameInitializationTask task) {
         tasks.add(new InitializationTaskWrapper(task, true));
     }
 
-    CompletableFuture<FrameInitializationContext> run() {
-        performNextTask();
-        return completableFuture;
-    }
-
-    public interface InitializationTask {
-        void perform(FrameInitializationContext context) throws Throwable;
+    Future<FrameInitializationContext> run() {
+        frame.invokeLater(this::performNextTask);
+        return initializationFuture;
     }
 
     private static class InitializationTaskWrapper {
-        InitializationTask task;
+        FrameInitializationTask task;
         boolean isBackgroundTask;
 
-        InitializationTaskWrapper(InitializationTask task, boolean isBackgroundTask) {
+        InitializationTaskWrapper(FrameInitializationTask task, boolean isBackgroundTask) {
             this.task = task;
             this.isBackgroundTask = isBackgroundTask;
+        }
+    }
+
+    private static class InitializationFuture implements Future<FrameInitializationContext> {
+        private final CompletableFuture<FrameInitializationContext> completableFuture = new CompletableFuture<>();
+        private CompletableFuture<Void> activeFuture;
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            boolean cancelled;
+            cancelled = activeFuture.cancel(mayInterruptIfRunning);
+            cancelled |= completableFuture.cancel(mayInterruptIfRunning);
+            return cancelled;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return completableFuture.isCancelled();
+        }
+
+        @Override
+        public boolean isDone() {
+            return completableFuture.isDone();
+        }
+
+        @Override
+        public FrameInitializationContext get() throws InterruptedException, ExecutionException {
+            return completableFuture.get();
+        }
+
+        @Override
+        public FrameInitializationContext get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            return completableFuture.get(timeout, unit);
+        }
+
+        public void completeExceptionally(Throwable e) {
+            completableFuture.completeExceptionally(e);
+        }
+
+        public void complete(FrameInitializationContext context) {
+            completableFuture.complete(context);
+        }
+
+        public void runAsync(Runnable runnable) {
+            activeFuture = CompletableFuture.runAsync(runnable);
         }
     }
 }

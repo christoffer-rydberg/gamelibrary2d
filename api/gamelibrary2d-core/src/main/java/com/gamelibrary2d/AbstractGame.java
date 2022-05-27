@@ -209,6 +209,8 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     }
 
     public void update(float deltaTime) {
+        delayedActionMonitor.run();
+
         try {
             updating = true;
             window.pollEvents();
@@ -218,8 +220,6 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         } finally {
             updating = false;
         }
-
-        delayedActionMonitor.run();
     }
 
     private void update(Frame frame, float deltaTime) {
@@ -299,6 +299,21 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
     protected abstract void onStart() throws IOException;
 
     protected abstract void onExit();
+
+    private static class DelayedActionMonitor {
+        private final Deque<Action> actions = new ArrayDeque<>();
+
+        synchronized void add(Action action) {
+            actions.add(action);
+        }
+
+        synchronized void run() {
+            int size = actions.size();
+            for (int i = 0; i < size; ++i) {
+                actions.pollFirst().perform();
+            }
+        }
+    }
 
     private class InternalWindowEventListener implements WindowEventListener {
 
@@ -386,20 +401,6 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         @Override
         public void onScroll(int id, float xOffset, float yOffset) {
 
-        }
-    }
-
-    private static class DelayedActionMonitor {
-        private final Deque<Action> actions = new ArrayDeque<>();
-
-        synchronized void add(Action action) {
-            actions.add(action);
-        }
-
-        synchronized void run() {
-            while (!actions.isEmpty()) {
-                actions.pollFirst().perform();
-            }
         }
     }
 }

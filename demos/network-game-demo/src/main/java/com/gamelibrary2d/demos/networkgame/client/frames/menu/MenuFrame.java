@@ -124,22 +124,24 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    protected void initialize(FrameInitializer initializer) throws IOException {
+    protected void onBegin(FrameInitializer initializer) throws IOException {
         prepare();
     }
 
     @Override
-    protected void onInitialized(FrameInitializationContext context, Throwable error) {
-        if (error != null) {
-            error.printStackTrace();
-            return;
-        }
+    protected void onInitializationFailed(Throwable error) {
+        error.printStackTrace();
+    }
 
+    @Override
+    protected void onInitializationSuccessful(FrameInitializationContext context) {
         hideCredits();
         add(backgroundLayer);
         add(menuLayer);
         add(credits);
         runIntro();
+
+        musicPlayer.play(Music.MENU, 1f, false, 10f, false);
     }
 
     private void runIntro() {
@@ -174,11 +176,6 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
             startUpdater(updater);
             menuLayerIsHidden = false;
         }
-    }
-
-    @Override
-    protected void onBegin() {
-        musicPlayer.play(Music.MENU, 1f, false, 10f, false);
     }
 
     @Override
