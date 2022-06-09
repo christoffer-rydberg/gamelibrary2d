@@ -80,4 +80,22 @@ public interface Transformable extends Projection {
     default float getScaleAndRotationCenterY() {
         return getScaleAndRotationCenter().getY();
     }
+
+    default void projectTo(Projection projection) {
+        getPosition().projectTo(projection);
+        getScale().divide(projection.getScaleX(), projection.getScaleY());
+        setRotation(getRotation() - projection.getRotation());
+    }
+
+    default void projectFrom(Projection projection) {
+        getPosition().projectFrom(projection);
+        getScale().multiply(projection.getScaleX(), projection.getScaleY());
+        setRotation(getRotation() + projection.getRotation());
+    }
+
+    default void setProjection(Projection projection) {
+        setPosition(projection.getPosX(), projection.getPosY());
+        setScale(projection.getScaleX(), projection.getScaleY());
+        setRotation(projection.getRotation());
+    }
 }

@@ -12,7 +12,7 @@ public class Label implements ContentRenderer {
     private final DefaultTextRenderer textRenderer;
     private final List<TextChangedListener> textChangedListeners = new CopyOnWriteArrayList<>();
 
-    private String text;
+    private String text = "";
     private float rowHeight;
     private float maxWidth = Float.MAX_VALUE;
     private float maxHeight = Float.MAX_VALUE;
