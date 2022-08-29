@@ -39,7 +39,7 @@
         <repository>
             <id>github</id>
             <name>GitHub christoffer-rydberg Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/christoffer-rydberg/game-library-2d</url>
+            <url>https://maven.pkg.github.com/christoffer-rydberg/gamelibrary2d</url>
         </repository>
     </distributionManagement>
 
