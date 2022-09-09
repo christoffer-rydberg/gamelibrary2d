@@ -11,7 +11,7 @@ import java.util.Deque;
 
 public class NavigationPanel extends AbstractGameObject
         implements Clearable, PointerDownAware, PointerMoveAware, PointerUpAware {
-    private final Point pointerProjection = new Point();
+    private final Point transformationPoint = new Point();
     private final Deque<GameObject> previous = new ArrayDeque<>();
 
     private GameObject current;
@@ -57,33 +57,33 @@ public class NavigationPanel extends AbstractGameObject
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (current instanceof PointerDownAware) {
-            pointerProjection.set(projectedX, projectedY);
-            pointerProjection.projectTo(this);
-            return ((PointerDownAware) current).pointerDown(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
+            transformationPoint.set(transformedX, transformedY);
+            transformationPoint.transformTo(this);
+            return ((PointerDownAware) current).pointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
         }
 
         return false;
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
+    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
         if (current instanceof PointerMoveAware) {
-            pointerProjection.set(projectedX, projectedY);
-            pointerProjection.projectTo(this);
-            return ((PointerMoveAware) current).pointerMove(id, x, y, pointerProjection.getX(), pointerProjection.getY());
+            transformationPoint.set(transformedX, transformedY);
+            transformationPoint.transformTo(this);
+            return ((PointerMoveAware) current).pointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
         }
 
         return false;
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (current instanceof PointerUpAware) {
-            pointerProjection.set(projectedX, projectedY);
-            pointerProjection.projectTo(this);
-            ((PointerUpAware) current).pointerUp(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
+            transformationPoint.set(transformedX, transformedY);
+            transformationPoint.transformTo(this);
+            ((PointerUpAware) current).pointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
         }
     }
 

@@ -27,7 +27,7 @@ public class Button extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         onClick.perform(this);
     }
 

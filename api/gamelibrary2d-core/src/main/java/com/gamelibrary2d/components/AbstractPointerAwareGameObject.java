@@ -16,7 +16,7 @@ import com.gamelibrary2d.opengl.resources.FrameBuffer;
 public abstract class AbstractPointerAwareGameObject
         extends AbstractGameObject
         implements PointerDownAware, PointerMoveAware, PointerUpAware, PointerDownWhenFocusedAware {
-    private final Point pointerProjection = new Point();
+    private final Point transformationPoint = new Point();
     private final PointerInteractionsArray pointerInteractions = new PointerInteractionsArray(10);
     private FrameBufferRenderer frameBufferRenderer;
     private DefaultDisposer frameBufferDisposer;
@@ -79,12 +79,12 @@ public abstract class AbstractPointerAwareGameObject
     }
 
     @Override
-    public final boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public final boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (isEnabled()) {
-            pointerProjection.set(projectedX, projectedY);
-            pointerProjection.projectTo(this);
-            if (isPixelVisible(pointerProjection.getX(), pointerProjection.getY()) && pointerInteractions.setActive(id, id)) {
-                onPointerDown(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
+            transformationPoint.set(transformedX, transformedY);
+            transformationPoint.transformTo(this);
+            if (isPixelVisible(transformationPoint.getX(), transformationPoint.getY()) && pointerInteractions.setActive(id, id)) {
+                onPointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
                 return true;
             }
 
@@ -95,18 +95,18 @@ public abstract class AbstractPointerAwareGameObject
     }
 
     @Override
-    public final boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
+    public final boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
         if (isEnabled()) {
             if (pointerInteractions.hasActiveButtons(id) && isListeningToPointDragEvents()) {
-                pointerProjection.set(projectedX, projectedY);
-                pointerProjection.projectTo(this);
-                onPointerDrag(id, x, y, pointerProjection.getX(), pointerProjection.getY());
+                transformationPoint.set(transformedX, transformedY);
+                transformationPoint.transformTo(this);
+                onPointerDrag(id, x, y, transformationPoint.getX(), transformationPoint.getY());
                 return true;
             } else if (isListeningToPointHoverEvents()) {
-                pointerProjection.set(projectedX, projectedY);
-                pointerProjection.projectTo(this);
-                if (isPixelVisible(pointerProjection.getX(), pointerProjection.getY())) {
-                    onPointerHover(id, x, y, pointerProjection.getX(), pointerProjection.getY());
+                transformationPoint.set(transformedX, transformedY);
+                transformationPoint.transformTo(this);
+                if (isPixelVisible(transformationPoint.getX(), transformationPoint.getY())) {
+                    onPointerHover(id, x, y, transformationPoint.getX(), transformationPoint.getY());
                     return true;
                 }
             }
@@ -116,12 +116,12 @@ public abstract class AbstractPointerAwareGameObject
     }
 
     @Override
-    public final void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public final void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (isEnabled() && pointerInteractions.isActive(id, id)) {
             pointerInteractions.setInactive(id, id);
-            pointerProjection.set(projectedX, projectedY);
-            pointerProjection.projectTo(this);
-            onPointerUp(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
+            transformationPoint.set(transformedX, transformedY);
+            transformationPoint.transformTo(this);
+            onPointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
         }
     }
 
@@ -147,10 +147,10 @@ public abstract class AbstractPointerAwareGameObject
      * @param button     The id of the pointer button.
      * @param x          The x-coordinate of the pointer.
      * @param y          The y-coordinate of the pointer.
-     * @param projectedX The x-coordinate of the pointer projected to this object.
-     * @param projectedY The y-coordinate of the pointer projected to this object.
+     * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
+     * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */
-    protected void onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
 
     }
 
@@ -161,10 +161,10 @@ public abstract class AbstractPointerAwareGameObject
      * @param button     The id of the pointer button.
      * @param x          The x-coordinate of the pointer.
      * @param y          The y-coordinate of the pointer.
-     * @param projectedX The x-coordinate of the pointer projected to this object.
-     * @param projectedY The y-coordinate of the pointer projected to this object.
+     * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
+     * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */
-    protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
 
     }
 
@@ -175,10 +175,10 @@ public abstract class AbstractPointerAwareGameObject
      * @param id         The id of the pointer.
      * @param x          The x-coordinate of the pointer.
      * @param y          The y-coordinate of the pointer.
-     * @param projectedX The x-coordinate of the pointer projected to this object.
-     * @param projectedY The y-coordinate of the pointer projected to this object.
+     * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
+     * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */
-    protected void onPointerHover(int id, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerHover(int id, float x, float y, float transformedX, float transformedY) {
 
     }
 
@@ -189,10 +189,10 @@ public abstract class AbstractPointerAwareGameObject
      * @param id         The id of the pointer.
      * @param x          The x-coordinate of the pointer.
      * @param y          The y-coordinate of the pointer.
-     * @param projectedX The x-coordinate of the pointer projected to this object.
-     * @param projectedY The y-coordinate of the pointer projected to this object.
+     * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
+     * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */
-    protected void onPointerDrag(int id, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerDrag(int id, float x, float y, float transformedX, float transformedY) {
 
     }
 

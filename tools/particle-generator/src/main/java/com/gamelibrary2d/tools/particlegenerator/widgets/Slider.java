@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Slider extends AbstractGameObject implements PointerDownAware, PointerMoveAware, PointerUpAware {
-    private final Point pointerProjection = new Point();
+    private final Point transformationPoint = new Point();
     private final List<DragBeginListener> dragBeginListeners = new CopyOnWriteArrayList<>();
     private final List<DragStopListener> dragStopListeners = new CopyOnWriteArrayList<>();
     private final List<ValueChangedListener> valueChangedListeners = new CopyOnWriteArrayList<>();
@@ -108,49 +108,49 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (isEnabled()) {
-            pointerProjection.set(projectedX, projectedY);
-            pointerProjection.projectTo(this);
-            return handle.pointerDown(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
+            transformationPoint.set(transformedX, transformedY);
+            transformationPoint.transformTo(this);
+            return handle.pointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
         }
 
         return false;
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
+    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
         if (isEnabled()) {
-            pointerProjection.set(projectedX, projectedY);
-            pointerProjection.projectTo(this);
-            return handle.pointerMove(id, x, y, pointerProjection.getX(), pointerProjection.getY());
+            transformationPoint.set(transformedX, transformedY);
+            transformationPoint.transformTo(this);
+            return handle.pointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
         }
 
         return false;
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (isEnabled()) {
-            pointerProjection.set(projectedX, projectedY);
-            pointerProjection.projectTo(this);
-            handle.pointerUp(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
+            transformationPoint.set(transformedX, transformedY);
+            transformationPoint.transformTo(this);
+            handle.pointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
         }
     }
 
-    private void onHandleClicked(int id, int button, float x, float y, float projectedX, float projectedY) {
+    private void onHandleClicked(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (pointerId < 0) {
             pointerId = id;
             pointerButton = button;
-            dragOriginX = projectedX;
-            dragOriginY = projectedY;
+            dragOriginX = transformedX;
+            dragOriginY = transformedY;
             for (DragBeginListener listener : dragBeginListeners) {
                 listener.onDragBegin(getValue());
             }
         }
     }
 
-    private void onHandleReleased(int id, int button, float x, float y, float projectedX, float projectedY) {
+    private void onHandleReleased(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;
@@ -160,9 +160,9 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
         }
     }
 
-    private void onHandleDragged(int id, float x, float y, float projectedX, float projectedY) {
+    private void onHandleDragged(int id, float x, float y, float transformedX, float transformedY) {
         if (pointerId == id) {
-            setValue(getValueFromPosition(projectedX, projectedY));
+            setValue(getValueFromPosition(transformedX, transformedY));
         }
     }
 

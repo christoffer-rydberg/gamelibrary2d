@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class AbstractLayerObject<T extends Renderable> extends AbstractGameObject implements LayerObject<T> {
     private final Layer<T> layer;
-    private final Point pointerProjection = new Point();
+    private final Point transformationPoint = new Point();
 
     private Rectangle bounds;
     private boolean updatesEnabled = true;
@@ -80,38 +80,38 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
     }
 
     @Override
-    public final boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        return isEnabled() && onPointerDown(id, button, x, y, projectedX, projectedY);
+    public final boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        return isEnabled() && onPointerDown(id, button, x, y, transformedX, transformedY);
     }
 
-    protected boolean onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        pointerProjection.set(projectedX, projectedY);
-        pointerProjection.projectTo(this);
-        return layer.pointerDown(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
-    }
-
-    @Override
-    public final boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
-        return isEnabled() && onPointerMove(id, x, y, projectedX, projectedY);
-    }
-
-    protected boolean onPointerMove(int id, float x, float y, float projectedX, float projectedY) {
-        pointerProjection.set(projectedX, projectedY);
-        pointerProjection.projectTo(this);
-        return layer.pointerMove(id, x, y, pointerProjection.getX(), pointerProjection.getY());
+    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        transformationPoint.set(transformedX, transformedY);
+        transformationPoint.transformTo(this);
+        return layer.pointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
     }
 
     @Override
-    public final void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public final boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        return isEnabled() && onPointerMove(id, x, y, transformedX, transformedY);
+    }
+
+    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        transformationPoint.set(transformedX, transformedY);
+        transformationPoint.transformTo(this);
+        return layer.pointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
+    }
+
+    @Override
+    public final void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (isEnabled()) {
-            onPointerUp(id, button, x, y, projectedX, projectedY);
+            onPointerUp(id, button, x, y, transformedX, transformedY);
         }
     }
 
-    protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
-        pointerProjection.set(projectedX, projectedY);
-        pointerProjection.projectTo(this);
-        layer.pointerUp(id, button, x, y, pointerProjection.getX(), pointerProjection.getY());
+    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+        transformationPoint.set(transformedX, transformedY);
+        transformationPoint.transformTo(this);
+        layer.pointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
     }
 
     @Override

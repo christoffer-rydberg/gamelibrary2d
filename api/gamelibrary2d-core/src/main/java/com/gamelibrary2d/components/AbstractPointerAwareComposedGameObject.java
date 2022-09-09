@@ -16,28 +16,28 @@ public class AbstractPointerAwareComposedGameObject<T extends GameObject>
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         T content = getContent();
         if (content instanceof PointerDownAware) {
-            return ((PointerDownAware) content).pointerDown(id, button, x, y, projectedX, projectedY);
+            return ((PointerDownAware) content).pointerDown(id, button, x, y, transformedX, transformedY);
         }
         return false;
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
+    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
         T content = getContent();
         if (content instanceof PointerMoveAware) {
-            return ((PointerMoveAware) content).pointerMove(id, x, y, projectedX, projectedY);
+            return ((PointerMoveAware) content).pointerMove(id, x, y, transformedX, transformedY);
         }
         return false;
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         T content = getContent();
         if (content instanceof PointerUpAware) {
-            ((PointerUpAware) content).pointerUp(id, button, x, y, projectedX, projectedY);
+            ((PointerUpAware) content).pointerUp(id, button, x, y, transformedX, transformedY);
         }
     }
 }

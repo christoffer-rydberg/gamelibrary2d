@@ -105,30 +105,30 @@ public abstract class AbstractObservableGameObject<T extends Renderable>
     }
 
     @Override
-    protected void onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         for (PointerDownListener listener : pointerDownListeners) {
-            listener.onPointerDown(id, button, x, y, projectedX, projectedY);
+            listener.onPointerDown(id, button, x, y, transformedX, transformedY);
         }
     }
 
     @Override
-    protected void onPointerHover(int id, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerHover(int id, float x, float y, float transformedX, float transformedY) {
         for (PointerHoverListener listener : pointerHoverListeners) {
-            listener.onPointerHover(id, x, y, projectedX, projectedY);
+            listener.onPointerHover(id, x, y, transformedX, transformedY);
         }
     }
 
     @Override
-    protected void onPointerDrag(int id, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerDrag(int id, float x, float y, float transformedX, float transformedY) {
         for (PointerDragListener listener : pointerDragListeners) {
-            listener.onPointerDrag(id, x, y, projectedX, projectedY);
+            listener.onPointerDrag(id, x, y, transformedX, transformedY);
         }
     }
 
     @Override
-    protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         for (PointerUpListener listener : pointerUpListeners) {
-            listener.onPointerUp(id, button, x, y, projectedX, projectedY);
+            listener.onPointerUp(id, button, x, y, transformedX, transformedY);
         }
     }
 

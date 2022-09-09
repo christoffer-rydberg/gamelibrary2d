@@ -44,12 +44,12 @@ public class BallTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (!isDrawing()) {
             pointerId = id;
             pointerButton = button;
-            line.getStart().set(projectedX, projectedY);
-            line.getEnd().set(projectedX, projectedY);
+            line.getStart().set(transformedX, transformedY);
+            line.getEnd().set(transformedX, transformedY);
             line.refresh();
             return true;
         }
@@ -58,9 +58,9 @@ public class BallTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
+    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
         if (isDrawing()) {
-            line.getEnd().set(projectedX, projectedY);
+            line.getEnd().set(transformedX, transformedY);
             line.refresh();
             return true;
         }
@@ -69,7 +69,7 @@ public class BallTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;

@@ -273,37 +273,37 @@ public class Point {
         return getLength(this.x - x, this.y - y);
     }
 
-    public void projectTo(Projection projection) {
-        float rotationAndScaleCenterX = projection.getPosX() + projection.getScaleAndRotationCenterX();
-        float rotationAndScaleCenterY = projection.getPosY() + projection.getScaleAndRotationCenterY();
+    public void transformTo(CoordinateSpace coordinateSpace) {
+        float scaleAndRotationAnchorX = coordinateSpace.getPosX() + coordinateSpace.getScaleAndRotationAnchorX();
+        float scaleAndRotationAnchorY = coordinateSpace.getPosY() + coordinateSpace.getScaleAndRotationAnchorY();
 
-        if (projection.getRotation() != 0) {
-            rotate(-projection.getRotation(), rotationAndScaleCenterX, rotationAndScaleCenterY);
+        if (coordinateSpace.getRotation() != 0) {
+            rotate(-coordinateSpace.getRotation(), scaleAndRotationAnchorX, scaleAndRotationAnchorY);
         }
 
-        if (projection.getScaleX() != 1 || projection.getScaleX() != 1) {
-            setX(rotationAndScaleCenterX + ((getX() - rotationAndScaleCenterX) / projection.getScaleX()));
-            setY(rotationAndScaleCenterY + ((getY() - rotationAndScaleCenterY) / projection.getScaleY()));
+        if (coordinateSpace.getScaleX() != 1 || coordinateSpace.getScaleX() != 1) {
+            setX(scaleAndRotationAnchorX + ((getX() - scaleAndRotationAnchorX) / coordinateSpace.getScaleX()));
+            setY(scaleAndRotationAnchorY + ((getY() - scaleAndRotationAnchorY) / coordinateSpace.getScaleY()));
         }
 
-        setX(getX() - projection.getPosX());
-        setY(getY() - projection.getPosY());
+        setX(getX() - coordinateSpace.getPosX());
+        setY(getY() - coordinateSpace.getPosY());
     }
 
-    public void projectFrom(Projection projection) {
-        setX(getX() + projection.getPosX());
-        setY(getY() + projection.getPosY());
+    public void transformFrom(CoordinateSpace coordinateSpace) {
+        setX(getX() + coordinateSpace.getPosX());
+        setY(getY() + coordinateSpace.getPosY());
 
-        float rotationAndScaleCenterX = projection.getPosX() + projection.getScaleAndRotationCenterX();
-        float rotationAndScaleCenterY = projection.getPosY() + projection.getScaleAndRotationCenterY();
+        float scaleAndRotationAnchorX = coordinateSpace.getPosX() + coordinateSpace.getScaleAndRotationAnchorX();
+        float scaleAndRotationAnchorY = coordinateSpace.getPosY() + coordinateSpace.getScaleAndRotationAnchorY();
 
-        if (projection.getScaleX() != 1 || projection.getScaleY() != 1) {
-            setX(rotationAndScaleCenterX + ((getX() - rotationAndScaleCenterX) * projection.getScaleX()));
-            setY(rotationAndScaleCenterY + ((getY() - rotationAndScaleCenterY) * projection.getScaleY()));
+        if (coordinateSpace.getScaleX() != 1 || coordinateSpace.getScaleY() != 1) {
+            setX(scaleAndRotationAnchorX + ((getX() - scaleAndRotationAnchorX) * coordinateSpace.getScaleX()));
+            setY(scaleAndRotationAnchorY + ((getY() - scaleAndRotationAnchorY) * coordinateSpace.getScaleY()));
         }
 
-        if (projection.getRotation() != 0) {
-            rotate(projection.getRotation(), rotationAndScaleCenterX, rotationAndScaleCenterY);
+        if (coordinateSpace.getRotation() != 0) {
+            rotate(coordinateSpace.getRotation(), scaleAndRotationAnchorX, scaleAndRotationAnchorY);
         }
     }
 }

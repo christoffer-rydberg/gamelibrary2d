@@ -4,6 +4,7 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.DefaultDisposer;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.GameObject;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.renderers.RenderCache;
 
@@ -14,7 +15,7 @@ public class SplitLayoutLeaf<T> implements SplitLayout {
     private final PrepareRenderAction<T> prepareRender;
 
     private Disposer disposer;
-    private RenderCache renderer;
+    private RenderCache<Renderable> renderer;
     private GameObject target;
 
     /**
@@ -104,16 +105,10 @@ public class SplitLayoutLeaf<T> implements SplitLayout {
     }
 
     private void updateTargetFromSettings() {
-        target.setPosition(internalTargetSettings.getPosition());
-        target.setScaleAndRotationCenter(internalTargetSettings.getScaleAndRotationCenter());
-        target.setScale(internalTargetSettings.getScale());
-        target.setRotation(internalTargetSettings.getRotation());
+        target.setCoordinateSpace(internalTargetSettings);
     }
 
     private void updateSettingsFromTarget() {
-        internalTargetSettings.getPosition().set(target.getPosition());
-        internalTargetSettings.getScaleAndRotationCenter().set(target.getScaleAndRotationCenter());
-        internalTargetSettings.getScale().set(target.getScale());
-        internalTargetSettings.setRotation(target.getRotation());
+        internalTargetSettings.setCoordinateSpace(target);
     }
 }

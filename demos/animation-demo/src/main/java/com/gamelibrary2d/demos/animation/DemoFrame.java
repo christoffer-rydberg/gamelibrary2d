@@ -165,7 +165,7 @@ public class DemoFrame extends AbstractFrame {
         super.onUpdate(deltaTime);
     }
 
-    private void onLoadButtonClicked(int id, int button, float x, float y, float projectedX, float projectedY) {
+    private void onLoadButtonClicked(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (loadingAnimation == null) {
             try {
                 loadingAnimation = selectAnimation();

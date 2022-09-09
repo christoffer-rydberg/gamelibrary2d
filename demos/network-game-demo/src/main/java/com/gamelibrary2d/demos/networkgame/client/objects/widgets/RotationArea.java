@@ -63,8 +63,8 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        if (lowerBounds.contains(projectedX, projectedY)) {
+    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        if (lowerBounds.contains(transformedX, transformedY)) {
             switch (getMode()) {
                 case LEFT_OR_RIGHT:
                     game.getOptions().setRotationMode(RotationMode.TOWARD_DIRECTION);
@@ -74,11 +74,11 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
                     break;
             }
             return true;
-        } else if (bounds.contains(projectedX, projectedY)) {
+        } else if (bounds.contains(transformedX, transformedY)) {
             if (pointerId < 0) {
                 pointerId = id;
                 pointerButton = button;
-                start.set(projectedX, projectedY);
+                start.set(transformedX, transformedY);
                 if (getMode() == RotationMode.TOWARD_DIRECTION) {
                     setValue(1f);
                 }
@@ -91,18 +91,18 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
+    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
         if (pointerId == id) {
             switch (getMode()) {
                 case LEFT_OR_RIGHT:
-                    direction = start.getDirectionDegrees(projectedX, projectedY);
-                    float value = Math.min(1f, start.getDistance(projectedX, start.getY()) / maxLeftRightDistance);
+                    direction = start.getDirectionDegrees(transformedX, transformedY);
+                    float value = Math.min(1f, start.getDistance(transformedX, start.getY()) / maxLeftRightDistance);
                     setLeftRightControllerValue(direction >= 0 ? value : -value);
                     break;
                 case TOWARD_DIRECTION:
-                    if (start.getDistance(projectedX, projectedY) > minNodeInterval) {
-                        direction = start.getDirectionDegrees(projectedX, projectedY);
-                        start.set(projectedX, projectedY);
+                    if (start.getDistance(transformedX, transformedY) > minNodeInterval) {
+                        direction = start.getDirectionDegrees(transformedX, transformedY);
+                        start.set(transformedX, transformedY);
                         player.rotateTowardsGoal(Math.round(direction));
                     }
                     break;
@@ -129,7 +129,7 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (pointerId == id && pointerButton == button) {
             reset();
         }

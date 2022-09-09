@@ -99,11 +99,11 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected boolean onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        if (!super.onPointerDown(id, button, x, y, projectedX, projectedY)) {
+    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        if (!super.onPointerDown(id, button, x, y, transformedX, transformedY)) {
             if (dragging == -1) {
                 dragging = id;
-                particleSystem.setPosition(projectedX, projectedY);
+                particleSystem.setPosition(transformedX, transformedY);
                 return true;
             }
 
@@ -114,10 +114,10 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected boolean onPointerMove(int id, float x, float y, float projectedX, float projectedY) {
-        if (!super.onPointerMove(id, x, y, projectedX, projectedY)) {
+    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        if (!super.onPointerMove(id, x, y, transformedX, transformedY)) {
             if (dragging != -1) {
-                particleSystem.setPosition(projectedX, projectedY);
+                particleSystem.setPosition(transformedX, transformedY);
                 return true;
             }
 
@@ -128,11 +128,11 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (id == dragging) {
             dragging = -1;
         }
-        super.onPointerUp(id, button, x, y, projectedX, projectedY);
+        super.onPointerUp(id, button, x, y, transformedX, transformedY);
     }
 
     @Override

@@ -1,60 +1,81 @@
 package com.gamelibrary2d.components.denotations;
 
+import com.gamelibrary2d.common.CoordinateSpace;
 import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Projection;
 
 /**
- * Defines a {@link Projection} that can undergo transformations (i.e. be repositioned, scaled and resized).
+ * Represents a {@link CoordinateSpace} that be transformed.
  */
-public interface Transformable extends Projection {
+public interface Transformable extends CoordinateSpace {
 
+    /**
+     * The mutable {@link Point} representing the {@link #getPosX x-position} and {@link #getPosY y-position}
+     */
     Point getPosition();
 
+    /**
+     * The mutable {@link Point} representing the {@link #getScaleX x-axis scale} and {@link #getScaleY y-axis scale}
+     */
     Point getScale();
 
     /**
-     * @return The center point, relative to the object's position, used when
-     * scaling and rotating the object.
+     * The mutable {@link Point} representing the {@link #getScaleAndRotationAnchorX x-coordinate} and {@link #getScaleAndRotationAnchorX y-coordinate}
+     * of the scale and rotation anchor.
      */
-    Point getScaleAndRotationCenter();
+    Point getScaleAndRotationAnchor();
 
     /**
-     * @return The rotation of the object in degrees, clockwise, starting from the
-     * positive y-axis.
-     */
-    float getRotation();
-
-    /**
-     * Sets the {@link #getRotation() rotation}.
+     * Sets the {@link #getRotation rotation}.
      */
     void setRotation(float rotation);
 
+    /**
+     * Updates the {@link #getPosition position} with the values from the specified {@link Point}.
+     */
     default void setPosition(Point position) {
         getPosition().set(position);
     }
 
+    /**
+     * Updates the {@link #getPosition position}.
+     */
     default void setPosition(float x, float y) {
         getPosition().set(x, y);
     }
 
+    /**
+     * Updates the {@link #getScale scale} with the values from the specified {@link Point}.
+     */
     default void setScale(Point scale) {
         getScale().set(scale);
     }
 
+    /**
+     * Updates the {@link #getScale scale} with the same value for all axes.
+     */
     default void setScale(float scale) {
         getScale().set(scale, scale);
     }
 
+    /**
+     * Updates the {@link #getScale scale}.
+     */
     default void setScale(float x, float y) {
         getScale().set(x, y);
     }
 
-    default void setScaleAndRotationCenter(Point scaleAndRotationCenter) {
-        getScaleAndRotationCenter().set(scaleAndRotationCenter);
+    /**
+     * Updates the {@link #getScaleAndRotationAnchor() scale and rotation anchor} with the values from the specified {@link Point}.
+     */
+    default void setScaleAndRotationAnchor(Point scaleAndRotationAnchor) {
+        getScaleAndRotationAnchor().set(scaleAndRotationAnchor);
     }
 
-    default void setScaleAndRotationCenter(float x, float y) {
-        getScaleAndRotationCenter().set(x, y);
+    /**
+     * Updates the {@link #getScaleAndRotationAnchor() scale and rotation anchor}.
+     */
+    default void setScaleAndRotationAnchor(float x, float y) {
+        getScaleAndRotationAnchor().set(x, y);
     }
 
     default float getPosX() {
@@ -73,29 +94,45 @@ public interface Transformable extends Projection {
         return getScale().getY();
     }
 
-    default float getScaleAndRotationCenterX() {
-        return getScaleAndRotationCenter().getX();
+    default float getScaleAndRotationAnchorX() {
+        return getScaleAndRotationAnchor().getX();
     }
 
-    default float getScaleAndRotationCenterY() {
-        return getScaleAndRotationCenter().getY();
+    default float getScaleAndRotationAnchorY() {
+        return getScaleAndRotationAnchor().getY();
     }
 
-    default void projectTo(Projection projection) {
-        getPosition().projectTo(projection);
-        getScale().divide(projection.getScaleX(), projection.getScaleY());
-        setRotation(getRotation() - projection.getRotation());
+    /**
+     * Transforms the {@link #getPosition position}, {@link #getScale scale} and {@link #getRotation rotation}
+     * to the specified {@link CoordinateSpace}.
+     */
+    default void transformTo(CoordinateSpace coordinateSpace) {
+        getPosition().transformTo(coordinateSpace);
+        getScale().divide(coordinateSpace.getScaleX(), coordinateSpace.getScaleY());
+        setRotation(getRotation() - coordinateSpace.getRotation());
     }
 
-    default void projectFrom(Projection projection) {
-        getPosition().projectFrom(projection);
-        getScale().multiply(projection.getScaleX(), projection.getScaleY());
-        setRotation(getRotation() + projection.getRotation());
+    /**
+     * Transforms the {@link #getPosition position}, {@link #getScale scale} and {@link #getRotation rotation}
+     * from the specified {@link CoordinateSpace}.
+     */
+    default void transformFrom(CoordinateSpace coordinateSpace) {
+        getPosition().transformFrom(coordinateSpace);
+        getScale().multiply(coordinateSpace.getScaleX(), coordinateSpace.getScaleY());
+        setRotation(getRotation() + coordinateSpace.getRotation());
     }
 
-    default void setProjection(Projection projection) {
-        setPosition(projection.getPosX(), projection.getPosY());
-        setScale(projection.getScaleX(), projection.getScaleY());
-        setRotation(projection.getRotation());
+    /**
+     * Updates the {@link #getPosition position}, {@link #getScale scale}, {@link #getRotation rotation}
+     * and {@link #getScaleAndRotationAnchor() scale and rotation anchor}
+     * with the values from the specified {@link CoordinateSpace}.
+     */
+    default void setCoordinateSpace(CoordinateSpace coordinateSpace) {
+        setPosition(coordinateSpace.getPosX(), coordinateSpace.getPosY());
+        setScale(coordinateSpace.getScaleX(), coordinateSpace.getScaleY());
+        setRotation(coordinateSpace.getRotation());
+        setScaleAndRotationAnchor(
+                coordinateSpace.getScaleAndRotationAnchorX(),
+                coordinateSpace.getScaleAndRotationAnchorY());
     }
 }

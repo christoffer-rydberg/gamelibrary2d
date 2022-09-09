@@ -7,7 +7,7 @@ import com.gamelibrary2d.opengl.ModelMatrix;
 public abstract class AbstractGameObject implements GameObject {
     private final Point position = new Point();
     private final Point scale = new Point(1, 1);
-    private final Point scaleAndRotationCenter = new Point();
+    private final Point scaleAndRotationAnchor = new Point();
 
     private float rotation;
     private float opacity = 1.0f;
@@ -56,20 +56,20 @@ public abstract class AbstractGameObject implements GameObject {
     }
 
     @Override
-    public Point getScaleAndRotationCenter() {
-        return scaleAndRotationCenter;
+    public Point getScaleAndRotationAnchor() {
+        return scaleAndRotationAnchor;
     }
 
     @Override
     public final void render(float alpha) {
         if (isEnabled()) {
-            onRenderUnprojected(alpha);
+            onRenderUntransformed(alpha);
         }
     }
 
-    protected void onRenderUnprojected(float alpha) {
+    protected void onRenderUntransformed(float alpha) {
         ModelMatrix.instance().pushMatrix();
-        applyProjection(ModelMatrix.instance());
+        ModelMatrix.instance().transform(this);
         onRender(alpha * opacity);
         ModelMatrix.instance().popMatrix();
     }
@@ -84,21 +84,6 @@ public abstract class AbstractGameObject implements GameObject {
             if (!enabled) {
                 FocusManager.unfocus(this, true);
             }
-        }
-    }
-
-    private void applyProjection(ModelMatrix matrix) {
-        float centerX = getScaleAndRotationCenter().getX();
-        float centerY = getScaleAndRotationCenter().getY();
-
-        matrix.translatef(position.getX() + centerX, position.getY() + centerY, 0);
-
-        matrix.rotatef(-getRotation(), 0, 0, 1);
-
-        matrix.scalef(scale.getX(), scale.getY(), 1.0f);
-
-        if (centerX != 0 && centerY != 0) {
-            matrix.translatef(-centerX, -centerY, 0);
         }
     }
 

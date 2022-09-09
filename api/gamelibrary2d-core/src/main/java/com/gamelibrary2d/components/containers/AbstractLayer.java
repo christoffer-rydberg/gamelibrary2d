@@ -134,27 +134,27 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     @Override
-    public final boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        return isEnabled() && onPointerDown(id, button, x, y, projectedX, projectedY);
+    public final boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        return isEnabled() && onPointerDown(id, button, x, y, transformedX, transformedY);
     }
 
     @Override
-    public final boolean pointerMove(int id, float x, float y, float projectedX, float projectedY) {
-        return isEnabled() && onPointerMove(id, x, y, projectedX, projectedY);
+    public final boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        return isEnabled() && onPointerMove(id, x, y, transformedX, transformedY);
     }
 
     @Override
-    public final void pointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    public final void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (isEnabled()) {
-            onPointerUp(id, button, x, y, projectedX, projectedY);
+            onPointerUp(id, button, x, y, transformedX, transformedY);
         }
     }
 
-    protected boolean onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         iterationList.addAll(pointerDownAwareObjects);
         for (int i = iterationList.size() - 1; i >= 0; --i) {
             PointerDownAware obj = (PointerDownAware) iterationList.get(i);
-            if (obj.pointerDown(id, button, x, y, projectedX, projectedY)) {
+            if (obj.pointerDown(id, button, x, y, transformedX, transformedY)) {
                 iterationList.clear();
                 return true;
             }
@@ -164,11 +164,11 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         return false;
     }
 
-    protected boolean onPointerMove(int id, float x, float y, float projectedX, float projectedY) {
+    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
         iterationList.addAll(pointerMoveAwareObjects);
         for (int i = iterationList.size() - 1; i >= 0; --i) {
             PointerMoveAware obj = (PointerMoveAware) iterationList.get(i);
-            if (obj.pointerMove(id, x, y, projectedX, projectedY)) {
+            if (obj.pointerMove(id, x, y, transformedX, transformedY)) {
                 iterationList.clear();
                 return true;
             }
@@ -178,11 +178,11 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         return false;
     }
 
-    protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         iterationList.addAll(pointerUpAwareObjects);
         for (int i = iterationList.size() - 1; i >= 0; --i) {
             PointerUpAware obj = (PointerUpAware) iterationList.get(i);
-            obj.pointerUp(id, button, x, y, projectedX, projectedY);
+            obj.pointerUp(id, button, x, y, transformedX, transformedY);
         }
 
         iterationList.clear();

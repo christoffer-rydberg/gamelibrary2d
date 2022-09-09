@@ -54,9 +54,9 @@ public class Checkbox extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    public void onRenderUnprojected(float alpha) {
+    public void onRenderUntransformed(float alpha) {
         updateCheckbox();
-        super.onRenderUnprojected(alpha);
+        super.onRenderUntransformed(alpha);
     }
 
     @Override
@@ -65,8 +65,8 @@ public class Checkbox extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    protected void onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        super.onPointerDown(id, button, x, y, projectedX, projectedY);
+    protected void onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        super.onPointerDown(id, button, x, y, transformedX, transformedY);
         toggle();
     }
 

@@ -44,8 +44,8 @@ public class AbstractComposedGameObject<T extends GameObject> implements GameObj
     }
 
     @Override
-    public Point getScaleAndRotationCenter() {
-        return content.getScaleAndRotationCenter();
+    public Point getScaleAndRotationAnchor() {
+        return content.getScaleAndRotationAnchor();
     }
 
     @Override

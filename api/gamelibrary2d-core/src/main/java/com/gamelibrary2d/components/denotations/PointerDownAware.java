@@ -9,10 +9,10 @@ public interface PointerDownAware {
      * @param button     The id of the pointer button.
      * @param x          The x-coordinate of the pointer.
      * @param y          The y-coordinate of the pointer.
-     * @param projectedX The x-coordinate of the pointer projected to the parent container.
-     * @param projectedY The y-coordinate of the pointer projected to the parent container.
+     * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by the parent container.
+     * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by the parent container.
      * @return True if the action is handled and should not be routed to other objects, false otherwise.
      */
-    boolean pointerDown(int id, int button, float x, float y, float projectedX, float projectedY);
+    boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY);
 
 }

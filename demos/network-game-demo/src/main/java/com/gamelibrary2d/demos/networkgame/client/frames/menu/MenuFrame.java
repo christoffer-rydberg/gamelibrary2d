@@ -230,7 +230,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    protected boolean onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (credits.isEnabled()) {
             hideCredits();
             return true;
@@ -238,7 +238,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
             showMenu();
             return true;
         } else {
-            return super.onPointerDown(id, button, x, y, projectedX, projectedY);
+            return super.onPointerDown(id, button, x, y, transformedX, transformedY);
         }
     }
 

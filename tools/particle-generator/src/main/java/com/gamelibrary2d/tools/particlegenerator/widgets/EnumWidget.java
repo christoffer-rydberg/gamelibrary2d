@@ -44,8 +44,8 @@ public class EnumWidget<T extends Enum<T>> extends AbstractPointerAwareGameObjec
     }
 
     @Override
-    protected void onPointerDown(int id, int button, float x, float y, float projectedX, float projectedY) {
-        super.onPointerDown(id, button, x, y, projectedX, projectedY);
+    protected void onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        super.onPointerDown(id, button, x, y, transformedX, transformedY);
         currentIndex = (currentIndex + 1) % values.length;
         cachedValue = values[currentIndex];
         property.set(cachedValue);

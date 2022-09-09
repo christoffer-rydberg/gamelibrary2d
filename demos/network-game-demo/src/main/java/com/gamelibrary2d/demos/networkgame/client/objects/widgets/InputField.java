@@ -42,7 +42,7 @@ public class InputField extends AbstractPointerAwareGameObject implements KeyDow
     }
 
     @Override
-    protected void onPointerUp(int id, int button, float x, float y, float projectedX, float projectedY) {
+    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         FocusManager.focus(this, false);
     }
 

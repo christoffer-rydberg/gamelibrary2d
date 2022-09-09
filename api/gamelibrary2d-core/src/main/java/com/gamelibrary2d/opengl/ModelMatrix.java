@@ -1,5 +1,7 @@
 package com.gamelibrary2d.opengl;
 
+import com.gamelibrary2d.common.CoordinateSpace;
+
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,17 @@ public class ModelMatrix {
         float[] stored = bufferStack.get(stackPointer);
         matrixBuffer.deserialize(stored);
         --stackPointer;
+    }
+
+    public void transform(CoordinateSpace coordinateSpace) {
+        translatef(
+                coordinateSpace.getPosX() + coordinateSpace.getScaleAndRotationAnchorX(),
+                coordinateSpace.getPosY() + coordinateSpace.getScaleAndRotationAnchorY(),
+                0);
+
+        rotatef(-coordinateSpace.getRotation(), 0, 0, 1);
+
+        scalef(coordinateSpace.getScaleX(), coordinateSpace.getScaleY(), 1.0f);
     }
 
     public void translatef(float x, float y, float z) {

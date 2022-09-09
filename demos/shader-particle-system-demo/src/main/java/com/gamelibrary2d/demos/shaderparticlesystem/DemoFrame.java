@@ -41,7 +41,7 @@ public class DemoFrame extends AbstractFrame {
 
             LayerObject<Renderable> layer = new DefaultLayerObject<>();
             layer.setScale(scale, scale);
-            layer.setScaleAndRotationCenter(windowWidth / 2, windowHeight / 2);
+            layer.setScaleAndRotationAnchor(windowWidth / 2, windowHeight / 2);
             layer.add(particleSystem);
             add(layer);
         } catch (IOException e) {
