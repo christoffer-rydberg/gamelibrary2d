@@ -18,7 +18,6 @@ import com.gamelibrary2d.opengl.resources.DefaultTexture;
 import com.gamelibrary2d.opengl.resources.Quad;
 import com.gamelibrary2d.opengl.resources.Surface;
 import com.gamelibrary2d.opengl.resources.Texture;
-import com.gamelibrary2d.updaters.InfiniteUpdater;
 
 import java.io.IOException;
 
@@ -77,8 +76,11 @@ public class DemoFrame extends AbstractFrame {
 
         add(ballLayer);
         add(tool);
+    }
 
-        startUpdater(new InfiniteUpdater(collisionDetection::update));
+    protected void onUpdate(float deltaTime) {
+        collisionDetection.update(deltaTime);
+        super.onUpdate(deltaTime);
     }
 
     @Override

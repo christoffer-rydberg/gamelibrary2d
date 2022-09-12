@@ -7,7 +7,7 @@ import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.components.containers.AbstractLayer;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.updaters.Updater;
+import com.gamelibrary2d.updates.Update;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -18,7 +18,7 @@ import java.util.concurrent.Future;
 
 public abstract class AbstractFrame extends AbstractLayer<Renderable> implements Frame {
     private final DelayedActionMonitor delayedActionMonitor = new DelayedActionMonitor();
-    private final Deque<Updater> updaters = new ArrayDeque<>();
+    private final Deque<Update> updates = new ArrayDeque<>();
     private final DefaultDisposer disposer;
 
     private Color backgroundColor = Color.BLACK;
@@ -73,22 +73,22 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
 
         disposer.dispose();
         disposer.clear();
-        updaters.clear();
+        updates.clear();
         delayedActionMonitor.clear();
 
         onDispose();
     }
 
     @Override
-    public void startUpdater(Updater updater) {
-        if (!updaters.contains(updater)) {
-            updaters.addLast(updater);
+    public void startUpdate(Update update) {
+        if (!updates.contains(update)) {
+            updates.addLast(update);
         }
     }
 
     @Override
-    public void stopUpdater(Updater updater) {
-        updaters.remove(updater);
+    public void stopUpdate(Update update) {
+        updates.remove(update);
     }
 
     private void tryCompleteInitialization() {
@@ -117,11 +117,11 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     protected void onUpdate(float deltaTime) {
         super.handleUpdate(deltaTime);
 
-        for (int i = 0; i < updaters.size(); ++i) {
-            Updater updater = updaters.pollFirst();
-            updater.update(deltaTime);
-            if (!updater.isFinished()) {
-                updaters.addLast(updater);
+        for (int i = 0; i < updates.size(); ++i) {
+            Update update = updates.pollFirst();
+            update.update(deltaTime);
+            if (!update.isFinished()) {
+                updates.addLast(update);
             }
         }
     }

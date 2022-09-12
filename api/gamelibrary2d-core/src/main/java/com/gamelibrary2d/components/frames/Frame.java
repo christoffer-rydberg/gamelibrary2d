@@ -5,7 +5,7 @@ import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.updaters.Updater;
+import com.gamelibrary2d.updates.Update;
 
 public interface Frame extends Layer<Renderable>, Disposer {
 
@@ -25,14 +25,14 @@ public interface Frame extends Layer<Renderable>, Disposer {
     void end();
 
     /**
-     * Starts the specified updater.
+     * Runs the specified update.
      */
-    void startUpdater(Updater updater);
+    void startUpdate(Update update);
 
     /**
-     * Stops the specified updater.
+     * Stops the specified update.
      */
-    void stopUpdater(Updater updater);
+    void stopUpdate(Update update);
 
     /**
      * Performs the specified action in the beginning of the next update cycle.

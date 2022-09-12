@@ -7,7 +7,6 @@ import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.DefaultGameObject;
 import com.gamelibrary2d.components.GameObject;
-import com.gamelibrary2d.components.denotations.Transformable;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.demos.networkgame.client.ParticleRendererFactory;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
@@ -22,7 +21,6 @@ import com.gamelibrary2d.opengl.resources.Quad;
 import com.gamelibrary2d.opengl.resources.Texture;
 import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.particles.ParticleSystemParameters;
-import com.gamelibrary2d.updaters.*;
 import com.gamelibrary2d.updates.*;
 
 import java.io.IOException;
@@ -77,34 +75,33 @@ public class GameTitle extends AbstractGameObject implements Updatable {
         return new GameTitle(bounds, part1, part2, part3, new Portal(portalSystem, part2.getPosition()));
     }
 
-    private Updater suckInMiddlePart(float duration) {
-        Updatable suckedIntoPortalUpdate = new AttributeUpdateSet<Transformable>(
-                new ScaleUpdate<>(part2, -part2.getScale().getX(), -part2.getScale().getY()),
-                new RotationUpdate<>(part2, 360));
-
-        return new DurationUpdater(duration, true, suckedIntoPortalUpdate);
+    private Update suckInMiddlePart(float duration) {
+        return new DefaultUpdate(duration, dt -> {
+            dt /= duration;
+            part2.addScale(-part2.getScale().getX() * dt, -part2.getScale().getY() * dt);
+            part2.addRotation(360 * dt);
+        });
     }
 
-    private Updater moveOuterPartsTogether(float duration) {
-        UpdaterSet updater = new ParallelUpdater();
-        Updatable moveLeftUpdate = new PositionUpdate<>(part3, -part2.getBounds().getWidth() / 3, 0);
-        Updatable moveRightUpdate = new PositionUpdate<>(part1, part2.getBounds().getWidth() / 3, 0);
-        updater.add(new DurationUpdater(duration, true, moveRightUpdate));
-        updater.add(new DurationUpdater(duration, true, moveLeftUpdate));
-        return updater;
+    private Update moveOuterPartsTogether(float duration) {
+        return new DefaultUpdate(duration, dt -> {
+            dt /= duration;
+            part3.addPosition(dt * -part2.getBounds().getWidth() / 3, 0);
+            part1.addPosition(dt * part2.getBounds().getWidth() / 3, 0);
+        });
     }
 
-    public Updater createIntro() {
-        UpdaterSet updater = new SequentialUpdater();
+    public Update createIntro() {
+        Updater updater = new SequentialUpdater();
 
-        updater.add(new InstantUpdater(a -> showPortal = true));
-        updater.add(new DurationUpdater(3f, new EmptyUpdate()));
+        updater.add(() -> showPortal = true);
+        updater.add(new IdleUpdate(3f));
 
-        UpdaterSet moveOuterPartsTogether = new SequentialUpdater();
-        moveOuterPartsTogether.add(new DurationUpdater(4f, new EmptyUpdate()));
+        Updater moveOuterPartsTogether = new SequentialUpdater();
+        moveOuterPartsTogether.add(new IdleUpdate(4f));
         moveOuterPartsTogether.add(moveOuterPartsTogether(6f));
 
-        UpdaterSet parallelUpdater = new ParallelUpdater();
+        Updater parallelUpdater = new ParallelUpdater();
         parallelUpdater.add(suckInMiddlePart(10f));
         parallelUpdater.add(moveOuterPartsTogether);
 

@@ -2,11 +2,10 @@ package com.gamelibrary2d.sound;
 
 import com.gamelibrary2d.Game;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.updaters.DurationUpdater;
-import com.gamelibrary2d.updaters.InstantUpdater;
-import com.gamelibrary2d.updaters.SequentialUpdater;
-import com.gamelibrary2d.updaters.Updater;
-import com.gamelibrary2d.updates.EmptyUpdate;
+import com.gamelibrary2d.updates.DefaultUpdate;
+import com.gamelibrary2d.updates.IdleUpdate;
+import com.gamelibrary2d.updates.SequentialUpdater;
+import com.gamelibrary2d.updates.Update;
 
 public class MusicPlayer {
     private final SoundManager soundManager;
@@ -35,9 +34,9 @@ public class MusicPlayer {
         if (this.frame != frame) {
             this.frame = frame;
             if (frame != null) {
-                for (Updater updater : updaters) {
+                for (Update updater : updaters) {
                     if (!updater.isFinished()) {
-                        frame.startUpdater(updater);
+                        frame.startUpdate(updater);
                     }
                 }
             }
@@ -67,7 +66,7 @@ public class MusicPlayer {
 
         updater.add(SoundUpdaterFactory.createFadeOutUpdater(sources[channel], fadeOutTime, false));
 
-        frame.startUpdater(updater);
+        frame.startUpdate(updater);
 
         return true;
     }
@@ -87,7 +86,7 @@ public class MusicPlayer {
 
         updater.add(SoundUpdaterFactory.createFadeOutUpdater(sources[channel], fadeOutTime, true));
 
-        frame.startUpdater(updater);
+        frame.startUpdate(updater);
 
         moveToNextChannel();
 
@@ -118,12 +117,12 @@ public class MusicPlayer {
 
         if (stopped) {
             fadeInTime /= 2;
-            updater.add(new DurationUpdater(fadeInTime, new EmptyUpdate()));
+            updater.add(new IdleUpdate(fadeInTime));
         }
 
         updater.add(SoundUpdaterFactory.createFadeInUpdater(source, volume, fadeInTime));
 
-        frame.startUpdater(updater);
+        frame.startUpdate(updater);
 
         return true;
     }
@@ -136,12 +135,12 @@ public class MusicPlayer {
         activeBuffer = soundManager.getBuffer(key);
         SoundSource source = sources[channel];
         source.setLooping(looping);
-        updater.add(new InstantUpdater(dt -> source.setSoundBuffer(activeBuffer)));
+        updater.add(() -> source.setSoundBuffer(activeBuffer));
 
         updater.add(SoundUpdaterFactory.createFadeInUpdater(sources[channel], volume,
                 stopped ? fadeInTime / 2 : fadeInTime));
 
-        frame.startUpdater(updater);
+        frame.startUpdate(updater);
     }
 
     private boolean canResume() {
@@ -184,7 +183,7 @@ public class MusicPlayer {
             SequentialUpdater updater = getUpdater();
             abort(updater);
             updater.add(SoundUpdaterFactory.createVolumeUpdater(source, volume, fadeInTime));
-            frame.startUpdater(updater);
+            frame.startUpdate(updater);
         }
     }
 

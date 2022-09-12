@@ -10,10 +10,8 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.text.Label;
-import com.gamelibrary2d.updaters.DurationUpdater;
-import com.gamelibrary2d.updaters.InstantUpdater;
-import com.gamelibrary2d.updaters.SequentialUpdater;
-import com.gamelibrary2d.updates.PositionUpdate;
+import com.gamelibrary2d.updates.DefaultUpdate;
+import com.gamelibrary2d.updates.SequentialUpdater;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,12 +57,14 @@ class Credits implements Renderable, Updatable {
 
         updater.clear();
 
-        updater.add(new DurationUpdater(
+        updater.add(new DefaultUpdate(
                 60f,
-                true,
-                new PositionUpdate<>(credits, 0, height + windowHeight)));
+                dt -> {
+                    dt /= 60f;
+                    credits.addPosition(0, (height + windowHeight) * dt);
+                }));
 
-        updater.add(new InstantUpdater(dt -> onFinished.perform()));
+        updater.add(onFinished::perform);
     }
 
     @Override

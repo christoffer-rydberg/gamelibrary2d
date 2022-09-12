@@ -30,6 +30,13 @@ public interface Transformable extends CoordinateSpace {
     void setRotation(float rotation);
 
     /**
+     * Adds to the {@link #getRotation rotation}.
+     */
+    default void addRotation(float rotation) {
+        setRotation(getRotation() + rotation);
+    }
+
+    /**
      * Updates the {@link #getPosition position} with the values from the specified {@link Point}.
      */
     default void setPosition(Point position) {
@@ -37,10 +44,24 @@ public interface Transformable extends CoordinateSpace {
     }
 
     /**
-     * Updates the {@link #getPosition position}.
+     * Updates the {@link #getPosition position} with the specified values.
      */
     default void setPosition(float x, float y) {
         getPosition().set(x, y);
+    }
+
+    /**
+     * Updates the {@link #getPosition position} by adding the values from the specified {@link Point}.
+     */
+    default void addPosition(Point position) {
+        getPosition().add(position);
+    }
+
+    /**
+     * Updates the {@link #getPosition position} by adding the specified values.
+     */
+    default void addPosition(float x, float y) {
+        getPosition().add(x, y);
     }
 
     /**
@@ -62,6 +83,27 @@ public interface Transformable extends CoordinateSpace {
      */
     default void setScale(float x, float y) {
         getScale().set(x, y);
+    }
+
+    /**
+     * Updates the {@link #getScale scale} by adding the values from the specified {@link Point}.
+     */
+    default void addScale(Point scale) {
+        getScale().add(scale);
+    }
+
+    /**
+     * Updates the {@link #getScale scale} by adding the same value for all axes.
+     */
+    default void addScale(float scale) {
+        getScale().add(scale, scale);
+    }
+
+    /**
+     * Updates the {@link #getScale scale} by adding the specified values.
+     */
+    default void addScale(float x, float y) {
+        getScale().add(x, y);
     }
 
     /**

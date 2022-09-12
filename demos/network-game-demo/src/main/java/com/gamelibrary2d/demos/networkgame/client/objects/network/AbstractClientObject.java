@@ -15,9 +15,8 @@ import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.Ins
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.interpolation.InterpolatableAngle;
 import com.gamelibrary2d.interpolation.PositionInterpolator;
-import com.gamelibrary2d.updaters.DurationUpdater;
-import com.gamelibrary2d.updaters.Updater;
-import com.gamelibrary2d.updates.ScaleUpdate;
+import com.gamelibrary2d.updates.DefaultUpdate;
+import com.gamelibrary2d.updates.Update;
 
 public abstract class AbstractClientObject
         extends AbstractGameObject implements ClientObject, Updatable {
@@ -30,7 +29,7 @@ public abstract class AbstractClientObject
     private final InterpolatableAngle direction = new InterpolatableAngle();
 
     private final Point particleHotspot = new Point();
-    private final Updater spawnUpdater = new DurationUpdater(1f, new ScaleUpdate<>(this, 1f));
+    private final Update spawnUpdater = new DefaultUpdate(1f, this::addScale);
     private DurationEffect updateEffect;
     private InstantEffect destroyedEffect;
     private boolean accelerating;
@@ -84,7 +83,7 @@ public abstract class AbstractClientObject
     public void spawn(Frame frame) {
         setScale(0f);
         spawnUpdater.reset();
-        frame.startUpdater(spawnUpdater);
+        frame.startUpdate(spawnUpdater);
     }
 
     @Override

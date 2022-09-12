@@ -5,7 +5,6 @@ import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.*;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.denotations.KeyUpAware;
-import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
@@ -30,11 +29,10 @@ import com.gamelibrary2d.sound.SoundPlayer;
 import com.gamelibrary2d.text.HorizontalTextAlignment;
 import com.gamelibrary2d.text.Label;
 import com.gamelibrary2d.text.VerticalTextAlignment;
-import com.gamelibrary2d.updaters.DurationUpdater;
-import com.gamelibrary2d.updaters.InstantUpdater;
-import com.gamelibrary2d.updaters.SequentialUpdater;
-import com.gamelibrary2d.updates.EmptyUpdate;
-import com.gamelibrary2d.updates.OpacityUpdate;
+import com.gamelibrary2d.updates.AbstractUpdate;
+import com.gamelibrary2d.updates.DefaultUpdate;
+import com.gamelibrary2d.updates.IdleUpdate;
+import com.gamelibrary2d.updates.SequentialUpdater;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -151,29 +149,24 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
 
         introUpdater.clear();
 
-        introUpdater.add(new DurationUpdater(
-                19f,
-                true,
-                new IntroZoomUpdate(backgroundLayer)
-        ));
+        introUpdater.add(new IntroZoomUpdate(backgroundLayer));
 
-        introUpdater.add(new InstantUpdater(dt -> showMenu()));
-        introUpdater.add(new DurationUpdater(4f, new EmptyUpdate()));
+        introUpdater.add(this::showMenu);
+        introUpdater.add(new IdleUpdate(4f));
         introUpdater.add(gameTitle.createIntro());
 
-        startUpdater(introUpdater);
+        startUpdate(introUpdater);
     }
 
     private void showMenu() {
         if (menuLayerIsHidden) {
             SequentialUpdater updater = new SequentialUpdater();
-            updater.add(new InstantUpdater(dt -> menuLayer.setEnabled(true)));
-            updater.add(new DurationUpdater(
+            updater.add(() -> menuLayer.setEnabled(true));
+            updater.add(new DefaultUpdate(
                     4f,
-                    true,
-                    new OpacityUpdate<>(menuLayer, 1f)
+                    dt -> menuLayer.addOpacity(-0.25f * dt)
             ));
-            startUpdater(updater);
+            startUpdate(updater);
             menuLayerIsHidden = false;
         }
     }
@@ -242,19 +235,26 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         }
     }
 
-    private static class IntroZoomUpdate implements Updatable {
+    private static class IntroZoomUpdate extends AbstractUpdate {
         private final GameObject obj;
         private final float initialScale;
 
         private float alpha;
 
         IntroZoomUpdate(GameObject obj) {
+            super(19f);
             this.obj = obj;
             this.initialScale = obj.getScale().getX();
         }
 
         @Override
-        public void update(float deltaTime) {
+        protected void initialize() {
+
+        }
+
+        @Override
+        protected void onUpdate(float deltaTime) {
+            deltaTime /= getDuration();
             alpha += deltaTime;
             float radius = initialScale - 1;
             float x = -radius * (1f - alpha) + 0 * alpha;

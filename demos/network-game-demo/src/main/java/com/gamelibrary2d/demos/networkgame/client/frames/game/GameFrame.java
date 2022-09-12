@@ -36,11 +36,10 @@ import com.gamelibrary2d.opengl.resources.Quad;
 import com.gamelibrary2d.opengl.resources.Texture;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
-import com.gamelibrary2d.updaters.DurationUpdater;
-import com.gamelibrary2d.updaters.InstantUpdater;
-import com.gamelibrary2d.updaters.ParallelUpdater;
-import com.gamelibrary2d.updaters.SequentialUpdater;
-import com.gamelibrary2d.updates.EmptyUpdate;
+import com.gamelibrary2d.updates.DefaultUpdate;
+import com.gamelibrary2d.updates.IdleUpdate;
+import com.gamelibrary2d.updates.ParallelUpdater;
+import com.gamelibrary2d.updates.SequentialUpdater;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -303,20 +302,19 @@ public class GameFrame extends AbstractFrame {
 
         ParallelUpdater parallelUpdater = new ParallelUpdater();
         objectLayer.getChildren().stream()
-                .map(obj -> new DurationUpdater(
+                .map(obj -> new DefaultUpdate(
                         2f,
-                        true,
                         new SuckedIntoPortalUpdate(obj, gameBounds.getCenterX(), gameBounds.getCenterY())))
                 .forEach(parallelUpdater::add);
 
         SequentialUpdater sequentialUpdater = new SequentialUpdater();
-        sequentialUpdater.add(new DurationUpdater(1.5f, new EmptyUpdate()));
+        sequentialUpdater.add(new IdleUpdate(1.5f));
         sequentialUpdater.add(parallelUpdater);
-        sequentialUpdater.add(new InstantUpdater(dt -> objectLayer.clear()));
-        sequentialUpdater.add(new DurationUpdater(5f, new EmptyUpdate()));
-        sequentialUpdater.add(new InstantUpdater(dt -> client.requestNewGame()));
+        sequentialUpdater.add(objectLayer::clear);
+        sequentialUpdater.add(new IdleUpdate(5f));
+        sequentialUpdater.add(client::requestNewGame);
 
-        startUpdater(sequentialUpdater);
+        startUpdate(sequentialUpdater);
     }
 
     public void gameEnded() {

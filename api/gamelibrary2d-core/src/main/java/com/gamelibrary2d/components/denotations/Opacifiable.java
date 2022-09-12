@@ -12,4 +12,12 @@ public interface Opacifiable {
      */
     void setOpacity(float opacity);
 
+    /**
+     * Adds to the object's {@link #getOpacity() opacity}.
+     * @param deltaOpacity The opacity to add.
+     */
+    default void addOpacity(float deltaOpacity) {
+        setOpacity(getOpacity() + deltaOpacity);
+    }
+
 }

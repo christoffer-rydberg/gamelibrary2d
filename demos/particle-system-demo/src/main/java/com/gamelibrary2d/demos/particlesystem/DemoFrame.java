@@ -6,10 +6,8 @@ import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.particles.*;
-import com.gamelibrary2d.updaters.DurationUpdater;
-import com.gamelibrary2d.updaters.InstantUpdater;
-import com.gamelibrary2d.updaters.SequentialUpdater;
-import com.gamelibrary2d.updates.EmptyUpdate;
+import com.gamelibrary2d.updates.IdleUpdate;
+import com.gamelibrary2d.updates.SequentialUpdater;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,9 +103,9 @@ public class DemoFrame extends AbstractFrame {
 
     private void createFire(float posX, float posY, float delay) {
         SequentialUpdater updater = new SequentialUpdater();
-        updater.add(new DurationUpdater(delay, new EmptyUpdate()));
-        updater.add(new InstantUpdater(dt -> emitters.add(new ParticleEmitter(posX, posY, fireSystem))));
-        startUpdater(updater);
+        updater.add(new IdleUpdate(delay));
+        updater.add(() -> emitters.add(new ParticleEmitter(posX, posY, fireSystem)));
+        startUpdate(updater);
     }
 
     @Override
