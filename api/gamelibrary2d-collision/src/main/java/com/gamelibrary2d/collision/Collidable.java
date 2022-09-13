@@ -23,6 +23,6 @@ public interface Collidable extends InternalArea {
     /**
      * Repositions this object at the specified coordinates.
      */
-    void reposition(float x, float y);
+    void setPosition(float x, float y);
 
 }

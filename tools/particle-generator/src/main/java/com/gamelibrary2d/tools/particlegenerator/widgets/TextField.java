@@ -9,11 +9,20 @@ import com.gamelibrary2d.text.Label;
 
 public class TextField extends AbstractObservableGameObject {
     private final Label label;
+    private final Renderable renderer;
     private Renderable background;
     private Rectangle bounds;
 
     public TextField(Label label) {
         this.label = label;
+
+        renderer = alpha -> {
+            if (background != null) {
+                background.render(alpha);
+            }
+
+            label.render(alpha);
+        };
     }
 
     @Override
@@ -51,20 +60,16 @@ public class TextField extends AbstractObservableGameObject {
     }
 
     @Override
-    protected void onRender(float alpha) {
-        if (background != null) {
-            background.render(alpha);
-        }
-
-        label.render(alpha);
-    }
-
-    @Override
     public Rectangle getBounds() {
         return bounds;
     }
 
     public void setBounds(Rectangle bounds) {
         this.bounds = bounds;
+    }
+
+    @Override
+    public Renderable getRenderer() {
+        return renderer;
     }
 }

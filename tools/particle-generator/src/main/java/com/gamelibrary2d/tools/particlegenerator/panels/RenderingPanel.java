@@ -84,10 +84,10 @@ public class RenderingPanel extends AbstractPanel<GameObject> {
     }
 
     @Override
-    public void onRenderUntransformed(float alpha) {
+    public void onRender(float alpha) {
         updateActivePanel();
         shapePanel.updateActivePanel();
-        super.onRenderUntransformed(alpha);
+        super.onRender(alpha);
     }
 
     private void setActivePanel(Panel<GameObject> activePanel) {

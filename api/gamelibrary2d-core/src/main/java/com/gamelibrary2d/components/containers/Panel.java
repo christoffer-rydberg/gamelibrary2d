@@ -4,7 +4,7 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.GameObject;
 
 /**
- * A panel is a {@link LayerObject} with dynamically updated bounds. By
+ * A panel is a {@link LayerGameObject} with dynamically updated bounds. By
  * default, bounds are extended whenever an object is added and recalculated
  * whenever an object is removed. Panels also provide methods to stack objects.
  * This is done by adding and aligning objects to the edge of the current
@@ -12,7 +12,7 @@ import com.gamelibrary2d.components.GameObject;
  * This abstract base class holds all basic panel functionality. The
  * {@link DefaultPanel} class can be used to instantiate a basic panel.
  */
-public interface Panel<T extends GameObject> extends LayerObject<T> {
+public interface Panel<T extends GameObject> extends LayerGameObject<T> {
 
     /**
      * Determines if the panel {@link #getBounds() bounds} should resize

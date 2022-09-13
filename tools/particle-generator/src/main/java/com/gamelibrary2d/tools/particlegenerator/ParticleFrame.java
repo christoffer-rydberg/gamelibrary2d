@@ -1,6 +1,6 @@
 package com.gamelibrary2d.tools.particlegenerator;
 
-import com.gamelibrary2d.components.containers.BasicLayer;
+import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
@@ -31,13 +31,13 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     protected void onBegin(FrameInitializer initializer) {
-        screenLayer = new BasicLayer<>();
-        Layer<Renderable> particleLayer = new BasicLayer<>();
+        screenLayer = new DefaultLayer<>();
+        Layer<Renderable> particleLayer = new DefaultLayer<>();
 
         particleSystem = ParticleSystemModel.create(this);
         particleSystem.addToLayer(particleLayer);
 
-        Layer<Renderable> backgroundLayer = new BasicLayer<>();
+        Layer<Renderable> backgroundLayer = new DefaultLayer<>();
 
         ParticleSystemSettingsPanel settingsPanel = new ParticleSystemSettingsPanel(particleSystem, this);
         settingsPanel.setPosition(180f, game.getWindow().getHeight() - 20f);

@@ -5,21 +5,21 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.lightning.DefaultDynamicLightMap;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.particles.DefaultParticleSystem;
 
 public class Torch extends AbstractGameObject implements PointerMoveAware, Updatable {
     private final static int pointerId = 0;
-
-    private final Game game;
     private final ContentRenderer renderer;
     private final DefaultDynamicLightMap lightMap;
     private float particleSystemTimer;
     private final DefaultParticleSystem particleSystem;
 
+    private final Renderable internalRenderer;
+
     Torch(Game game, ContentRenderer renderer, DefaultDynamicLightMap lightMap, DefaultParticleSystem particleSystem) {
-        this.game = game;
         this.renderer = renderer;
         this.lightMap = lightMap;
         this.particleSystem = particleSystem;
@@ -30,6 +30,12 @@ public class Torch extends AbstractGameObject implements PointerMoveAware, Updat
             lightMap.addInterpolated(par.getPosX() / 32f, par.getPosY() / 32f, light);
             return true;
         });
+
+        this.internalRenderer = alpha -> {
+            if (game.hasPointerFocus(pointerId)) {
+                renderer.render(alpha);
+            }
+        };
     }
 
     @Override
@@ -53,9 +59,7 @@ public class Torch extends AbstractGameObject implements PointerMoveAware, Updat
     }
 
     @Override
-    protected void onRender(float alpha) {
-        if (game.hasPointerFocus(pointerId)) {
-            renderer.render(alpha);
-        }
+    public Renderable getRenderer() {
+        return internalRenderer;
     }
 }

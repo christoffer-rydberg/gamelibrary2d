@@ -4,29 +4,25 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.denotations.Bounded;
 import com.gamelibrary2d.framework.Renderable;
 
-public final class DefaultObservableGameObject<T extends Renderable> extends AbstractObservableGameObject<T> {
-    private T content;
+public final class DefaultObservableGameObject<T extends Renderable> extends AbstractObservableGameObject {
+    private T renderer;
     private Rectangle bounds;
 
     public DefaultObservableGameObject() {
 
     }
 
-    public DefaultObservableGameObject(T content) {
-        this.content = content;
-    }
-
-    public T getContent() {
-        return content;
-    }
-
-    public void setContent(T content) {
-        this.content = content;
+    public DefaultObservableGameObject(T renderer) {
+        this.renderer = renderer;
     }
 
     @Override
-    protected void onRender(float alpha) {
-        content.render(alpha);
+    public T getRenderer() {
+        return renderer;
+    }
+
+    public void setRenderer(T renderer) {
+        this.renderer = renderer;
     }
 
     @Override
@@ -35,8 +31,8 @@ public final class DefaultObservableGameObject<T extends Renderable> extends Abs
             return bounds;
         }
 
-        if (content instanceof Bounded) {
-            return ((Bounded) content).getBounds();
+        if (renderer instanceof Bounded) {
+            return ((Bounded) renderer).getBounds();
         }
 
         return Rectangle.EMPTY;

@@ -32,6 +32,7 @@ public class GameTitle extends AbstractGameObject implements Updatable {
     private final GameObject part3;
     private final Portal portal;
 
+    private final Renderable renderer;
     private boolean showPortal;
 
     private GameTitle(Rectangle bounds, GameObject part1, GameObject part2, GameObject part3, Portal portal) {
@@ -41,6 +42,16 @@ public class GameTitle extends AbstractGameObject implements Updatable {
         this.part3 = part3;
         this.portal = portal;
         setOpacity(0.75f);
+
+        renderer = alpha -> {
+            if (showPortal) {
+                portal.render(alpha);
+            }
+
+            part1.render(alpha);
+            part2.render(alpha);
+            part3.render(alpha);
+        };
     }
 
     private static GameObject createPartialTitle(Rectangle titleBounds, Texture titleTexture, float left, float right, Disposer disposer) {
@@ -76,19 +87,17 @@ public class GameTitle extends AbstractGameObject implements Updatable {
     }
 
     private Update suckInMiddlePart(float duration) {
-        return new DefaultUpdate(duration, dt -> {
-            dt /= duration;
-            part2.addScale(-part2.getScale().getX() * dt, -part2.getScale().getY() * dt);
-            part2.addRotation(360 * dt);
-        });
+        Updater updater = new ParallelUpdater();
+        updater.add(new ScaleUpdate(duration, part2, 0, 0));
+        updater.add(new AddRotationUpdate(duration, part2, 360f));
+        return updater;
     }
 
     private Update moveOuterPartsTogether(float duration) {
-        return new DefaultUpdate(duration, dt -> {
-            dt /= duration;
-            part3.addPosition(dt * -part2.getBounds().getWidth() / 3, 0);
-            part1.addPosition(dt * part2.getBounds().getWidth() / 3, 0);
-        });
+        Updater updater = new ParallelUpdater();
+        updater.add(new AddPositionUpdate(duration, part3, -part2.getBounds().getWidth() / 3, 0));
+        updater.add(new AddPositionUpdate(duration, part1, part2.getBounds().getWidth() / 3, 0));
+        return updater;
     }
 
     public Update createIntro() {
@@ -111,17 +120,6 @@ public class GameTitle extends AbstractGameObject implements Updatable {
     }
 
     @Override
-    protected void onRender(float alpha) {
-        if (showPortal) {
-            portal.render(alpha);
-        }
-
-        part1.render(alpha);
-        part2.render(alpha);
-        part3.render(alpha);
-    }
-
-    @Override
     public Rectangle getBounds() {
         return bounds;
     }
@@ -131,6 +129,11 @@ public class GameTitle extends AbstractGameObject implements Updatable {
         if (showPortal) {
             portal.update(deltaTime);
         }
+    }
+
+    @Override
+    public Renderable getRenderer() {
+        return renderer;
     }
 
     private static class Portal implements Updatable, Renderable {

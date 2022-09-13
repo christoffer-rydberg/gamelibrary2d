@@ -6,12 +6,11 @@ import com.gamelibrary2d.components.denotations.FocusAware;
 import com.gamelibrary2d.components.denotations.InputAware;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.denotations.KeyUpAware;
-import com.gamelibrary2d.framework.Renderable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class AbstractObservableGameObject<T extends Renderable>
+public abstract class AbstractObservableGameObject
         extends AbstractPointerAwareGameObject
         implements FocusAware, KeyDownAware, KeyUpAware, InputAware {
 

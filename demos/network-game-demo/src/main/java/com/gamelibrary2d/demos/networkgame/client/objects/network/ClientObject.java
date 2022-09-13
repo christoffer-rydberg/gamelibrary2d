@@ -3,7 +3,7 @@ package com.gamelibrary2d.demos.networkgame.client.objects.network;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.ContentMap;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.RendererMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.EffectMap;
 
 public interface ClientObject extends GameObject {
@@ -24,7 +24,7 @@ public interface ClientObject extends GameObject {
 
     float getDirection();
 
-    void addContent(ContentMap contentMap);
+    void setRenderer(RendererMap rendererMap);
 
     void addEffects(EffectMap effectMap);
 

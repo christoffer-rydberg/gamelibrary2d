@@ -8,14 +8,14 @@ import com.gamelibrary2d.components.denotations.Bounded;
 import com.gamelibrary2d.components.denotations.Updatable;
 import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
-import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.ContentMap;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.RendererMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.DurationEffect;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.EffectMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.InstantEffect;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.interpolation.InterpolatableAngle;
 import com.gamelibrary2d.interpolation.PositionInterpolator;
-import com.gamelibrary2d.updates.DefaultUpdate;
+import com.gamelibrary2d.updates.AddScaleUpdate;
 import com.gamelibrary2d.updates.Update;
 
 public abstract class AbstractClientObject
@@ -29,11 +29,11 @@ public abstract class AbstractClientObject
     private final InterpolatableAngle direction = new InterpolatableAngle();
 
     private final Point particleHotspot = new Point();
-    private final Update spawnUpdater = new DefaultUpdate(1f, this::addScale);
+    private final Update spawnUpdater = new AddScaleUpdate(1f, this, 1f,1f);
     private DurationEffect updateEffect;
     private InstantEffect destroyedEffect;
     private boolean accelerating;
-    private Renderable content;
+    private Renderable renderer;
 
     protected AbstractClientObject(byte primaryType, GameFrameClient client, DataBuffer buffer) {
         this.primaryType = primaryType;
@@ -58,17 +58,18 @@ public abstract class AbstractClientObject
         return secondaryType;
     }
 
-    public Renderable getContent() {
-        return content;
+    @Override
+    public Renderable getRenderer() {
+        return renderer;
     }
 
-    public void setContent(Renderable content) {
-        this.content = content;
+    public void setRenderer(Renderable renderer) {
+        this.renderer = renderer;
     }
 
     @Override
-    public void addContent(ContentMap contentMap) {
-        contentMap.setContent(this);
+    public void setRenderer(RendererMap rendererMap) {
+        rendererMap.setRenderer(this);
     }
 
     public void setUpdateEffect(DurationEffect updateEffect) {
@@ -121,8 +122,8 @@ public abstract class AbstractClientObject
             updateEffect.onUpdate(this, deltaTime);
         }
 
-        if (content instanceof Updatable) {
-            ((Updatable) content).update(deltaTime);
+        if (renderer instanceof Updatable) {
+            ((Updatable) renderer).update(deltaTime);
         }
     }
 
@@ -151,16 +152,9 @@ public abstract class AbstractClientObject
     }
 
     @Override
-    protected void onRender(float alpha) {
-        if (content != null) {
-            content.render(alpha);
-        }
-    }
-
-    @Override
     public Rectangle getBounds() {
-        if (content instanceof Bounded)
-            return ((Bounded) content).getBounds();
+        if (renderer instanceof Bounded)
+            return ((Bounded) renderer).getBounds();
         else
             return Rectangle.EMPTY;
     }

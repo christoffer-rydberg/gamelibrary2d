@@ -75,8 +75,8 @@ public class SequentialUpdater implements Updater {
     protected float runUpdate(float deltaTime) {
         Object obj = active.peekFirst();
 
-        if (obj instanceof Updater) {
-            Updater update = (Updater) obj;
+        if (obj instanceof Update) {
+            Update update = (Update) obj;
             float usedTime = update.isFinished() ? 0f : update.update(deltaTime);
             if (update.isFinished()) {
                 finished.addLast(active.pollFirst());

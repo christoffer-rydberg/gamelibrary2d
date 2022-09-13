@@ -23,8 +23,8 @@ public class Ball extends AbstractGameObject implements Obstacle {
     }
 
     @Override
-    public void reposition(float x, float y) {
-        setPosition(x, y);
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
     }
 
     public void accelerate(float x, float y) {
@@ -72,8 +72,8 @@ public class Ball extends AbstractGameObject implements Obstacle {
     }
 
     @Override
-    protected void onRender(float alpha) {
-        renderer.render(alpha);
+    public Renderable getRenderer() {
+        return renderer;
     }
 
     @Override

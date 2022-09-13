@@ -10,13 +10,19 @@ import com.gamelibrary2d.framework.Renderable;
 
 public class InputField extends AbstractPointerAwareGameObject implements KeyDownAware, InputAware {
     private final Rectangle bounds;
-    private final Renderable background;
     private final ShadowedLabel label;
+    private final Renderable renderer;
 
     public InputField(ShadowedLabel label, Renderable background, Rectangle bounds) {
         this.bounds = bounds;
         this.label = label;
-        this.background = background;
+        this.renderer = alpha -> {
+            if (background != null) {
+                background.render(alpha);
+            }
+
+            label.render(alpha);
+        };
     }
 
     public int getIntValue() {
@@ -30,15 +36,6 @@ public class InputField extends AbstractPointerAwareGameObject implements KeyDow
     @Override
     public Rectangle getBounds() {
         return bounds;
-    }
-
-    @Override
-    protected void onRender(float alpha) {
-        if (background != null) {
-            background.render(alpha);
-        }
-
-        label.render(alpha);
     }
 
     @Override
@@ -64,5 +61,10 @@ public class InputField extends AbstractPointerAwareGameObject implements KeyDow
         if (textLength > 0) {
             label.getLabel().setText(text.substring(0, textLength - 1));
         }
+    }
+
+    @Override
+    public Renderable getRenderer() {
+        return renderer;
     }
 }

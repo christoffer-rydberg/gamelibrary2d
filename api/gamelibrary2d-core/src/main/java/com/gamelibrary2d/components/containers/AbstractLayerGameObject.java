@@ -9,74 +9,69 @@ import com.gamelibrary2d.framework.Renderable;
 import java.util.Comparator;
 import java.util.List;
 
-public abstract class AbstractLayerObject<T extends Renderable> extends AbstractGameObject implements LayerObject<T> {
-    private final Layer<T> layer;
+public abstract class AbstractLayerGameObject<T extends Renderable> extends AbstractGameObject implements LayerGameObject<T> {
     private final Point transformationPoint = new Point();
 
     private Rectangle bounds;
     private boolean updatesEnabled = true;
 
-    protected AbstractLayerObject() {
-        layer = new BasicLayer<>();
-    }
-
     @Override
     public int indexOf(Object obj) {
-        return layer.indexOf(obj);
+        return getLayer().indexOf(obj);
     }
 
     @Override
     public Comparator<T> getRenderOrderComparator() {
-        return layer.getRenderOrderComparator();
+        return getLayer().getRenderOrderComparator();
     }
 
     @Override
     public void setRenderOrderComparator(Comparator<T> renderOrderComparator) {
-        layer.setRenderOrderComparator(renderOrderComparator);
+        getLayer().setRenderOrderComparator(renderOrderComparator);
     }
 
     @Override
     public boolean isAutoClearing() {
-        return layer.isAutoClearing();
+        return getLayer().isAutoClearing();
     }
 
     public void setAutoClearing(boolean autoClearing) {
-        layer.setAutoClearing(autoClearing);
+        getLayer().setAutoClearing(autoClearing);
     }
 
     @Override
     public void clear() {
-        layer.clear();
+        getLayer().clear();
     }
 
     @Override
     public T get(int index) {
-        return layer.get(index);
+        return getLayer().get(index);
     }
 
     @Override
     public void add(T obj) {
-        layer.add(obj);
+        getLayer().add(obj);
     }
 
     @Override
     public void add(int index, T obj) {
-        layer.add(index, obj);
+        getLayer().add(index, obj);
     }
 
     @Override
     public void remove(int index) {
-        layer.remove(index);
+        getLayer().remove(index);
     }
 
     @Override
     public boolean remove(Object obj) {
-        return layer.remove(obj);
+        return getLayer().remove(obj);
     }
 
     @Override
     public List<T> getChildren() {
-        return layer.getChildren();
+        return getLayer().getChildren();
     }
 
     @Override
@@ -87,7 +82,7 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
     protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         transformationPoint.set(transformedX, transformedY);
         transformationPoint.transformTo(this);
-        return layer.pointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
+        return getLayer().pointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
     }
 
     @Override
@@ -98,7 +93,7 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
     protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
         transformationPoint.set(transformedX, transformedY);
         transformationPoint.transformTo(this);
-        return layer.pointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
+        return getLayer().pointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
     }
 
     @Override
@@ -111,7 +106,7 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
     protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         transformationPoint.set(transformedX, transformedY);
         transformationPoint.transformTo(this);
-        layer.pointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
+        getLayer().pointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
     }
 
     @Override
@@ -121,13 +116,8 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
         }
     }
 
-    @Override
-    protected void onRender(float alpha) {
-        layer.render(alpha);
-    }
-
     protected void onUpdate(float deltaTime) {
-        layer.update(deltaTime);
+        getLayer().update(deltaTime);
     }
 
     @Override
@@ -135,11 +125,12 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
         return bounds != null ? bounds : getLayerBounds();
     }
 
-    public void setBounds(Rectangle bounds) {
+    protected void setBounds(Rectangle bounds) {
         this.bounds = bounds;
     }
 
     private Rectangle getLayerBounds() {
+        Layer<T> layer = getLayer();
         if (layer instanceof Bounded)
             return ((Bounded) layer).getBounds();
         else
@@ -155,4 +146,11 @@ public abstract class AbstractLayerObject<T extends Renderable> extends Abstract
     public void setUpdatesEnabled(boolean updatesEnabled) {
         this.updatesEnabled = updatesEnabled;
     }
+
+    @Override
+    public Renderable getRenderer() {
+        return getLayer();
+    }
+
+    protected abstract Layer<T> getLayer();
 }

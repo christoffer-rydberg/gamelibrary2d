@@ -19,5 +19,4 @@ public interface Opacifiable {
     default void addOpacity(float deltaOpacity) {
         setOpacity(getOpacity() + deltaOpacity);
     }
-
 }

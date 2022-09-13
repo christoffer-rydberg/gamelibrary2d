@@ -8,8 +8,8 @@ import com.gamelibrary2d.framework.Renderable;
 public class Button extends AbstractPointerAwareGameObject {
     private final ParameterizedAction<Button> onClick;
     private final Rectangle bounds;
-    private final Renderable background;
     private final ShadowedLabel label;
+    private final Renderable renderer;
 
     public Button(ShadowedLabel label, Rectangle bounds, ParameterizedAction<Button> onClick) {
         this(label, null, bounds, onClick);
@@ -19,7 +19,13 @@ public class Button extends AbstractPointerAwareGameObject {
         this.onClick = onClick;
         this.bounds = bounds;
         this.label = label;
-        this.background = background;
+        this.renderer = alpha -> {
+            if (background != null) {
+                background.render(alpha);
+            }
+
+            label.render(alpha);
+        };
     }
 
     public ShadowedLabel getLabel() {
@@ -32,16 +38,12 @@ public class Button extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    protected void onRender(float alpha) {
-        if (background != null) {
-            background.render(alpha);
-        }
-
-        label.render(alpha);
+    public Rectangle getBounds() {
+        return bounds;
     }
 
     @Override
-    public Rectangle getBounds() {
-        return bounds;
+    public Renderable getRenderer() {
+        return renderer;
     }
 }

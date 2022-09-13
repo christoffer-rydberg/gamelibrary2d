@@ -3,7 +3,8 @@ package com.gamelibrary2d.demos.lightning;
 import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.io.ResourceReader;
-import com.gamelibrary2d.components.containers.DefaultLayerObject;
+import com.gamelibrary2d.components.containers.DefaultLayer;
+import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
@@ -70,12 +71,12 @@ class DemoFrame extends AbstractFrame {
         Window window = game.getWindow();
         DefaultParticleSystem particleSystem = createParticleSystem();
         DefaultDynamicLightMap lightMap = new DefaultDynamicLightMap(new DefaultLightSpreadMatrix(20));
-        DefaultLayerObject<Renderable> frameLayer = new DefaultLayerObject<>();
-        frameLayer.getBackground().add(createBackground(window));
+        Layer<Renderable> frameLayer = new DefaultLayer<>();
+        frameLayer.add(createBackground(window));
         frameLayer.add(createTorch(particleSystem, lightMap));
-        frameLayer.getForeground().add(particleSystem);
+        frameLayer.add(particleSystem);
         LightRenderer lightRenderer = createLightRenderer(window, lightMap);
-        frameLayer.setOverlay(alpha -> {
+        frameLayer.add(alpha -> {
             lightRenderer.apply();
             lightRenderer.render(alpha);
             lightRenderer.reset();

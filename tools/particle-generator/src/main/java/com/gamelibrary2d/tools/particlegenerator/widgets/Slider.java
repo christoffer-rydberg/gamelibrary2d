@@ -17,11 +17,11 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     private final List<DragBeginListener> dragBeginListeners = new CopyOnWriteArrayList<>();
     private final List<DragStopListener> dragStopListeners = new CopyOnWriteArrayList<>();
     private final List<ValueChangedListener> valueChangedListeners = new CopyOnWriteArrayList<>();
-    private DefaultObservableGameObject<Renderable> handle;
-    private SliderDirection direction;
-    private float min;
-    private float max;
-    private float step;
+    private final DefaultObservableGameObject<Renderable> handle;
+    private final SliderDirection direction;
+    private final float min;
+    private final float max;
+    private final float step;
     private int pointerId = -1;
     private int pointerButton = -1;
     private float dragOriginX;
@@ -167,8 +167,8 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    protected void onRender(float alpha) {
-        handle.render(alpha);
+    public Renderable getRenderer() {
+        return handle;
     }
 
     @Override

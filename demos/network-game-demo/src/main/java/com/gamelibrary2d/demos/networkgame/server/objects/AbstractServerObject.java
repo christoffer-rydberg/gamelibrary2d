@@ -1,11 +1,10 @@
 package com.gamelibrary2d.demos.networkgame.server.objects;
 
-import com.gamelibrary2d.collision.Collidable;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.io.DataBuffer;
 
-public abstract class AbstractServerObject implements ServerObject, Collidable {
+public abstract class AbstractServerObject implements ServerObject {
     private final byte primaryType;
     private final Point velocity = new Point();
     private final Point position = new Point();
@@ -67,12 +66,8 @@ public abstract class AbstractServerObject implements ServerObject, Collidable {
         return rotation;
     }
 
-    protected void setRotation(float rotation) {
+    public void setRotation(float rotation) {
         this.rotation = normalizeAngle(rotation);
-    }
-
-    public void reposition(float x, float y) {
-        getPosition().set(x, y);
     }
 
     protected void setSpeedAndDirection(float speed, float direction) {
@@ -100,16 +95,6 @@ public abstract class AbstractServerObject implements ServerObject, Collidable {
 
     private float normalizeAngle(float direction) {
         return (((direction % 360f) + 360f) % 360f);
-    }
-
-    @Override
-    public float getPosX() {
-        return getPosition().getX();
-    }
-
-    @Override
-    public float getPosY() {
-        return getPosition().getY();
     }
 
     @Override

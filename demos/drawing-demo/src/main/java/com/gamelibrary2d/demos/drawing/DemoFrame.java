@@ -4,7 +4,7 @@ import com.gamelibrary2d.Game;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomGenerator;
 import com.gamelibrary2d.common.random.RandomInstance;
-import com.gamelibrary2d.components.containers.BasicLayer;
+import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
@@ -31,7 +31,7 @@ public class DemoFrame extends AbstractFrame {
 
         Rectangle windowBounds = new Rectangle(0, 0, window.getWidth(), window.getHeight());
 
-        RenderCache<Layer<Renderable>> objLayer = RenderCache.create(new BasicLayer<>(), windowBounds, this);
+        RenderCache<Layer<Renderable>> objLayer = RenderCache.create(new DefaultLayer<>(), windowBounds, this);
 
         GeometryTool lineTool = new GeometryTool(
                 Mouse.instance().mouseButton1(),
@@ -39,8 +39,8 @@ public class DemoFrame extends AbstractFrame {
                 4f);
 
         lineTool.addGeometryCreatedListener(line -> {
-            randomizeColor(line.getRenderer());
-            objLayer.getContent().add(line);
+            randomizeColor(line.getArrayRenderer());
+            objLayer.getRenderer().add(line);
             objLayer.flushCache();
         });
 
@@ -52,7 +52,7 @@ public class DemoFrame extends AbstractFrame {
         quadTool.addQuadCreatedListener(quad -> {
             ContentRenderer renderer = new SurfaceRenderer<>(quad);
             randomizeColor(renderer);
-            objLayer.getContent().add(renderer);
+            objLayer.getRenderer().add(renderer);
             objLayer.flushCache();
         });
 

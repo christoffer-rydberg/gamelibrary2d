@@ -32,7 +32,7 @@ public class RestrictedAreaHandler<T extends Collidable> implements UpdatedHandl
                     obj,
                     horizontalBounce ? -2 * info.getSpeedX() : 0f,
                     verticalBounce ? -2 * info.getSpeedY() : 0f);
-            obj.reposition(info.getPrevX(), info.getPrevY());
+            obj.setPosition(info.getPrevX(), info.getPrevY());
         }
     }
 

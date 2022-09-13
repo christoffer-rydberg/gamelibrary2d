@@ -5,6 +5,7 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.denotations.*;
+import com.gamelibrary2d.framework.Renderable;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -13,7 +14,6 @@ public class NavigationPanel extends AbstractGameObject
         implements Clearable, PointerDownAware, PointerMoveAware, PointerUpAware {
     private final Point transformationPoint = new Point();
     private final Deque<GameObject> previous = new ArrayDeque<>();
-
     private GameObject current;
     private Rectangle bounds;
 
@@ -106,10 +106,8 @@ public class NavigationPanel extends AbstractGameObject
     }
 
     @Override
-    protected void onRender(float alpha) {
-        if (current != null) {
-            current.render(alpha);
-        }
+    public Renderable getRenderer() {
+        return current.getRenderer();
     }
 
     @Override

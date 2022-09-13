@@ -7,7 +7,7 @@ import com.gamelibrary2d.collision.handlers.CollisionHandler;
 import com.gamelibrary2d.collision.handlers.RestrictedAreaHandler;
 import com.gamelibrary2d.collision.handlers.UpdatedHandler;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.containers.BasicLayer;
+import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
@@ -26,7 +26,7 @@ public class DemoFrame extends AbstractFrame {
     private final Rectangle gameArea;
     private final UpdatedHandler<Ball> restrictedAreaHandler;
     private final CollisionHandler<Ball, Ball> bounceHandler = new BounceHandler<>(Ball.class);
-    private final Layer<Ball> ballLayer = new BasicLayer<>();
+    private final Layer<Ball> ballLayer = new DefaultLayer<>();
     private ContentRenderer ballRenderer;
 
     DemoFrame(Game game) {

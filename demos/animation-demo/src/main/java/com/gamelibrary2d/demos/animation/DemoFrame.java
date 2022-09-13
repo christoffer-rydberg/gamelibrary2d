@@ -45,7 +45,7 @@ public class DemoFrame extends AbstractFrame {
         label.setColor(Color.WHITE);
 
         DefaultObservableGameObject<Label> loadButton = new DefaultObservableGameObject<>();
-        loadButton.setContent(label);
+        loadButton.setRenderer(label);
         loadButton.setBounds(label.calculateBounds());
         loadButton.addPointerUpListener(this::onLoadButtonClicked);
 

@@ -5,30 +5,24 @@ import com.gamelibrary2d.components.denotations.Bounded;
 import com.gamelibrary2d.framework.Renderable;
 
 public final class DefaultGameObject<T extends Renderable> extends AbstractGameObject {
-    private T content;
+    private T renderer;
     private Rectangle bounds;
 
     public DefaultGameObject() {
 
     }
 
-    public DefaultGameObject(T content) {
-        this.content = content;
-    }
-
-    public T getContent() {
-        return content;
-    }
-
-    public void setContent(T content) {
-        this.content = content;
+    public DefaultGameObject(T renderer) {
+        this.renderer = renderer;
     }
 
     @Override
-    protected void onRender(float alpha) {
-        if (content != null) {
-            content.render(alpha);
-        }
+    public T getRenderer() {
+        return renderer;
+    }
+
+    public void setRenderer(T renderer) {
+        this.renderer = renderer;
     }
 
     @Override
@@ -37,8 +31,8 @@ public final class DefaultGameObject<T extends Renderable> extends AbstractGameO
             return bounds;
         }
 
-        if (content instanceof Bounded) {
-            return ((Bounded) content).getBounds();
+        if (renderer instanceof Bounded) {
+            return ((Bounded) renderer).getBounds();
         }
 
         return Rectangle.EMPTY;

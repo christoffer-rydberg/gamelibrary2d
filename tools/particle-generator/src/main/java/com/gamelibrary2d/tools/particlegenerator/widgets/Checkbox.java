@@ -54,14 +54,9 @@ public class Checkbox extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    public void onRenderUntransformed(float alpha) {
+    public void onRender(float alpha) {
         updateCheckbox();
-        super.onRenderUntransformed(alpha);
-    }
-
-    @Override
-    protected void onRender(float alpha) {
-        renderer.render(alpha);
+        super.onRender(alpha);
     }
 
     @Override
@@ -80,7 +75,12 @@ public class Checkbox extends AbstractPointerAwareGameObject {
         return renderer.getBounds();
     }
 
-    private class CheckboxRenderer implements Renderable, Bounded {
+    @Override
+    public Renderable getRenderer() {
+        return renderer;
+    }
+
+    private static class CheckboxRenderer implements Renderable, Bounded {
         private final Box box;
         private final LineRenderer renderer;
         private final Label label;

@@ -23,13 +23,6 @@ public class AnimatedGameObject extends AbstractGameObject implements Updatable 
         this.bounds = bounds;
     }
 
-    @Override
-    protected void onRender(float alpha) {
-        if (this.renderer != null) {
-            renderer.render(alpha);
-        }
-    }
-
     public float getAnimationTime() {
         return animationTime;
     }
@@ -52,6 +45,7 @@ public class AnimatedGameObject extends AbstractGameObject implements Updatable 
         setAnimationTime(animationTime + deltaTime);
     }
 
+    @Override
     public AnimationRenderer getRenderer() {
         return renderer;
     }

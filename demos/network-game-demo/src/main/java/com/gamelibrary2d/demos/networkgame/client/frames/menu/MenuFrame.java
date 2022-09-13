@@ -29,10 +29,7 @@ import com.gamelibrary2d.sound.SoundPlayer;
 import com.gamelibrary2d.text.HorizontalTextAlignment;
 import com.gamelibrary2d.text.Label;
 import com.gamelibrary2d.text.VerticalTextAlignment;
-import com.gamelibrary2d.updates.AbstractUpdate;
-import com.gamelibrary2d.updates.DefaultUpdate;
-import com.gamelibrary2d.updates.IdleUpdate;
-import com.gamelibrary2d.updates.SequentialUpdater;
+import com.gamelibrary2d.updates.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +44,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     private Credits credits;
     private GameTitle gameTitle;
     private Layer<Renderable> menuLayer;
-    private LayerObject<Renderable> backgroundLayer;
+    private GameObject backgroundLayer;
 
     private boolean menuLayerIsHidden = true;
     private boolean prepared;
@@ -78,8 +75,8 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         return new SurfaceRenderer<>(backgroundSurface, backgroundTexture);
     }
 
-    private LayerObject<Renderable> createBackgroundLayer() throws IOException {
-        DefaultLayerObject<Renderable> backgroundLayer = new DefaultLayerObject<>();
+    private DefaultLayerGameObject<Renderable> createBackgroundLayer() throws IOException {
+        DefaultLayerGameObject<Renderable> backgroundLayer = new DefaultLayerGameObject<>();
         backgroundLayer.setAutoClearing(false);
         backgroundLayer.add(createBackground());
         return backgroundLayer;
@@ -91,7 +88,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
                 19 * game.getWindow().getWidth() / 20f,
                 game.getWindow().getHeight() / 20f);
 
-        BasicLayer<Renderable> menuLayer = new BasicLayer<>();
+        Layer<Renderable> menuLayer = new DefaultLayer<>();
         menuLayer.setAutoClearing(false);
 
         gameTitle = GameTitle.create(game.getWindow(), resourceManager, this);
@@ -162,10 +159,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         if (menuLayerIsHidden) {
             SequentialUpdater updater = new SequentialUpdater();
             updater.add(() -> menuLayer.setEnabled(true));
-            updater.add(new DefaultUpdate(
-                    4f,
-                    dt -> menuLayer.addOpacity(-0.25f * dt)
-            ));
+            updater.add(new OpacityUpdate(4f, menuLayer, 1f));
             startUpdate(updater);
             menuLayerIsHidden = false;
         }

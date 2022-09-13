@@ -5,6 +5,7 @@ import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 
 public class SpaceCraft extends AbstractGameObject implements Updatable {
@@ -39,11 +40,6 @@ public class SpaceCraft extends AbstractGameObject implements Updatable {
     }
 
     @Override
-    protected void onRender(float alpha) {
-        renderer.render(alpha);
-    }
-
-    @Override
     public void update(float deltaTime) {
         setRotation(delta.getAngleDegrees());
         getPosition().add(delta.getX() * deltaTime, delta.getY() * deltaTime);
@@ -53,5 +49,10 @@ public class SpaceCraft extends AbstractGameObject implements Updatable {
     @Override
     public Rectangle getBounds() {
         return renderer.getBounds();
+    }
+
+    @Override
+    public Renderable getRenderer() {
+        return renderer;
     }
 }

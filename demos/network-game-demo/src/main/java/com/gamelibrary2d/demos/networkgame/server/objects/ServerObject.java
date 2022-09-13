@@ -1,24 +1,16 @@
 package com.gamelibrary2d.demos.networkgame.server.objects;
 
+import com.gamelibrary2d.collision.Collidable;
 import com.gamelibrary2d.collision.CollisionDetection;
-import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.io.Serializable;
+import com.gamelibrary2d.components.denotations.Positionable;
+import com.gamelibrary2d.components.denotations.Rotatable;
 
-public interface ServerObject extends Serializable {
+public interface ServerObject extends Collidable, Rotatable, Positionable, Serializable {
 
     int getId();
 
     void onRegistered(int id);
-
-    Point getPosition();
-
-    default void setPosition(Point position) {
-        getPosition().set(position);
-    }
-
-    default void setPosition(float x, float y) {
-        getPosition().set(x, y);
-    }
 
     byte getObjectIdentifier();
 
@@ -33,4 +25,19 @@ public interface ServerObject extends Serializable {
     void addCollisionDetection(CollisionDetection collisionDetection);
 
     boolean isAccelerating();
+
+    @Override
+    default float getPosX() {
+        return getPosition().getX();
+    }
+
+    @Override
+    default float getPosY() {
+        return getPosition().getY();
+    }
+
+    @Override
+    default void setPosition(float x, float y) {
+        getPosition().set(x, y);
+    }
 }

@@ -1,8 +1,7 @@
 package com.gamelibrary2d.demos.shaderparticlesystem;
 
 import com.gamelibrary2d.Game;
-import com.gamelibrary2d.components.containers.DefaultLayerObject;
-import com.gamelibrary2d.components.containers.LayerObject;
+import com.gamelibrary2d.components.containers.DefaultLayerGameObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
@@ -39,7 +38,7 @@ public class DemoFrame extends AbstractFrame {
             float scaleY = Math.min(1f, 0.5f * windowHeight / init.getHeight());
             float scale = Math.min(scaleX, scaleY);
 
-            LayerObject<Renderable> layer = new DefaultLayerObject<>();
+            DefaultLayerGameObject<Renderable> layer = new DefaultLayerGameObject<>();
             layer.setScale(scale, scale);
             layer.setScaleAndRotationAnchor(windowWidth / 2, windowHeight / 2);
             layer.add(particleSystem);

@@ -7,9 +7,9 @@ import com.gamelibrary2d.common.random.RandomGenerator;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.DefaultGameObject;
 import com.gamelibrary2d.components.GameObject;
-import com.gamelibrary2d.components.containers.BasicLayer;
-import com.gamelibrary2d.components.containers.DefaultLayerObject;
+import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
+import com.gamelibrary2d.components.containers.DefaultLayerGameObject;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
@@ -33,7 +33,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     private final static Color SPLIT_COLOR = Color.WHITE;
     private final static Color BACKGROUND_COLOR = Color.BLACK;
     private final static int INITIAL_SPACECRAFT_COUNT = 5;
-    private final DefaultLayerObject<Renderable> spacecraftLayer;
+    private final DefaultLayerGameObject<Renderable> spacecraftLayer;
     private final Game game;
 
     private GameObject view;
@@ -44,7 +44,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     DemoFrame(Game game) {
         super(game);
         this.game = game;
-        spacecraftLayer = new DefaultLayerObject<>();
+        spacecraftLayer = new DefaultLayerGameObject<>();
         setBackgroundColor(SPLIT_COLOR);
     }
 
@@ -133,7 +133,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     private Renderable createBackground() {
-        Layer<Renderable> backgroundLayer = new BasicLayer<>();
+        Layer<Renderable> backgroundLayer = new DefaultLayer<>();
         backgroundLayer.setAutoClearing(false);
         backgroundLayer.add(createBackgroundColor());
         backgroundLayer.add(createStars(Math.round(GAME_BOUNDS.getArea() * 0.0001f)));
@@ -174,7 +174,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     @Override
     protected void onBegin(FrameInitializer initializer) {
         try {
-            spacecraftLayer.getBackground().add(createBackground());
+            spacecraftLayer.add(0, createBackground());
 
             spaceCraftQuad = Quad.create(Rectangle.create(64, 64), this);
 

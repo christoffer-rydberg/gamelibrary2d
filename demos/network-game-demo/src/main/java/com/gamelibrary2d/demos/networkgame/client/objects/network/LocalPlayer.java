@@ -5,7 +5,7 @@ import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
 import com.gamelibrary2d.demos.networkgame.client.input.Controller;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerInputId;
-import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.ContentMap;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.RendererMap;
 import com.gamelibrary2d.demos.networkgame.common.PlayerAcceleration;
 
 public class LocalPlayer extends AbstractPlayer {
@@ -43,8 +43,8 @@ public class LocalPlayer extends AbstractPlayer {
     }
 
     @Override
-    public void addContent(ContentMap contentMap) {
-        contentMap.setContent(this);
+    public void setRenderer(RendererMap rendererMap) {
+        rendererMap.setRenderer(this);
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerDownWhenFocusedAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.renderers.FrameBufferRenderer;
 import com.gamelibrary2d.opengl.resources.DefaultFrameBuffer;
 import com.gamelibrary2d.opengl.resources.FrameBuffer;
@@ -68,8 +69,13 @@ public abstract class AbstractPointerAwareGameObject
                     frameBufferRenderer = new FrameBufferRenderer(bounds, frameBuffer);
                 }
 
-                frameBufferRenderer.render(this::onRender, 1f);
-                return frameBufferRenderer.isVisible(x, y);
+                Renderable renderer = getRenderer();
+                if (renderer != null) {
+                    frameBufferRenderer.render(renderer, 1f);
+                    return frameBufferRenderer.isVisible(x, y);
+                } else {
+                    return false;
+                }
             } else {
                 return true;
             }

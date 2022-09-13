@@ -6,7 +6,11 @@ import com.gamelibrary2d.components.GameObject;
 
 import java.util.List;
 
-public abstract class AbstractPanel<T extends GameObject> extends AbstractLayerObject<T> implements Panel<T> {
+public abstract class AbstractPanel<T extends GameObject>
+        extends AbstractLayerGameObject<T>
+        implements Panel<T> {
+
+    private final Layer<T> layer = new DefaultLayer<>();
     private boolean autoResizing = true;
 
     protected AbstractPanel() {
@@ -21,6 +25,11 @@ public abstract class AbstractPanel<T extends GameObject> extends AbstractLayerO
     @Override
     public void setAutoResizing(boolean autoResizing) {
         this.autoResizing = autoResizing;
+    }
+
+    @Override
+    public void setBounds(Rectangle bounds) {
+        super.setBounds(bounds);
     }
 
     @Override
@@ -62,6 +71,11 @@ public abstract class AbstractPanel<T extends GameObject> extends AbstractLayerO
     @Override
     public boolean remove(Object obj) {
         return onRemove(obj, true);
+    }
+
+    @Override
+    protected Layer<T> getLayer() {
+        return layer;
     }
 
     protected boolean onRemove(Object obj, boolean recalculateBounds) {

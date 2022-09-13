@@ -9,15 +9,15 @@ import com.gamelibrary2d.opengl.resources.FrameBuffer;
 import com.gamelibrary2d.opengl.resources.Quad;
 
 public class RenderCache<T extends Renderable> implements Renderable, Bounded {
-    private final T content;
+    private final T renderer;
     private final Rectangle bounds;
-    private final SurfaceRenderer<Quad> renderer;
+    private final SurfaceRenderer<Quad> cacheRenderer;
     private final FrameBufferRenderer frameBufferRenderer;
     private boolean caching;
     private boolean cached;
 
-    private RenderCache(T content, Rectangle bounds, Disposer disposer) {
-        this.content = content;
+    private RenderCache(T renderer, Rectangle bounds, Disposer disposer) {
+        this.renderer = renderer;
         this.bounds = bounds;
 
         FrameBuffer frameBuffer = DefaultFrameBuffer.create(
@@ -27,13 +27,13 @@ public class RenderCache<T extends Renderable> implements Renderable, Bounded {
 
         this.frameBufferRenderer = new FrameBufferRenderer(bounds, frameBuffer);
 
-        this.renderer = new SurfaceRenderer<>(
+        this.cacheRenderer = new SurfaceRenderer<>(
                 Quad.create(bounds, disposer),
                 frameBufferRenderer.getFrameBuffer().getTexture());
     }
 
-    public static <T extends Renderable> RenderCache<T> create(T content, Rectangle bounds, Disposer disposer) {
-        return new RenderCache<>(content, bounds, disposer);
+    public static <T extends Renderable> RenderCache<T> create(T renderer, Rectangle bounds, Disposer disposer) {
+        return new RenderCache<>(renderer, bounds, disposer);
     }
 
     @Override
@@ -56,14 +56,14 @@ public class RenderCache<T extends Renderable> implements Renderable, Bounded {
     @Override
     public void render(float alpha) {
         if (!cached) {
-            frameBufferRenderer.render(content, 1f);
+            frameBufferRenderer.render(renderer, 1f);
             cached = caching;
         }
 
-        renderer.render(alpha);
+        cacheRenderer.render(alpha);
     }
 
-    public T getContent() {
-        return content;
+    public T getRenderer() {
+        return renderer;
     }
 }

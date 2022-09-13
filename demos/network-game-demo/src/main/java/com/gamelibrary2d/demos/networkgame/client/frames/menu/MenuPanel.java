@@ -27,8 +27,10 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
 class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> {
+    private final NavigationPanel navigationPanel;
+
     MenuPanel(DemoGame game) {
-        NavigationPanel navigationPanel = new NavigationPanel();
+        navigationPanel = new NavigationPanel();
 
         GameObject hostPanel = createHostPanel(game, navigationPanel);
         GameObject joinPanel = createJoinPanel(game, navigationPanel);
@@ -41,8 +43,11 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
                 .add(mainPanel.getBounds()));
 
         navigationPanel.navigateTo(mainPanel, false);
+    }
 
-        setContent(navigationPanel);
+    @Override
+    protected NavigationPanel getComposition() {
+        return navigationPanel;
     }
 
     private static <T extends GameObject> void stack(Panel<T> panel, T obj) {

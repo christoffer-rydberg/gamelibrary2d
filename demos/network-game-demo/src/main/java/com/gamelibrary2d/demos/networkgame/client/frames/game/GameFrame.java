@@ -2,10 +2,9 @@ package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
 import com.gamelibrary2d.common.Color;
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.containers.BasicLayer;
-import com.gamelibrary2d.components.containers.DefaultLayerObject;
+import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.components.containers.DefaultLayerGameObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
@@ -14,7 +13,7 @@ import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.ClientObject;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.LocalPlayer;
-import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.ContentMap;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.RendererMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.EffectMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.SoundMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.TextureMap;
@@ -36,10 +35,7 @@ import com.gamelibrary2d.opengl.resources.Quad;
 import com.gamelibrary2d.opengl.resources.Texture;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
-import com.gamelibrary2d.updates.DefaultUpdate;
-import com.gamelibrary2d.updates.IdleUpdate;
-import com.gamelibrary2d.updates.ParallelUpdater;
-import com.gamelibrary2d.updates.SequentialUpdater;
+import com.gamelibrary2d.updates.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,19 +43,18 @@ import java.io.InputStream;
 public class GameFrame extends AbstractFrame {
     private final DemoGame game;
     private final ResourceManager resourceManager;
-
-    private final DefaultLayerObject<Renderable> gameLayer = new DefaultLayerObject<>();
-    private final Layer<Renderable> backgroundLayer = new BasicLayer<>();
-    private final Layer<Renderable> backgroundEffects = new BasicLayer<>();
-    private final Layer<ClientObject> objectLayer = new BasicLayer<>();
-    private final Layer<Renderable> foregroundEffects = new BasicLayer<>();
-    private final Layer<Renderable> screenLayer = new BasicLayer<>();
-    private final Layer<Renderable> controllerLayer = new BasicLayer<>();
+    private final DefaultLayerGameObject<Renderable> gameLayer = new DefaultLayerGameObject<>();
+    private final Layer<Renderable> backgroundLayer = new DefaultLayer<>();
+    private final Layer<Renderable> backgroundEffects = new DefaultLayer<>();
+    private final Layer<ClientObject> objectLayer = new DefaultLayer<>();
+    private final Layer<Renderable> foregroundEffects = new DefaultLayer<>();
+    private final Layer<Renderable> screenLayer = new DefaultLayer<>();
+    private final Layer<Renderable> controllerLayer = new DefaultLayer<>();
 
     private final SoundMap soundMap;
     private final EffectMap effects;
     private final TextureMap textures;
-    private final ContentMap content = new ContentMap();
+    private final RendererMap renderers = new RendererMap();
 
     private final MusicPlayer musicPlayer;
     private final GameFrameClient client;
@@ -169,7 +164,7 @@ public class GameFrame extends AbstractFrame {
         gameLayer.setScale(scale, scale);
         gameLayer.setPosition(renderedGameBounds.getLowerX(), renderedGameBounds.getLowerY());
 
-        content.initialize(gameSettings, textures, this);
+        renderers.initialize(gameSettings, textures, this);
 
         backgroundLayer.add(createBackground(
                 new Rectangle(0, 0, windowWidth, windowHeight),
@@ -287,7 +282,7 @@ public class GameFrame extends AbstractFrame {
         }
 
         obj.spawn(this);
-        obj.addContent(content);
+        obj.setRenderer(renderers);
         obj.addEffects(effects);
 
         objectLayer.add(obj);
@@ -302,9 +297,7 @@ public class GameFrame extends AbstractFrame {
 
         ParallelUpdater parallelUpdater = new ParallelUpdater();
         objectLayer.getChildren().stream()
-                .map(obj -> new DefaultUpdate(
-                        2f,
-                        new SuckedIntoPortalUpdate(obj, gameBounds.getCenterX(), gameBounds.getCenterY())))
+                .map(obj -> new SuckedIntoPortalUpdate(2f, obj, gameBounds.getCenterX(), gameBounds.getCenterY()))
                 .forEach(parallelUpdater::add);
 
         SequentialUpdater sequentialUpdater = new SequentialUpdater();
@@ -331,16 +324,15 @@ public class GameFrame extends AbstractFrame {
         return client;
     }
 
-    private static class SuckedIntoPortalUpdate implements Updatable {
+    private static class SuckedIntoPortalUpdate extends AbstractUpdate {
         private final ClientObject target;
         private final float originX;
         private final float originY;
         private final float goalX;
         private final float goalY;
 
-        private float timer;
-
-        SuckedIntoPortalUpdate(ClientObject target, float goalX, float goalY) {
+        SuckedIntoPortalUpdate(float duration, ClientObject target, float goalX, float goalY) {
+            super(duration);
             this.target = target;
             this.originX = target.getPosition().getX();
             this.originY = target.getPosition().getY();
@@ -349,10 +341,15 @@ public class GameFrame extends AbstractFrame {
         }
 
         @Override
-        public void update(float deltaTime) {
-            timer += deltaTime;
-            target.getPosition().lerp(originX, originY, goalX, goalY, Math.min(timer * 2f, 1f));
-            target.setScale(1f - timer);
+        protected void initialize() {
+
+        }
+
+        @Override
+        protected void onUpdate(float deltaTime) {
+            float alpha = getTime() / getDuration();
+            target.getPosition().lerp(originX, originY, goalX, goalY, alpha);
+            target.setScale(1f - alpha);
         }
     }
 }

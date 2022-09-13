@@ -18,7 +18,7 @@ import com.gamelibrary2d.opengl.resources.Texture;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContentMap {
+public class RendererMap {
     private final Map<Byte, Map<Byte, Renderable>> renderers = new HashMap<>();
     private PlayerRendererFactory playerRendererFactory;
 
@@ -49,18 +49,18 @@ public class ContentMap {
         initializeObstacleRenderers(settings, textures, disposer);
     }
 
-    public void setContent(LocalPlayer player) {
-        Renderable content = playerRendererFactory.create(player.getColor());
-        player.setContent(content);
+    public void setRenderer(LocalPlayer player) {
+        Renderable renderer = playerRendererFactory.create(player.getColor());
+        player.setRenderer(renderer);
     }
 
-    public void setContent(RemotePlayer player) {
-        Renderable content = playerRendererFactory.create(player.getColor());
-        player.setContent(content);
+    public void setRenderer(RemotePlayer player) {
+        Renderable renderer = playerRendererFactory.create(player.getColor());
+        player.setRenderer(renderer);
     }
 
-    public void setContent(AbstractClientObject obj) {
-        obj.setContent(get(obj.getPrimaryType(), obj.getSecondaryType()));
+    public void setRenderer(AbstractClientObject obj) {
+        obj.setRenderer(get(obj.getPrimaryType(), obj.getSecondaryType()));
     }
 
     private Renderable get(byte primaryType, byte secondaryType) {

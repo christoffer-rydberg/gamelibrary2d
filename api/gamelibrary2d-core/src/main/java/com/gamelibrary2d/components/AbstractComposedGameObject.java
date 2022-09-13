@@ -2,79 +2,68 @@ package com.gamelibrary2d.components;
 
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.framework.Renderable;
 
-public class AbstractComposedGameObject<T extends GameObject> implements GameObject {
-
-    private T content;
-
-    protected AbstractComposedGameObject() {
-
-    }
-
-    protected AbstractComposedGameObject(T content) {
-        this.content = content;
-    }
-
-    protected T getContent() {
-        return content;
-    }
-
-    protected void setContent(T content) {
-        this.content = content;
-    }
+public abstract class AbstractComposedGameObject<T extends GameObject> implements GameObject {
+    protected abstract T getComposition();
 
     @Override
     public void render(float alpha) {
-        content.render(alpha);
+        getComposition().render(alpha);
+    }
+
+    @Override
+    public Renderable getRenderer() {
+        return getComposition().getRenderer();
     }
 
     @Override
     public Rectangle getBounds() {
-        return content.getBounds();
+        return getComposition().getBounds();
     }
 
     @Override
     public Point getPosition() {
-        return content.getPosition();
+        return getComposition().getPosition();
     }
 
     @Override
     public Point getScale() {
-        return content.getScale();
+        return getComposition().getScale();
     }
 
     @Override
     public Point getScaleAndRotationAnchor() {
-        return content.getScaleAndRotationAnchor();
+        return getComposition().getScaleAndRotationAnchor();
     }
 
     @Override
     public float getRotation() {
-        return content.getRotation();
+        return getComposition().getRotation();
     }
 
     @Override
     public void setRotation(float rotation) {
-        content.setRotation(rotation);
+        getComposition().setRotation(rotation);
     }
 
     @Override
     public boolean isEnabled() {
-        return content.isEnabled();
+        return getComposition().isEnabled();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        content.setEnabled(enabled);
+        getComposition().setEnabled(enabled);
     }
 
     @Override
     public float getOpacity() {
-        return content.getOpacity();
+        return getComposition().getOpacity();
     }
 
     @Override
     public void setOpacity(float opacity) {
-        content.setOpacity(opacity);
+        getComposition().setOpacity(opacity);
     }
 }

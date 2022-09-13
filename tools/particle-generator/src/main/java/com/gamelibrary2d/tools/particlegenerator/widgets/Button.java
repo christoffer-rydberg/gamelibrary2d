@@ -3,6 +3,7 @@ package com.gamelibrary2d.tools.particlegenerator.widgets;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.text.Label;
 
 public class Button extends AbstractPointerAwareGameObject {
@@ -22,16 +23,16 @@ public class Button extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    protected void onRender(float alpha) {
-        label.render(alpha);
-    }
-
-    @Override
     public Rectangle getBounds() {
         return bounds;
     }
 
     public void setBounds(Rectangle bounds) {
         this.bounds = bounds;
+    }
+
+    @Override
+    public Renderable getRenderer() {
+        return label;
     }
 }

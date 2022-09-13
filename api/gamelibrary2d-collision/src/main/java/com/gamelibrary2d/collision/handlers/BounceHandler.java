@@ -85,7 +85,7 @@ public class BounceHandler<T1 extends Obstacle, T2 extends Obstacle> implements 
     @Override
     public void finish() {
         if (reposition) {
-            updated.getCollidable().reposition(updated.getPrevX(), updated.getPrevY());
+            updated.getCollidable().setPosition(updated.getPrevX(), updated.getPrevY());
             reposition = false;
         }
     }

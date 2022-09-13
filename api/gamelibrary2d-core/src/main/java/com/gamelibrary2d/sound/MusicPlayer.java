@@ -2,7 +2,6 @@ package com.gamelibrary2d.sound;
 
 import com.gamelibrary2d.Game;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.updates.DefaultUpdate;
 import com.gamelibrary2d.updates.IdleUpdate;
 import com.gamelibrary2d.updates.SequentialUpdater;
 import com.gamelibrary2d.updates.Update;
