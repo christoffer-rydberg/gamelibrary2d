@@ -19,7 +19,13 @@
     <dependencies>
         <dependency>
             <groupId>com.gamelibrary2d</groupId>
-            <artifactId>gamelibrary2d-network</artifactId>
+            <artifactId>gamelibrary2d-network-client</artifactId>
+            <version>0.14.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.gamelibrary2d</groupId>
+            <artifactId>gamelibrary2d-network-server</artifactId>
             <version>0.14.0</version>
             <scope>compile</scope>
         </dependency>

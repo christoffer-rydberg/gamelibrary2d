@@ -4,7 +4,7 @@ import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
-import com.gamelibrary2d.network.common.server.AbstractNetworkServer;
+import com.gamelibrary2d.network.server.AbstractNetworkServer;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

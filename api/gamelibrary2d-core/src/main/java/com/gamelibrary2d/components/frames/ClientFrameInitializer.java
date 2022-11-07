@@ -3,7 +3,7 @@ package com.gamelibrary2d.components.frames;
 import com.gamelibrary2d.common.functional.Factory;
 import com.gamelibrary2d.common.functional.ParameterizedAction;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.client.Client;
+import com.gamelibrary2d.network.client.Client;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;

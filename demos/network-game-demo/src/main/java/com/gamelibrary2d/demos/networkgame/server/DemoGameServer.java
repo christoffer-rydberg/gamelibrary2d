@@ -12,7 +12,7 @@ import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.*;
-import com.gamelibrary2d.network.common.security.ServerHandshakeConfiguration;
+import com.gamelibrary2d.network.server.ServerHandshakeConfiguration;
 import com.gamelibrary2d.network.common.server.Server;
 import com.gamelibrary2d.network.common.server.ServerContext;
 

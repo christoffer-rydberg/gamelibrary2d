@@ -15,7 +15,9 @@
         <module>api/gamelibrary2d-framework</module>
         <module>api/gamelibrary2d-framework-lwjgl</module>
         <module>api/gamelibrary2d-core</module>
-        <module>api/gamelibrary2d-network</module>
+        <module>api/gamelibrary2d-network-client</module>
+        <module>api/gamelibrary2d-network-server</module>
+        <module>api/gamelibrary2d-network-common</module>
         <module>api/gamelibrary2d-sound</module>
         <module>api/gamelibrary2d-sound-lwjgl</module>
         <module>tools/particle-generator</module>

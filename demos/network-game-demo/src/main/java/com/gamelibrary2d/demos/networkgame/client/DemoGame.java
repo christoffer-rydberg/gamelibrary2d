@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
 import com.gamelibrary2d.AbstractGame;
+import com.gamelibrary2d.common.functional.Factory;
 import com.gamelibrary2d.demos.networkgame.client.frames.SplashFrame;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrame;
 import com.gamelibrary2d.demos.networkgame.client.frames.menu.MenuFrame;
@@ -13,12 +14,13 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Textures;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
 import com.gamelibrary2d.demos.networkgame.client.urls.Music;
 import com.gamelibrary2d.framework.Framework;
-import com.gamelibrary2d.network.common.client.CommunicatorConnector;
+import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundManager;
 import com.gamelibrary2d.sound.SoundPlayer;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.Future;
 
 public class DemoGame extends AbstractGame {
     private final ControllerFactory controllerFactory;
@@ -46,8 +48,8 @@ public class DemoGame extends AbstractGame {
         setFrame(menuFrame);
     }
 
-    private void startGame(CommunicatorConnector connector) {
-        gameFrame.setCommunicatorFactory(connector::connect);
+    private void startGame(Factory<Future<Communicator>> communicatorFactory) {
+        gameFrame.setCommunicatorFactory(communicatorFactory);
         setFrame(gameFrame);
     }
 

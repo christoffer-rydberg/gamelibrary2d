@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.gamelibrary2d</groupId>
-    <artifactId>gamelibrary2d-core</artifactId>
+    <artifactId>gamelibrary2d-network-server</artifactId>
     <version>0.14.0</version>
     <packaging>jar</packaging>
 
@@ -16,29 +16,10 @@
     <dependencies>
         <dependency>
             <groupId>com.gamelibrary2d</groupId>
-            <artifactId>gamelibrary2d-common</artifactId>
+            <artifactId>gamelibrary2d-network-common</artifactId>
             <version>0.14.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.gamelibrary2d</groupId>
-            <artifactId>gamelibrary2d-sound</artifactId>
-            <version>0.14.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.gamelibrary2d</groupId>
-            <artifactId>gamelibrary2d-network-client</artifactId>
-            <version>0.14.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.gamelibrary2d</groupId>
-            <artifactId>gamelibrary2d-framework</artifactId>
-            <version>0.14.0</version>
-            <scope>compile</scope>
-        </dependency>
-
     </dependencies>
 
     <build>

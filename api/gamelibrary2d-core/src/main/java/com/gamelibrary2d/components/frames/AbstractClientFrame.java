@@ -3,8 +3,8 @@ package com.gamelibrary2d.components.frames;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.client.AbstractClient;
-import com.gamelibrary2d.network.common.client.Client;
+import com.gamelibrary2d.network.client.AbstractClient;
+import com.gamelibrary2d.network.client.Client;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 import java.io.IOException;
