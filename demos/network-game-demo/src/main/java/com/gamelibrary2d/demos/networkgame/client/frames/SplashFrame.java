@@ -16,7 +16,7 @@ public class SplashFrame extends AbstractFrame {
 
 
     @Override
-    protected void onBegin(FrameInitializer initializer) {
+    protected void onInitialize(FrameInitializer initializer) {
 
     }
 

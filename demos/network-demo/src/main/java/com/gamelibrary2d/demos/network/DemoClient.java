@@ -9,11 +9,10 @@ import com.gamelibrary2d.network.common.client.TcpConnectionSettings;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
 import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
 import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
-import com.gamelibrary2d.network.common.exceptions.ConnectionException;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
 
 public class DemoClient extends AbstractClient {
     private final UpdateLoop updateLoop;
@@ -23,21 +22,20 @@ public class DemoClient extends AbstractClient {
         updateLoop = new UpdateLoop(this::update, 10);
     }
 
-    @Override
-    protected Future<Communicator> connectCommunicator() {
+    private Communicator connectCommunicator() throws ExecutionException, InterruptedException {
         TcpConnectionSettings connectionSettings = new TcpConnectionSettings(
                 "localhost",
                 4444);
 
-        return ClientSideCommunicator.connect(connectionSettings);
+        return ClientSideCommunicator.connect(connectionSettings).get();
     }
 
     void run() {
         try {
-            connect();
-            getCommunicator().addDisconnectedListener(this::onDisconnected);
+            Communicator communicator = connectCommunicator();
+            setCommunicator(communicator);
             sendMessage("What do you call a guy with a rubber toe?");
-        } catch (ConnectionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             System.err.println("Failed to connect communicator");
             e.printStackTrace();
             return;

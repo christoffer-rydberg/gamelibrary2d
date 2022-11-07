@@ -22,7 +22,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onBegin(FrameInitializer initializer) {
+    protected void onInitialize(FrameInitializer initializer) {
         try {
             Window window = game.getWindow();
             float windowWidth = window.getWidth();

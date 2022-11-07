@@ -20,8 +20,8 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     private final DelayedActionMonitor delayedActionMonitor = new DelayedActionMonitor();
     private final Deque<Update> updates = new ArrayDeque<>();
     private final DefaultDisposer disposer;
-
     private Color backgroundColor = Color.BLACK;
+    private boolean initialized;
     private Future<FrameInitializationContext> initializationContextFuture;
 
     protected AbstractFrame(Disposer parentDisposer) {
@@ -40,12 +40,33 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
 
     @Override
     public void begin() {
+        clearDelayedActions();
+        initialize();
+    }
+
+    /**
+     * Removes all actions that have been queued by {@link #invokeLater}.
+     */
+    protected void clearDelayedActions() {
         delayedActionMonitor.clear();
+    }
+
+    /**
+     * This method sets {@link #isInitialized} to false, invokes {@link #onInitialize(FrameInitializer)} and runs the initialization pipeline.
+     * Note that no cleanup is attempted. It's up to the invoker to set the frame in a state so that it can be re-initialized.
+     */
+    protected void reInitialize() {
+        abortInitialization();
+        initialize();
+    }
+
+    private void initialize() {
+        initialized = false;
 
         FrameInitializer frameInitializer = new FrameInitializer(this);
 
         try {
-            onBegin(frameInitializer);
+            onInitialize(frameInitializer);
             initializationContextFuture = frameInitializer.run();
         } catch (Throwable e) {
             CompletableFuture<FrameInitializationContext> completedFuture = new CompletableFuture<>();
@@ -56,27 +77,46 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         tryCompleteInitialization();
     }
 
+    private void tryCompleteInitialization() {
+        initialized = initializationContextFuture.isDone();
+
+        if (initialized) {
+            try {
+                onInitializationSuccessful(initializationContextFuture.get());
+            } catch (InterruptedException | ExecutionException e) {
+                onInitializationFailed(e);
+            } finally {
+                initializationContextFuture = null;
+            }
+        }
+    }
+
     @Override
     public void end() {
         onEnd();
-        delayedActionMonitor.clear();
+        clearDelayedActions();
     }
 
     @Override
     public void dispose() {
-        if (initializationContextFuture != null) {
-            initializationContextFuture.cancel(true);
-            initializationContextFuture = null;
-        }
+        abortInitialization();
+        initialized = false;
 
         clear();
 
         disposer.dispose();
         disposer.clear();
         updates.clear();
-        delayedActionMonitor.clear();
+        clearDelayedActions();
 
         onDispose();
+    }
+
+    private void abortInitialization() {
+        if (initializationContextFuture != null) {
+            initializationContextFuture.cancel(true);
+            initializationContextFuture = null;
+        }
     }
 
     @Override
@@ -91,16 +131,8 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         updates.remove(update);
     }
 
-    private void tryCompleteInitialization() {
-        if (initializationContextFuture.isDone()) {
-            try {
-                onInitializationSuccessful(initializationContextFuture.get());
-            } catch (InterruptedException | ExecutionException e) {
-                onInitializationFailed(e);
-            } finally {
-                initializationContextFuture = null;
-            }
-        }
+    protected boolean isInitialized() {
+        return initialized;
     }
 
     @Override
@@ -140,14 +172,14 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     }
 
     /**
-     * Invoked when the frame begins.
+     * Invoked when the frame begins or if {@link #reInitialize} is invoked.
      *
      * @param initializer Used to configure the frame initialization pipeline.
      *                    Either {@link #onInitializationSuccessful} or {@link #onInitializationFailed} will be invoked
      *                    when the pipeline has finished.
      * @throws IOException Throwing this exception will result in {@link #onInitializationFailed} being invoked.
      */
-    protected abstract void onBegin(FrameInitializer initializer) throws IOException;
+    protected abstract void onInitialize(FrameInitializer initializer) throws IOException;
 
     /**
      * Invoked if a task of the {@link FrameInitializer} throws an exception.
@@ -159,7 +191,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
 
     /**
      * Invoked when all tasks of the {@link FrameInitializer} has completed successfully,
-     * or directly after {@link #onBegin} if no {@link FrameInitializationTask initialization tasks} were added.
+     * or directly after {@link #onInitialize} if no {@link FrameInitializationTask initialization tasks} were added.
      *
      * @param context The context from the initialization pipeline.
      */

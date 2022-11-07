@@ -26,7 +26,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onBegin(FrameInitializer initializer) {
+    protected void onInitialize(FrameInitializer initializer) {
         Window window = game.getWindow();
 
         Rectangle windowBounds = new Rectangle(0, 0, window.getWidth(), window.getHeight());

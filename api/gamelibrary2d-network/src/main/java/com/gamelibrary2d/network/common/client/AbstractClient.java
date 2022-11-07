@@ -5,14 +5,11 @@ import com.gamelibrary2d.common.io.DynamicByteBuffer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
 import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
-import com.gamelibrary2d.network.common.exceptions.ConnectionException;
 import com.gamelibrary2d.network.common.initialization.*;
 import com.gamelibrary2d.network.common.initialization.ConditionalInitializationTask;
 import com.gamelibrary2d.network.common.initialization.InitializationTask;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public abstract class AbstractClient implements Client {
     private final DataBuffer inbox;
@@ -52,23 +49,15 @@ public abstract class AbstractClient implements Client {
     }
 
     @Override
-    public void connect() throws ConnectionException, ClientAuthenticationException, ClientInitializationException {
+    public void setCommunicator(Communicator communicator) throws ClientAuthenticationException, ClientInitializationException {
         try {
-            this.communicator = connectCommunicator().get();
-
-            if (!communicator.isConnected()) {
-                throw new ConnectionException("The communicator is not connected");
-            }
+            this.communicator = communicator;
 
             clearInbox();
             communicator.clearOutgoing();
             CommunicatorInitializationContext context = new CommunicatorInitializationContext();
             authenticate(context, communicator);
             initialize(context, communicator);
-        } catch (InterruptedException | ExecutionException e) {
-            communicator.disconnect(e);
-            this.communicator = null;
-            throw new ConnectionException("Failed to connect communicator", e);
         } catch (Exception e) {
             communicator.disconnect(e);
             this.communicator = null;
@@ -227,8 +216,6 @@ public abstract class AbstractClient implements Client {
         communicator.setId(communicatorId);
         return true;
     }
-
-    protected abstract Future<Communicator> connectCommunicator();
 
     protected abstract void initialize(CommunicatorInitializer initializer);
 

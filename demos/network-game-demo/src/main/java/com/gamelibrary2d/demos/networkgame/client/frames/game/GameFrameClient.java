@@ -1,44 +1,35 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
-import com.gamelibrary2d.common.functional.Factory;
 import com.gamelibrary2d.common.io.BitParser;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.*;
 import com.gamelibrary2d.demos.networkgame.common.*;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.client.AbstractClient;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
 
 import static com.gamelibrary2d.demos.networkgame.common.ServerMessages.*;
 
-public class GameFrameClient extends AbstractClient {
-    private final GameFrame frame;
+public class GameFrameClient {
+    private final GameFrameManager frameManager;
     private final ControllerFactory controllerFactory;
     private final BitParser bitParser = new BitParser();
     private State state;
     private GameSettings gameSettings;
     private float serverUpdatesPerSecond;
-    private Factory<Future<Communicator>> communicatorFactory;
+    private Communicator communicator;
 
-    public GameFrameClient(GameFrame frame, ControllerFactory controllerFactory) {
-        this.frame = frame;
+    public GameFrameClient(GameFrameManager frameManager, ControllerFactory controllerFactory) {
+        this.frameManager = frameManager;
         this.controllerFactory = controllerFactory;
     }
 
-    @Override
-    protected Future<Communicator> connectCommunicator() {
-        return communicatorFactory.create();
-    }
-
-    @Override
-    protected void initialize(CommunicatorInitializer initializer) {
+    public void initialize(CommunicatorInitializer initializer) {
         initializer.addConsumer((ctx, com, inbox) -> {
             serverUpdatesPerSecond = inbox.getFloat();
             return true;
@@ -51,7 +42,6 @@ public class GameFrameClient extends AbstractClient {
 
         initializer.addProducer(this::requestPlayers);
         initializer.addConsumer(this::readState);
-        initializer.addProducer(this::onInitialized);
     }
 
     private void requestPlayers(CommunicatorInitializationContext context, Communicator communicator) {
@@ -63,28 +53,28 @@ public class GameFrameClient extends AbstractClient {
         return true;
     }
 
-    private void onInitialized(CommunicatorInitializationContext context, Communicator communicator) {
+    public void onInitialized(Communicator communicator) {
+        this.communicator = communicator;
         communicator.addDisconnectedListener(this::onDisconnected);
-        frame.invokeLater(() -> {
-            frame.applySettings(gameSettings);
+        frameManager.invokeLater(() -> {
+            frameManager.applySettings(gameSettings);
             for (ClientObject obj : state.getObjects().values()) {
-                frame.spawn(obj);
+                frameManager.spawn(obj);
             }
         });
     }
 
     private void onDisconnected(CommunicatorDisconnectedEvent event) {
-        frame.invokeLater(() -> {
+        frameManager.invokeLater(() -> {
             System.err.println("Disconnected from server");
             Throwable cause = event.getCause();
             if (cause != null) {
                 cause.printStackTrace();
             }
-            frame.goToMenu();
+            frameManager.goToMenu();
         });
     }
 
-    @Override
     public void onMessage(DataBuffer buffer) {
         byte id = buffer.get();
         switch (id) {
@@ -108,12 +98,17 @@ public class GameFrameClient extends AbstractClient {
 
     private void gameOver() {
         state.objects.clear();
-        frame.gameOver();
+        frameManager.gameOver(this::requestNewGame);
     }
 
     private void gameEnded() {
         state.clear();
-        frame.gameEnded();
+        frameManager.gameEnded();
+        requestNewGame();
+    }
+
+    private void requestNewGame() {
+        getCommunicator().getOutgoing().put(ClientMessages.PLAY_AGAIN);
     }
 
     private ClientObject readObject(byte primaryType, DataBuffer buffer) {
@@ -136,12 +131,12 @@ public class GameFrameClient extends AbstractClient {
 
     private void destroy(int id) {
         ClientObject obj = state.getObjects().remove(id);
-        frame.destroy(obj);
+        frameManager.destroy(obj);
     }
 
     private void spawn(ClientObject obj) {
         state.getObjects().put(obj.getId(), obj);
-        frame.spawn(obj);
+        frameManager.spawn(obj);
     }
 
     private void update(DataBuffer buffer) {
@@ -158,7 +153,7 @@ public class GameFrameClient extends AbstractClient {
 
         int time = bitParser.getInt();
 
-        frame.setTime(time);
+        frameManager.setTime(time);
 
         while (bitParser.position() < endOfUpdate) {
             int id = bitParser.getInt(NetworkConstants.OBJECT_ID_BIT_SIZE);
@@ -192,12 +187,14 @@ public class GameFrameClient extends AbstractClient {
         return serverUpdatesPerSecond;
     }
 
-    public void requestNewGame() {
-        getCommunicator().getOutgoing().put(ClientMessages.PLAY_AGAIN);
+    public Communicator getCommunicator() {
+        return communicator;
     }
 
-    public void setCommunicatorFactory(Factory<Future<Communicator>> communicatorFactory) {
-        this.communicatorFactory = communicatorFactory;
+    public void disconnect() {
+        if (communicator != null) {
+            communicator.disconnect();
+        }
     }
 
     private class State {

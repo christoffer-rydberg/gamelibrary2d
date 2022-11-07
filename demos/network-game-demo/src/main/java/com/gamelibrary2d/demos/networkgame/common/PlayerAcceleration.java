@@ -2,10 +2,10 @@ package com.gamelibrary2d.demos.networkgame.common;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.Serializable;
-import com.gamelibrary2d.network.common.client.Client;
+import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
 
 public class PlayerAcceleration implements Serializable {
-    private final Client client;
+    private final GameFrameClient client;
     private final int playerId;
 
     private float acceleration;
@@ -15,7 +15,7 @@ public class PlayerAcceleration implements Serializable {
 
     private boolean changed = true;
 
-    public PlayerAcceleration(Client client, int playerId) {
+    public PlayerAcceleration(GameFrameClient client, int playerId) {
         this.client = client;
         this.playerId = playerId;
     }

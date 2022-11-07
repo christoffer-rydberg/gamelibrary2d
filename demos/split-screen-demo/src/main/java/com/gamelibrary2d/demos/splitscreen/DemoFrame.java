@@ -172,7 +172,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onBegin(FrameInitializer initializer) {
+    protected void onInitialize(FrameInitializer initializer) {
         try {
             spacecraftLayer.add(0, createBackground());
 

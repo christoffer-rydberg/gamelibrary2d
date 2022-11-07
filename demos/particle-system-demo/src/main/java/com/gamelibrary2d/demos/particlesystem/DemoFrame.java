@@ -53,7 +53,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onBegin(FrameInitializer initializer) {
+    protected void onInitialize(FrameInitializer initializer) {
         try {
             // Example of particle system settings created from code:
             ParticleEmissionParameters emissionParameters = new ParticleEmissionParameters();

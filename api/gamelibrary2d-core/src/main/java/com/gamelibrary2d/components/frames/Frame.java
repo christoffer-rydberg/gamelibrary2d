@@ -37,5 +37,5 @@ public interface Frame extends Layer<Renderable>, Disposer {
     /**
      * Performs the specified action in the beginning of the next update cycle.
      */
-    void invokeLater(Action runnable);
+    void invokeLater(Action action);
 }

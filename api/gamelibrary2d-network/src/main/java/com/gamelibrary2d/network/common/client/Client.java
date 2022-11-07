@@ -4,21 +4,19 @@ import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
 import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
-import com.gamelibrary2d.network.common.exceptions.ConnectionException;
 
 public interface Client {
 
     /**
      * Connects the client.
      *
-     * @throws ConnectionException           Failed to connect the {@link Communicator}.
      * @throws ClientAuthenticationException Client authentication failed.
      * @throws ClientInitializationException Client initialization failed.
      */
-    void connect() throws ConnectionException, ClientAuthenticationException, ClientInitializationException;
+    void setCommunicator(Communicator communicator) throws ClientAuthenticationException, ClientInitializationException;
 
     /**
-     * @return The client's {@link Communicator}, or null if the client hasn't been {@link #connect connected}.
+     * @return The client's {@link Communicator}, or null if the client hasn't been {@link #setCommunicator connected}.
      */
     Communicator getCommunicator();
 
