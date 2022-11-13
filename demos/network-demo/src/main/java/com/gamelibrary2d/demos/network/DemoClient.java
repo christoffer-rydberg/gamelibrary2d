@@ -4,8 +4,7 @@ import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.updating.UpdateLoop;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.client.AbstractClient;
-import com.gamelibrary2d.network.client.ClientSideCommunicator;
-import com.gamelibrary2d.network.client.TcpConnectionSettings;
+import com.gamelibrary2d.network.client.RemoteServer;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
 import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
 import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
@@ -23,17 +22,14 @@ public class DemoClient extends AbstractClient {
     }
 
     private Communicator connectCommunicator() throws ExecutionException, InterruptedException {
-        TcpConnectionSettings connectionSettings = new TcpConnectionSettings(
-                "localhost",
-                4444);
-
-        return ClientSideCommunicator.connect(connectionSettings).get();
+        return new RemoteServer("localhost", 4444).connect().get();
     }
 
     void run() {
         try {
             Communicator communicator = connectCommunicator();
             setCommunicator(communicator);
+            communicator.addDisconnectedListener(this::onDisconnected);
             sendMessage("What do you call a guy with a rubber toe?");
         } catch (InterruptedException | ExecutionException e) {
             System.err.println("Failed to connect communicator");

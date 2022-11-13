@@ -41,7 +41,7 @@ public abstract class AbstractNetworkServer extends AbstractServer {
                 try {
                     // Disable Nagle's algorithm
                     channel.socket().setTcpNoDelay(true);
-                    addPendingCommunicator(new ServerSideCommunicator(
+                    addPendingCommunicator(new InternalNetworkCommunicator(
                             networkService,
                             channel,
                             this::configureClientAuthentication));

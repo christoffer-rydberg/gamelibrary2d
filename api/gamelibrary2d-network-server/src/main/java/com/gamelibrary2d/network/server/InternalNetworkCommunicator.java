@@ -7,12 +7,12 @@ import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 import java.nio.channels.SocketChannel;
 
-public class ServerSideCommunicator extends AbstractNetworkCommunicator {
+class InternalNetworkCommunicator extends AbstractNetworkCommunicator {
 
     private final String endpoint;
     private final ParameterizedAction<CommunicatorInitializer> configureAuthentication;
 
-    public ServerSideCommunicator(NetworkService networkService, SocketChannel socketChannel, ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
+    public InternalNetworkCommunicator(NetworkService networkService, SocketChannel socketChannel, ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
         super(networkService, 1, false);
         setSocketChannel(socketChannel);
         endpoint = socketChannel.socket().getInetAddress().getHostAddress();

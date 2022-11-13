@@ -4,6 +4,7 @@ import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.*;
 
 import java.io.IOException;
+import java.nio.channels.SocketChannel;
 import java.util.*;
 
 class InternalCommunicatorInitializer implements CommunicatorInitializer {

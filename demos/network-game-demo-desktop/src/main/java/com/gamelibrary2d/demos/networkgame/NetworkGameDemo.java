@@ -66,7 +66,7 @@ public class NetworkGameDemo {
                     new Lwjgl_Framework(),
                     KeyboardController::new,
                     new DesktopResourceManager(),
-                    ServerManager.create(createKeyPair(), disposer),
+                    new ServerManager(createKeyPair()),
                     DefaultSoundManager.create(disposer)).start(createWindow(args)
             );
         }

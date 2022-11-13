@@ -1,6 +1,5 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.common.functional.ParameterizedAction;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.AbstractCommunicator;
 import com.gamelibrary2d.network.common.Communicator;
@@ -8,41 +7,21 @@ import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 import java.io.IOException;
 
-public class LocalClientSideCommunicator extends AbstractCommunicator {
-
+class InternalLocalCommunicator extends AbstractCommunicator {
     private final LocalServerSideCommunicator serverSideCommunicator;
-    private final ParameterizedAction<CommunicatorInitializer> configureAuthentication;
 
-    private LocalClientSideCommunicator(
-            LocalServer localServer,
-            ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
+    InternalLocalCommunicator() {
         super(1);
-        this.configureAuthentication = configureAuthentication;
-        serverSideCommunicator = new LocalServerSideCommunicator(
-                this,
-                configureAuthentication != null ? localServer::configureClientAuthentication : null
-        );
+        serverSideCommunicator = new LocalServerSideCommunicator(this);
     }
 
-    public static Communicator connect(LocalServer localServer) {
-        return connect(localServer, null);
-    }
-
-    public static Communicator connect(
-            LocalServer localServer,
-            ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
-
-        LocalClientSideCommunicator communicator =
-                new LocalClientSideCommunicator(localServer, configureAuthentication);
-        localServer.connectCommunicator(communicator.serverSideCommunicator);
-        return communicator;
+    Communicator getServerSideCommunicator() {
+        return serverSideCommunicator;
     }
 
     @Override
     public void configureAuthentication(CommunicatorInitializer initializer) {
-        if (configureAuthentication != null) {
-            configureAuthentication.perform(initializer);
-        }
+
     }
 
     @Override
@@ -62,14 +41,10 @@ public class LocalClientSideCommunicator extends AbstractCommunicator {
 
     private static class LocalServerSideCommunicator extends AbstractCommunicator {
         private final Communicator clientSideCommunicator;
-        private final ParameterizedAction<CommunicatorInitializer> configureAuthentication;
 
-        LocalServerSideCommunicator(
-                Communicator clientSideCommunicator,
-                ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
+        LocalServerSideCommunicator(Communicator clientSideCommunicator) {
             super(1);
             this.clientSideCommunicator = clientSideCommunicator;
-            this.configureAuthentication = configureAuthentication;
         }
 
         @Override
@@ -79,9 +54,7 @@ public class LocalClientSideCommunicator extends AbstractCommunicator {
 
         @Override
         public void configureAuthentication(CommunicatorInitializer initializer) {
-            if (configureAuthentication != null) {
-                configureAuthentication.perform(initializer);
-            }
+
         }
 
         @Override

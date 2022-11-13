@@ -1,6 +1,5 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
-import com.gamelibrary2d.common.functional.Factory;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
@@ -9,6 +8,7 @@ import com.gamelibrary2d.components.frames.AbstractClientFrame;
 import com.gamelibrary2d.components.frames.ClientFrameInitializer;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.SoundMap;
+import com.gamelibrary2d.network.client.Connectable;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.sound.MusicPlayer;
@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 public final class GameFrame extends AbstractClientFrame {
     private final GameFrameManager frameManager;
     private final GameFrameClient frameClient;
-    private Factory<Future<Communicator>> communicatorFactory;
+    private Connectable server;
 
     public GameFrame(
             DemoGame game,
@@ -34,8 +34,8 @@ public final class GameFrame extends AbstractClientFrame {
         this.frameClient = new GameFrameClient(frameManager, controllerFactory);
     }
 
-    public void setCommunicatorFactory(Factory<Future<Communicator>> communicatorFactory) {
-        this.communicatorFactory = communicatorFactory;
+    public void setServer(Connectable server) {
+        this.server = server;
     }
 
     public void prepare() throws IOException {
@@ -55,7 +55,7 @@ public final class GameFrame extends AbstractClientFrame {
 
     @Override
     protected Future<Communicator> connectToServer() {
-        return communicatorFactory.create();
+        return server.connect();
     }
 
     @Override
