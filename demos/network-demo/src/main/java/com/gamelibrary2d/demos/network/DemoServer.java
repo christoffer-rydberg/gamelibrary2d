@@ -4,61 +4,67 @@ import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
-import com.gamelibrary2d.network.server.AbstractNetworkServer;
+import com.gamelibrary2d.network.common.server.ServerLogic;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class DemoServer extends AbstractNetworkServer {
+public class DemoServer implements ServerLogic {
     private int messagesReceived;
 
-    DemoServer(String hostname, int port) {
-        super(hostname, port);
-    }
-
     @Override
-    protected void configureClientAuthentication(CommunicatorInitializer initializer) {
+    public void onAuthenticateClient(CommunicatorInitializer initializer) {
 
     }
 
     @Override
-    protected void initializeClient(CommunicatorInitializer initializer) {
+    public void onInitializeClient(CommunicatorInitializer initializer) {
 
     }
 
     @Override
-    protected void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
+    public void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
         log(String.format("Client has been authenticated: %s", communicator.getEndpoint()));
     }
 
     @Override
-    protected void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
+    public void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
         log(String.format("Client has been initialized: %s", communicator.getEndpoint()));
     }
 
     @Override
-    protected boolean acceptConnection(String endpoint) {
+    public void onStarted() {
+
+    }
+
+    @Override
+    public void onStopped() {
+
+    }
+
+    @Override
+    public boolean acceptConnection(String endpoint) {
         log(String.format("Accepting incoming connection: %s", endpoint));
         return true;
     }
 
     @Override
-    protected void onConnectionFailed(String endpoint, Exception e) {
+    public void onConnectionFailed(String endpoint, Exception e) {
         log(String.format("Incoming connection failed: %s", endpoint), e);
     }
 
     @Override
-    protected void onConnected(Communicator communicator) {
+    public void onConnected(Communicator communicator) {
         log(String.format("Connection established: %s", communicator.getEndpoint()));
     }
 
     @Override
-    protected void onDisconnected(Communicator communicator, boolean pending) {
+    public void onDisconnected(Communicator communicator, boolean pending) {
         log(String.format("Connection lost: %s", communicator.getEndpoint()));
     }
 
     @Override
-    protected void onUpdate(float deltaTime) {
+    public void onUpdate(float deltaTime) {
 
     }
 
@@ -69,7 +75,7 @@ public class DemoServer extends AbstractNetworkServer {
     }
 
     @Override
-    protected void onMessage(Communicator communicator, DataBuffer buffer) {
+    public void onMessage(Communicator communicator, DataBuffer buffer) {
         int length = buffer.getInt();
         byte[] bytes = new byte[length];
         buffer.get(bytes, 0, length);

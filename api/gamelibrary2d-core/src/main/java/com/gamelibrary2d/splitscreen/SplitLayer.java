@@ -1,6 +1,8 @@
 package com.gamelibrary2d.splitscreen;
 
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.common.denotations.Clearable;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.components.AbstractPointerAwareComposedGameObject;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.denotations.*;

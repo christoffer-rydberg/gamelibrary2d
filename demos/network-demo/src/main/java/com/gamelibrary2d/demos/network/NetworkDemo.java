@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.network;
 
 import com.gamelibrary2d.common.updating.UpdateLoop;
+import com.gamelibrary2d.network.server.NetworkServer;
 
 import java.io.IOException;
 
@@ -14,11 +15,11 @@ public class NetworkDemo {
 
     private static Thread startServerThread() {
         Thread thread = new Thread(() -> {
-            DemoServer server = new DemoServer("localhost", 4444);
+            NetworkServer server = new NetworkServer("localhost", 4444, s -> new DemoServer());
             try {
                 server.start();
                 server.listenForConnections(true);
-                new UpdateLoop(server::update, 10).run();
+                new UpdateLoop(server, 10).run();
                 server.stop();
             } catch (IOException | InterruptedException e) {
                 exitWithError("Failed to start connection server", e);

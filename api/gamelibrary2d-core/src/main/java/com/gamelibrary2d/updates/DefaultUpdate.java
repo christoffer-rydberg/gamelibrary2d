@@ -1,7 +1,7 @@
 package com.gamelibrary2d.updates;
 
 import com.gamelibrary2d.common.functional.Action;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.common.denotations.Updatable;
 
 public class DefaultUpdate extends AbstractUpdate {
     private final Action onInitialize;

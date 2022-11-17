@@ -3,7 +3,7 @@ package com.gamelibrary2d.components.containers;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.AbstractGameObject;
-import com.gamelibrary2d.components.denotations.Bounded;
+import com.gamelibrary2d.common.denotations.Bounded;
 import com.gamelibrary2d.framework.Renderable;
 
 import java.util.Comparator;
@@ -70,8 +70,8 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
     }
 
     @Override
-    public List<T> getChildren() {
-        return getLayer().getChildren();
+    public List<T> getItems() {
+        return getLayer().getItems();
     }
 
     @Override

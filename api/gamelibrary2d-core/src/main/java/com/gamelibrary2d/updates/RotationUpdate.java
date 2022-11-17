@@ -1,6 +1,6 @@
 package com.gamelibrary2d.updates;
 
-import com.gamelibrary2d.components.denotations.Rotatable;
+import com.gamelibrary2d.common.denotations.Rotatable;
 
 /**
  * Rotates a {@link Rotatable} target to the specified rotation.

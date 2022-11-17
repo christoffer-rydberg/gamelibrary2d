@@ -59,7 +59,7 @@ public class ClientHandshakeConfiguration implements TaskConfiguration {
     }
 
     @Override
-    public void configure(CommunicatorInitializer initializer) {
+    public void addTasks(CommunicatorInitializer initializer) {
         initializer.addConsumer(this::createSecretKeyEncrypter);
         initializer.addProducer(this::shareSecretKey);
     }

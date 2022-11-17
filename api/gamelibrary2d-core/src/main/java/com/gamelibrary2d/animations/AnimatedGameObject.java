@@ -2,7 +2,7 @@ package com.gamelibrary2d.animations;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.AbstractGameObject;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.opengl.shaders.ShaderParameter;
 
 public class AnimatedGameObject extends AbstractGameObject implements Updatable {

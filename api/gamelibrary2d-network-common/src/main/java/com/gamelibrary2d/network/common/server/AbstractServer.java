@@ -5,6 +5,7 @@ import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.DynamicByteBuffer;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.common.io.Serializable;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedListener;
@@ -19,12 +20,12 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractServer implements Server {
+public abstract class AbstractServer implements Updatable, BroadcastService {
     private final Factory<Integer> communicatorIdFactory = RandomInstance.get()::nextInt;
     private final List<PendingCommunicator> pendingCommunicators;
     private final DataBuffer outgoingBuffer;
     private final DataBuffer incomingBuffer;
-    private final List<Communicator> communicators;
+    private final ArrayList<Communicator> communicators;
     private final DelayedMonitor delayedMonitor = new DelayedMonitor();
     private final CommunicatorDisconnectedListener disconnectedEventListener = this::onDisconnectedEvent;
     private final AtomicBoolean running = new AtomicBoolean();
@@ -249,16 +250,16 @@ public abstract class AbstractServer implements Server {
     private void sendOutgoingBufferToAll() {
         if (outgoingBuffer.position() > 0) {
             outgoingBuffer.flip();
-            sendToAll(communicators, outgoingBuffer);
+            sendToAll(outgoingBuffer);
             outgoingBuffer.clear();
         }
     }
 
-    protected void sendToAll(Iterable<Communicator> communicators, DataBuffer outgoingBuffer) {
+    private void sendToAll(DataBuffer buffer) {
         for (Communicator communicator : communicators) {
             try {
-                outgoingBuffer.position(0);
-                communicator.sendUpdate(outgoingBuffer);
+                buffer.position(0);
+                communicator.sendUpdate(buffer);
             } catch (IOException e) {
                 communicator.disconnect(e);
             }
@@ -266,7 +267,7 @@ public abstract class AbstractServer implements Server {
     }
 
     @Override
-    public void sendToAll(int message, boolean stream) {
+    public void send(int message, boolean stream) {
         if (stream) {
             outgoingBuffer.putInt(message);
         } else {
@@ -277,7 +278,7 @@ public abstract class AbstractServer implements Server {
     }
 
     @Override
-    public void sendToAll(float message, boolean stream) {
+    public void send(float message, boolean stream) {
         if (stream) {
             outgoingBuffer.putFloat(message);
         } else {
@@ -288,7 +289,7 @@ public abstract class AbstractServer implements Server {
     }
 
     @Override
-    public void sendToAll(double message, boolean stream) {
+    public void send(double message, boolean stream) {
         if (stream) {
             outgoingBuffer.putDouble(message);
         } else {
@@ -299,7 +300,7 @@ public abstract class AbstractServer implements Server {
     }
 
     @Override
-    public void sendToAll(byte message, boolean stream) {
+    public void send(byte message, boolean stream) {
         if (stream) {
             outgoingBuffer.put(message);
         } else {
@@ -310,7 +311,7 @@ public abstract class AbstractServer implements Server {
     }
 
     @Override
-    public void sendToAll(byte[] message, int off, int len, boolean stream) {
+    public void send(byte[] message, int off, int len, boolean stream) {
         if (stream) {
             outgoingBuffer.put(message, off, len);
         } else {
@@ -321,7 +322,7 @@ public abstract class AbstractServer implements Server {
     }
 
     @Override
-    public void sendToAll(Serializable message, boolean stream) {
+    public void send(Serializable message, boolean stream) {
         if (stream) {
             message.serialize(outgoingBuffer);
         } else {
@@ -331,52 +332,43 @@ public abstract class AbstractServer implements Server {
         }
     }
 
-    @Override
-    public void send(Communicator communicator, int message) {
+    private void send(Communicator communicator, int message) {
         communicator.getOutgoing().putInt(message);
     }
 
-    @Override
-    public void send(Communicator communicator, float message) {
+    private void send(Communicator communicator, float message) {
         communicator.getOutgoing().putFloat(message);
     }
 
-    @Override
-    public void send(Communicator communicator, double message) {
+    private void send(Communicator communicator, double message) {
         communicator.getOutgoing().putDouble(message);
     }
 
-    @Override
-    public void send(Communicator communicator, byte message) {
+    private void send(Communicator communicator, byte message) {
         communicator.getOutgoing().put(message);
     }
 
-    @Override
-    public void send(Communicator communicator, byte[] message, int off, int len) {
+    private void send(Communicator communicator, byte[] message, int off, int len) {
         communicator.getOutgoing().put(message, off, len);
     }
 
-    @Override
-    public void send(Communicator communicator, Serializable message) {
+    private void send(Communicator communicator, Serializable message) {
         message.serialize(communicator.getOutgoing());
     }
 
-    @Override
     public final void start() throws IOException {
         if (running.compareAndSet(false, true)) {
             onStart();
         }
     }
 
-    @Override
     public final void stop() throws IOException, InterruptedException {
         if (running.compareAndSet(true, false)) {
             onStop();
         }
     }
 
-    @Override
-    public boolean isRunning() {
+    protected boolean isRunning() {
         return running.get();
     }
 

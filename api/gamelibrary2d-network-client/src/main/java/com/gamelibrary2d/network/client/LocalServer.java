@@ -6,20 +6,20 @@ import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.network.common.server.AbstractServer;
-import com.gamelibrary2d.network.common.server.Server;
-import com.gamelibrary2d.network.common.server.ServerContext;
+import com.gamelibrary2d.network.common.server.BroadcastService;
+import com.gamelibrary2d.network.common.server.ServerLogic;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public class LocalServer extends AbstractServer implements Connectable {
-    private final Func<Server, ServerContext> serverContextFactory;
+    private final Func<BroadcastService, ServerLogic> serverLogicFactory;
     private final ArrayList<Communicator> clientSideCommunicators = new ArrayList<>();
-    private ServerContext serverContext;
+    private ServerLogic serverLogic;
 
-    public LocalServer(Func<Server, ServerContext> serverContextFactory) {
-        this.serverContextFactory = serverContextFactory;
+    public LocalServer(Func<BroadcastService, ServerLogic> serverLogicFactory) {
+        this.serverLogicFactory = serverLogicFactory;
     }
 
     @Override
@@ -32,8 +32,8 @@ public class LocalServer extends AbstractServer implements Connectable {
 
     @Override
     protected void onStart() {
-        serverContext = serverContextFactory.invoke(this);
-        serverContext.start();
+        serverLogic = serverLogicFactory.invoke(this);
+        serverLogic.onStarted();
     }
 
     @Override
@@ -41,43 +41,43 @@ public class LocalServer extends AbstractServer implements Connectable {
         for (Communicator com : clientSideCommunicators) {
             com.disconnect();
         }
-        serverContext.stop();
+        serverLogic.onStopped();
     }
 
     @Override
     protected void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
-        serverContext.onClientAuthenticated(context, communicator);
+        serverLogic.onClientAuthenticated(context, communicator);
     }
 
     @Override
     protected void onUpdate(float deltaTime) {
-        if (serverContext != null) {
-            serverContext.update(deltaTime);
+        if (serverLogic != null) {
+            serverLogic.onUpdate(deltaTime);
         }
     }
 
     @Override
     protected void onConnected(Communicator communicator) {
-        serverContext.onConnected(communicator);
+        serverLogic.onConnected(communicator);
     }
 
     @Override
     protected void initializeClient(CommunicatorInitializer initializer) {
-        serverContext.configureClientInitialization(initializer);
+        serverLogic.onInitializeClient(initializer);
     }
 
     @Override
     protected void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
-        serverContext.onClientInitialized(context, communicator);
+        serverLogic.onClientInitialized(context, communicator);
     }
 
     @Override
     protected void onDisconnected(Communicator communicator, boolean pending) {
-        serverContext.onDisconnected(communicator, pending);
+        serverLogic.onDisconnected(communicator, pending);
     }
 
     @Override
     protected void onMessage(Communicator communicator, DataBuffer buffer) {
-        serverContext.onMessage(communicator, buffer);
+        serverLogic.onMessage(communicator, buffer);
     }
 }

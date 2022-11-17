@@ -2,7 +2,7 @@ package com.gamelibrary2d.animations;
 
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.components.denotations.Bounded;
+import com.gamelibrary2d.common.denotations.Bounded;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -8,7 +8,7 @@ import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
-public abstract class AbstractNetworkServer extends AbstractServer {
+abstract class InternalAbstractNetworkServer extends AbstractServer {
     private final NetworkService networkService;
     private final boolean ownsNetworkService;
     private final int port;
@@ -16,18 +16,18 @@ public abstract class AbstractNetworkServer extends AbstractServer {
 
     private ServerSocketChannelRegistration registration;
 
-    private AbstractNetworkServer(String hostname, int port, NetworkService networkService, boolean ownsNetworkService) {
+    private InternalAbstractNetworkServer(String hostname, int port, NetworkService networkService, boolean ownsNetworkService) {
         this.hostname = hostname;
         this.port = port;
         this.networkService = networkService;
         this.ownsNetworkService = ownsNetworkService;
     }
 
-    protected AbstractNetworkServer(String hostname, int port) {
+    protected InternalAbstractNetworkServer(String hostname, int port) {
         this(hostname, port, new NetworkService(), true);
     }
 
-    protected AbstractNetworkServer(String hostname, int port, NetworkService networkService) {
+    protected InternalAbstractNetworkServer(String hostname, int port, NetworkService networkService) {
         this(hostname, port, networkService, false);
     }
 
@@ -44,7 +44,7 @@ public abstract class AbstractNetworkServer extends AbstractServer {
                     addPendingCommunicator(new InternalNetworkCommunicator(
                             networkService,
                             channel,
-                            this::configureClientAuthentication));
+                            this::authenticateClient));
                 } catch (IOException e) {
                     networkService.disconnect(channel);
                     onConnectionFailed(endpoint, e);
@@ -97,7 +97,7 @@ public abstract class AbstractNetworkServer extends AbstractServer {
         }
     }
 
-    protected abstract void configureClientAuthentication(CommunicatorInitializer initializer);
+    protected abstract void authenticateClient(CommunicatorInitializer initializer);
 
     protected abstract boolean acceptConnection(String endpoint);
 

@@ -7,7 +7,7 @@ import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.DefaultGameObject;
 import com.gamelibrary2d.components.GameObject;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.demos.networkgame.client.ParticleRendererFactory;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.urls.Images;

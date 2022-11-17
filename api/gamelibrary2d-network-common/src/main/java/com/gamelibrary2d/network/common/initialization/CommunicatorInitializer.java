@@ -35,7 +35,7 @@ public interface CommunicatorInitializer {
      * Adds a {@link TaskConfiguration} to the pipeline.
      */
     default void addConfig(TaskConfiguration config) {
-        config.configure(this);
+        config.addTasks(this);
     }
 
     /**

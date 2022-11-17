@@ -1,7 +1,7 @@
 package com.gamelibrary2d.splitscreen;
 
 import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.components.denotations.Transformable;
+import com.gamelibrary2d.common.denotations.Transformable;
 
 class InternalTargetSettings implements Transformable {
     private final Point position = new Point();

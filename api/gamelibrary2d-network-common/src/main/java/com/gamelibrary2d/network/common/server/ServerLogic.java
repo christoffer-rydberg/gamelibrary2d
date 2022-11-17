@@ -5,11 +5,11 @@ import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
-public interface ServerContext {
+public interface ServerLogic {
 
-    void start();
+    void onStarted();
 
-    void stop();
+    void onStopped();
 
     boolean acceptConnection(String endpoint);
 
@@ -17,15 +17,15 @@ public interface ServerContext {
 
     void onConnected(Communicator communicator);
 
-    void configureClientAuthentication(CommunicatorInitializer initializer);
+    void onAuthenticateClient(CommunicatorInitializer initializer);
 
-    void configureClientInitialization(CommunicatorInitializer initializer);
+    void onInitializeClient(CommunicatorInitializer initializer);
 
     void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator);
 
     void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator);
 
-    void update(float deltaTime);
+    void onUpdate(float deltaTime);
 
     void onMessage(Communicator communicator, DataBuffer buffer);
 

@@ -2,9 +2,6 @@ package com.gamelibrary2d.network.common;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.DynamicByteBuffer;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.ConnectionType;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;

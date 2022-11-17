@@ -79,8 +79,8 @@ class MenuPanel extends AbstractPointerAwareComposedGameObject<NavigationPanel> 
     }
 
     private static void centerPanel(Panel<GameObject> panel) {
-        for (GameObject child : panel.getChildren()) {
-            child.getPosition().subtract(panel.getBounds().getCenterX(), panel.getBounds().getCenterY());
+        for (GameObject item : panel.getItems()) {
+            item.getPosition().subtract(panel.getBounds().getCenterX(), panel.getBounds().getCenterY());
         }
 
         panel.recalculateBounds();

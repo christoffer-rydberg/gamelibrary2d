@@ -1,7 +1,7 @@
 package com.gamelibrary2d.components;
 
 import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.components.denotations.Bounded;
+import com.gamelibrary2d.common.denotations.Bounded;
 import com.gamelibrary2d.framework.Renderable;
 
 public final class DefaultObservableGameObject<T extends Renderable> extends AbstractObservableGameObject {

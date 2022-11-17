@@ -52,7 +52,7 @@ public class ServerHandshakeConfiguration implements TaskConfiguration {
     }
 
     @Override
-    public void configure(CommunicatorInitializer initializer) {
+    public void addTasks(CommunicatorInitializer initializer) {
         initializer.addProducer(this::sharePublicKey);
         initializer.addConsumer(this::readSecretKey);
     }

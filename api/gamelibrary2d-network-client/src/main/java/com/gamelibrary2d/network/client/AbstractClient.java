@@ -11,7 +11,7 @@ import com.gamelibrary2d.network.common.initialization.InitializationTask;
 
 import java.io.IOException;
 
-public abstract class AbstractClient implements Client {
+public abstract class AbstractClient {
     private final DataBuffer inbox;
     private Communicator communicator;
     private int initializationRetries = 100;
@@ -36,20 +36,17 @@ public abstract class AbstractClient implements Client {
         inbox.flip();
     }
 
-    @Override
-    public boolean isConnected() {
+    protected boolean isConnected() {
         return communicator != null && communicator.isConnected();
     }
 
-    @Override
-    public void disconnect() {
+    protected void disconnect() {
         if (communicator != null) {
             communicator.disconnect();
         }
     }
 
-    @Override
-    public void setCommunicator(Communicator communicator) throws ClientAuthenticationException, ClientInitializationException {
+    protected void initialize(Communicator communicator) throws ClientAuthenticationException, ClientInitializationException {
         try {
             this.communicator = communicator;
 
@@ -57,7 +54,7 @@ public abstract class AbstractClient implements Client {
             communicator.clearOutgoing();
             CommunicatorInitializationContext context = new CommunicatorInitializationContext();
             authenticate(context, communicator);
-            initialize(context, communicator);
+            onInitialize(context, communicator);
         } catch (Exception e) {
             communicator.disconnect(e);
             this.communicator = null;
@@ -79,10 +76,10 @@ public abstract class AbstractClient implements Client {
         }
     }
 
-    private void initialize(CommunicatorInitializationContext context, Communicator communicator)
+    private void onInitialize(CommunicatorInitializationContext context, Communicator communicator)
             throws ClientInitializationException {
         InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
-        initialize(initializer);
+        onInitialize(initializer);
         try {
             runInitializationTasks(context, communicator, initializer);
         } catch (IOException | InterruptedException e) {
@@ -118,13 +115,11 @@ public abstract class AbstractClient implements Client {
         this.initializationRetryDelay = initializationRetryDelay;
     }
 
-    @Override
-    public Communicator getCommunicator() {
+    protected Communicator getCommunicator() {
         return communicator;
     }
 
-    @Override
-    public void readIncoming() {
+    protected void readIncoming() {
         handleMessages();
         Communicator com = getCommunicator();
         if (com != null && refreshInboxIfEmpty(com)) {
@@ -132,8 +127,7 @@ public abstract class AbstractClient implements Client {
         }
     }
 
-    @Override
-    public void sendOutgoing() {
+    protected void sendOutgoing() {
         if (isConnected()) {
             Communicator com = getCommunicator();
             try {
@@ -217,7 +211,7 @@ public abstract class AbstractClient implements Client {
         return true;
     }
 
-    protected abstract void initialize(CommunicatorInitializer initializer);
+    protected abstract void onInitialize(CommunicatorInitializer initializer);
 
     protected abstract void onMessage(DataBuffer buffer);
 }

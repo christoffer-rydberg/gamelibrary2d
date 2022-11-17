@@ -1,7 +1,7 @@
 package com.gamelibrary2d.particles;
 
 import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.framework.OpenGL;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.buffers.AbstractMirroredVertexArrayBuffer;

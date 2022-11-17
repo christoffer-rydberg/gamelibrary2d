@@ -138,7 +138,7 @@ public abstract class AbstractPanel<T extends GameObject>
     @Override
     public void recalculateBounds() {
         setBounds(Rectangle.EMPTY);
-        List<T> objects = getChildren();
+        List<T> objects = getItems();
         for (int i = 0; i < objects.size(); ++i) {
             expandBounds(objects.get(i));
         }

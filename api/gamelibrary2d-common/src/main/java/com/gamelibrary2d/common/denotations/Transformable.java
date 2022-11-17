@@ -1,4 +1,4 @@
-package com.gamelibrary2d.components.denotations;
+package com.gamelibrary2d.common.denotations;
 
 import com.gamelibrary2d.common.CoordinateSpace;
 import com.gamelibrary2d.common.Point;

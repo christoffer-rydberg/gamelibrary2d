@@ -1,5 +1,6 @@
 package com.gamelibrary2d;
 
+import com.gamelibrary2d.common.denotations.Container;
 import com.gamelibrary2d.components.denotations.*;
 
 import java.util.ArrayList;
@@ -56,14 +57,14 @@ public class FocusManager {
             ((FocusAware) obj).unfocused();
         }
 
-        if (recursive && obj instanceof Parent) {
-            unfocus((Parent<?>) obj);
+        if (recursive && obj instanceof Container) {
+            unfocus((Container<?>) obj);
         }
     }
 
-    private static void unfocus(Parent<?> parent) {
-        for (Object child : parent.getChildren()) {
-            unfocus(child, true);
+    private static void unfocus(Container<?> container) {
+        for (Object item : container.getItems()) {
+            unfocus(item, true);
         }
     }
 

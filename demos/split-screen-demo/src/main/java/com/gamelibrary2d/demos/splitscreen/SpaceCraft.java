@@ -4,7 +4,7 @@ import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.components.AbstractGameObject;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 

@@ -1,6 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client.input;
 
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.common.denotations.Updatable;
 
 public interface Controller extends Updatable {
     float getValue(ControllerInputId id);

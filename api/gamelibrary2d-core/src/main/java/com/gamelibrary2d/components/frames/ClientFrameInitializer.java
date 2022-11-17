@@ -1,29 +1,20 @@
 package com.gamelibrary2d.components.frames;
 
-import com.gamelibrary2d.common.functional.Factory;
-import com.gamelibrary2d.common.functional.ParameterizedAction;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.client.Client;
+import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
+import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public class ClientFrameInitializer {
-    private final FrameInitializer initializer;
+    private final FrameInitializer frameInitializer;
     private final Client client;
-    private final Factory<Future<Communicator>> communicatorFactory;
-    private final ParameterizedAction<Communicator> onInitialized;
     private boolean connectionTasksAdded;
 
-    ClientFrameInitializer(
-            FrameInitializer initializer,
-            Client client,
-            Factory<Future<Communicator>> communicatorFactory,
-            ParameterizedAction<Communicator> onInitialized) {
-        this.initializer = initializer;
+    ClientFrameInitializer(FrameInitializer frameInitializer, Client client) {
+        this.frameInitializer = frameInitializer;
         this.client = client;
-        this.communicatorFactory = communicatorFactory;
-        this.onInitialized = onInitialized;
     }
 
     /**
@@ -34,7 +25,7 @@ public class ClientFrameInitializer {
      * @param task The initialization task
      */
     public void addTask(FrameInitializationTask task) {
-        initializer.addTask(task);
+        frameInitializer.addTask(task);
     }
 
     /**
@@ -48,7 +39,7 @@ public class ClientFrameInitializer {
      * @param task The initialization task
      */
     public void addBackgroundTask(FrameInitializationTask task) {
-        initializer.addBackgroundTask(task);
+        frameInitializer.addBackgroundTask(task);
     }
 
     public void addClientInitialization(ClientFrameInitializer initializer) {
@@ -59,12 +50,18 @@ public class ClientFrameInitializer {
         connectionTasksAdded = true;
 
         initializer.addBackgroundTask(ctx -> {
-            Communicator communicator = communicatorFactory.create().get();
-            client.setCommunicator(communicator);
+            Communicator communicator = client.connect().get();
+            client.initialize(communicator);
         });
 
         initializer.addTask(ctx -> {
-            onInitialized.perform(client.getCommunicator());
+            client.onInitialized();
         });
+    }
+
+    interface Client {
+        Future<Communicator> connect();
+        void initialize(Communicator communicator) throws ClientAuthenticationException, ClientInitializationException;
+        void onInitialized();
     }
 }

@@ -28,7 +28,7 @@ public class DemoClient extends AbstractClient {
     void run() {
         try {
             Communicator communicator = connectCommunicator();
-            setCommunicator(communicator);
+            initialize(communicator);
             communicator.addDisconnectedListener(this::onDisconnected);
             sendMessage("What do you call a guy with a rubber toe?");
         } catch (InterruptedException | ExecutionException e) {
@@ -66,7 +66,7 @@ public class DemoClient extends AbstractClient {
     }
 
     @Override
-    protected void initialize(CommunicatorInitializer initializer) {
+    protected void onInitialize(CommunicatorInitializer initializer) {
 
     }
 

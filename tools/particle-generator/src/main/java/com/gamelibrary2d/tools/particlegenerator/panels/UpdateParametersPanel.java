@@ -4,13 +4,13 @@ import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.containers.DefaultPanel;
 import com.gamelibrary2d.components.containers.Panel;
-import com.gamelibrary2d.components.denotations.Parent;
+import com.gamelibrary2d.common.denotations.Container;
 import com.gamelibrary2d.particles.ParticleUpdateParameters;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.properties.BooleanProperty;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;
 
-public class UpdateParametersPanel extends AbstractPanel<GameObject> implements Parent<GameObject> {
+public class UpdateParametersPanel extends AbstractPanel<GameObject> implements Container<GameObject> {
 
     private final ParticleSystemModel particleSystem;
 

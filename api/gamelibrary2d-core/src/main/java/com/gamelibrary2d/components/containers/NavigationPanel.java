@@ -2,6 +2,8 @@ package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.common.denotations.Bounded;
+import com.gamelibrary2d.common.denotations.Clearable;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.*;
 import com.gamelibrary2d.framework.Renderable;

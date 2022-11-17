@@ -1,5 +1,7 @@
 package com.gamelibrary2d.components.containers;
 
+import com.gamelibrary2d.common.denotations.Clearable;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.components.denotations.*;
 import com.gamelibrary2d.framework.Renderable;
 
@@ -129,7 +131,7 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     @Override
-    public List<T> getChildren() {
+    public List<T> getItems() {
         return readonlyObjects;
     }
 

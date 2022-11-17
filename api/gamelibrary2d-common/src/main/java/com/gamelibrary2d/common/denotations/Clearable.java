@@ -1,4 +1,4 @@
-package com.gamelibrary2d.components.denotations;
+package com.gamelibrary2d.common.denotations;
 
 /**
  * Any game object containing a clear method should implement this interface in

@@ -8,7 +8,7 @@ import com.gamelibrary2d.common.io.DynamicByteBuffer;
 import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.AbstractPanel;
-import com.gamelibrary2d.components.denotations.Parent;
+import com.gamelibrary2d.common.denotations.Container;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.Quad;
@@ -19,7 +19,7 @@ import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.resources.Textures;
 import com.gamelibrary2d.tools.particlegenerator.widgets.Slider;
 
-public class ParticleSystemSettingsPanel extends AbstractPanel<GameObject> implements Parent<GameObject> {
+public class ParticleSystemSettingsPanel extends AbstractPanel<GameObject> implements Container<GameObject> {
 
     private static final DataBuffer ioBuffer = new DynamicByteBuffer();
 

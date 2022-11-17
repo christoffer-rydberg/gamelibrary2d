@@ -2,7 +2,7 @@ package com.gamelibrary2d.framework.lwjgl;
 
 import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.common.updating.Timer;
-import com.gamelibrary2d.common.updating.UpdateAction;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.framework.GameLoop;
 import com.gamelibrary2d.framework.Runtime;
 import com.gamelibrary2d.framework.Window;
@@ -14,13 +14,13 @@ public class Lwjgl_GameLoop implements GameLoop {
     private final Timer timer = GLFW::glfwGetTime;
 
     private final AtomicBoolean running = new AtomicBoolean();
-    private UpdateAction updateAction;
+    private Updatable target;
     private Action disposeAction;
     private Window window;
 
     @Override
-    public void initialize(UpdateAction updateAction, Action disposeAction, Window window) {
-        this.updateAction = updateAction;
+    public void initialize(Updatable target, Action disposeAction, Window window) {
+        this.target = target;
         this.disposeAction = disposeAction;
         this.window = window;
         running.set(true);
@@ -32,7 +32,7 @@ public class Lwjgl_GameLoop implements GameLoop {
         while (running.get() && !window.isCloseRequested()) {
             double startTime = timer.getTime();
             double deltaTime = startTime - prevTime;
-            updateAction.perform((float) deltaTime);
+            target.update((float) deltaTime);
             prevTime = startTime;
         }
 

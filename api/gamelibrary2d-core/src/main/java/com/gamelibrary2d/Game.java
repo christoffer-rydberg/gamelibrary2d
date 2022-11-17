@@ -3,7 +3,7 @@ package com.gamelibrary2d;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.event.EventListener;
 import com.gamelibrary2d.common.functional.Action;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.framework.GameLoop;
 import com.gamelibrary2d.framework.Runtime;

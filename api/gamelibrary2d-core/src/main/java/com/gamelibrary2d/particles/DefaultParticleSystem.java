@@ -3,8 +3,8 @@ package com.gamelibrary2d.particles;
 import com.gamelibrary2d.common.Point;
 import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.common.random.RandomInstance;
-import com.gamelibrary2d.components.denotations.Clearable;
-import com.gamelibrary2d.components.denotations.Updatable;
+import com.gamelibrary2d.common.denotations.Clearable;
+import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.ModelMatrix;
 

@@ -261,7 +261,7 @@ public class GameFrameManager {
         Rectangle gameBounds = gameSettings.getGameBounds();
 
         ParallelUpdater parallelUpdater = new ParallelUpdater();
-        objectLayer.getChildren().stream()
+        objectLayer.getItems().stream()
                 .map(obj -> new SuckedIntoPortalUpdate(2f, obj, gameBounds.getCenterX(), gameBounds.getCenterY()))
                 .forEach(parallelUpdater::add);
 

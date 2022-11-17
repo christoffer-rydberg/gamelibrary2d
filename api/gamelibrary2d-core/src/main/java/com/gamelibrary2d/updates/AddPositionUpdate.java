@@ -1,6 +1,6 @@
 package com.gamelibrary2d.updates;
 
-import com.gamelibrary2d.components.denotations.Positionable;
+import com.gamelibrary2d.common.denotations.Positionable;
 
 /**
  * Adds the specified position to the {@link Positionable} target.

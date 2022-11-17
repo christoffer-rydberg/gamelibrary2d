@@ -10,7 +10,7 @@ import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.network.common.initialization.UdpConfiguration;
 import com.gamelibrary2d.network.client.ClientHandshakeConfiguration;
 import com.gamelibrary2d.network.client.LocalServer;
-import com.gamelibrary2d.network.server.DefaultNetworkServer;
+import com.gamelibrary2d.network.server.NetworkServer;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.util.concurrent.Future;
@@ -34,7 +34,7 @@ public class ServerManager {
     }
 
     public HostedServer hostNetworkServer(String host, int tcpPort) {
-        DefaultNetworkServer server = new DefaultNetworkServer(
+        NetworkServer server = new NetworkServer(
                 host,
                 tcpPort,
                 s -> new DemoGameServer(s, keyPair));
@@ -63,7 +63,7 @@ public class ServerManager {
         }
     }
 
-    private void startNetworkServer(DefaultNetworkServer server) {
+    private void startNetworkServer(NetworkServer server) {
         try {
             server.start();
             server.listenForConnections(true);
@@ -72,7 +72,7 @@ public class ServerManager {
         }
     }
 
-    private void stopNetworkServer(DefaultNetworkServer server) {
+    private void stopNetworkServer(NetworkServer server) {
         try {
             server.stop();
         } catch (IOException | InterruptedException e) {

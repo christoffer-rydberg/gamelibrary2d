@@ -12,9 +12,9 @@ import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.*;
+import com.gamelibrary2d.network.common.server.BroadcastService;
 import com.gamelibrary2d.network.server.ServerHandshakeConfiguration;
-import com.gamelibrary2d.network.common.server.Server;
-import com.gamelibrary2d.network.common.server.ServerContext;
+import com.gamelibrary2d.network.common.server.ServerLogic;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -23,7 +23,7 @@ import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class DemoGameServer implements ServerContext {
+public class DemoGameServer implements ServerLogic {
     public final static float UPDATES_PER_SECOND = 30;
     private final static int STREAM_UPDATE_RATE = 3;
     private final static float STREAMS_PER_SECOND = UPDATES_PER_SECOND / STREAM_UPDATE_RATE;
@@ -32,7 +32,7 @@ public class DemoGameServer implements ServerContext {
     private final ServerState state = new ServerState();
     private final ClientStateService clientStateService = new ClientStateService();
 
-    private final Server server;
+    private final BroadcastService server;
     private final DemoGameLogic gameLogic;
     private final KeyPair keyPair;
     private final DataBuffer decryptionBuffer = new DynamicByteBuffer();
@@ -42,18 +42,18 @@ public class DemoGameServer implements ServerContext {
     private float startCountdown = 10f;
     private float timer;
 
-    public DemoGameServer(Server server) {
+    public DemoGameServer(BroadcastService server) {
         this(server, null);
     }
 
-    public DemoGameServer(Server server, KeyPair keyPair) {
+    public DemoGameServer(BroadcastService server, KeyPair keyPair) {
         this.server = server;
         this.keyPair = keyPair;
         this.gameLogic = new DemoGameLogic(this);
     }
 
     @Override
-    public void configureClientAuthentication(CommunicatorInitializer initializer) {
+    public void onAuthenticateClient(CommunicatorInitializer initializer) {
         if (keyPair == null) {
             throw new NullPointerException("Key pair has not been set");
         }
@@ -78,7 +78,7 @@ public class DemoGameServer implements ServerContext {
     }
 
     @Override
-    public void configureClientInitialization(CommunicatorInitializer initializer) {
+    public void onInitializeClient(CommunicatorInitializer initializer) {
         initializer.send(buffer -> buffer.putFloat(STREAMS_PER_SECOND));
         initializer.send(gameLogic::getGameSettings);
         initializer.receive("requestedPlayers", DataBuffer::getInt);
@@ -163,17 +163,17 @@ public class DemoGameServer implements ServerContext {
     }
 
     @Override
-    public void start() {
+    public void onStarted() {
         log("Server has started");
     }
 
     @Override
-    public void stop() {
+    public void onStopped() {
         log("Server has stopped");
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void onUpdate(float deltaTime) {
         if (clientStateService.size() > 0) {
             if (gameLogic.isGameOver()) {
                 startCountdown -= deltaTime;
@@ -215,14 +215,14 @@ public class DemoGameServer implements ServerContext {
             communicatorState.setReady(false);
         }
 
-        server.sendToAll(ServerMessages.GAME_OVER, false);
+        server.send(ServerMessages.GAME_OVER, false);
     }
 
     void spawn(ServerObject obj) {
         state.register(obj);
-        server.sendToAll(ServerMessages.SPAWN, false);
-        server.sendToAll(obj.getObjectIdentifier(), false);
-        server.sendToAll(obj, false);
+        server.send(ServerMessages.SPAWN, false);
+        server.send(obj.getObjectIdentifier(), false);
+        server.send(obj, false);
     }
 
     private boolean allPlayersAreDead() {
@@ -238,8 +238,8 @@ public class DemoGameServer implements ServerContext {
 
     void destroy(ServerObject obj) {
         state.deregister(obj);
-        server.sendToAll(ServerMessages.DESTROY, false);
-        server.sendToAll(obj.getId(), false);
+        server.send(ServerMessages.DESTROY, false);
+        server.send(obj.getId(), false);
 
         if (obj instanceof ServerPlayer) {
             if (allPlayersAreDead()) {
@@ -249,7 +249,7 @@ public class DemoGameServer implements ServerContext {
     }
 
     private void updateClients() {
-        server.sendToAll(ServerMessages.UPDATE, true);
+        server.send(ServerMessages.UPDATE, true);
 
         bitParser.position(NetworkConstants.HEADER_BIT_SIZE);
 
@@ -282,7 +282,7 @@ public class DemoGameServer implements ServerContext {
         int bitSize = bitPosition - NetworkConstants.HEADER_BIT_SIZE;
         bitParser.putInt(bitSize, NetworkConstants.HEADER_BIT_SIZE);
 
-        server.sendToAll(bitParser.getByteBuffer().array(), 0, bytesToSend, true);
+        server.send(bitParser.getByteBuffer().array(), 0, bytesToSend, true);
     }
 
     private void log(String message) {
