@@ -1,20 +1,22 @@
 package com.gamelibrary2d.components.frames;
 
+import com.gamelibrary2d.network.client.Client;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
-import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
-
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public class ClientFrameInitializer {
-    private final FrameInitializer frameInitializer;
     private final Client client;
+    private final AbstractClientFrame frame;
+    private final FrameInitializer frameInitializer;
     private boolean connectionTasksAdded;
 
-    ClientFrameInitializer(FrameInitializer frameInitializer, Client client) {
-        this.frameInitializer = frameInitializer;
+    ClientFrameInitializer(
+            Client client,
+            AbstractClientFrame frame,
+            FrameInitializer frameInitializer) {
         this.client = client;
+        this.frame = frame;
+        this.frameInitializer = frameInitializer;
     }
 
     /**
@@ -42,26 +44,23 @@ public class ClientFrameInitializer {
         frameInitializer.addBackgroundTask(task);
     }
 
-    public void addClientInitialization(ClientFrameInitializer initializer) {
+    /**
+     * Adds tasks to connect and initialize the client.
+     */
+    public void addClientTasks() {
         if (connectionTasksAdded) {
             return;
         }
 
         connectionTasksAdded = true;
 
-        initializer.addBackgroundTask(ctx -> {
-            Communicator communicator = client.connect().get();
+        addBackgroundTask(ctx -> {
+            Communicator communicator = frame.connectToServer().get();
             client.initialize(communicator);
         });
 
-        initializer.addTask(ctx -> {
-            client.onInitialized();
+        addTask(ctx -> {
+            frame.onClientInitialized(client.getCommunicator());
         });
-    }
-
-    interface Client {
-        Future<Communicator> connect();
-        void initialize(Communicator communicator) throws ClientAuthenticationException, ClientInitializationException;
-        void onInitialized();
     }
 }

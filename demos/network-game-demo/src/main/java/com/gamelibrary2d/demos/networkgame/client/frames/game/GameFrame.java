@@ -75,6 +75,7 @@ public final class GameFrame extends AbstractClientFrame {
 
     @Override
     protected void onInitializationFailed(Throwable error) {
+        System.err.println(error);
         frameManager.goToMenu();
     }
 

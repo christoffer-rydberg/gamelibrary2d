@@ -1,30 +1,42 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
-import com.gamelibrary2d.common.functional.Action;
 import com.gamelibrary2d.common.updating.UpdateLoop;
 import com.gamelibrary2d.network.client.Connectable;
 import com.gamelibrary2d.network.common.Communicator;
+import com.gamelibrary2d.network.common.server.Server;
+
+import java.io.IOException;
 import java.util.concurrent.Future;
 
 public class HostedServer implements Connectable {
-    private final Action start;
-    private final Action stop;
-    private final UpdateLoop updateLoop;
+    private final Server server;
+    private final float ups;
     private final Connectable connectable;
+    private final UpdateLoop updateLoop = new UpdateLoop();
     private Thread serverThread;
 
-    public HostedServer(Action start, Action stop, Connectable connect, UpdateLoop updateLoop) {
-        this.start = start;
-        this.stop = stop;
+    public HostedServer(Server server, Connectable connect, float ups) {
+        this.server = server;
         this.connectable = connect;
-        this.updateLoop = updateLoop;
+        this.ups = ups;
     }
 
     public void start() {
         serverThread = new Thread(() -> {
-            start.perform();
-            updateLoop.run();
-            stop.perform();
+            try {
+                server.start();
+                server.enableConnections();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            updateLoop.run(ups, server);
+
+            try {
+                server.stop();
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         serverThread.start();

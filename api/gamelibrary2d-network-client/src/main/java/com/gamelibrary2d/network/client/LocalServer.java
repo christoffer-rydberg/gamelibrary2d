@@ -1,29 +1,34 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.common.functional.Func;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.network.common.server.AbstractServer;
-import com.gamelibrary2d.network.common.server.BroadcastService;
 import com.gamelibrary2d.network.common.server.ServerLogic;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-public class LocalServer extends AbstractServer implements Connectable {
-    private final Func<BroadcastService, ServerLogic> serverLogicFactory;
+public final class LocalServer extends AbstractServer implements Connectable {
+    public static final String LOCAL_CONNECTION_ENDPOINT = "local";
+    private final ServerLogic serverLogic;
     private final ArrayList<Communicator> clientSideCommunicators = new ArrayList<>();
-    private ServerLogic serverLogic;
+    private boolean connectionsEnabled;
 
-    public LocalServer(Func<BroadcastService, ServerLogic> serverLogicFactory) {
-        this.serverLogicFactory = serverLogicFactory;
+    public LocalServer(ServerLogic serverLogic) {
+        this.serverLogic = serverLogic;
     }
 
     @Override
     public Future<Communicator> connect() {
+        if (!connectionsEnabled || !serverLogic.acceptConnection(LOCAL_CONNECTION_ENDPOINT)) {
+            CompletableFuture<Communicator> future = new CompletableFuture<>();
+            future.completeExceptionally(new RuntimeException("Connection refused by server"));
+            return future;
+        }
+
         InternalLocalCommunicator communicator = new InternalLocalCommunicator();
         clientSideCommunicators.add(communicator);
         addPendingCommunicator(communicator.getServerSideCommunicator());
@@ -32,8 +37,7 @@ public class LocalServer extends AbstractServer implements Connectable {
 
     @Override
     protected void onStart() {
-        serverLogic = serverLogicFactory.invoke(this);
-        serverLogic.onStarted();
+        serverLogic.onStarted(this);
     }
 
     @Override
@@ -62,7 +66,7 @@ public class LocalServer extends AbstractServer implements Connectable {
     }
 
     @Override
-    protected void initializeClient(CommunicatorInitializer initializer) {
+    protected void onInitializeClient(CommunicatorInitializer initializer) {
         serverLogic.onInitializeClient(initializer);
     }
 
@@ -79,5 +83,15 @@ public class LocalServer extends AbstractServer implements Connectable {
     @Override
     protected void onMessage(Communicator communicator, DataBuffer buffer) {
         serverLogic.onMessage(communicator, buffer);
+    }
+
+    @Override
+    public void enableConnections() {
+        connectionsEnabled = true;
+    }
+
+    @Override
+    public void disableConnections() {
+        connectionsEnabled = false;
     }
 }

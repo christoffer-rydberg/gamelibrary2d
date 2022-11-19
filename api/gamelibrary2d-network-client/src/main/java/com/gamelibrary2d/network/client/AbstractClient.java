@@ -11,42 +11,17 @@ import com.gamelibrary2d.network.common.initialization.InitializationTask;
 
 import java.io.IOException;
 
-public abstract class AbstractClient {
+public abstract class AbstractClient implements Client {
     private final DataBuffer inbox;
     private Communicator communicator;
-    private int initializationRetries = 100;
-    private int initializationRetryDelay = 100;
 
     protected AbstractClient() {
         this.inbox = new DynamicByteBuffer();
         inbox.flip();
     }
 
-    private static void sendOutgoing(Communicator com) throws IOException {
-        try {
-            com.sendOutgoing();
-        } catch (IOException e) {
-            com.disconnect(e);
-            throw e;
-        }
-    }
-
-    private void clearInbox() {
-        inbox.clear();
-        inbox.flip();
-    }
-
-    protected boolean isConnected() {
-        return communicator != null && communicator.isConnected();
-    }
-
-    protected void disconnect() {
-        if (communicator != null) {
-            communicator.disconnect();
-        }
-    }
-
-    protected void initialize(Communicator communicator) throws ClientAuthenticationException, ClientInitializationException {
+    @Override
+    public void initialize(Communicator communicator) throws ClientAuthenticationException, ClientInitializationException {
         try {
             this.communicator = communicator;
 
@@ -54,12 +29,17 @@ public abstract class AbstractClient {
             communicator.clearOutgoing();
             CommunicatorInitializationContext context = new CommunicatorInitializationContext();
             authenticate(context, communicator);
-            onInitialize(context, communicator);
+            initialize(context, communicator);
         } catch (Exception e) {
             communicator.disconnect(e);
             this.communicator = null;
             throw e;
         }
+    }
+
+    private void clearInbox() {
+        inbox.clear();
+        inbox.flip();
     }
 
     private void authenticate(CommunicatorInitializationContext context, Communicator communicator) throws ClientAuthenticationException {
@@ -76,7 +56,7 @@ public abstract class AbstractClient {
         }
     }
 
-    private void onInitialize(CommunicatorInitializationContext context, Communicator communicator)
+    private void initialize(CommunicatorInitializationContext context, Communicator communicator)
             throws ClientInitializationException {
         InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
         onInitialize(initializer);
@@ -87,42 +67,15 @@ public abstract class AbstractClient {
         }
     }
 
-    /**
-     * The max number of retries for each task.
-     */
-    protected int getInitializationRetries() {
-        return initializationRetries;
-    }
-
-    /**
-     * Sets the number of {@link #getInitializationRetries() initialization retries}.
-     */
-    protected void setInitializationRetries(int initializationRetries) {
-        this.initializationRetries = initializationRetries;
-    }
-
-    /**
-     * The delay between retries of tasks in milliseconds.
-     */
-    protected int getInitializationRetryDelay() {
-        return initializationRetryDelay;
-    }
-
-    /**
-     * Sets the {@link #getInitializationRetries() initialization retry delay}.
-     */
-    protected void setInitializationRetryDelay(int initializationRetryDelay) {
-        this.initializationRetryDelay = initializationRetryDelay;
-    }
-
-    protected Communicator getCommunicator() {
+    @Override
+    public Communicator getCommunicator() {
         return communicator;
     }
 
     protected void readIncoming() {
         handleMessages();
         Communicator com = getCommunicator();
-        if (com != null && refreshInboxIfEmpty(com)) {
+        if (com != null && refreshInboxIfEmpty(communicator)) {
             handleMessages();
         }
     }
@@ -156,7 +109,7 @@ public abstract class AbstractClient {
         do {
             result = initializer.runTask(context, communicator, this::runInitializationTask);
             if (result == InternalInitializationTaskResult.AWAITING_DATA) {
-                if (retries == getInitializationRetries()) {
+                if (retries == initializer.getRetries()) {
                     throw new IOException("Reading server response timed out");
                 }
 
@@ -168,7 +121,7 @@ public abstract class AbstractClient {
 
                 sendOutgoing(communicator);
 
-                Thread.sleep(getInitializationRetryDelay());
+                Thread.sleep(initializer.getRetryDelay());
             } else {
                 retries = 0;
             }
@@ -176,6 +129,15 @@ public abstract class AbstractClient {
         } while (result != InternalInitializationTaskResult.FINISHED);
 
         sendOutgoing(communicator);
+    }
+
+    private static void sendOutgoing(Communicator com) throws IOException {
+        try {
+            com.sendOutgoing();
+        } catch (IOException e) {
+            com.disconnect(e);
+            throw e;
+        }
     }
 
     private boolean runInitializationTask(CommunicatorInitializationContext context, Communicator communicator,

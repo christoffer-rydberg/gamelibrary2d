@@ -53,23 +53,12 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
         });
     }
 
-    public boolean isListeningForConnections() {
+    public boolean isConnectionsEnabled() {
         return registration != null;
     }
 
-    public void listenForConnections(boolean listen) throws IOException {
-        if (!isRunning()) {
-            throw new IllegalStateException("Server is not running");
-        }
-
-        if (listen) {
-            enableConnections();
-        } else {
-            disableConnections();
-        }
-    }
-
-    private void enableConnections() throws IOException {
+    public void enableConnections() throws IOException {
+        throwIfNotRunning();
         registration = networkService.registerConnectionListener(
                 hostname,
                 port,
@@ -77,10 +66,14 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
                 (endpoint, exc) -> invokeLater(() -> onConnectionFailed(endpoint, exc)));
     }
 
-    private void disableConnections() throws IOException {
-        if (registration != null) {
-            networkService.deregisterConnectionListener(registration);
-            registration = null;
+    public void disableConnections() throws IOException {
+        throwIfNotRunning();
+        deregisterConnectionListener();
+    }
+
+    private void throwIfNotRunning() {
+        if (!isRunning()) {
+            throw new IllegalStateException("Server is not running");
         }
     }
 
@@ -91,9 +84,16 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
 
     @Override
     protected void onStop() throws IOException, InterruptedException {
-        disableConnections();
+        deregisterConnectionListener();
         if (ownsNetworkService) {
             networkService.stop();
+        }
+    }
+
+    private void deregisterConnectionListener() throws IOException {
+        if (registration != null) {
+            networkService.deregisterConnectionListener(registration);
+            registration = null;
         }
     }
 

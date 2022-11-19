@@ -1,7 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
 import com.gamelibrary2d.common.io.Write;
-import com.gamelibrary2d.common.updating.UpdateLoop;
 import com.gamelibrary2d.demos.networkgame.server.DemoGameServer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.client.RemoteServer;
@@ -13,7 +12,6 @@ import com.gamelibrary2d.network.client.LocalServer;
 import com.gamelibrary2d.network.server.NetworkServer;
 import java.io.IOException;
 import java.security.KeyPair;
-import java.util.concurrent.Future;
 
 public class ServerManager {
     private final KeyPair keyPair;
@@ -23,67 +21,23 @@ public class ServerManager {
     }
 
     public HostedServer hostLocalServer() {
-        LocalServer localServer = new LocalServer(DemoGameServer::new);
-
-        return new HostedServer(
-                () -> startLocalServer(localServer),
-                () -> stopLocalServer(localServer),
-                localServer,
-                new UpdateLoop(localServer::update, DemoGameServer.UPDATES_PER_SECOND)
-        );
+        LocalServer server = new LocalServer(new DemoGameServer());
+        return new HostedServer(server, server, DemoGameServer.UPDATES_PER_SECOND);
     }
 
     public HostedServer hostNetworkServer(String host, int tcpPort) {
         NetworkServer server = new NetworkServer(
                 host,
                 tcpPort,
-                s -> new DemoGameServer(s, keyPair));
+                new DemoGameServer(keyPair));
 
-        return new HostedServer(
-                () -> startNetworkServer(server),
-                () -> stopNetworkServer(server),
-                () -> connectToServer(host, tcpPort),
-                new UpdateLoop(server::update, DemoGameServer.UPDATES_PER_SECOND)
-        );
+        return new HostedServer(server, connectToServer(host, tcpPort), DemoGameServer.UPDATES_PER_SECOND);
     }
 
-    private void startLocalServer(LocalServer server) {
-        try {
-            server.start();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void stopLocalServer(LocalServer server) {
-        try {
-            server.stop();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void startNetworkServer(NetworkServer server) {
-        try {
-            server.start();
-            server.listenForConnections(true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void stopNetworkServer(NetworkServer server) {
-        try {
-            server.stop();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Future<Communicator> connectToServer(String host, int tcpPort) {
+    public RemoteServer connectToServer(String host, int tcpPort) {
         RemoteServer server = new RemoteServer(host, tcpPort);
         server.addAuthentication(this::configureAuthentication);
-        return server.connect();
+        return server;
     }
 
     private void configureAuthentication(CommunicatorInitializer initializer) {

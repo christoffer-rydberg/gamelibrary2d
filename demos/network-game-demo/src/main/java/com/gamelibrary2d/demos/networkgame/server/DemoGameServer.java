@@ -28,26 +28,24 @@ public class DemoGameServer implements ServerLogic {
     private final static int STREAM_UPDATE_RATE = 3;
     private final static float STREAMS_PER_SECOND = UPDATES_PER_SECOND / STREAM_UPDATE_RATE;
     private final BitParser bitParser = new BitParser(ByteBuffer.wrap(new byte[NetworkConstants.UPDATE_BUFFER_BYTE_SIZE]));
-
     private final ServerState state = new ServerState();
     private final ClientStateService clientStateService = new ClientStateService();
-
-    private final BroadcastService server;
     private final DemoGameLogic gameLogic;
     private final KeyPair keyPair;
     private final DataBuffer decryptionBuffer = new DynamicByteBuffer();
+
+    private BroadcastService broadcastService;
 
     private int streamCounter;
 
     private float startCountdown = 10f;
     private float timer;
 
-    public DemoGameServer(BroadcastService server) {
-        this(server, null);
+    public DemoGameServer() {
+        this(null);
     }
 
-    public DemoGameServer(BroadcastService server, KeyPair keyPair) {
-        this.server = server;
+    public DemoGameServer(KeyPair keyPair) {
         this.keyPair = keyPair;
         this.gameLogic = new DemoGameLogic(this);
     }
@@ -163,7 +161,8 @@ public class DemoGameServer implements ServerLogic {
     }
 
     @Override
-    public void onStarted() {
+    public void onStarted(BroadcastService broadcastService) {
+        this.broadcastService = broadcastService;
         log("Server has started");
     }
 
@@ -215,14 +214,14 @@ public class DemoGameServer implements ServerLogic {
             communicatorState.setReady(false);
         }
 
-        server.send(ServerMessages.GAME_OVER, false);
+        broadcastService.send(ServerMessages.GAME_OVER, false);
     }
 
     void spawn(ServerObject obj) {
         state.register(obj);
-        server.send(ServerMessages.SPAWN, false);
-        server.send(obj.getObjectIdentifier(), false);
-        server.send(obj, false);
+        broadcastService.send(ServerMessages.SPAWN, false);
+        broadcastService.send(obj.getObjectIdentifier(), false);
+        broadcastService.send(obj, false);
     }
 
     private boolean allPlayersAreDead() {
@@ -238,8 +237,8 @@ public class DemoGameServer implements ServerLogic {
 
     void destroy(ServerObject obj) {
         state.deregister(obj);
-        server.send(ServerMessages.DESTROY, false);
-        server.send(obj.getId(), false);
+        broadcastService.send(ServerMessages.DESTROY, false);
+        broadcastService.send(obj.getId(), false);
 
         if (obj instanceof ServerPlayer) {
             if (allPlayersAreDead()) {
@@ -249,7 +248,7 @@ public class DemoGameServer implements ServerLogic {
     }
 
     private void updateClients() {
-        server.send(ServerMessages.UPDATE, true);
+        broadcastService.send(ServerMessages.UPDATE, true);
 
         bitParser.position(NetworkConstants.HEADER_BIT_SIZE);
 
@@ -282,7 +281,7 @@ public class DemoGameServer implements ServerLogic {
         int bitSize = bitPosition - NetworkConstants.HEADER_BIT_SIZE;
         bitParser.putInt(bitSize, NetworkConstants.HEADER_BIT_SIZE);
 
-        server.send(bitParser.getByteBuffer().array(), 0, bytesToSend, true);
+        broadcastService.send(bitParser.getByteBuffer().array(), 0, bytesToSend, true);
     }
 
     private void log(String message) {

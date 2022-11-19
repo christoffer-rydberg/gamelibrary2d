@@ -12,6 +12,26 @@ import java.io.IOException;
 public interface CommunicatorInitializer {
 
     /**
+     * The max number of retries for each task.
+     */
+    int getRetries();
+
+    /**
+     * Sets the number of {@link #getRetries() retries}.
+     */
+    void setRetries(int retries);
+
+    /**
+     * The delay between retries of tasks in milliseconds.
+     */
+    int getRetryDelay();
+
+    /**
+     * Sets the {@link #getRetries() initialization retry delay}.
+     */
+    void setRetryDelay(int retryDelay);
+
+    /**
      * Adds a {@link ConsumerTask} to the pipeline.
      */
     void addConsumer(ConsumerTask task);

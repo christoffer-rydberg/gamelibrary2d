@@ -70,18 +70,18 @@ public class DemoGame extends AbstractGame {
         stopHostedServer();
         hostedServer = serverManager.hostLocalServer();
         hostedServer.start();
-        startGame(hostedServer::connect);
+        startGame(hostedServer);
     }
 
     public void hostNetworkGame(String host, int port) {
         stopHostedServer();
         hostedServer = serverManager.hostNetworkServer(host, port);
         hostedServer.start();
-        startGame(hostedServer::connect);
+        startGame(hostedServer);
     }
 
     public void joinNetworkGame(String host, int port) {
-        startGame(() -> serverManager.connectToServer(host, port));
+        startGame(serverManager.connectToServer(host, port));
     }
 
     private void showSplashScreen() {

@@ -1,10 +1,8 @@
 package com.gamelibrary2d.network.server;
 
-import com.gamelibrary2d.common.functional.Func;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.NetworkService;
-import com.gamelibrary2d.network.common.server.BroadcastService;
 import com.gamelibrary2d.network.common.server.ServerLogic;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
@@ -14,14 +12,14 @@ import java.io.IOException;
 public final class NetworkServer extends InternalAbstractNetworkServer {
     private final ServerLogic serverLogic;
 
-    public NetworkServer(String hostname, int port, Func<BroadcastService, ServerLogic> serverLogicFactory) {
+    public NetworkServer(String hostname, int port, ServerLogic serverLogic) {
         super(hostname, port);
-        this.serverLogic = serverLogicFactory.invoke(this);
+        this.serverLogic = serverLogic;
     }
 
-    public NetworkServer(String hostname, int port, NetworkService networkService, Func<BroadcastService, ServerLogic> serverLogicFactory) {
+    public NetworkServer(String hostname, int port, NetworkService networkService, ServerLogic serverLogic) {
         super(hostname, port, networkService);
-        this.serverLogic = serverLogicFactory.invoke(this);
+        this.serverLogic = serverLogic;
     }
 
     @Override
@@ -55,7 +53,7 @@ public final class NetworkServer extends InternalAbstractNetworkServer {
     }
 
     @Override
-    protected void initializeClient(CommunicatorInitializer initializer) {
+    protected void onInitializeClient(CommunicatorInitializer initializer) {
         serverLogic.onInitializeClient(initializer);
     }
 
@@ -72,7 +70,7 @@ public final class NetworkServer extends InternalAbstractNetworkServer {
     @Override
     protected void onStart() throws IOException {
         super.onStart();
-        serverLogic.onStarted();
+        serverLogic.onStarted(this);
     }
 
     @Override

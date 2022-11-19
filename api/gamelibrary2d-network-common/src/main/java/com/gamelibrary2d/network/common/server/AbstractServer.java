@@ -20,7 +20,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractServer implements Updatable, BroadcastService {
+public abstract class AbstractServer implements Server, Updatable, BroadcastService {
     private final Factory<Integer> communicatorIdFactory = RandomInstance.get()::nextInt;
     private final List<PendingCommunicator> pendingCommunicators;
     private final DataBuffer outgoingBuffer;
@@ -44,7 +44,7 @@ public abstract class AbstractServer implements Updatable, BroadcastService {
         initializer.addProducer(this::connectedTask);
         communicator.configureAuthentication(initializer);
         initializer.addProducer(this::authenticatedTask);
-        initializeClient(initializer);
+        onInitializeClient(initializer);
 
         pendingCommunicators.add(new PendingCommunicator(
                 communicator,
@@ -73,7 +73,7 @@ public abstract class AbstractServer implements Updatable, BroadcastService {
         communicators.remove(communicator);
         InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
         try {
-            initializeClient(initializer);
+            onInitializeClient(initializer);
         } finally {
             pendingCommunicators.add(new PendingCommunicator(
                     communicator,
@@ -188,6 +188,7 @@ public abstract class AbstractServer implements Updatable, BroadcastService {
 
                 boolean hasCompleted = ((ConsumerTask) task).run(context, communicator, incomingBuffer);
                 if (hasCompleted) {
+                    communicator.sendOutgoing();
                     return true;
                 }
 
@@ -197,6 +198,7 @@ public abstract class AbstractServer implements Updatable, BroadcastService {
             }
         } else if (task instanceof ProducerTask) {
             ((ProducerTask) task).run(context, communicator);
+            communicator.sendOutgoing();
             return true;
         } else {
             throw new IOException("Unknown  task");
@@ -378,7 +380,7 @@ public abstract class AbstractServer implements Updatable, BroadcastService {
 
     protected abstract void onConnected(Communicator communicator);
 
-    protected abstract void initializeClient(CommunicatorInitializer initializer);
+    protected abstract void onInitializeClient(CommunicatorInitializer initializer);
 
     protected abstract void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator);
 

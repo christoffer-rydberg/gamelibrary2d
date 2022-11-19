@@ -7,7 +7,7 @@ import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
 public interface ServerLogic {
 
-    void onStarted();
+    void onStarted(BroadcastService broadcastService);
 
     void onStopped();
 

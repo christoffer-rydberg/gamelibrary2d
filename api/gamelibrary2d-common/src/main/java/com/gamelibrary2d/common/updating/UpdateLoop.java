@@ -3,19 +3,10 @@ package com.gamelibrary2d.common.updating;
 import com.gamelibrary2d.common.denotations.Updatable;
 
 public class UpdateLoop {
-    private final Updatable target;
-    private final double ups;
-    private final Timer timer;
-
+    private final Timer timer = new DefaultTimer();
     private volatile boolean running;
 
-    public UpdateLoop(Updatable target, double ups) {
-        this.target = target;
-        this.ups = ups;
-        timer = new DefaultTimer();
-    }
-
-    public void run() {
+    public void run(double ups, Updatable target) {
         running = true;
 
         double prevTime = timer.getTime();
@@ -23,14 +14,14 @@ public class UpdateLoop {
             double startTime = timer.getTime();
             double deltaTime = startTime - prevTime;
             target.update((float) (deltaTime));
-            sync(startTime);
+            sync(startTime, ups);
             prevTime = startTime;
         }
 
         running = false;
     }
 
-    private void sync(double startTime) {
+    private void sync(double startTime, double ups) {
         double timeRequired = 1.0 / ups;
         double timePassed = timer.getTime() - startTime;
         if (timePassed < timeRequired) {
