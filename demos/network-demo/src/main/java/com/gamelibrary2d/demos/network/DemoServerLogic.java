@@ -81,8 +81,8 @@ public class DemoServerLogic implements ServerLogic {
     }
 
     @Override
-    public void onDisconnected(Communicator communicator, boolean pending) {
-        log(String.format("Connection lost: %s", communicator.getEndpoint()));
+    public void onDisconnected(Communicator communicator, boolean pending, Throwable cause) {
+        log(String.format("Client disconnected: %s", communicator.getEndpoint()));
     }
 
     @Override

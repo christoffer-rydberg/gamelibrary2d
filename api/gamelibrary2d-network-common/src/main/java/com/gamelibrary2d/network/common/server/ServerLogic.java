@@ -29,5 +29,5 @@ public interface ServerLogic {
 
     void onMessage(Communicator communicator, DataBuffer buffer);
 
-    void onDisconnected(Communicator communicator, boolean pending);
+    void onDisconnected(Communicator communicator, boolean pending, Throwable cause);
 }

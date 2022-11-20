@@ -128,8 +128,13 @@ public class DemoGameServer implements ServerLogic {
     }
 
     @Override
-    public void onDisconnected(Communicator communicator, boolean pending) {
-        log(String.format("%s: Client has disconnected", communicator.getEndpoint()));
+    public void onDisconnected(Communicator communicator, boolean pending, Throwable cause) {
+        if (cause != null) {
+            log(String.format("%s: Client was disconnected (%s)", communicator.getEndpoint(), cause.getMessage()));
+        } else {
+            log(String.format("%s: Client was disconnected", communicator.getEndpoint()));
+        }
+
         ClientState clientState = clientStateService.remove(communicator);
         if (clientState != null) {
             for (ServerPlayer player : clientState.getPlayers()) {

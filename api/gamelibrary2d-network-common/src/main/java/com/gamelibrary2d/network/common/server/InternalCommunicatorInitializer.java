@@ -66,6 +66,7 @@ class InternalCommunicatorInitializer implements CommunicatorInitializer {
             tasks.pollFirst();
             return tasks.isEmpty() ? InternalInitializationTaskResult.FINISHED : InternalInitializationTaskResult.PENDING;
         }
+
         return InternalInitializationTaskResult.AWAITING_DATA;
     }
 }

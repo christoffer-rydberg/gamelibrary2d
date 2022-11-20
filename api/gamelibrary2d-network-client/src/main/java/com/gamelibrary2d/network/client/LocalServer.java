@@ -76,8 +76,8 @@ public final class LocalServer extends AbstractServer implements Connectable {
     }
 
     @Override
-    protected void onDisconnected(Communicator communicator, boolean pending) {
-        serverLogic.onDisconnected(communicator, pending);
+    protected void onDisconnected(Communicator communicator, boolean pending, Throwable cause) {
+        serverLogic.onDisconnected(communicator, pending, cause);
     }
 
     @Override

@@ -91,7 +91,7 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
 
     private void onDisconnectedEvent(CommunicatorDisconnectedEvent event) {
         Communicator communicator = event.getCommunicator();
-        invokeLater(() -> onDisconnected(communicator));
+        invokeLater(() -> onDisconnected(communicator, event.getCause()));
     }
 
     private PendingCommunicator removePending(Communicator communicator) {
@@ -105,15 +105,15 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
         return null;
     }
 
-    private void onDisconnected(Communicator communicator) {
+    private void onDisconnected(Communicator communicator, Throwable cause) {
         if (communicators.remove(communicator)) {
             // Read final messages
             readAndHandleMessages(communicator);
-            onDisconnected(communicator, false);
+            onDisconnected(communicator, false, cause);
         } else {
             PendingCommunicator pending = removePending(communicator);
             if (pending != null) {
-                onDisconnected(communicator, true);
+                onDisconnected(communicator, true, cause);
             } else {
                 throw new IllegalStateException(String.format(
                         "Faulty state! Disconnected communicator '%s' is neither active nor pending. Endpoint: %s.",
@@ -149,31 +149,52 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
         for (int i = pendingCommunicators.size() - 1; i >= 0; --i) {
             PendingCommunicator pending = pendingCommunicators.get(i);
             try {
-                runInitializationTasks(pending.communicator, pending.context, pending.initializer);
+                runInitializationTasks(pending);
             } catch (IOException e) {
                 pending.communicator.disconnect(e);
             }
         }
     }
 
-    private void runInitializationTasks(Communicator communicator, CommunicatorInitializationContext context, InternalCommunicatorInitializer initializer)
+    private void runInitializationTasks(PendingCommunicator pending)
             throws IOException {
         InternalInitializationTaskResult result;
+
         do {
-            result = initializer.runTask(context, communicator, this::runInitializationTask);
-            if (result == InternalInitializationTaskResult.AWAITING_DATA && communicator.readIncoming(incomingBuffer)) {
-                result = initializer.runTask(context, communicator, this::runInitializationTask);
+            result = pending.initializer.runTask(pending.context, pending.communicator, this::runInitializationTask);
+
+            if (result == InternalInitializationTaskResult.AWAITING_DATA) {
+                long currentTime = System.currentTimeMillis();
+
+                ++pending.retryAttempt;
+                if (pending.retryAttempt == 1) {
+                    pending.retryStart = currentTime;
+                }
+
+                long timeSinceRetriesStarted = currentTime - pending.retryStart;
+
+                float maxRetryTime = pending.initializer.getRetries() + pending.initializer.getRetryDelay();
+
+                if (timeSinceRetriesStarted > maxRetryTime) {
+                   pending.communicator.disconnect(new IOException("Initialization retry time exceeded"));
+                   return;
+                }
+            } else {
+                pending.retryAttempt = 0;
             }
         } while (result == InternalInitializationTaskResult.PENDING);
 
         if (result == InternalInitializationTaskResult.FINISHED) {
-            initialized(context, communicator);
-            handleMessages(communicator);
+            initialized(pending.context, pending.communicator);
+            handleMessages(pending.communicator);
         }
     }
 
-    private boolean runInitializationTask(CommunicatorInitializationContext context, Communicator communicator,
-                                      ConditionalInitializationTask conditionalTask) throws IOException {
+    private boolean runInitializationTask(
+            CommunicatorInitializationContext context,
+            Communicator communicator,
+            ConditionalInitializationTask conditionalTask) throws IOException {
+
         if (!conditionalTask.condition.evaluate(context, communicator)) {
             return true;
         }
@@ -206,6 +227,10 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
     }
 
     private void readIncoming() {
+        for (int i = 0; i < pendingCommunicators.size(); ++i) {
+            pendingCommunicators.get(i).communicator.readIncoming(incomingBuffer);
+        }
+
         for (int i = 0; i < communicators.size(); ++i) {
             Communicator communicator = communicators.get(i);
             readAndHandleMessages(communicator);
@@ -386,7 +411,7 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
 
     protected abstract void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator);
 
-    protected abstract void onDisconnected(Communicator communicator, boolean pending);
+    protected abstract void onDisconnected(Communicator communicator, boolean pending, Throwable cause);
 
     protected abstract void onMessage(Communicator communicator, DataBuffer buffer);
 
@@ -408,6 +433,8 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
         final Communicator communicator;
         final CommunicatorInitializationContext context;
         final InternalCommunicatorInitializer initializer;
+        public long retryStart;
+        public int retryAttempt;
 
         PendingCommunicator(Communicator communicator, CommunicatorInitializationContext context, InternalCommunicatorInitializer initializer) {
             this.communicator = communicator;
