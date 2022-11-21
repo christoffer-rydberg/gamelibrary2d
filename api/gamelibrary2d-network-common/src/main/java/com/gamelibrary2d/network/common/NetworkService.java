@@ -107,7 +107,7 @@ public class NetworkService {
             }
             DataBuffer byteBuffer = tcpConnection.getWriteBuffer();
             synchronized (byteBuffer) {
-                tcpConnection.incrementTransmissionId();
+                tcpConnection.scheduledToWrite = true;
                 byteBuffer.putBool(false);
                 byteBuffer.putInt(buffer.remaining());
                 byteBuffer.put(buffer);
@@ -162,8 +162,9 @@ public class NetworkService {
         if (tcpConnection != null) {
             DataBuffer byteBuffer = tcpConnection.getWriteBuffer();
             synchronized (byteBuffer) {
-                tcpConnection.scheduleCloseConnection();
-                if (tcpConnection.shouldClose()) {
+                if (tcpConnection.scheduledToWrite) {
+                    tcpConnection.scheduledToClose = true;
+                } else {
                     disconnect(channel);
                 }
             }
@@ -264,8 +265,9 @@ public class NetworkService {
                     key.interestOps(SelectionKey.OP_READ);
                 }
 
-                tcpConnection.incrementProcessedTransmissions();
-                if (tcpConnection.shouldClose()) {
+                tcpConnection.scheduledToWrite = false;
+
+                if (tcpConnection.scheduledToClose) {
                     disconnect(channel);
                 }
             }
@@ -437,17 +439,11 @@ public class NetworkService {
         private final DataBuffer writeBuffer = new DynamicByteBuffer();
         private final int channel;
 
-        int prevTransmissionId;
-
         AbstractConnection(Communicator communicator, ChannelDisconnectedHandler disconnectedHandler,
                            int channel) {
             this.communicator = communicator;
             this.disconnectedHandler = disconnectedHandler;
             this.channel = channel;
-        }
-
-        int incrementTransmissionId() {
-            return ++prevTransmissionId;
         }
 
         public void onDisconnected(IOException e) {
@@ -468,34 +464,27 @@ public class NetworkService {
     }
 
     private static class TcpConnection extends AbstractConnection {
-
-        private int finalTransmission = -1;
-        private int processedTransmissions;
+        boolean scheduledToClose;
+        boolean scheduledToWrite;
 
         TcpConnection(Communicator communicator, ChannelDisconnectedHandler disconnectedHandler) {
             super(communicator, disconnectedHandler, 0);
-        }
-
-        void incrementProcessedTransmissions() {
-            ++processedTransmissions;
-        }
-
-        void scheduleCloseConnection() {
-            finalTransmission = prevTransmissionId;
-        }
-
-        boolean shouldClose() {
-            return finalTransmission != -1 && processedTransmissions >= finalTransmission;
         }
     }
 
     private static class UdpConnection extends AbstractConnection {
         private final ConnectionType connectionType;
 
+        int prevTransmissionId;
+
         UdpConnection(Communicator communicator, ConnectionType connectionType,
                       ChannelDisconnectedHandler disconnectedHandler) {
             super(communicator, disconnectedHandler, 1);
             this.connectionType = connectionType;
+        }
+
+        int incrementTransmissionId() {
+            return ++prevTransmissionId;
         }
 
         ConnectionType getConnectionType() {
