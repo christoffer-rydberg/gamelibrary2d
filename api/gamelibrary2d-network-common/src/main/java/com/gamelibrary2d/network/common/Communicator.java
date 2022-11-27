@@ -73,11 +73,11 @@ public interface Communicator {
     void clearOutgoing();
 
     /**
-     * Sends the content of the specified buffer.
+     * Streams the content of the specified buffer.
      *
      * @param buffer The buffer to send.
      */
-    void sendUpdate(DataBuffer buffer) throws IOException;
+    void stream(DataBuffer buffer) throws IOException;
 
     /**
      * Adds a listener for events from this communicator

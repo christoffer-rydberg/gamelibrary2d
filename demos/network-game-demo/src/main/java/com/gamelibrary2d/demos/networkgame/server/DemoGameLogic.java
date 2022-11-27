@@ -11,13 +11,13 @@ import com.gamelibrary2d.demos.networkgame.server.objects.ServerPortal;
 import java.util.List;
 
 public class DemoGameLogic {
-    private final DemoGameServer server;
+    private final DemoServerLogic server;
     private final GameSettings settings;
     private final CollisionDetection collisionDetection;
 
     private boolean gameOver = true;
 
-    public DemoGameLogic(DemoGameServer server) {
+    public DemoGameLogic(DemoServerLogic server) {
         this.server = server;
 
         settings = new GameSettings(

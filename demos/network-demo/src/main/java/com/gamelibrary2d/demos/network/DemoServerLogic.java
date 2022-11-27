@@ -4,19 +4,21 @@ import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
-import com.gamelibrary2d.network.common.server.BroadcastService;
+import com.gamelibrary2d.network.common.server.Host;
 import com.gamelibrary2d.network.common.server.ServerLogic;
+
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class DemoServerLogic implements ServerLogic {
 
     @Override
-    public void onStarted(BroadcastService broadcastService) {
-
+    public void onStart(Host host) throws IOException {
+        host.enableConnections();
     }
 
     @Override
-    public void onStopped() {
+    public void onStop() {
 
     }
 

@@ -12,7 +12,7 @@ import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.*;
-import com.gamelibrary2d.network.common.server.BroadcastService;
+import com.gamelibrary2d.network.common.server.Host;
 import com.gamelibrary2d.network.server.ServerHandshakeConfiguration;
 import com.gamelibrary2d.network.common.server.ServerLogic;
 
@@ -23,7 +23,7 @@ import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class DemoGameServer implements ServerLogic {
+public class DemoServerLogic implements ServerLogic {
     public final static float UPDATES_PER_SECOND = 30;
     private final static int STREAM_UPDATE_RATE = 3;
     private final static float STREAMS_PER_SECOND = UPDATES_PER_SECOND / STREAM_UPDATE_RATE;
@@ -34,18 +34,18 @@ public class DemoGameServer implements ServerLogic {
     private final KeyPair keyPair;
     private final DataBuffer decryptionBuffer = new DynamicByteBuffer();
 
-    private BroadcastService broadcastService;
+    private Host host;
 
     private int streamCounter;
 
     private float startCountdown = 10f;
     private float timer;
 
-    public DemoGameServer() {
+    public DemoServerLogic() {
         this(null);
     }
 
-    public DemoGameServer(KeyPair keyPair) {
+    public DemoServerLogic(KeyPair keyPair) {
         this.keyPair = keyPair;
         this.gameLogic = new DemoGameLogic(this);
     }
@@ -166,13 +166,16 @@ public class DemoGameServer implements ServerLogic {
     }
 
     @Override
-    public void onStarted(BroadcastService broadcastService) {
-        this.broadcastService = broadcastService;
+    public void onStart(Host host) throws IOException {
+        this.host = host;
         log("Server has started");
+
+        log("Listening for incoming connections...");
+        host.enableConnections();
     }
 
     @Override
-    public void onStopped() {
+    public void onStop() {
         log("Server has stopped");
     }
 
@@ -219,14 +222,14 @@ public class DemoGameServer implements ServerLogic {
             communicatorState.setReady(false);
         }
 
-        broadcastService.send(ServerMessages.GAME_OVER, false);
+        host.broadcast(ServerMessages.GAME_OVER);
     }
 
     void spawn(ServerObject obj) {
         state.register(obj);
-        broadcastService.send(ServerMessages.SPAWN, false);
-        broadcastService.send(obj.getObjectIdentifier(), false);
-        broadcastService.send(obj, false);
+        host.broadcast(ServerMessages.SPAWN);
+        host.broadcast(obj.getObjectIdentifier());
+        host.broadcast(obj);
     }
 
     private boolean allPlayersAreDead() {
@@ -242,8 +245,8 @@ public class DemoGameServer implements ServerLogic {
 
     void destroy(ServerObject obj) {
         state.deregister(obj);
-        broadcastService.send(ServerMessages.DESTROY, false);
-        broadcastService.send(obj.getId(), false);
+        host.broadcast(ServerMessages.DESTROY);
+        host.broadcast(obj.getId());
 
         if (obj instanceof ServerPlayer) {
             if (allPlayersAreDead()) {
@@ -253,7 +256,9 @@ public class DemoGameServer implements ServerLogic {
     }
 
     private void updateClients() {
-        broadcastService.send(ServerMessages.UPDATE, true);
+        DataBuffer streamBuffer = host.getStreamBuffer();
+
+        streamBuffer.put(ServerMessages.UPDATE);
 
         bitParser.position(NetworkConstants.HEADER_BIT_SIZE);
 
@@ -286,7 +291,7 @@ public class DemoGameServer implements ServerLogic {
         int bitSize = bitPosition - NetworkConstants.HEADER_BIT_SIZE;
         bitParser.putInt(bitSize, NetworkConstants.HEADER_BIT_SIZE);
 
-        broadcastService.send(bitParser.getByteBuffer().array(), 0, bytesToSend, true);
+        streamBuffer.put(bitParser.getByteBuffer().array(), 0, bytesToSend);
     }
 
     private void log(String message) {

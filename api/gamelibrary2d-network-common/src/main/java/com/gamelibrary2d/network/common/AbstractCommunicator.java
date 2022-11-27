@@ -150,7 +150,7 @@ public abstract class AbstractCommunicator implements Communicator {
     }
 
     @Override
-    public void sendUpdate(DataBuffer buffer) throws IOException {
+    public void stream(DataBuffer buffer) throws IOException {
         send(buffer);
     }
 

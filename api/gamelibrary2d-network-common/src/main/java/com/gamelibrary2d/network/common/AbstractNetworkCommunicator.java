@@ -63,7 +63,7 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
     }
 
     @Override
-    public void sendUpdate(DataBuffer buffer) throws IOException {
+    public void stream(DataBuffer buffer) throws IOException {
         if (udpConnection != null) {
             switch (udpConnection.connectionType) {
                 case WRITE:
@@ -71,13 +71,13 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
                     getNetworkService().send(udpConnection.channel, buffer);
                     break;
                 case READ:
-                    super.sendUpdate(buffer);
+                    super.stream(buffer);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown UDP connection type: " + udpConnection.connectionType);
             }
         } else {
-            super.sendUpdate(buffer);
+            super.stream(buffer);
         }
     }
 

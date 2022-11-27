@@ -4,7 +4,6 @@ import com.gamelibrary2d.common.functional.Factory;
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.common.io.DynamicByteBuffer;
 import com.gamelibrary2d.common.random.RandomInstance;
-import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
@@ -14,18 +13,16 @@ import com.gamelibrary2d.network.common.initialization.ConditionalInitialization
 import com.gamelibrary2d.network.common.initialization.InitializationTask;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractServer implements Server, Updatable, BroadcastService {
+public abstract class AbstractServer implements Server, Updatable {
     private final Factory<Integer> communicatorIdFactory = RandomInstance.get()::nextInt;
     private final List<PendingCommunicator> pendingCommunicators;
-    private final DataBuffer outgoingBuffer;
+    private final DataBuffer streamBuffer;
     private final DataBuffer incomingBuffer;
     private final ArrayList<Communicator> communicators;
+    private final List<Communicator> readOnlyCommunicators;
     private final DelayedMonitor delayedMonitor = new DelayedMonitor();
     private final CommunicatorDisconnectedListener disconnectedEventListener = this::onDisconnectedEvent;
     private final AtomicBoolean running = new AtomicBoolean();
@@ -33,9 +30,10 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
     protected AbstractServer() {
         incomingBuffer = new DynamicByteBuffer();
         incomingBuffer.flip();
-        outgoingBuffer = new DynamicByteBuffer();
+        streamBuffer = new DynamicByteBuffer();
         communicators = new ArrayList<>();
         pendingCommunicators = new ArrayList<>();
+        readOnlyCommunicators = Collections.unmodifiableList(communicators);
     }
 
     protected void addPendingCommunicator(Communicator communicator) {
@@ -54,6 +52,14 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
         communicator.addDisconnectedListener(disconnectedEventListener);
     }
 
+    protected List<Communicator> getCommunicators() {
+        return readOnlyCommunicators;
+    }
+
+    protected DataBuffer getStreamBuffer() {
+        return streamBuffer;
+    }
+
     private void writeIdentifier(Communicator communicator, Factory<Integer> idFactory) {
         int id = idFactory.create();
         communicator.setId(id);
@@ -70,15 +76,16 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
     }
 
     protected void reinitialize(Communicator communicator) {
-        communicators.remove(communicator);
-        InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
-        try {
-            onInitializeClient(initializer);
-        } finally {
-            pendingCommunicators.add(new PendingCommunicator(
-                    communicator,
-                    new CommunicatorInitializationContext(),
-                    initializer));
+        if (communicators.remove(communicator)) {
+            InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
+            try {
+                onInitializeClient(initializer);
+            } finally {
+                pendingCommunicators.add(new PendingCommunicator(
+                        communicator,
+                        new CommunicatorInitializationContext(),
+                        initializer));
+            }
         }
     }
 
@@ -255,7 +262,7 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
 
     private void sendOutGoing() {
         sendIndividualMessages();
-        sendOutgoingBufferToAll();
+        flushStreamBuffer();
     }
 
     private void sendIndividualMessages() {
@@ -274,19 +281,19 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
         }
     }
 
-    private void sendOutgoingBufferToAll() {
-        if (outgoingBuffer.position() > 0) {
-            outgoingBuffer.flip();
-            sendToAll(outgoingBuffer);
-            outgoingBuffer.clear();
+    private void flushStreamBuffer() {
+        if (streamBuffer.position() > 0) {
+            streamBuffer.flip();
+            stream(streamBuffer);
+            streamBuffer.clear();
         }
     }
 
-    private void sendToAll(DataBuffer buffer) {
+    private void stream(DataBuffer buffer) {
         for (Communicator communicator : communicators) {
             try {
                 buffer.position(0);
-                communicator.sendUpdate(buffer);
+                communicator.stream(buffer);
             } catch (IOException e) {
                 communicator.disconnect(e);
             }
@@ -294,108 +301,21 @@ public abstract class AbstractServer implements Server, Updatable, BroadcastServ
     }
 
     @Override
-    public void send(int message, boolean stream) {
-        if (stream) {
-            outgoingBuffer.putInt(message);
-        } else {
-            for (int i = 0; i < communicators.size(); ++i) {
-                send(communicators.get(i), message);
-            }
-        }
-    }
-
-    @Override
-    public void send(float message, boolean stream) {
-        if (stream) {
-            outgoingBuffer.putFloat(message);
-        } else {
-            for (int i = 0; i < communicators.size(); ++i) {
-                send(communicators.get(i), message);
-            }
-        }
-    }
-
-    @Override
-    public void send(double message, boolean stream) {
-        if (stream) {
-            outgoingBuffer.putDouble(message);
-        } else {
-            for (int i = 0; i < communicators.size(); ++i) {
-                send(communicators.get(i), message);
-            }
-        }
-    }
-
-    @Override
-    public void send(byte message, boolean stream) {
-        if (stream) {
-            outgoingBuffer.put(message);
-        } else {
-            for (int i = 0; i < communicators.size(); ++i) {
-                send(communicators.get(i), message);
-            }
-        }
-    }
-
-    @Override
-    public void send(byte[] message, int off, int len, boolean stream) {
-        if (stream) {
-            outgoingBuffer.put(message, off, len);
-        } else {
-            for (int i = 0; i < communicators.size(); ++i) {
-                send(communicators.get(i), message, off, len);
-            }
-        }
-    }
-
-    @Override
-    public void send(Serializable message, boolean stream) {
-        if (stream) {
-            message.serialize(outgoingBuffer);
-        } else {
-            for (int i = 0; i < communicators.size(); ++i) {
-                send(communicators.get(i), message);
-            }
-        }
-    }
-
-    private void send(Communicator communicator, int message) {
-        communicator.getOutgoing().putInt(message);
-    }
-
-    private void send(Communicator communicator, float message) {
-        communicator.getOutgoing().putFloat(message);
-    }
-
-    private void send(Communicator communicator, double message) {
-        communicator.getOutgoing().putDouble(message);
-    }
-
-    private void send(Communicator communicator, byte message) {
-        communicator.getOutgoing().put(message);
-    }
-
-    private void send(Communicator communicator, byte[] message, int off, int len) {
-        communicator.getOutgoing().put(message, off, len);
-    }
-
-    private void send(Communicator communicator, Serializable message) {
-        message.serialize(communicator.getOutgoing());
-    }
-
     public final void start() throws IOException {
         if (running.compareAndSet(false, true)) {
             onStart();
         }
     }
 
+    @Override
     public final void stop() throws IOException, InterruptedException {
         if (running.compareAndSet(true, false)) {
             onStop();
         }
     }
 
-    protected boolean isRunning() {
+    @Override
+    public final boolean isRunning() {
         return running.get();
     }
 

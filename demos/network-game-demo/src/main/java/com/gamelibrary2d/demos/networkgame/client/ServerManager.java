@@ -1,7 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
 import com.gamelibrary2d.common.io.Write;
-import com.gamelibrary2d.demos.networkgame.server.DemoGameServer;
+import com.gamelibrary2d.demos.networkgame.server.DemoServerLogic;
 import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.client.RemoteServer;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
@@ -21,17 +21,17 @@ public class ServerManager {
     }
 
     public HostedServer hostLocalServer() {
-        LocalServer server = new LocalServer(new DemoGameServer());
-        return new HostedServer(server, server, DemoGameServer.UPDATES_PER_SECOND);
+        LocalServer server = new LocalServer(new DemoServerLogic());
+        return new HostedServer(server, server, DemoServerLogic.UPDATES_PER_SECOND);
     }
 
     public HostedServer hostNetworkServer(String host, int tcpPort) {
         NetworkServer server = new NetworkServer(
                 host,
                 tcpPort,
-                new DemoGameServer(keyPair));
+                new DemoServerLogic(keyPair));
 
-        return new HostedServer(server, connectToServer(host, tcpPort), DemoGameServer.UPDATES_PER_SECOND);
+        return new HostedServer(server, connectToServer(host, tcpPort), DemoServerLogic.UPDATES_PER_SECOND);
     }
 
     public RemoteServer connectToServer(String host, int tcpPort) {

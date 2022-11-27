@@ -5,11 +5,13 @@ import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
+import java.io.IOException;
+
 public interface ServerLogic {
 
-    void onStarted(BroadcastService broadcastService);
+    void onStart(Host host) throws IOException;
 
-    void onStopped();
+    void onStop();
 
     boolean acceptConnection(String endpoint);
 

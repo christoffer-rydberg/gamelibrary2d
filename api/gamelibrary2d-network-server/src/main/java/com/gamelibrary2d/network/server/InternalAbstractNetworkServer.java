@@ -13,7 +13,6 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
     private final boolean ownsNetworkService;
     private final int port;
     private final String hostname;
-
     private ServerSocketChannelRegistration registration;
 
     private InternalAbstractNetworkServer(String hostname, int port, NetworkService networkService, boolean ownsNetworkService) {

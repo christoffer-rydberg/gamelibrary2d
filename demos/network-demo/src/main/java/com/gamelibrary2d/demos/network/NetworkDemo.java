@@ -48,7 +48,6 @@ public class NetworkDemo {
         Thread thread = new Thread(() -> {
             try {
                 server.start();
-                server.enableConnections();
                 new UpdateLoop().run(10, server);
                 server.stop();
             } catch (IOException | InterruptedException e) {

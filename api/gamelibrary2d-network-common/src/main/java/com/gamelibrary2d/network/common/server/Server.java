@@ -9,7 +9,5 @@ public interface Server extends Updatable {
 
     void stop() throws IOException, InterruptedException;
 
-    void enableConnections() throws IOException;
-
-    void disableConnections() throws IOException;
+    boolean isRunning();
 }

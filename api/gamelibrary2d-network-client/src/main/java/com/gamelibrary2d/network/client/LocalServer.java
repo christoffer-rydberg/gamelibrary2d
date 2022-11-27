@@ -5,15 +5,20 @@ import com.gamelibrary2d.network.common.Communicator;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.network.common.server.AbstractServer;
+import com.gamelibrary2d.network.common.server.Host;
 import com.gamelibrary2d.network.common.server.ServerLogic;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public final class LocalServer extends AbstractServer implements Connectable {
     public static final String LOCAL_CONNECTION_ENDPOINT = "local";
     private final ServerLogic serverLogic;
+
+    private final Host host = new InternalHost();
     private final ArrayList<Communicator> clientSideCommunicators = new ArrayList<>();
     private boolean connectionsEnabled;
 
@@ -36,8 +41,8 @@ public final class LocalServer extends AbstractServer implements Connectable {
     }
 
     @Override
-    protected void onStart() {
-        serverLogic.onStarted(this);
+    protected void onStart() throws IOException {
+        serverLogic.onStart(host);
     }
 
     @Override
@@ -45,7 +50,7 @@ public final class LocalServer extends AbstractServer implements Connectable {
         for (Communicator com : clientSideCommunicators) {
             com.disconnect();
         }
-        serverLogic.onStopped();
+        serverLogic.onStop();
     }
 
     @Override
@@ -85,13 +90,31 @@ public final class LocalServer extends AbstractServer implements Connectable {
         serverLogic.onMessage(communicator, buffer);
     }
 
-    @Override
-    public void enableConnections() {
-        connectionsEnabled = true;
-    }
+    private class InternalHost implements Host {
 
-    @Override
-    public void disableConnections() {
-        connectionsEnabled = false;
+        @Override
+        public void enableConnections() {
+            connectionsEnabled = true;
+        }
+
+        @Override
+        public void disableConnections() {
+            connectionsEnabled = false;
+        }
+
+        @Override
+        public void reinitialize(Communicator communicator) {
+            LocalServer.super.reinitialize(communicator);
+        }
+
+        @Override
+        public List<Communicator> getCommunicators() {
+            return LocalServer.super.getCommunicators();
+        }
+
+        @Override
+        public DataBuffer getStreamBuffer() {
+            return LocalServer.super.getStreamBuffer();
+        }
     }
 }

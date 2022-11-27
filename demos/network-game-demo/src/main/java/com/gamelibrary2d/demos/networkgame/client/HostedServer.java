@@ -25,7 +25,6 @@ public class HostedServer implements Connectable {
         serverThread = new Thread(() -> {
             try {
                 server.start();
-                server.enableConnections();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
