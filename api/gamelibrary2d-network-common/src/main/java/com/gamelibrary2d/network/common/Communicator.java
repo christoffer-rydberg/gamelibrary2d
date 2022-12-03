@@ -47,15 +47,14 @@ public interface Communicator {
      * Adds bytes from the specified {@link DataReader} to the communicator's
      * incoming buffer.
      */
-    void addIncoming(int channel, DataReader dataReader) throws IOException;
+    int addIncoming(int channel, DataReader dataReader) throws IOException;
 
     /**
-     * Reads bytes from the communicator's incoming buffer to the specified output
-     * buffer.
+     * Reads bytes from the communicator's incoming buffer to the specified buffer.
      *
      * @return True if any bytes were read, false otherwise.
      */
-    boolean readIncoming(DataBuffer outputBuffer);
+    boolean readIncoming(DataBuffer dst);
 
     /**
      * Gets the outgoing buffer.

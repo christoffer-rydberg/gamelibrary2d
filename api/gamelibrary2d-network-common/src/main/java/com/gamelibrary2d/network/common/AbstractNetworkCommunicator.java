@@ -1,26 +1,28 @@
 package com.gamelibrary2d.network.common;
 
 import com.gamelibrary2d.common.io.DataBuffer;
+import com.gamelibrary2d.network.common.connections.ConnectionService;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SocketChannel;
 
 public abstract class AbstractNetworkCommunicator extends AbstractCommunicator implements NetworkCommunicator {
-    private final NetworkService networkService;
-    private final boolean ownsNetworkService;
+    private final ConnectionService connectionService;
+    private final boolean ownsConnectionService;
 
     private volatile UdpConnection udpConnection;
     private volatile SocketChannel socketChannel;
 
-    protected AbstractNetworkCommunicator(NetworkService networkService, int incomingChannels, boolean ownsNetworkService) {
+    protected AbstractNetworkCommunicator(ConnectionService connectionService, int incomingChannels, boolean ownsConnectionService) {
         super(incomingChannels);
-        this.networkService = networkService;
-        this.ownsNetworkService = ownsNetworkService;
+        this.connectionService = connectionService;
+        this.ownsConnectionService = ownsConnectionService;
     }
 
-    protected NetworkService getNetworkService() {
-        return networkService;
+    protected ConnectionService getConnectionService() {
+        return connectionService;
     }
 
     protected SocketChannel getSocketChannel() {
@@ -45,9 +47,9 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
     protected void onDisconnected(Throwable cause) {
         disconnectTcp();
         disableUdp();
-        if (ownsNetworkService) {
+        if (ownsConnectionService) {
             try {
-                networkService.stop();
+                connectionService.stop();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -59,7 +61,7 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
         SocketChannel socketChannel = this.socketChannel;
         if (socketChannel == null)
             throw new IOException("Socket channel not connected");
-        networkService.send(socketChannel, buffer);
+        connectionService.send(socketChannel, buffer);
     }
 
     @Override
@@ -68,7 +70,7 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
             switch (udpConnection.connectionType) {
                 case WRITE:
                 case READ_WRITE:
-                    getNetworkService().send(udpConnection.channel, buffer);
+                    getConnectionService().send(udpConnection.channel, buffer);
                     break;
                 case READ:
                     super.stream(buffer);
@@ -85,7 +87,7 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
         if (socketChannelConnected()) {
             SocketChannel socketChannel = this.socketChannel;
             setSocketChannel(null);
-            networkService.closeAfterLastScheduledSend(socketChannel);
+            connectionService.closeAfterLastScheduledSend(socketChannel);
         }
     }
 
@@ -110,7 +112,7 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
             throw new IOException("UDP has not been enabled");
         }
 
-        networkService.connect(
+        connectionService.connect(
                 this.udpConnection.channel,
                 this,
                 this.udpConnection.connectionType,
@@ -123,7 +125,7 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
         UdpConnection connection = this.udpConnection;
         if (connection != null) {
             this.udpConnection = null;
-            networkService.disconnect(connection.channel);
+            connectionService.disconnect(connection.channel);
         }
     }
 

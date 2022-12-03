@@ -1,14 +1,12 @@
-package com.gamelibrary2d.network.common;
+package com.gamelibrary2d.network.common.connections;
 
 import java.nio.channels.ServerSocketChannel;
 
-public class ServerSocketChannelRegistration {
-
+public class ConnectionListenerRegistration {
     private final ServerSocketChannel serverSocketChannel;
-
     private final int localPort;
 
-    ServerSocketChannelRegistration(ServerSocketChannel serverSocketChannel, int localPort) {
+    ConnectionListenerRegistration(ServerSocketChannel serverSocketChannel, int localPort) {
         this.serverSocketChannel = serverSocketChannel;
         this.localPort = localPort;
     }

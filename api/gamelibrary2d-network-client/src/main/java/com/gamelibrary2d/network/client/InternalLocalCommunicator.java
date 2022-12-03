@@ -69,11 +69,13 @@ class InternalLocalCommunicator extends AbstractCommunicator {
     }
 
     private static class Util {
-        private static void addIncoming(DataBuffer buffer, DataBuffer b) {
+        private static int addIncoming(DataBuffer buffer, DataBuffer b) {
+            int posBefore = b.position();
             int size = buffer.remaining();
             b.putBool(false);
             b.putInt(size);
             b.put(buffer);
+            return b.position() - posBefore;
         }
     }
 }

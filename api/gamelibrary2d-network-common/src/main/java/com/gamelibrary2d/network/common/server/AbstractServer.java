@@ -180,7 +180,7 @@ public abstract class AbstractServer implements Server, Updatable {
 
                 long timeSinceRetriesStarted = currentTime - pending.retryStart;
 
-                float maxRetryTime = pending.initializer.getRetries() + pending.initializer.getRetryDelay();
+                float maxRetryTime = pending.initializer.getRetries() * pending.initializer.getRetryDelay();
 
                 if (timeSinceRetriesStarted > maxRetryTime) {
                    pending.communicator.disconnect(new IOException("Initialization retry time exceeded"));

@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.server;
 
 import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.NetworkService;
+import com.gamelibrary2d.network.common.connections.ConnectionService;
 import com.gamelibrary2d.network.common.server.Host;
 import com.gamelibrary2d.network.common.server.ServerLogic;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
@@ -20,8 +20,8 @@ public final class NetworkServer extends InternalAbstractNetworkServer {
         this.serverLogic = serverLogic;
     }
 
-    public NetworkServer(String hostname, int port, NetworkService networkService, ServerLogic serverLogic) {
-        super(hostname, port, networkService);
+    public NetworkServer(String hostname, int port, ConnectionService connectionService, ServerLogic serverLogic) {
+        super(hostname, port, connectionService);
         this.serverLogic = serverLogic;
     }
 

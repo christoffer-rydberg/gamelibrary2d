@@ -1,7 +1,7 @@
 package com.gamelibrary2d.network.server;
 
-import com.gamelibrary2d.network.common.NetworkService;
-import com.gamelibrary2d.network.common.ServerSocketChannelRegistration;
+import com.gamelibrary2d.network.common.connections.ConnectionService;
+import com.gamelibrary2d.network.common.connections.ConnectionListenerRegistration;
 import com.gamelibrary2d.network.common.server.AbstractServer;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
 
@@ -9,43 +9,43 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 abstract class InternalAbstractNetworkServer extends AbstractServer {
-    private final NetworkService networkService;
-    private final boolean ownsNetworkService;
+    private final ConnectionService connectionService;
+    private final boolean ownsConnectionService;
     private final int port;
     private final String hostname;
-    private ServerSocketChannelRegistration registration;
+    private ConnectionListenerRegistration registration;
 
-    private InternalAbstractNetworkServer(String hostname, int port, NetworkService networkService, boolean ownsNetworkService) {
+    private InternalAbstractNetworkServer(String hostname, int port, ConnectionService connectionService, boolean ownsConnectionService) {
         this.hostname = hostname;
         this.port = port;
-        this.networkService = networkService;
-        this.ownsNetworkService = ownsNetworkService;
+        this.connectionService = connectionService;
+        this.ownsConnectionService = ownsConnectionService;
     }
 
     protected InternalAbstractNetworkServer(String hostname, int port) {
-        this(hostname, port, new NetworkService(), true);
+        this(hostname, port, new ConnectionService(), true);
     }
 
-    protected InternalAbstractNetworkServer(String hostname, int port, NetworkService networkService) {
-        this(hostname, port, networkService, false);
+    protected InternalAbstractNetworkServer(String hostname, int port, ConnectionService connectionService) {
+        this(hostname, port, connectionService, false);
     }
 
     private void onConnected(SocketChannel channel) {
         invokeLater(() -> {
             String endpoint = channel.socket().getInetAddress().getHostAddress();
             if (!acceptConnection(endpoint)) {
-                networkService.disconnect(channel);
+                connectionService.disconnect(channel);
                 onConnectionFailed(endpoint, new IOException("Connection refused by server"));
             } else {
                 try {
                     // Disable Nagle's algorithm
                     channel.socket().setTcpNoDelay(true);
                     addPendingCommunicator(new InternalNetworkCommunicator(
-                            networkService,
+                            connectionService,
                             channel,
                             this::authenticateClient));
                 } catch (IOException e) {
-                    networkService.disconnect(channel);
+                    connectionService.disconnect(channel);
                     onConnectionFailed(endpoint, e);
                 }
             }
@@ -58,7 +58,7 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
 
     public void enableConnections() throws IOException {
         throwIfNotRunning();
-        registration = networkService.registerConnectionListener(
+        registration = connectionService.registerConnectionListener(
                 hostname,
                 port,
                 this::onConnected,
@@ -78,20 +78,20 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
 
     @Override
     protected void onStart() throws IOException {
-        networkService.start();
+        connectionService.start();
     }
 
     @Override
     protected void onStop() throws IOException, InterruptedException {
         deregisterConnectionListener();
-        if (ownsNetworkService) {
-            networkService.stop();
+        if (ownsConnectionService) {
+            connectionService.stop();
         }
     }
 
     private void deregisterConnectionListener() throws IOException {
         if (registration != null) {
-            networkService.deregisterConnectionListener(registration);
+            connectionService.deregisterConnectionListener(registration);
             registration = null;
         }
     }

@@ -136,17 +136,17 @@ public abstract class AbstractCommunicator implements Communicator {
     }
 
     @Override
-    public boolean readIncoming(DataBuffer buffer) {
-        buffer.clear();
+    public boolean readIncoming(DataBuffer dst) {
+        dst.clear();
         for (int i = 0; i < incomingBufferMonitor.length; ++i)
-            incomingBufferMonitor[i].readIncoming(buffer);
-        buffer.flip();
-        return buffer.remaining() > 0;
+            incomingBufferMonitor[i].readIncoming(dst);
+        dst.flip();
+        return dst.remaining() > 0;
     }
 
     @Override
-    public void addIncoming(int channel, DataReader dataReader) throws IOException {
-        incomingBufferMonitor[channel].addIncoming(dataReader);
+    public int addIncoming(int channel, DataReader dataReader) throws IOException {
+        return incomingBufferMonitor[channel].addIncoming(dataReader);
     }
 
     @Override
@@ -168,8 +168,8 @@ public abstract class AbstractCommunicator implements Communicator {
             this.incomingBuffer = incomingBuffer;
         }
 
-        synchronized void addIncoming(DataReader dataReader) throws IOException {
-            dataReader.read(incomingBuffer);
+        synchronized int addIncoming(DataReader dataReader) throws IOException {
+            return dataReader.read(incomingBuffer);
         }
 
         synchronized void readIncoming(DataBuffer buffer) {

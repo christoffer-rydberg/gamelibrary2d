@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.client;
 
 import com.gamelibrary2d.common.functional.ParameterizedAction;
 import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.NetworkService;
+import com.gamelibrary2d.network.common.connections.ConnectionService;
 import com.gamelibrary2d.network.common.SocketChannelConnectedHandler;
 import com.gamelibrary2d.network.common.SocketChannelFailedConnectionHandler;
 import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
@@ -15,23 +15,23 @@ import java.util.concurrent.Future;
 public class RemoteServer implements Connectable {
     private final String host;
     private final int port;
-    private final NetworkService networkService;
-    private final boolean owningNetworkService;
+    private final ConnectionService connectionService;
+    private final boolean ownsConnectionService;
     private final ArrayList<ParameterizedAction<CommunicatorInitializer>> authentication = new ArrayList<>();
 
-    private RemoteServer(String host, int port, NetworkService networkService, boolean owningNetworkService) {
+    private RemoteServer(String host, int port, ConnectionService connectionService, boolean ownsConnectionService) {
         this.host = host;
         this.port = port;
-        this.networkService = networkService;
-        this.owningNetworkService = owningNetworkService;
+        this.connectionService = connectionService;
+        this.ownsConnectionService = ownsConnectionService;
     }
 
     public RemoteServer(String host, int port) {
-        this(host, port, new NetworkService(), true);
+        this(host, port, new ConnectionService(), true);
     }
 
-    public RemoteServer(String host, int port, NetworkService networkService) {
-        this(host, port, networkService, false);
+    public RemoteServer(String host, int port, ConnectionService connectionService) {
+        this(host, port, connectionService, false);
     }
 
     public void addAuthentication(ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
@@ -44,23 +44,23 @@ public class RemoteServer implements Connectable {
 
         SocketChannelConnectedHandler onConnected = socketChannel -> {
             InternalNetworkCommunicator communicator = new InternalNetworkCommunicator(
-                    host, networkService, owningNetworkService, this::configureAuthentication);
+                    host, connectionService, ownsConnectionService, this::configureAuthentication);
             socketChannel.socket().setTcpNoDelay(true);
             communicator.setSocketChannel(socketChannel);
-            networkService.connect(socketChannel, communicator, communicator::onSocketChannelDisconnected);
+            connectionService.connect(socketChannel, communicator, communicator::onSocketChannelDisconnected);
             future.complete(communicator);
         };
 
         SocketChannelFailedConnectionHandler onConnectionFailed = (endpoint, error) -> future.completeExceptionally(error);
 
-        boolean networkServiceWasRunning = networkService.isRunning();
+        boolean connectionServiceWasRunning = connectionService.isRunning();
         try {
-            networkService.start();
-            networkService.connect(host, port, onConnected, onConnectionFailed);
+            connectionService.start();
+            connectionService.connect(host, port, onConnected, onConnectionFailed);
         } catch (IOException e) {
-            if (!networkServiceWasRunning) {
+            if (!connectionServiceWasRunning) {
                 try {
-                    networkService.stop();
+                    connectionService.stop();
                 } catch (InterruptedException ie) {
                     ie.printStackTrace();
                 }
