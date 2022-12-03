@@ -87,7 +87,7 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
         if (socketChannelConnected()) {
             SocketChannel socketChannel = this.socketChannel;
             setSocketChannel(null);
-            connectionService.closeAfterLastScheduledSend(socketChannel);
+            connectionService.disconnectWhenAllDataIsSent(socketChannel);
         }
     }
 

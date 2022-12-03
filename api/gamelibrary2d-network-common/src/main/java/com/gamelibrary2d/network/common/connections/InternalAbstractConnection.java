@@ -73,13 +73,13 @@ abstract class InternalAbstractConnection implements InternalConnection {
         }
     }
 
-    public void closeAfterScheduledWrite() {
+    public void disconnectWhenAllDataIsSent() {
         synchronized (synchronizationKey) {
-            if (writeBuffer.internalByteBuffer().position() > 0) {
-                scheduledToClose = true;
-            } else {
-                disconnect();
-            }
+            scheduledToClose = writeBuffer.internalByteBuffer().position() > 0;
+        }
+
+        if (!scheduledToClose) {
+            disconnect();
         }
     }
 
@@ -92,6 +92,7 @@ abstract class InternalAbstractConnection implements InternalConnection {
     public void disconnect(IOException e) {
         closeChannel();
         disconnectedHandler.onDisconnected(e);
+        scheduledToClose = false;
     }
 
     private void closeChannel() {

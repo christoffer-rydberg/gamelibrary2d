@@ -55,7 +55,7 @@ public class ConnectionService {
 
             ConnectionListenerRegistration registration = new ConnectionListenerRegistration(socketChannel, socketChannel.socket().getLocalPort());
             connectionListeners.put(socketChannel, new InternalConnectionListener(onConnected, onConnectionFailed));
-            socketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            register(socketChannel, selector, SelectionKey.OP_ACCEPT);
             return registration;
         } catch (IOException e) {
             close(socketChannel);
@@ -75,12 +75,7 @@ public class ConnectionService {
             throw new IOException("No connected UDP communicator");
         }
 
-        try {
-            udpConnection.addOutgoing(selector, buffer);
-        } catch (IOException e) {
-            udpConnection.disconnect(e);
-            throw e;
-        }
+        addOutgoing(udpConnection, buffer);
     }
 
     public void send(SocketChannel channel, DataBuffer buffer) throws IOException {
@@ -89,11 +84,25 @@ public class ConnectionService {
             throw new IOException("No connected TCP communicator");
         }
 
+        addOutgoing(tcpConnection, buffer);
+    }
+
+    private void addOutgoing(InternalConnection connection, DataBuffer buffer) throws IOException {
         try {
-            tcpConnection.addOutgoing(selector, buffer);
+            connection.addOutgoing(selector, buffer);
+            selector.wakeup();
         } catch (IOException e) {
-            tcpConnection.disconnect(e);
+            connection.disconnect(e);
             throw e;
+        }
+    }
+
+    private void sendOutgoing(InternalConnection connection, SelectionKey key) {
+        try {
+            connection.sendOutgoing(key);
+            selector.wakeup();
+        } catch (IOException e) {
+            connection.disconnect(e);
         }
     }
 
@@ -103,7 +112,7 @@ public class ConnectionService {
         channel.configureBlocking(false);
         channel.connect(new InetSocketAddress(hostname, port));
         connectionListeners.put(channel, new InternalConnectionListener(onConnected, onConnectionFailed));
-        channel.register(selector, SelectionKey.OP_CONNECT);
+        register(channel, selector, SelectionKey.OP_CONNECT);
     }
 
     public void connect(SocketChannel socketChannel, Communicator communicator,
@@ -117,7 +126,7 @@ public class ConnectionService {
         tcpConnections.put(socketChannel, tcpConnection);
 
         try {
-            socketChannel.register(selector, SelectionKey.OP_READ, tcpConnection);
+            register(socketChannel, selector, SelectionKey.OP_READ, tcpConnection);
         } catch (IOException e) {
             disconnect(socketChannel, e);
         }
@@ -137,11 +146,21 @@ public class ConnectionService {
             datagramChannel.connect(new InetSocketAddress(communicator.getEndpoint(), hostPort));
             datagramChannel.configureBlocking(false);
             if (connectionType != ConnectionType.WRITE) {
-                datagramChannel.register(selector, SelectionKey.OP_READ, udpConnection);
+                register(datagramChannel, selector, SelectionKey.OP_READ, udpConnection);
             }
         } catch (IOException e) {
             disconnect(datagramChannel);
         }
+    }
+
+    private void register(SelectableChannel channel, Selector selector, int ops) throws ClosedChannelException {
+        channel.register(selector, ops);
+        selector.wakeup();
+    }
+
+    private void register(SelectableChannel channel, Selector selector, int ops, Object att) throws ClosedChannelException {
+        channel.register(selector, ops, att);
+        selector.wakeup();
     }
 
     public void disconnect(SocketChannel socketChannel) {
@@ -162,17 +181,17 @@ public class ConnectionService {
         }
     }
 
-    public void closeAfterLastScheduledSend(SocketChannel channel) {
+    public void disconnectWhenAllDataIsSent(SocketChannel channel) {
         InternalTcpConnection tcpConnection = tcpConnections.get(channel);
         if (tcpConnection != null) {
-            tcpConnection.closeAfterScheduledWrite();
+            tcpConnection.disconnectWhenAllDataIsSent();
         }
     }
 
     private void run() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                int selectedKeys = selector.selectNow();
+                int selectedKeys = selector.select();
                 if (selectedKeys > 0) {
                     Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
                     while (keys.hasNext()) {
@@ -191,12 +210,6 @@ public class ConnectionService {
                         } else if (key.isConnectable()) {
                             handleConnect(key);
                         }
-                    }
-                } else {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        break;
                     }
                 }
             }
@@ -231,8 +244,15 @@ public class ConnectionService {
         ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
         SocketChannel socketChannel = null;
         InternalConnectionListener connectionListener = connectionListeners.get(serverSocketChannel);
+
         try {
             socketChannel = serverSocketChannel.accept();
+        } catch (IOException e) {
+            connectionListener.onConnectionFailed("unknown", e);
+            return;
+        }
+
+        try {
             socketChannel.configureBlocking(false);
             connectionListener.onConnected(socketChannel);
         } catch (IOException e) {
@@ -244,11 +264,7 @@ public class ConnectionService {
 
     private void write(SelectionKey key) {
         InternalConnection connection = (InternalConnection) key.attachment();
-        try {
-            connection.sendOutgoing(key);
-        } catch (IOException e) {
-            connection.disconnect(e);
-        }
+        sendOutgoing(connection, key);
     }
 
     private void read(SelectionKey key) {
