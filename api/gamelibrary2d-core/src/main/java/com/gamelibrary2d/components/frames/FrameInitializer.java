@@ -98,10 +98,24 @@ public class FrameInitializer {
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            boolean cancelled;
-            cancelled = activeFuture.cancel(mayInterruptIfRunning);
-            cancelled |= completableFuture.cancel(mayInterruptIfRunning);
-            return cancelled;
+            if (!cancelActiveFuture(mayInterruptIfRunning)) {
+                return false;
+            }
+
+            return completableFuture.cancel(mayInterruptIfRunning);
+        }
+
+        private boolean cancelActiveFuture(boolean mayInterruptIfRunning) {
+            if (activeFuture == null) {
+                return true;
+            }
+
+            if (activeFuture.cancel(mayInterruptIfRunning)) {
+                activeFuture = null;
+                return true;
+            } else {
+                return false;
+            }
         }
 
         @Override
