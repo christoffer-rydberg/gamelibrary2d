@@ -78,7 +78,7 @@ public class FrameInitializer {
     }
 
     Future<FrameInitializationContext> run() {
-        frame.invokeLater(this::performNextTask);
+        performNextTask();
         return initializationFuture;
     }
 
