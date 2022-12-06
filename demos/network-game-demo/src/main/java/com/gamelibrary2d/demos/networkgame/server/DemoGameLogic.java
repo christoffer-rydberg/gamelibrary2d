@@ -1,12 +1,12 @@
 package com.gamelibrary2d.demos.networkgame.server;
 
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.collision.CollisionDetection;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPortal;
+import com.gamelibrary2d.random.RandomInstance;
 
 import java.util.List;
 

@@ -4,7 +4,7 @@ import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.components.containers.DefaultPanel;
 import com.gamelibrary2d.components.containers.Panel;
-import com.gamelibrary2d.common.denotations.Container;
+import com.gamelibrary2d.denotations.Container;
 import com.gamelibrary2d.particles.ParticleUpdateParameters;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.properties.BooleanProperty;

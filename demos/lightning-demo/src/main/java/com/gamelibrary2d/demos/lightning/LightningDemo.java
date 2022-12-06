@@ -1,7 +1,7 @@
 package com.gamelibrary2d.demos.lightning;
 
-import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
-import com.gamelibrary2d.framework.lwjgl.MouseCursorMode;
+import com.gamelibrary2d.lwjgl.GlfwWindow;
+import com.gamelibrary2d.lwjgl.input.MouseCursorMode;
 
 import java.io.IOException;
 

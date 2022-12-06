@@ -1,13 +1,13 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
 import com.gamelibrary2d.demos.networkgame.client.input.Controller;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerInputId;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.LocalPlayer;
-import com.gamelibrary2d.framework.Renderable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

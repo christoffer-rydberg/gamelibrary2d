@@ -1,13 +1,13 @@
 package com.gamelibrary2d.lightning;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.io.BufferUtils;
-import com.gamelibrary2d.common.io.Read;
-import com.gamelibrary2d.framework.OpenGL;
-import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.Window;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.io.BufferUtils;
+import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
@@ -84,7 +84,7 @@ public class DefaultLightRenderer implements LightRenderer {
     }
 
     private static DefaultShader loadShader(String path, ShaderType shaderType, Disposer disposer) {
-        try(InputStream stream = DefaultShader.class.getClassLoader().getResourceAsStream(path)) {
+        try (InputStream stream = DefaultShader.class.getClassLoader().getResourceAsStream(path)) {
             String src = Read.text(stream, StandardCharsets.UTF_8);
             return DefaultShader.create(src, shaderType, disposer);
         } catch (IOException ex) {

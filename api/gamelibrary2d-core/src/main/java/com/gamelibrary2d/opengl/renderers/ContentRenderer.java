@@ -1,7 +1,7 @@
 package com.gamelibrary2d.opengl.renderers;
 
-import com.gamelibrary2d.common.denotations.Bounded;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.denotations.Bounded;
 
 /**
  * A renderer for any type of content encapsulated by the derived class.

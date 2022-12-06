@@ -1,6 +1,7 @@
 package com.gamelibrary2d.updates;
 
-import com.gamelibrary2d.common.functional.Action;
+import com.gamelibrary2d.functional.Action;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 

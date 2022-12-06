@@ -1,7 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.server;
 
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
-import com.gamelibrary2d.network.common.Communicator;
+import com.gamelibrary2d.network.Communicator;
 
 import java.util.ArrayList;
 

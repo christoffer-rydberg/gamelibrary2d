@@ -1,9 +1,9 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.common.denotations.Updatable;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
-import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
+import com.gamelibrary2d.denotations.Updatable;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.exceptions.ClientAuthenticationException;
+import com.gamelibrary2d.network.exceptions.ClientInitializationException;
 
 public interface Client extends Updatable {
 

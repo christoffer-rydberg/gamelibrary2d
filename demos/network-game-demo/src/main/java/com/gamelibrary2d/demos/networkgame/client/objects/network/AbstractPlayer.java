@@ -1,9 +1,9 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network;
 
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.io.DataBuffer;
+import com.gamelibrary2d.Color;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
 import com.gamelibrary2d.interpolation.RotationInterpolator;
+import com.gamelibrary2d.io.DataBuffer;
 
 public abstract class AbstractPlayer extends AbstractClientObject {
     private final GameFrameClient client;

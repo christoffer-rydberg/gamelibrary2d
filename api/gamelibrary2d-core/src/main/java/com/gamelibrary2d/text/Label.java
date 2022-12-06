@@ -1,7 +1,7 @@
 package com.gamelibrary2d.text;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 

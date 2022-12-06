@@ -1,12 +1,10 @@
 package com.gamelibrary2d.network.server;
 
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.connections.ConnectionService;
-import com.gamelibrary2d.network.common.server.Host;
-import com.gamelibrary2d.network.common.server.ServerLogic;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.connections.ConnectionService;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 
 import java.io.IOException;
 import java.util.List;

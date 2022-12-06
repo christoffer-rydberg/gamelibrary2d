@@ -1,7 +1,6 @@
 package com.gamelibrary2d.collision;
 
-import com.gamelibrary2d.common.Pool;
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Rectangle;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,7 +20,7 @@ class InternalQuadTreeNode {
     private static final int NEAR_EDGE = 1;
     private static final int NOT_ACTIVATED = 0;
 
-    private final Pool<InternalQuadTreeNode> nodePool;
+    private final InternalPool<InternalQuadTreeNode> nodePool;
     private final ArrayList<InternalCollidableWrapper> objects;
     private final ArrayList<ActivationArea> activationAreas;
     private final InternalQuadTreeNode[] nodes;
@@ -30,7 +29,7 @@ class InternalQuadTreeNode {
     private int capacity;
     private float xMin, yMin, xMax, yMax;
 
-    InternalQuadTreeNode(Pool<InternalQuadTreeNode> nodePool) {
+    InternalQuadTreeNode(InternalPool<InternalQuadTreeNode> nodePool) {
         this.nodePool = nodePool;
         objects = new ArrayList<>();
         activationAreas = new ArrayList<>();

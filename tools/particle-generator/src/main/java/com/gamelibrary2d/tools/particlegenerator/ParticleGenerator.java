@@ -1,11 +1,11 @@
 package com.gamelibrary2d.tools.particlegenerator;
 
 import com.gamelibrary2d.AbstractGame;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.framework.lwjgl.GlfwWindow;
-import com.gamelibrary2d.framework.lwjgl.Lwjgl_Framework;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.lwjgl.GlfwWindow;
+import com.gamelibrary2d.lwjgl.Lwjgl_Framework;
 import com.gamelibrary2d.tools.particlegenerator.resources.Fonts;
 import com.gamelibrary2d.tools.particlegenerator.resources.Surfaces;
 import com.gamelibrary2d.tools.particlegenerator.resources.Textures;

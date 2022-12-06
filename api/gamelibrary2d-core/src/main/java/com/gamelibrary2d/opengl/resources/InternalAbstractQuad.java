@@ -1,8 +1,8 @@
 package com.gamelibrary2d.opengl.resources;
 
-import com.gamelibrary2d.common.disposal.AbstractDisposable;
-import com.gamelibrary2d.common.io.BufferUtils;
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.disposal.AbstractDisposable;
+import com.gamelibrary2d.io.BufferUtils;
 import com.gamelibrary2d.opengl.shaders.ShaderProgram;
 
 import java.nio.ByteBuffer;

@@ -1,8 +1,8 @@
 package com.gamelibrary2d.components;
 
 import com.gamelibrary2d.FocusManager;
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.opengl.ModelMatrix;
 
 public abstract class AbstractGameObject implements GameObject {

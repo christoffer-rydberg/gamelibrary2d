@@ -1,7 +1,7 @@
 package com.gamelibrary2d.particles;
 
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.Serializable;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.Serializable;
 
 public final class ParticleSystemParameters implements Serializable {
     private ParticleEmissionParameters emissionParameters;

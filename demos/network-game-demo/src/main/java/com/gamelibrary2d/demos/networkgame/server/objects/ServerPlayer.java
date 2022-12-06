@@ -1,18 +1,18 @@
 package com.gamelibrary2d.demos.networkgame.server.objects;
 
+import com.gamelibrary2d.Color;
+import com.gamelibrary2d.FloatUtils;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.collision.CollisionDetection;
 import com.gamelibrary2d.collision.Obstacle;
 import com.gamelibrary2d.collision.handlers.BounceHandler;
 import com.gamelibrary2d.collision.handlers.RestrictedAreaHandler;
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.FloatUtils;
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.demos.networkgame.server.DemoGameLogic;
-import com.gamelibrary2d.network.common.Communicator;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.random.RandomInstance;
 
 public class ServerPlayer extends AbstractServerObject implements Obstacle {
     private final static float MAX_SPEED = 100f;

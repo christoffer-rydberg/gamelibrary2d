@@ -1,13 +1,13 @@
 package com.gamelibrary2d.network.server;
 
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.DynamicByteBuffer;
-import com.gamelibrary2d.common.io.Serializable;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.common.initialization.TaskConfiguration;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
-import com.gamelibrary2d.network.common.security.*;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.DynamicByteBuffer;
+import com.gamelibrary2d.io.Serializable;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.TaskConfiguration;
+import com.gamelibrary2d.network.security.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -41,7 +41,7 @@ public class ServerHandshakeConfiguration implements TaskConfiguration {
     /**
      * Creates a {@link ServerHandshakeConfiguration} with the specified {@link ServerHandshakeConfiguration.SecretKeyDecrypterFactory}.
      *
-     * @param keyPair Holds the private and public key used to encrypt the handshake. The public key will be shared with the client.
+     * @param keyPair                   Holds the private and public key used to encrypt the handshake. The public key will be shared with the client.
      * @param secretKeyDecrypterFactory Creates a {@link Decrypter} from the secret key.
      *                                  The decrypter is used to decrypt the {@link SecretKeyMessage} that's sent from the client.
      *                                  The decrypted key is used to set up symmetric encryption between the server and the client.

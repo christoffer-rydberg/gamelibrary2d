@@ -1,20 +1,20 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.io.DataBuffer;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractGameObject;
-import com.gamelibrary2d.common.denotations.Bounded;
-import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.components.frames.Frame;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
-import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.RendererMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.DurationEffect;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.EffectMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.InstantEffect;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.RendererMap;
+import com.gamelibrary2d.denotations.Bounded;
+import com.gamelibrary2d.denotations.Updatable;
 import com.gamelibrary2d.interpolation.InterpolatableAngle;
 import com.gamelibrary2d.interpolation.PositionInterpolator;
+import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.updates.AddScaleUpdate;
 import com.gamelibrary2d.updates.Update;
 
@@ -29,7 +29,7 @@ public abstract class AbstractClientObject
     private final InterpolatableAngle direction = new InterpolatableAngle();
 
     private final Point particleHotspot = new Point();
-    private final Update spawnUpdater = new AddScaleUpdate(1f, this, 1f,1f);
+    private final Update spawnUpdater = new AddScaleUpdate(1f, this, 1f, 1f);
     private DurationEffect updateEffect;
     private InstantEffect destroyedEffect;
     private boolean accelerating;

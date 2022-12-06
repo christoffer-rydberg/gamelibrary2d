@@ -1,15 +1,15 @@
 package com.gamelibrary2d.components;
 
 import com.gamelibrary2d.FocusManager;
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerDownWhenFocusedAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.renderers.FrameBufferRenderer;
 import com.gamelibrary2d.opengl.resources.DefaultFrameBuffer;
 import com.gamelibrary2d.opengl.resources.FrameBuffer;
@@ -149,10 +149,10 @@ public abstract class AbstractPointerAwareGameObject
     /**
      * Override this method to handle pointer-down actions.
      *
-     * @param id         The id of the pointer.
-     * @param button     The id of the pointer button.
-     * @param x          The x-coordinate of the pointer.
-     * @param y          The y-coordinate of the pointer.
+     * @param id           The id of the pointer.
+     * @param button       The id of the pointer button.
+     * @param x            The x-coordinate of the pointer.
+     * @param y            The y-coordinate of the pointer.
      * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
      * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */
@@ -163,10 +163,10 @@ public abstract class AbstractPointerAwareGameObject
     /**
      * Override this method to handle pointer-up actions.
      *
-     * @param id         The id of the pointer.
-     * @param button     The id of the pointer button.
-     * @param x          The x-coordinate of the pointer.
-     * @param y          The y-coordinate of the pointer.
+     * @param id           The id of the pointer.
+     * @param button       The id of the pointer button.
+     * @param x            The x-coordinate of the pointer.
+     * @param y            The y-coordinate of the pointer.
      * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
      * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */
@@ -178,9 +178,9 @@ public abstract class AbstractPointerAwareGameObject
      * Override this method to handle pointer-hover actions. Note that {@link #isListeningToPointHoverEvents}
      * must be overridden as well to return true.
      *
-     * @param id         The id of the pointer.
-     * @param x          The x-coordinate of the pointer.
-     * @param y          The y-coordinate of the pointer.
+     * @param id           The id of the pointer.
+     * @param x            The x-coordinate of the pointer.
+     * @param y            The y-coordinate of the pointer.
      * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
      * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */
@@ -192,9 +192,9 @@ public abstract class AbstractPointerAwareGameObject
      * Override this method to handle pointer-drag actions. Note that {@link #isListeningToPointDragEvents}
      * must be overridden as well to return true.
      *
-     * @param id         The id of the pointer.
-     * @param x          The x-coordinate of the pointer.
-     * @param y          The y-coordinate of the pointer.
+     * @param id           The id of the pointer.
+     * @param x            The x-coordinate of the pointer.
+     * @param y            The y-coordinate of the pointer.
      * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
      * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */

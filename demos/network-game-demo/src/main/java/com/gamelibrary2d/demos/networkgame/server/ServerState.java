@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.server;
 
-import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
-import com.gamelibrary2d.common.io.Serializable;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.Serializable;
 
 import java.util.Collection;
 import java.util.HashMap;

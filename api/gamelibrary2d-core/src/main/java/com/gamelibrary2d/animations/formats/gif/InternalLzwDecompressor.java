@@ -1,6 +1,6 @@
 package com.gamelibrary2d.animations.formats.gif;
 
-import com.gamelibrary2d.common.io.BitInputStream;
+import com.gamelibrary2d.io.BitInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,13 +1,13 @@
 package com.gamelibrary2d.demos.transparentwindow;
 
+import com.gamelibrary2d.Color;
 import com.gamelibrary2d.Game;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.Window;
 import com.gamelibrary2d.animations.*;
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.Rectangle;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
-import com.gamelibrary2d.framework.Window;
 
 import java.io.IOException;
 import java.util.ArrayList;

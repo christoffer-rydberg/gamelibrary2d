@@ -1,6 +1,6 @@
 package com.example.sound.android;
 
-import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.sound.SoundBuffer;
 
 public class DefaultSoundBuffer implements SoundBuffer {

@@ -1,8 +1,8 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.common.denotations.Updatable;
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.denotations.Updatable;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 
 public class DefaultClient extends AbstractClient implements Updatable {
     private final ClientLogic clientLogic;

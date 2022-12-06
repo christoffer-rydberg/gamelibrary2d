@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>com.gamelibrary2d</groupId>
-            <artifactId>gamelibrary2d-network-common</artifactId>
+            <artifactId>gamelibrary2d-network</artifactId>
             <version>0.15.0</version>
             <scope>compile</scope>
         </dependency>

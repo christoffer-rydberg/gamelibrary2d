@@ -1,12 +1,15 @@
 package com.gamelibrary2d.components.containers;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.denotations.Bounded;
-import com.gamelibrary2d.common.denotations.Clearable;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractGameObject;
-import com.gamelibrary2d.components.denotations.*;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.components.denotations.NavigationAware;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerMoveAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
+import com.gamelibrary2d.denotations.Bounded;
+import com.gamelibrary2d.denotations.Clearable;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -118,8 +121,8 @@ public class NavigationPanel extends AbstractGameObject
 
     private Rectangle getCurrentBounds() {
         return current instanceof Bounded
-            ? ((Bounded) current).getBounds()
-            : Rectangle.EMPTY;
+                ? ((Bounded) current).getBounds()
+                : Rectangle.EMPTY;
     }
 
     public void setBounds(Rectangle bounds) {

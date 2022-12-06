@@ -1,16 +1,16 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
-import com.gamelibrary2d.common.io.DataBuffer;
+import com.gamelibrary2d.components.frames.AbstractClientFrame;
+import com.gamelibrary2d.components.frames.ClientFrameInitializer;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
-import com.gamelibrary2d.components.frames.AbstractClientFrame;
-import com.gamelibrary2d.components.frames.ClientFrameInitializer;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.SoundMap;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.Connectable;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
 

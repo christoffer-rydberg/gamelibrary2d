@@ -1,12 +1,12 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.random.RandomInstance;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.common.initialization.TaskConfiguration;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
-import com.gamelibrary2d.network.common.security.*;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.TaskConfiguration;
+import com.gamelibrary2d.network.security.*;
+import com.gamelibrary2d.random.RandomInstance;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -49,7 +49,7 @@ public class ClientHandshakeConfiguration implements TaskConfiguration {
     /**
      * Creates a {@link ClientHandshakeConfiguration} with the specified {@link SecretKeyFactory} and {@link SecretKeyEncrypterFactory}.
      *
-     * @param secretKeyFactory Creates the {@link SecretKeyMessage} that will be sent to the server in order to set up symmetric encryption.
+     * @param secretKeyFactory          Creates the {@link SecretKeyMessage} that will be sent to the server in order to set up symmetric encryption.
      * @param secretKeyEncrypterFactory Creates an {@link Encrypter} from the {@link PublicKeyMessage} that's sent from the server.
      *                                  The encrypter is used to encrypt the {@link SecretKeyMessage} before sending it to the server.
      */

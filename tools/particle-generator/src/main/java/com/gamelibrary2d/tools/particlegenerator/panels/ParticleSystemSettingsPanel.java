@@ -1,14 +1,14 @@
 package com.gamelibrary2d.tools.particlegenerator.panels;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.functional.Func;
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.DynamicByteBuffer;
-import com.gamelibrary2d.common.io.Serializable;
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.AbstractPanel;
-import com.gamelibrary2d.common.denotations.Container;
+import com.gamelibrary2d.denotations.Container;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.functional.Func;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.DynamicByteBuffer;
+import com.gamelibrary2d.io.Serializable;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.Quad;

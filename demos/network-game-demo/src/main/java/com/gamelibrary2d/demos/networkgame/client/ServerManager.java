@@ -1,15 +1,16 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
-import com.gamelibrary2d.common.io.Write;
 import com.gamelibrary2d.demos.networkgame.server.DemoServerLogic;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.client.RemoteServer;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
-import com.gamelibrary2d.network.common.initialization.UdpConfiguration;
+import com.gamelibrary2d.io.Write;
+import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.ClientHandshakeConfiguration;
 import com.gamelibrary2d.network.client.LocalServer;
+import com.gamelibrary2d.network.client.RemoteServer;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.UdpConfiguration;
 import com.gamelibrary2d.network.server.NetworkServer;
+
 import java.io.IOException;
 import java.security.KeyPair;
 

@@ -1,9 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network.decoration;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.functional.Factory;
-import com.gamelibrary2d.common.io.ResourceReader;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.demos.networkgame.client.ParticleRendererFactory;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
@@ -11,7 +9,9 @@ import com.gamelibrary2d.demos.networkgame.client.objects.network.AbstractClient
 import com.gamelibrary2d.demos.networkgame.client.objects.network.ClientObject;
 import com.gamelibrary2d.demos.networkgame.client.urls.Particles;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.functional.Factory;
+import com.gamelibrary2d.io.ResourceReader;
 import com.gamelibrary2d.opengl.renderers.BlendMode;
 import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.particles.ParticleRenderer;

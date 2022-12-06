@@ -1,6 +1,6 @@
 package com.gamelibrary2d.sound.lwjgl;
 
-import com.gamelibrary2d.common.disposal.AbstractDisposable;
+import com.gamelibrary2d.disposal.AbstractDisposable;
 import com.gamelibrary2d.sound.SoundBuffer;
 
 import static org.lwjgl.openal.AL10.alDeleteBuffers;

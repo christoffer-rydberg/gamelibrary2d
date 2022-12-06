@@ -1,7 +1,7 @@
 package com.gamelibrary2d.tools.particlegenerator.resources;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.resources.Quad;
 import com.gamelibrary2d.opengl.resources.Surface;
 import com.gamelibrary2d.tools.particlegenerator.widgets.Box;

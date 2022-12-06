@@ -1,10 +1,10 @@
 package com.gamelibrary2d.animations;
 
+import com.gamelibrary2d.imaging.Image;
+import com.gamelibrary2d.imaging.ImageReader;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.Runtime;
 import com.gamelibrary2d.animations.formats.gif.GifAnimationReader;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.framework.Image;
-import com.gamelibrary2d.framework.ImageReader;
-import com.gamelibrary2d.framework.Runtime;
 
 import java.io.IOException;
 import java.io.InputStream;

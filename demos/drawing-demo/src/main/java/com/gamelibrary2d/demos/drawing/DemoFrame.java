@@ -1,21 +1,19 @@
 package com.gamelibrary2d.demos.drawing;
 
-import com.gamelibrary2d.Game;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.random.RandomGenerator;
-import com.gamelibrary2d.common.random.RandomInstance;
+import com.gamelibrary2d.*;
 import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
-import com.gamelibrary2d.framework.Mouse;
-import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.input.Mouse;
 import com.gamelibrary2d.opengl.buffers.PositionBuffer;
 import com.gamelibrary2d.opengl.renderers.*;
 import com.gamelibrary2d.opengl.resources.MutableQuad;
 import com.gamelibrary2d.opengl.resources.Quad;
+import com.gamelibrary2d.random.RandomGenerator;
+import com.gamelibrary2d.random.RandomInstance;
 
 public class DemoFrame extends AbstractFrame {
     private final Game game;

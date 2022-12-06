@@ -1,6 +1,6 @@
 package com.gamelibrary2d.opengl.resources;
 
-import com.gamelibrary2d.common.disposal.Disposable;
+import com.gamelibrary2d.disposal.Disposable;
 import com.gamelibrary2d.opengl.OpenGLState;
 
 public interface FrameBuffer extends Disposable {

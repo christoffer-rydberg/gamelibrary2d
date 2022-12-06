@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.renderers.BlendMode;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.Quad;

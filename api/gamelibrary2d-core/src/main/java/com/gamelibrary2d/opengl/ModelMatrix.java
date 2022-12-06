@@ -1,6 +1,6 @@
 package com.gamelibrary2d.opengl;
 
-import com.gamelibrary2d.common.CoordinateSpace;
+import com.gamelibrary2d.CoordinateSpace;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;

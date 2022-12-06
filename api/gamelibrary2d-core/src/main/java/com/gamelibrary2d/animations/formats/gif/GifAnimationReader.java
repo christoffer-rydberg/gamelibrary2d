@@ -1,9 +1,9 @@
 package com.gamelibrary2d.animations.formats.gif;
 
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.animations.AnimationFrameMetadata;
 import com.gamelibrary2d.animations.AnimationMetadata;
 import com.gamelibrary2d.animations.AnimationReader;
-import com.gamelibrary2d.common.Rectangle;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,7 +1,7 @@
 package com.gamelibrary2d;
 
-import com.gamelibrary2d.common.denotations.Container;
 import com.gamelibrary2d.components.denotations.*;
+import com.gamelibrary2d.denotations.Container;
 
 import java.util.ArrayList;
 import java.util.List;

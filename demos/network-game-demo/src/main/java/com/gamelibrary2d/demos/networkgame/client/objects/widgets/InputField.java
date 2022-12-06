@@ -1,12 +1,12 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
 import com.gamelibrary2d.FocusManager;
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.input.Keyboard;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
 import com.gamelibrary2d.components.denotations.InputAware;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
-import com.gamelibrary2d.framework.Keyboard;
-import com.gamelibrary2d.framework.Renderable;
 
 public class InputField extends AbstractPointerAwareGameObject implements KeyDownAware, InputAware {
     private final Rectangle bounds;

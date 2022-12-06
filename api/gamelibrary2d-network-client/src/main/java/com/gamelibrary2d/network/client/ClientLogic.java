@@ -1,7 +1,7 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 
 public interface ClientLogic {
     void onInitialize(CommunicatorInitializer initializer);

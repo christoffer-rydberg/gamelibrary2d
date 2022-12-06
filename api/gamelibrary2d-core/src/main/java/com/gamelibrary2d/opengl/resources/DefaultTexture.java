@@ -1,12 +1,15 @@
 package com.gamelibrary2d.opengl.resources;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.AbstractDisposable;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.io.BufferUtils;
-import com.gamelibrary2d.framework.Runtime;
-import com.gamelibrary2d.framework.*;
+import com.gamelibrary2d.Runtime;
+import com.gamelibrary2d.*;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.disposal.AbstractDisposable;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.imaging.DefaultImage;
+import com.gamelibrary2d.imaging.Image;
+import com.gamelibrary2d.imaging.ImageReader;
+import com.gamelibrary2d.io.BufferUtils;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.OpenGLState;
 
@@ -15,7 +18,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 
-import static com.gamelibrary2d.framework.OpenGL.*;
+import static com.gamelibrary2d.OpenGL.*;
 
 public class DefaultTexture extends AbstractDisposable implements Texture {
     private final int id;

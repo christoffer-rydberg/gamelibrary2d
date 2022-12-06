@@ -1,6 +1,6 @@
 package com.gamelibrary2d.opengl.resources;
 
-import com.gamelibrary2d.framework.Image;
+import com.gamelibrary2d.imaging.Image;
 import com.gamelibrary2d.opengl.OpenGLState;
 
 public interface Texture {

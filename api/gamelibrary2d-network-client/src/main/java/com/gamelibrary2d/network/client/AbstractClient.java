@@ -1,13 +1,11 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.DynamicByteBuffer;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
-import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
-import com.gamelibrary2d.network.common.initialization.*;
-import com.gamelibrary2d.network.common.initialization.ConditionalInitializationTask;
-import com.gamelibrary2d.network.common.initialization.InitializationTask;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.DynamicByteBuffer;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.exceptions.ClientAuthenticationException;
+import com.gamelibrary2d.network.exceptions.ClientInitializationException;
+import com.gamelibrary2d.network.initialization.*;
 
 import java.io.IOException;
 
@@ -141,7 +139,7 @@ public abstract class AbstractClient implements Client {
     }
 
     private boolean runInitializationTask(CommunicatorInitializationContext context, Communicator communicator,
-                                      ConditionalInitializationTask conditionalTask) throws IOException {
+                                          ConditionalInitializationTask conditionalTask) throws IOException {
         if (!conditionalTask.condition.evaluate(context, communicator)) {
             return true;
         }

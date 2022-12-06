@@ -1,6 +1,6 @@
 package com.gamelibrary2d.updates;
 
-import com.gamelibrary2d.common.denotations.Scalable;
+import com.gamelibrary2d.denotations.Scalable;
 
 /**
  * Adds the specified scale to the {@link Scalable} target.

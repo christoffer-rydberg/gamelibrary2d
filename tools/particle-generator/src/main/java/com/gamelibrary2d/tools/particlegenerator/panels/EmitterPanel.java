@@ -1,6 +1,6 @@
 package com.gamelibrary2d.tools.particlegenerator.panels;
 
-import com.gamelibrary2d.common.Color;
+import com.gamelibrary2d.Color;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.text.Font;

@@ -1,9 +1,9 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.functional.ParameterizedAction;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.functional.ParameterizedAction;
 
 public class Button extends AbstractPointerAwareGameObject {
     private final ParameterizedAction<Button> onClick;

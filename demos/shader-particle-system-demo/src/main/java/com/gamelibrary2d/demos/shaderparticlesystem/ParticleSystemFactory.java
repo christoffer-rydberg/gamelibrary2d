@@ -1,10 +1,9 @@
 package com.gamelibrary2d.demos.shaderparticlesystem;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.io.Read;
-import com.gamelibrary2d.common.random.RandomInstance;
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.opengl.renderers.BlendMode;
 import com.gamelibrary2d.opengl.renderers.PointSmoothing;
 import com.gamelibrary2d.opengl.shaders.DefaultShader;
@@ -14,6 +13,7 @@ import com.gamelibrary2d.opengl.shaders.ShaderType;
 import com.gamelibrary2d.particles.CustomParticleSystem;
 import com.gamelibrary2d.particles.EfficientParticleRenderer;
 import com.gamelibrary2d.particles.ParticleShape;
+import com.gamelibrary2d.random.RandomInstance;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -61,7 +61,7 @@ class ParticleSystemFactory {
     }
 
     private static DefaultShader loadShader(String path, ShaderType shaderType, Disposer disposer) {
-        try(InputStream stream = DefaultShader.class.getClassLoader().getResourceAsStream(path)) {
+        try (InputStream stream = DefaultShader.class.getClassLoader().getResourceAsStream(path)) {
             String src = Read.text(stream, StandardCharsets.UTF_8);
             return DefaultShader.create(src, shaderType, disposer);
         } catch (IOException ex) {

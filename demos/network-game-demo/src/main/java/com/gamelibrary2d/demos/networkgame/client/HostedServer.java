@@ -1,9 +1,9 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
-import com.gamelibrary2d.common.updating.UpdateLoop;
+import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.Connectable;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.server.Server;
+import com.gamelibrary2d.network.server.Server;
+import com.gamelibrary2d.updating.UpdateLoop;
 
 import java.io.IOException;
 import java.util.concurrent.Future;

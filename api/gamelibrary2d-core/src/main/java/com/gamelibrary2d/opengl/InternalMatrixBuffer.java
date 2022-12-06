@@ -1,6 +1,6 @@
 package com.gamelibrary2d.opengl;
 
-import com.gamelibrary2d.common.io.BufferUtils;
+import com.gamelibrary2d.io.BufferUtils;
 
 import java.nio.FloatBuffer;
 

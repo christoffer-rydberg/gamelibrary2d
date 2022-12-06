@@ -1,13 +1,10 @@
 package com.gamelibrary2d;
 
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.event.EventListener;
-import com.gamelibrary2d.common.functional.Action;
-import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.framework.GameLoop;
-import com.gamelibrary2d.framework.Runtime;
-import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.denotations.Updatable;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.event.EventListener;
+import com.gamelibrary2d.functional.Action;
 
 import java.io.IOException;
 

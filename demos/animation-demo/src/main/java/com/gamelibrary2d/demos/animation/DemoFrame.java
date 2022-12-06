@@ -1,17 +1,17 @@
 package com.gamelibrary2d.demos.animation;
 
+import com.gamelibrary2d.Color;
 import com.gamelibrary2d.Game;
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.animations.*;
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.DefaultObservableGameObject;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
-import com.gamelibrary2d.framework.lwjgl.FontMetadataFactory;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.lwjgl.imaging.FontMetadataFactory;
 import com.gamelibrary2d.text.*;
 
 import java.io.File;

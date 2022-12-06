@@ -1,13 +1,13 @@
 package com.gamelibrary2d.opengl.renderers;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.framework.OpenGL;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.resources.FrameBuffer;
 
-import static com.gamelibrary2d.framework.OpenGL.*;
+import static com.gamelibrary2d.OpenGL.*;
 
 public class FrameBufferRenderer {
     private final Rectangle area;

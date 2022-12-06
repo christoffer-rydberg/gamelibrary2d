@@ -1,7 +1,7 @@
 package com.gamelibrary2d.components.containers;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.components.GameObject;
 
 import java.util.List;

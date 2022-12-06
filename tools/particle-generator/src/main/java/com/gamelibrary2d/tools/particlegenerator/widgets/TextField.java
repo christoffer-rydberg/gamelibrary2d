@@ -1,10 +1,10 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.FocusManager;
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.input.Keyboard;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractObservableGameObject;
-import com.gamelibrary2d.framework.Keyboard;
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.text.Label;
 
 public class TextField extends AbstractObservableGameObject {

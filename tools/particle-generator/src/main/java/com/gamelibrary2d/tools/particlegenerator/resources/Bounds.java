@@ -1,6 +1,6 @@
 package com.gamelibrary2d.tools.particlegenerator.resources;
 
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Rectangle;
 
 public class Bounds {
 

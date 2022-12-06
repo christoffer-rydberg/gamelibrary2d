@@ -1,9 +1,8 @@
 package com.gamelibrary2d.network.server;
 
-import com.gamelibrary2d.network.common.connections.ConnectionService;
-import com.gamelibrary2d.network.common.connections.ConnectionListenerRegistration;
-import com.gamelibrary2d.network.common.server.AbstractServer;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.connections.ConnectionListenerRegistration;
+import com.gamelibrary2d.network.connections.ConnectionService;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;

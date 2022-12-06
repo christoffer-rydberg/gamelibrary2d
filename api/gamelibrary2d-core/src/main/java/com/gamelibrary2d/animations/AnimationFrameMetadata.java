@@ -1,8 +1,8 @@
 package com.gamelibrary2d.animations;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.denotations.Bounded;
-import com.gamelibrary2d.framework.Image;
+import com.gamelibrary2d.imaging.Image;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Bounded;
 
 public class AnimationFrameMetadata implements Bounded {
     private final Image img;

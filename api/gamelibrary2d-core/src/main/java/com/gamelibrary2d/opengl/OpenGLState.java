@@ -1,7 +1,7 @@
 package com.gamelibrary2d.opengl;
 
-import com.gamelibrary2d.framework.OpenGL;
-import com.gamelibrary2d.framework.Runtime;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.Runtime;
 import com.gamelibrary2d.opengl.renderers.BlendMode;
 import com.gamelibrary2d.opengl.shaders.ShaderProgram;
 

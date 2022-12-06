@@ -1,6 +1,9 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.input.Keyboard;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.Window;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.*;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
@@ -17,9 +20,6 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Surfaces;
 import com.gamelibrary2d.demos.networkgame.client.settings.Colors;
 import com.gamelibrary2d.demos.networkgame.client.urls.Images;
 import com.gamelibrary2d.demos.networkgame.client.urls.Music;
-import com.gamelibrary2d.framework.Keyboard;
-import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.DefaultTexture;
 import com.gamelibrary2d.opengl.resources.Surface;
@@ -29,7 +29,10 @@ import com.gamelibrary2d.sound.SoundPlayer;
 import com.gamelibrary2d.text.HorizontalTextAlignment;
 import com.gamelibrary2d.text.Label;
 import com.gamelibrary2d.text.VerticalTextAlignment;
-import com.gamelibrary2d.updates.*;
+import com.gamelibrary2d.updates.AbstractUpdate;
+import com.gamelibrary2d.updates.IdleUpdate;
+import com.gamelibrary2d.updates.OpacityUpdate;
+import com.gamelibrary2d.updates.SequentialUpdater;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,12 +1,12 @@
 package com.gamelibrary2d.particles;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.random.RandomInstance;
-import com.gamelibrary2d.common.denotations.Clearable;
-import com.gamelibrary2d.common.denotations.Updatable;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.denotations.Clearable;
+import com.gamelibrary2d.denotations.Updatable;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.ModelMatrix;
+import com.gamelibrary2d.random.RandomInstance;
 
 public class DefaultParticleSystem implements Updatable, Renderable, Clearable {
     private final float[] externalSpeed = new float[2];

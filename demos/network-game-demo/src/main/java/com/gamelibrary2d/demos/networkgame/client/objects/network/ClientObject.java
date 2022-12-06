@@ -1,10 +1,10 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network;
 
-import com.gamelibrary2d.common.Point;
+import com.gamelibrary2d.Point;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.RendererMap;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.EffectMap;
+import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.RendererMap;
 
 public interface ClientObject extends GameObject {
 

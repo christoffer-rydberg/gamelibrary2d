@@ -1,13 +1,13 @@
 package com.gamelibrary2d.tools.particlegenerator.models;
 
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.animations.Animation;
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.renderers.BlendMode;
 import com.gamelibrary2d.opengl.resources.DefaultTexture;
 import com.gamelibrary2d.opengl.resources.Texture;

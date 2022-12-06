@@ -1,9 +1,9 @@
 package com.gamelibrary2d.opengl.shaders;
 
-import com.gamelibrary2d.common.disposal.Disposable;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.framework.OpenGL;
-import com.gamelibrary2d.framework.Runtime;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.Runtime;
+import com.gamelibrary2d.disposal.Disposable;
+import com.gamelibrary2d.disposal.Disposer;
 
 public class DefaultShader implements Shader, Disposable {
     private final int id;

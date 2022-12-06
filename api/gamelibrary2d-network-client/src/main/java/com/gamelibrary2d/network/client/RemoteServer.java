@@ -1,11 +1,11 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.common.functional.ParameterizedAction;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.connections.ConnectionService;
-import com.gamelibrary2d.network.common.SocketChannelConnectedHandler;
-import com.gamelibrary2d.network.common.SocketChannelFailedConnectionHandler;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.functional.ParameterizedAction;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.SocketChannelConnectedHandler;
+import com.gamelibrary2d.network.SocketChannelFailedConnectionHandler;
+import com.gamelibrary2d.network.connections.ConnectionService;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 
 import java.io.IOException;
 import java.util.ArrayList;

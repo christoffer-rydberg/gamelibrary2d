@@ -1,7 +1,7 @@
 package com.gamelibrary2d.opengl.buffers;
 
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.disposal.Disposer;
 
 public class DefaultOpenGLBuffer extends AbstractOpenGLBuffer {
     private final int usage;

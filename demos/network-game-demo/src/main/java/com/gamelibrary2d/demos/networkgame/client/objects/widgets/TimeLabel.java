@@ -1,10 +1,10 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Color;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.text.Font;
 import com.gamelibrary2d.text.HorizontalTextAlignment;

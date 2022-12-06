@@ -1,6 +1,6 @@
 package com.gamelibrary2d.collision;
 
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Rectangle;
 
 public abstract class AbstractActivationArea implements ActivationArea {
     private final float maxMovement;

@@ -1,11 +1,11 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.initialization.*;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.initialization.*;
 
 import java.io.IOException;
-import java.nio.channels.SocketChannel;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 class InternalCommunicatorInitializer implements CommunicatorInitializer {
     private final Deque<ConditionalInitializationTask> tasks = new ArrayDeque<>();

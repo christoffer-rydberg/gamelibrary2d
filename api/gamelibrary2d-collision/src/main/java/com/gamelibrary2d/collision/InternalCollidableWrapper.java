@@ -1,8 +1,8 @@
 package com.gamelibrary2d.collision;
 
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.collision.handlers.CollisionHandler;
 import com.gamelibrary2d.collision.handlers.UpdatedHandler;
-import com.gamelibrary2d.common.Rectangle;
 
 import java.util.ArrayList;
 

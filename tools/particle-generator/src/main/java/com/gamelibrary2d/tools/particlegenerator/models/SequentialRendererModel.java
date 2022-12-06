@@ -1,10 +1,10 @@
 package com.gamelibrary2d.tools.particlegenerator.models;
 
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.animations.*;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.io.Read;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.opengl.renderers.BlendMode;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.Quad;

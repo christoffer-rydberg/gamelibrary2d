@@ -1,8 +1,8 @@
 package com.gamelibrary2d.collision.handlers;
 
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.collision.Collidable;
 import com.gamelibrary2d.collision.CollidableInfo;
-import com.gamelibrary2d.common.Rectangle;
 
 public class RestrictedAreaHandler<T extends Collidable> implements UpdatedHandler<T> {
     private final Rectangle area;

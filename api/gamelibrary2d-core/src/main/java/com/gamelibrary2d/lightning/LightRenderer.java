@@ -1,6 +1,6 @@
 package com.gamelibrary2d.lightning;
 
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.denotations.Renderable;
 
 /**
  * The name "LightRenderer" is a bit misleading, since it does not actually

@@ -1,7 +1,8 @@
 package com.gamelibrary2d.components.frames;
 
+import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.Client;
-import com.gamelibrary2d.network.common.Communicator;
+
 import java.util.concurrent.CompletableFuture;
 
 public class ClientFrameInitializer {

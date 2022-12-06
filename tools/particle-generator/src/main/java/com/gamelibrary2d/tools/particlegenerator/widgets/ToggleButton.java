@@ -1,9 +1,9 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Color;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.shaders.ShaderParameter;
 import com.gamelibrary2d.text.Font;
 import com.gamelibrary2d.text.Label;

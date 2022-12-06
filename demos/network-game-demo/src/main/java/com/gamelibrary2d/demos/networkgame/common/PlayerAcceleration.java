@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.common;
 
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.Serializable;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.Serializable;
 
 public class PlayerAcceleration implements Serializable {
     private final GameFrameClient client;

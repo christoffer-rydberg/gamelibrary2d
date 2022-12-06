@@ -1,14 +1,14 @@
 package com.gamelibrary2d.tools.particlegenerator;
 
+import com.gamelibrary2d.input.Keyboard;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.Window;
 import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
-import com.gamelibrary2d.framework.Keyboard;
-import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.framework.Window;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.panels.EmitterPanel;
 import com.gamelibrary2d.tools.particlegenerator.panels.ParticleSystemSettingsPanel;

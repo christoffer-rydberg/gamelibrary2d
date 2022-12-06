@@ -1,6 +1,6 @@
 package com.gamelibrary2d.sound.lwjgl;
 
-import com.gamelibrary2d.common.Point;
+import com.gamelibrary2d.Point;
 
 import static org.lwjgl.openal.AL10.*;
 

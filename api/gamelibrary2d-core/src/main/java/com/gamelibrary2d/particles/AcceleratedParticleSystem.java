@@ -1,13 +1,12 @@
 package com.gamelibrary2d.particles;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.io.BufferUtils;
-import com.gamelibrary2d.common.random.RandomInstance;
-import com.gamelibrary2d.common.denotations.Clearable;
-import com.gamelibrary2d.common.denotations.Updatable;
-import com.gamelibrary2d.framework.OpenGL;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.denotations.Clearable;
+import com.gamelibrary2d.denotations.Updatable;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.io.BufferUtils;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.buffers.DefaultOpenGLBuffer;
@@ -15,6 +14,7 @@ import com.gamelibrary2d.opengl.buffers.DefaultVertexArrayBuffer;
 import com.gamelibrary2d.opengl.buffers.MirroredFloatBuffer;
 import com.gamelibrary2d.opengl.buffers.MirroredIntBuffer;
 import com.gamelibrary2d.opengl.shaders.ShaderProgram;
+import com.gamelibrary2d.random.RandomInstance;
 
 import java.nio.FloatBuffer;
 

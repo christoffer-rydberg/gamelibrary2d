@@ -1,13 +1,13 @@
 package com.gamelibrary2d.demos.networkgame.server.objects;
 
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.collision.CollisionDetection;
 import com.gamelibrary2d.collision.CollisionResult;
 import com.gamelibrary2d.collision.Obstacle;
 import com.gamelibrary2d.collision.handlers.DefaultCollisionHandler;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.demos.networkgame.server.DemoGameLogic;
+import com.gamelibrary2d.random.RandomInstance;
 
 public class ServerPortal extends AbstractServerObject {
     private static final float SPAWN_RATE = 1f;

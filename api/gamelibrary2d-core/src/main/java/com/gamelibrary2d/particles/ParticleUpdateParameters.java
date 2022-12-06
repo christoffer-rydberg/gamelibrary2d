@@ -1,8 +1,8 @@
 package com.gamelibrary2d.particles;
 
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.Serializable;
-import com.gamelibrary2d.common.random.RandomInstance;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.Serializable;
+import com.gamelibrary2d.random.RandomInstance;
 
 public class ParticleUpdateParameters implements Serializable {
     private final static int STRIDE = 52;

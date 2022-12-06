@@ -1,8 +1,8 @@
 package com.gamelibrary2d.particles;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.io.BufferUtils;
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.io.BufferUtils;
 import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.buffers.MirroredBuffer;
 import com.gamelibrary2d.opengl.buffers.OpenGLBuffer;

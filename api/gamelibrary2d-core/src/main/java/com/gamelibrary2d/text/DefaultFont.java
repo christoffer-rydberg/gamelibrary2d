@@ -1,13 +1,13 @@
 package com.gamelibrary2d.text;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.Serializable;
-import com.gamelibrary2d.framework.DefaultImage;
-import com.gamelibrary2d.framework.FontMetadata;
-import com.gamelibrary2d.framework.Image;
+import com.gamelibrary2d.imaging.DefaultImage;
+import com.gamelibrary2d.imaging.FontMetadata;
+import com.gamelibrary2d.imaging.Image;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.Serializable;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.resources.DefaultTexture;
 import com.gamelibrary2d.opengl.resources.Quad;

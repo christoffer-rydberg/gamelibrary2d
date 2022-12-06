@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network.decoration;
 
-import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.resources.DefaultTexture;
 import com.gamelibrary2d.opengl.resources.Texture;
 

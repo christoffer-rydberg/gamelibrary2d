@@ -2,9 +2,9 @@ package com.gamelibrary2d.demos.networkgame.server.objects;
 
 import com.gamelibrary2d.collision.Collidable;
 import com.gamelibrary2d.collision.CollisionDetection;
-import com.gamelibrary2d.common.io.Serializable;
-import com.gamelibrary2d.common.denotations.Positionable;
-import com.gamelibrary2d.common.denotations.Rotatable;
+import com.gamelibrary2d.denotations.Positionable;
+import com.gamelibrary2d.denotations.Rotatable;
+import com.gamelibrary2d.io.Serializable;
 
 public interface ServerObject extends Collidable, Rotatable, Positionable, Serializable {
 

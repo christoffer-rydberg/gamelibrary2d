@@ -1,8 +1,8 @@
 package com.gamelibrary2d.sound.lwjgl;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.disposal.AbstractDisposable;
-import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.disposal.AbstractDisposable;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.sound.SoundBuffer;
 import com.gamelibrary2d.sound.SoundSource;
 

@@ -1,8 +1,8 @@
 package com.gamelibrary2d.components;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 
 public abstract class AbstractComposedGameObject<T extends GameObject> implements GameObject {
     protected abstract T getComposition();

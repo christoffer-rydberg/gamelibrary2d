@@ -1,14 +1,14 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.functional.Action;
-import com.gamelibrary2d.common.io.Read;
+import com.gamelibrary2d.Color;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.Window;
 import com.gamelibrary2d.components.DefaultGameObject;
-import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
-import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.denotations.Updatable;
+import com.gamelibrary2d.functional.Action;
+import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.text.Label;
 import com.gamelibrary2d.updates.AddPositionUpdate;
 import com.gamelibrary2d.updates.SequentialUpdater;

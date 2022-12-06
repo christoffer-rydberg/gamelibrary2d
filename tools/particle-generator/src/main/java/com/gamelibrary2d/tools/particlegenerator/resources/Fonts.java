@@ -1,7 +1,7 @@
 package com.gamelibrary2d.tools.particlegenerator.resources;
 
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.framework.lwjgl.FontMetadataFactory;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.lwjgl.imaging.FontMetadataFactory;
 import com.gamelibrary2d.text.DefaultFont;
 import com.gamelibrary2d.text.Font;
 

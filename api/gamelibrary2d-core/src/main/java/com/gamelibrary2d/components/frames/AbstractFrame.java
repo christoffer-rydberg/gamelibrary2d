@@ -1,12 +1,12 @@
 package com.gamelibrary2d.components.frames;
 
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposable;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.functional.Action;
+import com.gamelibrary2d.Color;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.containers.AbstractLayer;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposable;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.functional.Action;
 import com.gamelibrary2d.updates.Update;
 
 import java.io.IOException;

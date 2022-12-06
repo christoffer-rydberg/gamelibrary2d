@@ -1,6 +1,6 @@
 package com.gamelibrary2d.collision;
 
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Rectangle;
 
 public class CollidableInfo<T extends Collidable> {
     private final T collidable;

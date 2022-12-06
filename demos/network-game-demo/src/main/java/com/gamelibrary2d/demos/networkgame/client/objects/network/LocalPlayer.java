@@ -1,12 +1,12 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network;
 
-import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
 import com.gamelibrary2d.demos.networkgame.client.input.Controller;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerInputId;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.RendererMap;
 import com.gamelibrary2d.demos.networkgame.common.PlayerAcceleration;
+import com.gamelibrary2d.io.DataBuffer;
 
 public class LocalPlayer extends AbstractPlayer {
     private final Controller controller;

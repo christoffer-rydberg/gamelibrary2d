@@ -1,6 +1,6 @@
 package com.gamelibrary2d.updates;
 
-import com.gamelibrary2d.common.denotations.Updatable;
+import com.gamelibrary2d.denotations.Updatable;
 
 public class InfiniteUpdate implements Update {
     private final Updatable onUpdate;

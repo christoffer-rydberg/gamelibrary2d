@@ -1,14 +1,14 @@
 package com.example.androiddemo;
 
 import android.app.Activity;
-import com.example.framework.android.AbstractGameActivity;
-import com.example.framework.android.Android_Framework;
-import com.example.framework.android.DeviceUtil;
+import com.example.framework.AbstractGameActivity;
+import com.example.framework.Android_Framework;
+import com.example.framework.DeviceUtil;
 import com.example.sound.android.DefaultSoundManager;
-import com.gamelibrary2d.common.disposal.Disposer;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ServerManager;
 import com.gamelibrary2d.demos.networkgame.client.input.VirtualController;
+import com.gamelibrary2d.disposal.Disposer;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -32,7 +32,7 @@ public class MainActivity extends AbstractGameActivity {
                     new Android_Framework(),
                     VirtualController::new,
                     new AndroidResourceManager(activity.getAssets()),
-                    ServerManager.create(createKeyPair(), disposer),
+                    new ServerManager(createKeyPair()),
                     DefaultSoundManager.create(disposer)
             );
         } catch (NoSuchAlgorithmException e) {

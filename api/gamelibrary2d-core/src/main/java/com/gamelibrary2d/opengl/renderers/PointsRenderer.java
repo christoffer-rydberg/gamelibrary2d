@@ -1,6 +1,6 @@
 package com.gamelibrary2d.opengl.renderers;
 
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.OpenGL;
 import com.gamelibrary2d.opengl.buffers.PositionBuffer;
 import com.gamelibrary2d.opengl.shaders.ShaderProgram;
 

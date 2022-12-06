@@ -1,7 +1,7 @@
 package com.gamelibrary2d.particles;
 
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.buffers.AbstractInterleavedBuffer;
 import com.gamelibrary2d.opengl.buffers.MirroredBuffer;
 import com.gamelibrary2d.opengl.buffers.MirroredFloatBuffer;

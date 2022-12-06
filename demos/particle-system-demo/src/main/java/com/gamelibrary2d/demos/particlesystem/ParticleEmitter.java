@@ -1,6 +1,6 @@
 package com.gamelibrary2d.demos.particlesystem;
 
-import com.gamelibrary2d.common.denotations.Updatable;
+import com.gamelibrary2d.denotations.Updatable;
 import com.gamelibrary2d.particles.DefaultParticleSystem;
 
 public class ParticleEmitter implements Updatable {

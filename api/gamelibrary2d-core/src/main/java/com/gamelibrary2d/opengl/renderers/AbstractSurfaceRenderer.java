@@ -1,6 +1,6 @@
 package com.gamelibrary2d.opengl.renderers;
 
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.opengl.resources.Surface;
 import com.gamelibrary2d.opengl.resources.Texture;
 import com.gamelibrary2d.opengl.shaders.ShaderParameter;

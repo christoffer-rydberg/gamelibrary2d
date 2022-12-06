@@ -1,6 +1,6 @@
 package com.gamelibrary2d.sound.lwjgl.decoders;
 
-import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.sound.lwjgl.DefaultSoundBuffer;
 
 import java.io.IOException;

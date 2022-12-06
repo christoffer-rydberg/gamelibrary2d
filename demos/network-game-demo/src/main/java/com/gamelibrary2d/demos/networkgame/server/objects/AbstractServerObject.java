@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.server.objects;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.io.DataBuffer;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.io.DataBuffer;
 
 public abstract class AbstractServerObject implements ServerObject {
     private final byte primaryType;

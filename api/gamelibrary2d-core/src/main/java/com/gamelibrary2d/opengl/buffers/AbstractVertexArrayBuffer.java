@@ -1,7 +1,7 @@
 package com.gamelibrary2d.opengl.buffers;
 
-import com.gamelibrary2d.common.disposal.Disposable;
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.disposal.Disposable;
 
 public abstract class AbstractVertexArrayBuffer<T extends OpenGLBuffer> extends AbstractInterleavedBuffer<T>
         implements OpenGLBuffer, Disposable {

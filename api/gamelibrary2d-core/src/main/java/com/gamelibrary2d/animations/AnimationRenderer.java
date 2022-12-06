@@ -1,9 +1,9 @@
 package com.gamelibrary2d.animations;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.DefaultDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.denotations.Bounded;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Bounded;
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.renderers.AbstractContentRenderer;

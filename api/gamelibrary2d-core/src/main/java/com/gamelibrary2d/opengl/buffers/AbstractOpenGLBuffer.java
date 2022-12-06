@@ -1,7 +1,7 @@
 package com.gamelibrary2d.opengl.buffers;
 
-import com.gamelibrary2d.common.disposal.AbstractDisposable;
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.disposal.AbstractDisposable;
 
 public abstract class AbstractOpenGLBuffer extends AbstractDisposable implements OpenGLBuffer {
     private final int target;

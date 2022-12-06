@@ -1,8 +1,9 @@
 package com.gamelibrary2d.opengl.resources;
 
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.framework.OpenGL;
+import com.gamelibrary2d.Color;
+import com.gamelibrary2d.OpenGL;
+import com.gamelibrary2d.disposal.Disposer;
+
 import java.nio.ByteBuffer;
 
 public class DefaultFrameBuffer implements FrameBuffer {

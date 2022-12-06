@@ -1,10 +1,10 @@
 package com.gamelibrary2d.demos.collisiondetection;
 
-import com.gamelibrary2d.common.disposal.Disposer;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.ModelMatrix;
 
 public class BallTool implements Renderable, PointerDownAware, PointerMoveAware, PointerUpAware {

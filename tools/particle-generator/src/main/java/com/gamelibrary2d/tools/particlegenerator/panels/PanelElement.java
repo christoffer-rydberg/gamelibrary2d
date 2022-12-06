@@ -1,11 +1,11 @@
 package com.gamelibrary2d.tools.particlegenerator.panels;
 
-import com.gamelibrary2d.common.Color;
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Color;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.DefaultGameObject;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.containers.AbstractPanel;
-import com.gamelibrary2d.framework.Renderable;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.opengl.renderers.LineRenderer;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;

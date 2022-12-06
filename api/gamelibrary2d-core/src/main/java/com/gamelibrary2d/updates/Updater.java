@@ -1,6 +1,6 @@
 package com.gamelibrary2d.updates;
 
-import com.gamelibrary2d.common.functional.Action;
+import com.gamelibrary2d.functional.Action;
 
 /**
  * Represents an {@link Update} that is responsible for orchestrating other updates.

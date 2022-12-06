@@ -1,8 +1,8 @@
 package com.gamelibrary2d.sound;
 
+import com.gamelibrary2d.updates.AbstractUpdate;
 import com.gamelibrary2d.updates.SequentialUpdater;
 import com.gamelibrary2d.updates.Update;
-import com.gamelibrary2d.updates.AbstractUpdate;
 
 /**
  * The class contains static methods to create various sound {@link Update

@@ -1,8 +1,8 @@
 package com.example.sound.android;
 
-import com.gamelibrary2d.common.disposal.AbstractDisposer;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.io.Read;
+import com.gamelibrary2d.disposal.AbstractDisposer;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.sound.SoundManager;
 import com.gamelibrary2d.sound.SoundSource;
 

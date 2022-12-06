@@ -1,6 +1,6 @@
 package com.gamelibrary2d.sound;
 
-import com.gamelibrary2d.common.disposal.Disposable;
+import com.gamelibrary2d.disposal.Disposable;
 
 public interface SoundSource extends Disposable {
 

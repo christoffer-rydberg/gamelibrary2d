@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.common;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.Serializable;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.Serializable;
 
 public class GameSettings implements Serializable {
     private final Rectangle gameBounds;

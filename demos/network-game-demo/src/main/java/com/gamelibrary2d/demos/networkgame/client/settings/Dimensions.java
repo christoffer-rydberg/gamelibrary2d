@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.client.settings;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.Window;
 
 public final class Dimensions {
     private static final double MAX_MOBILE_SIZE = 200;

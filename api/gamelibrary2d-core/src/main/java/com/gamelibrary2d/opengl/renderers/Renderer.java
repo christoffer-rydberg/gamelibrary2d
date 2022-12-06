@@ -1,6 +1,6 @@
 package com.gamelibrary2d.opengl.renderers;
 
-import com.gamelibrary2d.common.Color;
+import com.gamelibrary2d.Color;
 import com.gamelibrary2d.opengl.shaders.ShaderParameter;
 
 public interface Renderer {

@@ -14,6 +14,7 @@ public interface Opacifiable {
 
     /**
      * Adds to the object's {@link #getOpacity() opacity}.
+     *
      * @param deltaOpacity The opacity to add.
      */
     default void addOpacity(float deltaOpacity) {

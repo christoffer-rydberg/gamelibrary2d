@@ -1,6 +1,6 @@
 package com.gamelibrary2d.components.containers;
 
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.denotations.Renderable;
 
 public final class DefaultLayerGameObject<T extends Renderable> extends AbstractLayerGameObject<T> {
     private final Layer<T> layer;

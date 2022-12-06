@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.network;
 
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.random.RandomInstance;
 import com.gamelibrary2d.demos.networkgame.client.frames.game.GameFrameClient;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.random.RandomInstance;
 
 public class Obstacle extends AbstractClientObject {
     private float rotationSpeed;

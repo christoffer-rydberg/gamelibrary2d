@@ -1,16 +1,16 @@
 package com.gamelibrary2d;
 
-import com.gamelibrary2d.common.disposal.AbstractDisposer;
-import com.gamelibrary2d.common.event.DefaultEventPublisher;
-import com.gamelibrary2d.common.event.EventPublisher;
-import com.gamelibrary2d.common.functional.Action;
-import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.components.denotations.InputAware;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.denotations.KeyUpAware;
 import com.gamelibrary2d.components.frames.Frame;
-import com.gamelibrary2d.framework.Runtime;
-import com.gamelibrary2d.framework.*;
+import com.gamelibrary2d.disposal.AbstractDisposer;
+import com.gamelibrary2d.event.DefaultEventPublisher;
+import com.gamelibrary2d.event.EventPublisher;
+import com.gamelibrary2d.functional.Action;
+import com.gamelibrary2d.input.KeyAction;
+import com.gamelibrary2d.input.PointerAction;
+import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.shaders.DefaultShader;
 import com.gamelibrary2d.opengl.shaders.DefaultShaderProgram;

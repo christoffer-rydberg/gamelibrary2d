@@ -1,9 +1,9 @@
 package com.gamelibrary2d.demos.networkgame;
 
+import com.gamelibrary2d.input.Keyboard;
 import com.gamelibrary2d.demos.networkgame.client.input.AbstractController;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerInputId;
 import com.gamelibrary2d.demos.networkgame.client.input.VirtualController;
-import com.gamelibrary2d.framework.Keyboard;
 
 public class KeyboardController extends AbstractController {
     private final int FIXED_STEPS = 10;

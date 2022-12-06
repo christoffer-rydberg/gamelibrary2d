@@ -1,9 +1,8 @@
 package com.gamelibrary2d.collision;
 
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.collision.handlers.CollisionHandler;
 import com.gamelibrary2d.collision.handlers.UpdatedHandler;
-import com.gamelibrary2d.common.Pool;
-import com.gamelibrary2d.common.Rectangle;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +16,7 @@ import java.util.List;
 public class CollisionDetection {
     private final Rectangle bounds;
     private final InternalQuadTreeNode rootNode;
-    private final Pool<InternalQuadTreeNode> nodePool = new Pool<>();
+    private final InternalPool<InternalQuadTreeNode> nodePool = new InternalPool<>();
     private final ArrayList<ActivationArea> activationAreas = new ArrayList<>();
     private final ArrayList<InternalCollidableWrapper<?>> participants;
     private final ArrayList<InternalCollidableWrapper<?>> updateList;

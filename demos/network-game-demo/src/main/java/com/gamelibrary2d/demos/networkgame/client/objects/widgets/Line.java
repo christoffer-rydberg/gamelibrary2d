@@ -1,8 +1,8 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.buffers.PositionBuffer;
 import com.gamelibrary2d.opengl.renderers.LineRenderer;
 

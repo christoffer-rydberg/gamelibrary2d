@@ -1,7 +1,7 @@
 package com.gamelibrary2d.demos.lightning;
 
 import com.gamelibrary2d.AbstractGame;
-import com.gamelibrary2d.framework.lwjgl.Lwjgl_Framework;
+import com.gamelibrary2d.lwjgl.Lwjgl_Framework;
 
 public class DemoGame extends AbstractGame {
 

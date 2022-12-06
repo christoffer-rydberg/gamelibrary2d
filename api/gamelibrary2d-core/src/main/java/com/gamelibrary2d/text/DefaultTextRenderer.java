@@ -1,6 +1,6 @@
 package com.gamelibrary2d.text;
 
-import com.gamelibrary2d.common.Rectangle;
+import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.renderers.AbstractRenderer;

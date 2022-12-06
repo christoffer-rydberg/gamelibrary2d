@@ -1,20 +1,22 @@
 package com.gamelibrary2d.demos.networkgame.server;
 
-import com.gamelibrary2d.common.io.BitParser;
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.DynamicByteBuffer;
-import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.demos.networkgame.common.ClientMessages;
 import com.gamelibrary2d.demos.networkgame.common.GameSettings;
 import com.gamelibrary2d.demos.networkgame.common.NetworkConstants;
 import com.gamelibrary2d.demos.networkgame.common.ServerMessages;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.initialization.*;
-import com.gamelibrary2d.network.common.server.Host;
+import com.gamelibrary2d.io.BitParser;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.DynamicByteBuffer;
+import com.gamelibrary2d.io.Read;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.UdpConfiguration;
+import com.gamelibrary2d.network.server.Host;
 import com.gamelibrary2d.network.server.ServerHandshakeConfiguration;
-import com.gamelibrary2d.network.common.server.ServerLogic;
+import com.gamelibrary2d.network.server.ServerLogic;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

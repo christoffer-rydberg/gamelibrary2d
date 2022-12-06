@@ -1,6 +1,6 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
-import com.gamelibrary2d.common.Color;
+import com.gamelibrary2d.Color;
 import com.gamelibrary2d.text.Font;
 import com.gamelibrary2d.text.Label;
 import com.gamelibrary2d.tools.particlegenerator.properties.FloatProperty;

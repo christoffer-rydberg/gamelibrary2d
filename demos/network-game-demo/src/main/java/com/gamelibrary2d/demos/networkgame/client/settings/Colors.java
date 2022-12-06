@@ -1,6 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client.settings;
 
-import com.gamelibrary2d.common.Color;
+import com.gamelibrary2d.Color;
 
 public class Colors {
     public static final Color BUTTON_BACKGROUND = Color.WHITE;

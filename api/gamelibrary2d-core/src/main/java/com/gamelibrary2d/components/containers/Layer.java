@@ -1,10 +1,13 @@
 package com.gamelibrary2d.components.containers;
 
-import com.gamelibrary2d.common.denotations.Clearable;
-import com.gamelibrary2d.common.denotations.Container;
-import com.gamelibrary2d.common.denotations.Updatable;
-import com.gamelibrary2d.components.denotations.*;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.components.denotations.Opacifiable;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerMoveAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
+import com.gamelibrary2d.denotations.Clearable;
+import com.gamelibrary2d.denotations.Container;
+import com.gamelibrary2d.denotations.Updatable;
 
 import java.util.Comparator;
 

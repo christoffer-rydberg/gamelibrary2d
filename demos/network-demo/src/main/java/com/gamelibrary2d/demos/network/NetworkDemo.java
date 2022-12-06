@@ -1,12 +1,12 @@
 package com.gamelibrary2d.demos.network;
 
-import com.gamelibrary2d.common.updating.UpdateLoop;
 import com.gamelibrary2d.network.client.*;
-import com.gamelibrary2d.network.common.exceptions.ClientAuthenticationException;
-import com.gamelibrary2d.network.common.exceptions.ClientInitializationException;
-import com.gamelibrary2d.network.common.server.Server;
-import com.gamelibrary2d.network.common.server.ServerLogic;
+import com.gamelibrary2d.network.exceptions.ClientAuthenticationException;
+import com.gamelibrary2d.network.exceptions.ClientInitializationException;
 import com.gamelibrary2d.network.server.NetworkServer;
+import com.gamelibrary2d.network.server.Server;
+import com.gamelibrary2d.network.server.ServerLogic;
+import com.gamelibrary2d.updating.UpdateLoop;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -15,8 +15,8 @@ public class NetworkDemo {
 
     public static void main(String[] args) {
         ServerResult serverResult = (args.length > 0 && args[0].equals("local"))
-            ? createLocalServer(new DemoServerLogic())
-            : createNetworkServer("localhost", 4444, new DemoServerLogic());
+                ? createLocalServer(new DemoServerLogic())
+                : createNetworkServer("localhost", 4444, new DemoServerLogic());
 
         Thread serverThread = runServer(serverResult.server);
         Thread clientThread = runClient(new DemoClientLogic(), serverResult.connectable);
@@ -33,8 +33,8 @@ public class NetworkDemo {
     private static ServerResult createNetworkServer(String host, int port, ServerLogic serverLogic) {
         System.out.println("Creating network server");
         return new ServerResult(
-            new NetworkServer(host, port, serverLogic),
-            new RemoteServer(host, port)
+                new NetworkServer(host, port, serverLogic),
+                new RemoteServer(host, port)
         );
     }
 

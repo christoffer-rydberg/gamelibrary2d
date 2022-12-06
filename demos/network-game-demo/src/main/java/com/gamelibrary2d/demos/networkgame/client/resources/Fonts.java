@@ -1,10 +1,10 @@
 package com.gamelibrary2d.demos.networkgame.client.resources;
 
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.io.DataBuffer;
-import com.gamelibrary2d.common.io.Read;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.text.DefaultFont;
 import com.gamelibrary2d.text.Font;
 

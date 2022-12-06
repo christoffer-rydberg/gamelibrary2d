@@ -1,9 +1,9 @@
 package com.gamelibrary2d.opengl.renderers;
 
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.denotations.Bounded;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.denotations.Bounded;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.resources.DefaultFrameBuffer;
 import com.gamelibrary2d.opengl.resources.FrameBuffer;
 import com.gamelibrary2d.opengl.resources.Quad;

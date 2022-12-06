@@ -1,19 +1,19 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.Rectangle;
-import com.gamelibrary2d.common.disposal.Disposer;
-import com.gamelibrary2d.common.io.ResourceReader;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.denotations.Renderable;
+import com.gamelibrary2d.Window;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.DefaultGameObject;
 import com.gamelibrary2d.components.GameObject;
-import com.gamelibrary2d.common.denotations.Updatable;
 import com.gamelibrary2d.demos.networkgame.client.ParticleRendererFactory;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.urls.Images;
 import com.gamelibrary2d.demos.networkgame.client.urls.Particles;
-import com.gamelibrary2d.framework.Renderable;
-import com.gamelibrary2d.framework.Window;
+import com.gamelibrary2d.denotations.Updatable;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.io.ResourceReader;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.DefaultTexture;

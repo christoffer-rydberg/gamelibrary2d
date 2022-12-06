@@ -1,10 +1,10 @@
 package com.gamelibrary2d.demos.particlesystem;
 
 import com.gamelibrary2d.Game;
-import com.gamelibrary2d.common.io.ResourceReader;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
 import com.gamelibrary2d.components.frames.FrameInitializer;
+import com.gamelibrary2d.io.ResourceReader;
 import com.gamelibrary2d.particles.*;
 import com.gamelibrary2d.updates.IdleUpdate;
 import com.gamelibrary2d.updates.SequentialUpdater;

@@ -1,14 +1,14 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
-import com.gamelibrary2d.common.io.BitParser;
-import com.gamelibrary2d.common.io.DataBuffer;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.*;
 import com.gamelibrary2d.demos.networkgame.common.*;
-import com.gamelibrary2d.network.common.Communicator;
-import com.gamelibrary2d.network.common.events.CommunicatorDisconnectedEvent;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.common.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.io.BitParser;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.events.CommunicatorDisconnectedEvent;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 
 import java.util.HashMap;
 import java.util.Map;

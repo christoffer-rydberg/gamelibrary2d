@@ -1,14 +1,14 @@
 package com.gamelibrary2d.demos.drawing;
 
-import com.gamelibrary2d.common.Point;
-import com.gamelibrary2d.common.event.DefaultEventPublisher;
-import com.gamelibrary2d.common.event.EventListener;
-import com.gamelibrary2d.common.event.EventPublisher;
-import com.gamelibrary2d.common.functional.Factory;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
-import com.gamelibrary2d.framework.Renderable;
+import com.gamelibrary2d.event.DefaultEventPublisher;
+import com.gamelibrary2d.event.EventListener;
+import com.gamelibrary2d.event.EventPublisher;
+import com.gamelibrary2d.functional.Factory;
 
 public class GeometryTool implements Renderable, PointerDownAware, PointerMoveAware, PointerUpAware {
     private final EventPublisher<Geometry> onCreated = new DefaultEventPublisher<>();

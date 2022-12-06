@@ -1,6 +1,6 @@
 package com.gamelibrary2d.animations.formats.gif;
 
-import com.gamelibrary2d.framework.Image;
+import com.gamelibrary2d.imaging.Image;
 
 class InternalGifImage implements Image {
     private final byte[] data;
