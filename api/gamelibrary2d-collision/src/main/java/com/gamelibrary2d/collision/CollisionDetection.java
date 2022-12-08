@@ -47,29 +47,29 @@ public class CollisionDetection {
     /**
      * Registers the object for automatic updating and collision detection.
      */
-    public void add(Collidable obj) {
-        participants.add(new InternalCollidableWrapper<>(obj));
+    public <T extends Collidable> void add(T obj) {
+        participants.add(new InternalCollidableWrapper<>(obj, getClass(obj)));
     }
 
     /**
      * Registers the object for automatic updating and collision detection.
      */
     public <T extends Collidable> void add(T obj, CollisionHandler<T, ?> collisionHandler) {
-        participants.add(new InternalCollidableWrapper<>(obj, collisionHandler));
+        participants.add(new InternalCollidableWrapper<>(obj, getClass(obj), collisionHandler));
     }
 
     /**
      * Registers the object for automatic updating and collision detection.
      */
     public <T extends Collidable> void add(T obj, Collection<CollisionHandler<T, ?>> collisionHandlers) {
-        participants.add(new InternalCollidableWrapper<>(obj, new ArrayList<>(collisionHandlers)));
+        participants.add(new InternalCollidableWrapper<>(obj, getClass(obj), new ArrayList<>(collisionHandlers)));
     }
 
     /**
      * Registers the object for automatic updating and collision detection.
      */
     public <T extends Collidable> void add(T obj, UpdatedHandler<T> updatedHandler) {
-        participants.add(new InternalCollidableWrapper<>(obj, updatedHandler));
+        participants.add(new InternalCollidableWrapper<>(obj, getClass(obj), updatedHandler));
     }
 
     /**
@@ -78,7 +78,7 @@ public class CollisionDetection {
     public <T extends Collidable> void add(T obj,
                                            UpdatedHandler<T> updatedHandler,
                                            CollisionHandler<T, ?> collisionHandler) {
-        participants.add(new InternalCollidableWrapper<>(obj, updatedHandler, collisionHandler));
+        participants.add(new InternalCollidableWrapper<>(obj, getClass(obj), updatedHandler, collisionHandler));
     }
 
     /**
@@ -87,7 +87,11 @@ public class CollisionDetection {
     public <T extends Collidable> void add(T obj,
                                            UpdatedHandler<T> updatedHandler,
                                            Collection<CollisionHandler<T, ?>> collisionHandlers) {
-        participants.add(new InternalCollidableWrapper<>(obj, updatedHandler, new ArrayList<>(collisionHandlers)));
+        participants.add(new InternalCollidableWrapper<>(obj, getClass(obj), updatedHandler, new ArrayList<>(collisionHandlers)));
+    }
+
+    private Class<?> getClass(Object obj) {
+        return obj.getClass();
     }
 
     /**
@@ -146,7 +150,7 @@ public class CollisionDetection {
 
         if (!activationAreas.isEmpty()) {
             for (int i = 0; i < participants.size(); ++i) {
-                InternalCollidableWrapper participant = participants.get(i);
+                InternalCollidableWrapper<?> participant = participants.get(i);
                 InsertionResult result = rootNode.insert(participant);
                 if (result == InsertionResult.INSERTED_ACTIVE) {
                     updateList.add(participant);
@@ -160,7 +164,7 @@ public class CollisionDetection {
         }
 
         for (int i = 0; i < updateList.size(); ++i) {
-            InternalCollidableWrapper obj = updateList.get(i);
+            InternalCollidableWrapper<?> obj = updateList.get(i);
             rootNode.update(obj, deltaTime);
             updated.add(obj.collidable);
         }

@@ -24,7 +24,7 @@ public class BounceHandler<T1 extends Obstacle, T2 extends Obstacle> implements 
         this.updated = updated;
     }
 
-    private double getSpeedTowardsCollision(CollidableInfo obj, CollidableInfo other) {
+    private double getSpeedTowardsCollision(CollidableInfo<?> obj, CollidableInfo<?> other) {
         float speedX = obj.getSpeedX();
         float speedY = obj.getSpeedY();
         double speed = Math.sqrt(speedX * speedX + speedY * speedY);
