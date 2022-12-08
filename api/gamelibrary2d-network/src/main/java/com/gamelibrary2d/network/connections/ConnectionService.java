@@ -90,7 +90,6 @@ public class ConnectionService {
     private void addOutgoing(InternalConnection connection, DataBuffer buffer) throws IOException {
         try {
             connection.addOutgoing(selector, buffer);
-            selector.wakeup();
         } catch (IOException e) {
             connection.disconnect(e);
             throw e;
@@ -100,7 +99,6 @@ public class ConnectionService {
     private void sendOutgoing(InternalConnection connection, SelectionKey key) {
         try {
             connection.sendOutgoing(key);
-            selector.wakeup();
         } catch (IOException e) {
             connection.disconnect(e);
         }
@@ -155,12 +153,10 @@ public class ConnectionService {
 
     private void register(SelectableChannel channel, Selector selector, int ops) throws ClosedChannelException {
         channel.register(selector, ops);
-        selector.wakeup();
     }
 
     private void register(SelectableChannel channel, Selector selector, int ops, Object att) throws ClosedChannelException {
         channel.register(selector, ops, att);
-        selector.wakeup();
     }
 
     public void disconnect(SocketChannel socketChannel) {
@@ -191,7 +187,7 @@ public class ConnectionService {
     private void run() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                int selectedKeys = selector.select();
+                int selectedKeys = selector.selectNow();
                 if (selectedKeys > 0) {
                     Iterator<SelectionKey> keys = selector.selectedKeys().iterator();
                     while (keys.hasNext()) {
@@ -210,6 +206,12 @@ public class ConnectionService {
                         } else if (key.isConnectable()) {
                             handleConnect(key);
                         }
+                    }
+                } else {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        break;
                     }
                 }
             }
