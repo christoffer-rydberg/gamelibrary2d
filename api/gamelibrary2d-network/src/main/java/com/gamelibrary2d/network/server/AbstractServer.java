@@ -167,6 +167,9 @@ public abstract class AbstractServer implements Server, Updatable {
 
         do {
             result = pending.initializer.runTask(pending.context, pending.communicator, this::runInitializationTask);
+            if (result == InternalInitializationTaskResult.AWAITING_DATA && pending.communicator.readIncoming(incomingBuffer)) {
+                result = pending.initializer.runTask(pending.context, pending.communicator, this::runInitializationTask);
+            }
 
             if (result == InternalInitializationTaskResult.AWAITING_DATA) {
                 long currentTime = System.currentTimeMillis();
@@ -232,10 +235,6 @@ public abstract class AbstractServer implements Server, Updatable {
     }
 
     private void readIncoming() {
-        for (int i = 0; i < pendingCommunicators.size(); ++i) {
-            pendingCommunicators.get(i).communicator.readIncoming(incomingBuffer);
-        }
-
         for (int i = 0; i < communicators.size(); ++i) {
             Communicator communicator = communicators.get(i);
             readAndHandleMessages(communicator);
