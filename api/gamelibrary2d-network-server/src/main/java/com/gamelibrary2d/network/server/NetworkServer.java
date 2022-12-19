@@ -13,14 +13,14 @@ public final class NetworkServer extends InternalAbstractNetworkServer {
     private final ServerLogic serverLogic;
     private final Host host;
 
-    public NetworkServer(String hostname, int port, ServerLogic serverLogic) {
-        super(hostname, port);
+    public NetworkServer(String hostname, ServerLogic serverLogic) {
+        super(hostname);
         host = new InternalHost(hostname);
         this.serverLogic = serverLogic;
     }
 
-    public NetworkServer(String hostname, int port, ConnectionService connectionService, ServerLogic serverLogic) {
-        super(hostname, port, connectionService);
+    public NetworkServer(String hostname, ConnectionService connectionService, ServerLogic serverLogic) {
+        super(hostname, connectionService);
         host = new InternalHost(hostname);
         this.serverLogic = serverLogic;
     }
@@ -83,6 +83,16 @@ public final class NetworkServer extends InternalAbstractNetworkServer {
     }
 
     @Override
+    protected void onConnectionsEnabled(int port) {
+        serverLogic.onConnectionsEnabled(port);
+    }
+
+    @Override
+    protected void onConnectionsDisabled() {
+        serverLogic.onConnectionsDisabled();
+    }
+
+    @Override
     protected void onMessage(Communicator communicator, DataBuffer buffer) {
         serverLogic.onMessage(communicator, buffer);
     }
@@ -100,8 +110,8 @@ public final class NetworkServer extends InternalAbstractNetworkServer {
         }
 
         @Override
-        public void enableConnections() throws IOException {
-            NetworkServer.super.enableConnections();
+        public void enableConnections(int port) throws IOException {
+            NetworkServer.super.enableConnections(port);
         }
 
         @Override

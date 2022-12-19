@@ -15,8 +15,8 @@ public class NetworkDemo {
 
     public static void main(String[] args) {
         ServerResult serverResult = (args.length > 0 && args[0].equals("local"))
-                ? createLocalServer(new DemoServerLogic())
-                : createNetworkServer("localhost", 4444, new DemoServerLogic());
+                ? createLocalServer()
+                : createNetworkServer("localhost", 4444);
 
         Thread serverThread = runServer(serverResult.server);
         Thread clientThread = runClient(new DemoClientLogic(), serverResult.connectable);
@@ -30,15 +30,17 @@ public class NetworkDemo {
         }
     }
 
-    private static ServerResult createNetworkServer(String host, int port, ServerLogic serverLogic) {
+    private static ServerResult createNetworkServer(String host, int port) {
+        ServerLogic serverLogic = new DemoServerLogic(port);
         System.out.println("Creating network server");
         return new ServerResult(
-                new NetworkServer(host, port, serverLogic),
+                new NetworkServer(host, serverLogic),
                 new RemoteServer(host, port)
         );
     }
 
-    private static ServerResult createLocalServer(ServerLogic logic) {
+    private static ServerResult createLocalServer() {
+        ServerLogic logic = new DemoServerLogic();
         System.out.println("Creating local server");
         LocalServer server = new LocalServer(logic);
         return new ServerResult(server, server);

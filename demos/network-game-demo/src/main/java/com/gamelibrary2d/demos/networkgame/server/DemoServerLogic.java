@@ -36,6 +36,8 @@ public class DemoServerLogic implements ServerLogic {
     private final KeyPair keyPair;
     private final DataBuffer decryptionBuffer = new DynamicByteBuffer();
 
+    private final int connectionTcpPort;
+
     private Host host;
 
     private int streamCounter;
@@ -44,11 +46,12 @@ public class DemoServerLogic implements ServerLogic {
     private float timer;
 
     public DemoServerLogic() {
-        this(null);
+        this(0, null);
     }
 
-    public DemoServerLogic(KeyPair keyPair) {
+    public DemoServerLogic(int connectionTcpPort, KeyPair keyPair) {
         this.keyPair = keyPair;
+        this.connectionTcpPort = connectionTcpPort;
         this.gameLogic = new DemoGameLogic(this);
     }
 
@@ -169,11 +172,21 @@ public class DemoServerLogic implements ServerLogic {
 
     @Override
     public void onStart(Host host) throws IOException {
+        log(String.format("Server has started: %s", host.getHostName()));
         this.host = host;
-        log("Server has started");
 
-        log("Listening for incoming connections...");
-        host.enableConnections();
+        log(String.format("Enabling connections on port: %d", connectionTcpPort));
+        host.enableConnections(connectionTcpPort);
+    }
+
+    @Override
+    public void onConnectionsEnabled(int port) {
+        log(String.format("Listening for incoming connections on port: %d", port));
+    }
+
+    @Override
+    public void onConnectionsDisabled() {
+        log("Stopped listening for incoming connections");
     }
 
     @Override

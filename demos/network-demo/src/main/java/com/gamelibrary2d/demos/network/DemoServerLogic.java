@@ -11,10 +11,29 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class DemoServerLogic implements ServerLogic {
+    private final int connectionTcpPort;
+
+    public DemoServerLogic() {
+        this(0);
+    }
+
+    public DemoServerLogic(int connectionTcpPort) {
+        this.connectionTcpPort = connectionTcpPort;
+    }
 
     @Override
     public void onStart(Host host) throws IOException {
-        host.enableConnections();
+        host.enableConnections(connectionTcpPort);
+    }
+
+    @Override
+    public void onConnectionsEnabled(int port) {
+
+    }
+
+    @Override
+    public void onConnectionsDisabled() {
+
     }
 
     @Override

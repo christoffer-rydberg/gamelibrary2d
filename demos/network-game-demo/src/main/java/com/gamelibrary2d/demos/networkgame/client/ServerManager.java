@@ -29,8 +29,7 @@ public class ServerManager {
     public HostedServer hostNetworkServer(String host, int tcpPort) {
         NetworkServer server = new NetworkServer(
                 host,
-                tcpPort,
-                new DemoServerLogic(keyPair));
+                new DemoServerLogic(tcpPort, keyPair));
 
         return new HostedServer(server, connectToServer(host, tcpPort), DemoServerLogic.UPDATES_PER_SECOND);
     }

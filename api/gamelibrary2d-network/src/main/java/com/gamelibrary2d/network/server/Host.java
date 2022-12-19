@@ -10,7 +10,7 @@ import java.util.List;
 public interface Host {
     String getHostName();
 
-    void enableConnections() throws IOException;
+    void enableConnections(int port) throws IOException;
 
     void disableConnections() throws IOException;
 

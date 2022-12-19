@@ -98,13 +98,19 @@ public final class LocalServer extends AbstractServer implements Connectable {
         }
 
         @Override
-        public void enableConnections() {
-            connectionsEnabled = true;
+        public void enableConnections(int port) {
+            if (!connectionsEnabled) {
+                connectionsEnabled = true;
+                serverLogic.onConnectionsEnabled(port);
+            }
         }
 
         @Override
         public void disableConnections() {
-            connectionsEnabled = false;
+            if (connectionsEnabled) {
+                connectionsEnabled = false;
+                serverLogic.onConnectionsDisabled();
+            }
         }
 
         @Override

@@ -11,6 +11,10 @@ public interface ServerLogic {
 
     void onStart(Host host) throws IOException;
 
+    void onConnectionsEnabled(int port);
+
+    void onConnectionsDisabled();
+
     void onStop();
 
     boolean acceptConnection(String endpoint);

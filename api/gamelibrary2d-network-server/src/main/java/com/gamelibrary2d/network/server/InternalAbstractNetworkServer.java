@@ -10,23 +10,21 @@ import java.nio.channels.SocketChannel;
 abstract class InternalAbstractNetworkServer extends AbstractServer {
     private final ConnectionService connectionService;
     private final boolean ownsConnectionService;
-    private final int port;
     private final String hostname;
     private ConnectionListenerRegistration registration;
 
-    private InternalAbstractNetworkServer(String hostname, int port, ConnectionService connectionService, boolean ownsConnectionService) {
+    private InternalAbstractNetworkServer(String hostname, ConnectionService connectionService, boolean ownsConnectionService) {
         this.hostname = hostname;
-        this.port = port;
         this.connectionService = connectionService;
         this.ownsConnectionService = ownsConnectionService;
     }
 
-    protected InternalAbstractNetworkServer(String hostname, int port) {
-        this(hostname, port, new ConnectionService(), true);
+    protected InternalAbstractNetworkServer(String hostname) {
+        this(hostname, new ConnectionService(), true);
     }
 
-    protected InternalAbstractNetworkServer(String hostname, int port, ConnectionService connectionService) {
-        this(hostname, port, connectionService, false);
+    protected InternalAbstractNetworkServer(String hostname, ConnectionService connectionService) {
+        this(hostname, connectionService, false);
     }
 
     private void onConnected(SocketChannel channel) {
@@ -55,18 +53,25 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
         return registration != null;
     }
 
-    public void enableConnections() throws IOException {
+    public void enableConnections(int port) throws IOException {
         throwIfNotRunning();
+
+        disableConnections();
+
         registration = connectionService.registerConnectionListener(
                 hostname,
                 port,
                 this::onConnected,
                 (endpoint, exc) -> invokeLater(() -> onConnectionFailed(endpoint, exc)));
+
+        onConnectionsEnabled(registration.getLocalPort());
     }
 
     public void disableConnections() throws IOException {
-        throwIfNotRunning();
-        deregisterConnectionListener();
+        if (registration != null) {
+            deregisterConnectionListener();
+            onConnectionsDisabled();
+        }
     }
 
     private void throwIfNotRunning() {
@@ -94,6 +99,10 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
             registration = null;
         }
     }
+
+    protected abstract void onConnectionsEnabled(int port);
+
+    protected abstract void onConnectionsDisabled();
 
     protected abstract void authenticateClient(CommunicatorInitializer initializer);
 
