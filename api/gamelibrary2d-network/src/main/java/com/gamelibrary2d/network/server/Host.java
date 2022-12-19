@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.List;
 
 public interface Host {
+    String getHostName();
+
     void enableConnections() throws IOException;
 
     void disableConnections() throws IOException;

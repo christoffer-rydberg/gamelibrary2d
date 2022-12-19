@@ -11,15 +11,17 @@ import java.util.List;
 
 public final class NetworkServer extends InternalAbstractNetworkServer {
     private final ServerLogic serverLogic;
-    private final Host host = new InternalHost();
+    private final Host host;
 
     public NetworkServer(String hostname, int port, ServerLogic serverLogic) {
         super(hostname, port);
+        host = new InternalHost(hostname);
         this.serverLogic = serverLogic;
     }
 
     public NetworkServer(String hostname, int port, ConnectionService connectionService, ServerLogic serverLogic) {
         super(hostname, port, connectionService);
+        host = new InternalHost(hostname);
         this.serverLogic = serverLogic;
     }
 
@@ -86,6 +88,16 @@ public final class NetworkServer extends InternalAbstractNetworkServer {
     }
 
     private class InternalHost implements Host {
+        private final String hostName;
+
+        public InternalHost(String hostName) {
+            this.hostName = hostName;
+        }
+
+        @Override
+        public String getHostName() {
+            return hostName;
+        }
 
         @Override
         public void enableConnections() throws IOException {

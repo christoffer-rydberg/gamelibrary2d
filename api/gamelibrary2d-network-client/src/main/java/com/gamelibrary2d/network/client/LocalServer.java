@@ -93,6 +93,11 @@ public final class LocalServer extends AbstractServer implements Connectable {
     private class InternalHost implements Host {
 
         @Override
+        public String getHostName() {
+            return "localhost";
+        }
+
+        @Override
         public void enableConnections() {
             connectionsEnabled = true;
         }
