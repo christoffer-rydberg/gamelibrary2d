@@ -215,23 +215,25 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
             updating = true;
             window.pollEvents();
             Frame currentFrame = frame;
-            update(currentFrame, deltaTime * speedFactor);
-            render(currentFrame);
+            if (currentFrame != null) {
+                update(currentFrame, deltaTime * speedFactor);
+                render(currentFrame);
+            }
         } finally {
             updating = false;
         }
     }
 
     private void update(Frame frame, float deltaTime) {
-        if (frame != null) {
-            frame.update(frameNotUpdated ? 0 : deltaTime);
-            frameNotUpdated = false;
-        }
+        frame.update(frameNotUpdated ? 0 : deltaTime);
+        frameNotUpdated = false;
     }
 
     @Override
     public void render() {
-        render(frame);
+        if (frame != null) {
+            render(frame);
+        }
     }
 
     private void render(Frame frame) {
