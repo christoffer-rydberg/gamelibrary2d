@@ -58,7 +58,6 @@ public abstract class AbstractClientObject
         return secondaryType;
     }
 
-    @Override
     public Renderable getRenderer() {
         return renderer;
     }
@@ -157,5 +156,12 @@ public abstract class AbstractClientObject
             return ((Bounded) renderer).getBounds();
         else
             return Rectangle.EMPTY;
+    }
+
+    @Override
+    public void onRender(float alpha) {
+        if (renderer != null) {
+            renderer.render(alpha);
+        }
     }
 }

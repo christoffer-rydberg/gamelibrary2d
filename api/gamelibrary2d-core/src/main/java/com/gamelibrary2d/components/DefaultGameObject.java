@@ -16,7 +16,6 @@ public final class DefaultGameObject<T extends Renderable> extends AbstractGameO
         this.renderer = renderer;
     }
 
-    @Override
     public T getRenderer() {
         return renderer;
     }
@@ -40,5 +39,12 @@ public final class DefaultGameObject<T extends Renderable> extends AbstractGameO
 
     public void setBounds(Rectangle bounds) {
         this.bounds = bounds;
+    }
+
+    @Override
+    protected void onRender(float alpha) {
+        if (renderer != null) {
+            renderer.render(alpha);
+        }
     }
 }

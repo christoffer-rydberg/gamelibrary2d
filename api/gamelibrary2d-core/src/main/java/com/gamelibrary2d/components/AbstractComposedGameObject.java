@@ -2,7 +2,6 @@ package com.gamelibrary2d.components;
 
 import com.gamelibrary2d.Point;
 import com.gamelibrary2d.Rectangle;
-import com.gamelibrary2d.denotations.Renderable;
 
 public abstract class AbstractComposedGameObject<T extends GameObject> implements GameObject {
     protected abstract T getComposition();
@@ -10,11 +9,6 @@ public abstract class AbstractComposedGameObject<T extends GameObject> implement
     @Override
     public void render(float alpha) {
         getComposition().render(alpha);
-    }
-
-    @Override
-    public Renderable getRenderer() {
-        return getComposition().getRenderer();
     }
 
     @Override

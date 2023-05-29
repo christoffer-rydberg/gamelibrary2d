@@ -11,18 +11,12 @@ import com.gamelibrary2d.components.denotations.KeyDownAware;
 public class InputField extends AbstractPointerAwareGameObject implements KeyDownAware, InputAware {
     private final Rectangle bounds;
     private final ShadowedLabel label;
-    private final Renderable renderer;
+    private final Renderable background;
 
     public InputField(ShadowedLabel label, Renderable background, Rectangle bounds) {
         this.bounds = bounds;
         this.label = label;
-        this.renderer = alpha -> {
-            if (background != null) {
-                background.render(alpha);
-            }
-
-            label.render(alpha);
-        };
+        this.background = background;
     }
 
     public int getIntValue() {
@@ -64,7 +58,11 @@ public class InputField extends AbstractPointerAwareGameObject implements KeyDow
     }
 
     @Override
-    public Renderable getRenderer() {
-        return renderer;
+    protected void onRender(float alpha) {
+        if (background != null) {
+            background.render(alpha);
+        }
+
+        label.render(alpha);
     }
 }

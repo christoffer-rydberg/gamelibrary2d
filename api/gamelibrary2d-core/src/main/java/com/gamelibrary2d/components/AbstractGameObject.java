@@ -2,7 +2,6 @@ package com.gamelibrary2d.components;
 
 import com.gamelibrary2d.FocusManager;
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.opengl.ModelMatrix;
 
 public abstract class AbstractGameObject implements GameObject {
@@ -64,16 +63,9 @@ public abstract class AbstractGameObject implements GameObject {
     @Override
     public final void render(float alpha) {
         if (isEnabled()) {
-            onRender(alpha);
-        }
-    }
-
-    protected void onRender(float alpha) {
-        Renderable renderer = getRenderer();
-        if (renderer != null) {
             ModelMatrix.instance().pushMatrix();
             ModelMatrix.instance().transform(this);
-            renderer.render(alpha * opacity);
+            onRender(alpha * opacity);
             ModelMatrix.instance().popMatrix();
         }
     }
@@ -90,4 +82,6 @@ public abstract class AbstractGameObject implements GameObject {
             }
         }
     }
+
+    protected abstract void onRender(float alpha);
 }

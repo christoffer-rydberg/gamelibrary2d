@@ -1,7 +1,6 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.Rectangle;
-import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
 import com.gamelibrary2d.text.Label;
 import com.gamelibrary2d.tools.particlegenerator.properties.GenericProperty;
@@ -9,7 +8,6 @@ import com.gamelibrary2d.tools.particlegenerator.properties.GenericProperty;
 public class EnumWidget<T extends Enum<T>> extends AbstractPointerAwareGameObject {
     private final T[] values;
     private final Label label;
-    private final Renderable renderer;
     private final GenericProperty<T> property;
 
     private T cachedValue;
@@ -21,11 +19,6 @@ public class EnumWidget<T extends Enum<T>> extends AbstractPointerAwareGameObjec
         this.values = enumType.getEnumConstants();
         this.property = property;
         updateLabel();
-
-        renderer = alpha -> {
-            updateLabel();
-            label.render(alpha);
-        };
     }
 
     private void updateLabel() {
@@ -63,7 +56,8 @@ public class EnumWidget<T extends Enum<T>> extends AbstractPointerAwareGameObjec
     }
 
     @Override
-    public Renderable getRenderer() {
-        return renderer;
+    protected void onRender(float alpha) {
+        updateLabel();
+        label.render(alpha);
     }
 }

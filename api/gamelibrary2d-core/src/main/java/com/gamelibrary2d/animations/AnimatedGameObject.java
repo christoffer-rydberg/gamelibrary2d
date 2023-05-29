@@ -46,6 +46,12 @@ public class AnimatedGameObject extends AbstractGameObject implements Updatable 
     }
 
     @Override
+    protected void onRender(float alpha) {
+        if (renderer != null) {
+            renderer.render(alpha);
+        }
+    }
+
     public AnimationRenderer getRenderer() {
         return renderer;
     }

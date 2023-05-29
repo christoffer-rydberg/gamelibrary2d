@@ -72,15 +72,15 @@ public class Ball extends AbstractGameObject implements Obstacle {
     }
 
     @Override
-    public Renderable getRenderer() {
-        return renderer;
-    }
-
-    @Override
     public Rectangle getBounds() {
         if (renderer instanceof Bounded)
             return ((Bounded) renderer).getBounds();
         else
             return Rectangle.EMPTY;
+    }
+
+    @Override
+    protected void onRender(float alpha) {
+        renderer.render(alpha);
     }
 }

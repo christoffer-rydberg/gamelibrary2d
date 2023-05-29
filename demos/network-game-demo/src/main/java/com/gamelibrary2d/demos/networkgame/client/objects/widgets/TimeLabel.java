@@ -2,7 +2,6 @@ package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
 import com.gamelibrary2d.Color;
 import com.gamelibrary2d.Rectangle;
-import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.demos.networkgame.client.resources.Fonts;
 import com.gamelibrary2d.opengl.ModelMatrix;
@@ -13,24 +12,12 @@ import com.gamelibrary2d.text.VerticalTextAlignment;
 
 public class TimeLabel extends AbstractGameObject {
     private final Label label;
-    private final Renderable renderer;
 
     public TimeLabel(Font font) {
         label = new Label(font);
         label.setColor(Color.LAVENDER);
         label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.CENTER);
         setTime(0, 0);
-
-        renderer = alpha -> {
-            ModelMatrix.instance().pushMatrix();
-            try {
-                float fontScale = Fonts.getFontScale();
-                ModelMatrix.instance().scalef(fontScale, fontScale, 1f);
-                label.render(alpha);
-            } finally {
-                ModelMatrix.instance().popMatrix();
-            }
-        };
     }
 
     public void setTimeFromSeconds(int seconds) {
@@ -49,7 +36,14 @@ public class TimeLabel extends AbstractGameObject {
     }
 
     @Override
-    public Renderable getRenderer() {
-        return renderer;
+    protected void onRender(float alpha) {
+        ModelMatrix.instance().pushMatrix();
+        try {
+            float fontScale = Fonts.getFontScale();
+            ModelMatrix.instance().scalef(fontScale, fontScale, 1f);
+            label.render(alpha);
+        } finally {
+            ModelMatrix.instance().popMatrix();
+        }
     }
 }

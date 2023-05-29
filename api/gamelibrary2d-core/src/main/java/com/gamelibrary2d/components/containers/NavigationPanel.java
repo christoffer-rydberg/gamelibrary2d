@@ -110,11 +110,6 @@ public class NavigationPanel extends AbstractGameObject
     }
 
     @Override
-    public Renderable getRenderer() {
-        return current;
-    }
-
-    @Override
     public Rectangle getBounds() {
         return bounds != null ? bounds : getCurrentBounds();
     }
@@ -127,5 +122,12 @@ public class NavigationPanel extends AbstractGameObject
 
     public void setBounds(Rectangle bounds) {
         this.bounds = bounds;
+    }
+
+    @Override
+    protected void onRender(float alpha) {
+        if (current != null) {
+            current.render(alpha);
+        }
     }
 }

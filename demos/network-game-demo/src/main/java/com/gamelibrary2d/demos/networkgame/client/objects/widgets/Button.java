@@ -9,7 +9,7 @@ public class Button extends AbstractPointerAwareGameObject {
     private final ParameterizedAction<Button> onClick;
     private final Rectangle bounds;
     private final ShadowedLabel label;
-    private final Renderable renderer;
+    private final Renderable background;
 
     public Button(ShadowedLabel label, Rectangle bounds, ParameterizedAction<Button> onClick) {
         this(label, null, bounds, onClick);
@@ -19,13 +19,7 @@ public class Button extends AbstractPointerAwareGameObject {
         this.onClick = onClick;
         this.bounds = bounds;
         this.label = label;
-        this.renderer = alpha -> {
-            if (background != null) {
-                background.render(alpha);
-            }
-
-            label.render(alpha);
-        };
+        this.background = background;
     }
 
     public ShadowedLabel getLabel() {
@@ -42,8 +36,13 @@ public class Button extends AbstractPointerAwareGameObject {
         return bounds;
     }
 
+
     @Override
-    public Renderable getRenderer() {
-        return renderer;
+    protected void onRender(float alpha) {
+        if (background != null) {
+            background.render(alpha);
+        }
+
+        label.render(alpha);
     }
 }

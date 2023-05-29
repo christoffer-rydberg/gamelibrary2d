@@ -167,17 +167,17 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    public Renderable getRenderer() {
-        return handle;
-    }
-
-    @Override
     public Rectangle getBounds() {
         return bounds != null ? bounds : handle.getBounds();
     }
 
     protected void setBounds(Rectangle bounds) {
         this.bounds = bounds;
+    }
+
+    @Override
+    protected void onRender(float alpha) {
+        handle.render(alpha);
     }
 
     public enum SliderDirection {

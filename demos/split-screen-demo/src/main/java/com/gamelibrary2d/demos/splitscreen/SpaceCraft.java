@@ -2,7 +2,6 @@ package com.gamelibrary2d.demos.splitscreen;
 
 import com.gamelibrary2d.Point;
 import com.gamelibrary2d.Rectangle;
-import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.denotations.Updatable;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
@@ -52,7 +51,7 @@ public class SpaceCraft extends AbstractGameObject implements Updatable {
     }
 
     @Override
-    public Renderable getRenderer() {
-        return renderer;
+    protected void onRender(float alpha) {
+        renderer.render(alpha);
     }
 }

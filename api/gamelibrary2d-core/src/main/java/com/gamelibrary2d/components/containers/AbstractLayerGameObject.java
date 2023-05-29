@@ -148,8 +148,8 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
     }
 
     @Override
-    public Renderable getRenderer() {
-        return getLayer();
+    public void onRender(float alpha) {
+        getLayer().render(alpha);
     }
 
     protected abstract Layer<T> getLayer();

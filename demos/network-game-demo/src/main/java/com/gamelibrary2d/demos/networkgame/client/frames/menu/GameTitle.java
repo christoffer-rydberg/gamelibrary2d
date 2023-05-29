@@ -31,8 +31,6 @@ public class GameTitle extends AbstractGameObject implements Updatable {
     private final GameObject part2;
     private final GameObject part3;
     private final Portal portal;
-
-    private final Renderable renderer;
     private boolean showPortal;
 
     private GameTitle(Rectangle bounds, GameObject part1, GameObject part2, GameObject part3, Portal portal) {
@@ -42,16 +40,6 @@ public class GameTitle extends AbstractGameObject implements Updatable {
         this.part3 = part3;
         this.portal = portal;
         setOpacity(0.75f);
-
-        renderer = alpha -> {
-            if (showPortal) {
-                portal.render(alpha);
-            }
-
-            part1.render(alpha);
-            part2.render(alpha);
-            part3.render(alpha);
-        };
     }
 
     private static GameObject createPartialTitle(Rectangle titleBounds, Texture titleTexture, float left, float right, Disposer disposer) {
@@ -132,8 +120,14 @@ public class GameTitle extends AbstractGameObject implements Updatable {
     }
 
     @Override
-    public Renderable getRenderer() {
-        return renderer;
+    protected void onRender(float alpha) {
+        if (showPortal) {
+            portal.render(alpha);
+        }
+
+        part1.render(alpha);
+        part2.render(alpha);
+        part3.render(alpha);
     }
 
     private static class Portal implements Updatable, Renderable {

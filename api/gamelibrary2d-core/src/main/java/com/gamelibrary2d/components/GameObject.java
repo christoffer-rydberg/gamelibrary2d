@@ -1,6 +1,5 @@
 package com.gamelibrary2d.components;
 
-import com.gamelibrary2d.CoordinateSpace;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.Opacifiable;
 import com.gamelibrary2d.denotations.Bounded;
@@ -17,9 +16,4 @@ public interface GameObject extends Renderable, Bounded, Transformable, Opacifia
      * Sets if the object is {@link #isEnabled() enabled}.
      */
     void setEnabled(boolean enabled);
-
-    /**
-     * Handles rendering of the game object within the game object's {@link CoordinateSpace}.
-     */
-    Renderable getRenderer();
 }

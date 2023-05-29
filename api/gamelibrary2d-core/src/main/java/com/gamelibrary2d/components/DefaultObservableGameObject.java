@@ -16,13 +16,19 @@ public final class DefaultObservableGameObject<T extends Renderable> extends Abs
         this.renderer = renderer;
     }
 
-    @Override
     public T getRenderer() {
         return renderer;
     }
 
     public void setRenderer(T renderer) {
         this.renderer = renderer;
+    }
+
+    @Override
+    protected void onRender(float alpha) {
+        if (renderer != null) {
+            renderer.render(alpha);
+        }
     }
 
     @Override

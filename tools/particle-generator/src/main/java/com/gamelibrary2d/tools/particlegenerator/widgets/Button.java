@@ -1,7 +1,6 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.Rectangle;
-import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
 import com.gamelibrary2d.functional.Action;
 import com.gamelibrary2d.text.Label;
@@ -32,7 +31,7 @@ public class Button extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    public Renderable getRenderer() {
-        return label;
+    protected void onRender(float alpha) {
+        label.render(alpha);
     }
 }
