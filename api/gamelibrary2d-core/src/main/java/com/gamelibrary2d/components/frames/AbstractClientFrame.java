@@ -1,27 +1,25 @@
 package com.gamelibrary2d.components.frames;
 
 import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.functional.ParameterizedAction;
 import com.gamelibrary2d.io.DataBuffer;
-import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.Client;
 import com.gamelibrary2d.network.client.ClientLogic;
 import com.gamelibrary2d.network.client.DefaultClient;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 
 import java.io.IOException;
-import java.util.concurrent.Future;
 
 public abstract class AbstractClientFrame extends AbstractFrame {
-    private final Client client;
+    private Client client;
 
     protected AbstractClientFrame(Disposer parentDisposer) {
         super(parentDisposer);
-        client = new DefaultClient(new FrameClientLogic(), super::onUpdate);
     }
 
     @Override
     protected void onUpdate(float deltaTime) {
-        if (isInitialized()) {
+        if (client != null) {
             client.update(deltaTime);
         } else {
             super.onUpdate(deltaTime);
@@ -30,25 +28,36 @@ public abstract class AbstractClientFrame extends AbstractFrame {
 
     @Override
     protected final void onInitialize(FrameInitializer initializer) throws IOException {
-        ClientFrameInitializer clientFrameInitializer = new ClientFrameInitializer(client, this, initializer);
+        ClientFrameInitializer clientFrameInitializer = new ClientFrameInitializer(
+                this::createClient,
+                this,
+                initializer);
+
         onInitialize(clientFrameInitializer);
-        clientFrameInitializer.addClientTasks();
     }
 
-    protected abstract Future<Communicator> connectToServer();
+    private Client createClient(ParameterizedAction<CommunicatorInitializer> onInitializeClient) {
+        return new DefaultClient(new FrameClientLogic(onInitializeClient), super::onUpdate);
+    }
+
+    final void onClientInitialized(Client client) {
+        this.client = client;
+    }
 
     protected abstract void onInitialize(ClientFrameInitializer initializer) throws IOException;
-
-    protected abstract void onInitializeClient(CommunicatorInitializer initializer);
-
-    protected abstract void onClientInitialized(Communicator communicator);
 
     protected abstract void onMessage(DataBuffer dataBuffer);
 
     private class FrameClientLogic implements ClientLogic {
+        private final ParameterizedAction<CommunicatorInitializer> onInitialize;
+
+        private FrameClientLogic(ParameterizedAction<CommunicatorInitializer> onInitialize) {
+            this.onInitialize = onInitialize;
+        }
+
         @Override
         public void onInitialize(CommunicatorInitializer initializer) {
-            AbstractClientFrame.this.onInitializeClient(initializer);
+            onInitialize.perform(initializer);
         }
 
         @Override

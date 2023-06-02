@@ -21,7 +21,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     private final Deque<Update> updates = new ArrayDeque<>();
     private final DefaultDisposer disposer;
     private Color backgroundColor = Color.BLACK;
-    private boolean initialized;
+    private boolean inInitializeScope;
     private Future<FrameInitializationContext> initializationContextFuture;
 
     protected AbstractFrame(Disposer parentDisposer) {
@@ -52,41 +52,50 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     }
 
     /**
-     * This method sets {@link #isInitialized} to false, invokes {@link #onInitialize(FrameInitializer)} and runs the initialization pipeline.
-     * Note that no cleanup is attempted. It's up to the invoker to set the frame in a state so that it can be re-initialized.
+     * Reruns the frame initialization pipeline without any cleanup.
      */
     protected void reInitialize() {
+        if (inInitializeScope) {
+            throw new RuntimeException("Cannot call reInitialize from initialize");
+        }
+
         abortInitialization();
         initialize();
     }
 
+    private void abortInitialization() {
+        if (initializationContextFuture != null) {
+            initializationContextFuture.cancel(true);
+            initializationContextFuture = null;
+        }
+    }
+
     private void initialize() {
-        initialized = false;
-
-        FrameInitializer frameInitializer = new FrameInitializer(this);
-
         try {
+            inInitializeScope = true;
+            FrameInitializer frameInitializer = new FrameInitializer(this);
             onInitialize(frameInitializer);
             initializationContextFuture = frameInitializer.run();
         } catch (Throwable e) {
             CompletableFuture<FrameInitializationContext> completedFuture = new CompletableFuture<>();
             completedFuture.completeExceptionally(e);
             initializationContextFuture = completedFuture;
+        } finally {
+            inInitializeScope = false;
         }
 
         tryCompleteInitialization();
     }
 
     private void tryCompleteInitialization() {
-        initialized = initializationContextFuture.isDone();
-
-        if (initialized) {
+        if (initializationContextFuture.isDone()) {
             try {
-                onInitializationSuccessful(initializationContextFuture.get());
-            } catch (InterruptedException | ExecutionException e) {
-                onInitializationFailed(e);
-            } finally {
+                FrameInitializationContext context = initializationContextFuture.get();
                 initializationContextFuture = null;
+                onInitializationSuccessful(context);
+            } catch (InterruptedException | ExecutionException e) {
+                initializationContextFuture = null;
+                onInitializationFailed(e);
             }
         }
     }
@@ -99,24 +108,17 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
 
     @Override
     public void dispose() {
+        if (inInitializeScope) {
+            throw new RuntimeException("Cannot call dispose from initialize");
+        }
+
         abortInitialization();
-        initialized = false;
-
         clear();
-
         disposer.dispose();
         disposer.clear();
         updates.clear();
         clearDelayedActions();
-
         onDispose();
-    }
-
-    private void abortInitialization() {
-        if (initializationContextFuture != null) {
-            initializationContextFuture.cancel(true);
-            initializationContextFuture = null;
-        }
     }
 
     @Override
@@ -129,10 +131,6 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     @Override
     public void stopUpdate(Update update) {
         updates.remove(update);
-    }
-
-    protected boolean isInitialized() {
-        return initialized;
     }
 
     @Override

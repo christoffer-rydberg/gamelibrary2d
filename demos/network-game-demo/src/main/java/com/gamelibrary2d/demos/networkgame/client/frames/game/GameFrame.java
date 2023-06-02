@@ -8,14 +8,11 @@ import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.SoundMap;
 import com.gamelibrary2d.io.DataBuffer;
-import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.Connectable;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
 
 import java.io.IOException;
-import java.util.concurrent.Future;
 
 public final class GameFrame extends AbstractClientFrame {
     private final GameFrameManager frameManager;
@@ -54,23 +51,13 @@ public final class GameFrame extends AbstractClientFrame {
     }
 
     @Override
-    protected Future<Communicator> connectToServer() {
-        return server.connect();
-    }
-
-    @Override
     protected void onInitialize(ClientFrameInitializer initializer) throws IOException {
         frameManager.prepare();
-    }
 
-    @Override
-    protected void onInitializeClient(CommunicatorInitializer initializer) {
-        frameClient.initialize(initializer);
-    }
-
-    @Override
-    protected void onClientInitialized(Communicator communicator) {
-        frameClient.onInitialized(communicator);
+        initializer.initializeClient(
+                server::connect,
+                frameClient::initialize,
+                frameClient::onInitialized);
     }
 
     @Override

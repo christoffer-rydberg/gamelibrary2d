@@ -1,21 +1,25 @@
 package com.gamelibrary2d.components.frames;
 
+import com.gamelibrary2d.functional.Factory;
+import com.gamelibrary2d.functional.ParameterizedAction;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.Client;
-
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.function.Function;
 
 public class ClientFrameInitializer {
-    private final Client client;
+    private final Function<ParameterizedAction<CommunicatorInitializer>, Client> clientFactory;
     private final AbstractClientFrame frame;
     private final FrameInitializer frameInitializer;
-    private boolean connectionTasksAdded;
+    private boolean clientTasksAdded;
 
     ClientFrameInitializer(
-            Client client,
+            Function<ParameterizedAction<CommunicatorInitializer>, Client> clientFactory,
             AbstractClientFrame frame,
             FrameInitializer frameInitializer) {
-        this.client = client;
+        this.clientFactory = clientFactory;
         this.frame = frame;
         this.frameInitializer = frameInitializer;
     }
@@ -48,20 +52,26 @@ public class ClientFrameInitializer {
     /**
      * Adds tasks to connect and initialize the client.
      */
-    public void addClientTasks() {
-        if (connectionTasksAdded) {
+    public void initializeClient(
+            Factory<Future<Communicator>> connectionFactory,
+            ParameterizedAction<CommunicatorInitializer> onInitialize,
+            ParameterizedAction<Communicator> onInitialized) {
+        if (clientTasksAdded) {
             return;
         }
 
-        connectionTasksAdded = true;
+        clientTasksAdded = true;
+
+        final Client client = clientFactory.apply(onInitialize);
 
         addBackgroundTask(ctx -> {
-            Communicator communicator = frame.connectToServer().get();
+            Communicator communicator = connectionFactory.create().get();
             client.initialize(communicator);
         });
 
         addTask(ctx -> {
-            frame.onClientInitialized(client.getCommunicator());
+            frame.onClientInitialized(client);
+            onInitialized.perform(client.getCommunicator());
         });
     }
 }
