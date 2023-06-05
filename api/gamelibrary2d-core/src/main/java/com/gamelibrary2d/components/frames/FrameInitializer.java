@@ -1,6 +1,12 @@
 package com.gamelibrary2d.components.frames;
 
+import com.gamelibrary2d.functional.Factory;
+import com.gamelibrary2d.functional.ParameterizedAction;
+import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.network.client.Client;
+
 import java.util.concurrent.*;
+import java.util.function.Function;
 
 /**
  * Used to configure the frame initialization pipeline by adding {@link FrameInitializationTask initialization tasks}.
@@ -16,9 +22,14 @@ public class FrameInitializer {
     private final ConcurrentLinkedQueue<InitializationTaskWrapper> tasks = new ConcurrentLinkedQueue<>();
     private final FrameInitializationContext context = new FrameInitializationContext();
     private final InitializationFuture initializationFuture = new InitializationFuture();
+    private final Function<FrameClient, Client> clientFactory;
+    private final ParameterizedAction<Client> onClientInitialized;
+    private boolean clientTasksAdded;
 
-    FrameInitializer(Frame frame) {
+    FrameInitializer(Frame frame, Function<FrameClient, Client> clientFactory, ParameterizedAction<Client> onClientInitialized) {
         this.frame = frame;
+        this.clientFactory = clientFactory;
+        this.onClientInitialized = onClientInitialized;
     }
 
     private void performTask(FrameInitializationTask task) {
@@ -75,6 +86,31 @@ public class FrameInitializer {
      */
     public void addBackgroundTask(FrameInitializationTask task) {
         tasks.add(new InitializationTaskWrapper(task, true));
+    }
+
+    /**
+     * Adds tasks to connect and initialize the client.
+     */
+    public void connectToServer(
+            Factory<Future<Communicator>> connectionFactory,
+            FrameClient frameClient) {
+        if (clientTasksAdded) {
+            return;
+        }
+
+        clientTasksAdded = true;
+
+        final Client client = clientFactory.apply(frameClient);
+
+        addBackgroundTask(ctx -> {
+            Communicator communicator = connectionFactory.create().get();
+            client.initialize(communicator);
+        });
+
+        addTask(ctx -> {
+            onClientInitialized.perform(client);
+            frameClient.onCommunicatorReady(client.getCommunicator());
+        });
     }
 
     Future<FrameInitializationContext> run() {

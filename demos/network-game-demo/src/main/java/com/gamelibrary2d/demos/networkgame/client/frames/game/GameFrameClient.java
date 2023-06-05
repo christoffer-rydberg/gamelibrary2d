@@ -1,5 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
+import com.gamelibrary2d.components.frames.FrameClient;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.*;
 import com.gamelibrary2d.demos.networkgame.common.*;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 import static com.gamelibrary2d.demos.networkgame.common.ServerMessages.*;
 
-public class GameFrameClient {
+public class GameFrameClient implements FrameClient {
     private final GameFrameManager frameManager;
     private final ControllerFactory controllerFactory;
     private final BitParser bitParser = new BitParser();
@@ -29,7 +30,8 @@ public class GameFrameClient {
         this.controllerFactory = controllerFactory;
     }
 
-    public void initialize(CommunicatorInitializer initializer) {
+    @Override
+    public void onInitializeClient(CommunicatorInitializer initializer) {
         initializer.addConsumer((ctx, com, inbox) -> {
             serverUpdatesPerSecond = inbox.getFloat();
             return true;
@@ -53,7 +55,7 @@ public class GameFrameClient {
         return true;
     }
 
-    public void onInitialized(Communicator communicator) {
+    public void onCommunicatorReady(Communicator communicator) {
         this.communicator = communicator;
         communicator.addDisconnectedListener(this::onDisconnected);
         frameManager.invokeLater(() -> {

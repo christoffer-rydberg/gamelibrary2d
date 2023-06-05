@@ -1,20 +1,19 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
-import com.gamelibrary2d.components.frames.AbstractClientFrame;
-import com.gamelibrary2d.components.frames.ClientFrameInitializer;
+import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.components.frames.FrameInitializationContext;
+import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.SoundMap;
-import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.client.Connectable;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
 
 import java.io.IOException;
 
-public final class GameFrame extends AbstractClientFrame {
+public final class GameFrame extends AbstractFrame {
     private final GameFrameManager frameManager;
     private final GameFrameClient frameClient;
     private Connectable server;
@@ -51,13 +50,9 @@ public final class GameFrame extends AbstractClientFrame {
     }
 
     @Override
-    protected void onInitialize(ClientFrameInitializer initializer) throws IOException {
+    protected void onInitialize(FrameInitializer initializer) throws IOException {
         frameManager.prepare();
-
-        initializer.initializeClient(
-                server::connect,
-                frameClient::initialize,
-                frameClient::onInitialized);
+        initializer.connectToServer(server::connect, frameClient);
     }
 
     @Override
@@ -69,10 +64,5 @@ public final class GameFrame extends AbstractClientFrame {
     @Override
     protected void onInitializationSuccessful(FrameInitializationContext context) {
         frameManager.onInitializationSuccessful();
-    }
-
-    @Override
-    protected void onMessage(DataBuffer dataBuffer) {
-        frameClient.onMessage(dataBuffer);
     }
 }

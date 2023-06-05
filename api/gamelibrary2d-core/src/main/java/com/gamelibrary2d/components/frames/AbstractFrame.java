@@ -7,6 +7,11 @@ import com.gamelibrary2d.disposal.DefaultDisposer;
 import com.gamelibrary2d.disposal.Disposable;
 import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.functional.Action;
+import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.client.Client;
+import com.gamelibrary2d.network.client.ClientLogic;
+import com.gamelibrary2d.network.client.DefaultClient;
+import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.updates.Update;
 
 import java.io.IOException;
@@ -23,6 +28,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     private Color backgroundColor = Color.BLACK;
     private boolean inInitializeScope;
     private Future<FrameInitializationContext> initializationContextFuture;
+    private Client client;
 
     protected AbstractFrame(Disposer parentDisposer) {
         this.disposer = new DefaultDisposer(parentDisposer);
@@ -73,7 +79,12 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     private void initialize() {
         try {
             inInitializeScope = true;
-            FrameInitializer frameInitializer = new FrameInitializer(this);
+
+            FrameInitializer frameInitializer = new FrameInitializer(
+                    this,
+                    this::createClient,
+                    client -> this.client = client);
+
             onInitialize(frameInitializer);
             initializationContextFuture = frameInitializer.run();
         } catch (Throwable e) {
@@ -119,6 +130,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         updates.clear();
         clearDelayedActions();
         onDispose();
+        client = null;
     }
 
     @Override
@@ -145,6 +157,14 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     }
 
     protected void onUpdate(float deltaTime) {
+        if (client != null) {
+            client.update(deltaTime);
+        } else {
+            performUpdate(deltaTime);
+        }
+    }
+
+    private void performUpdate(float deltaTime) {
         super.handleUpdate(deltaTime);
 
         for (int i = 0; i < updates.size(); ++i) {
@@ -221,6 +241,28 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
 
         synchronized void clear() {
             actions.clear();
+        }
+    }
+
+    private Client createClient(FrameClient frameClient) {
+        return new DefaultClient(new FrameClientLogic(frameClient), this::performUpdate);
+    }
+
+    private static class FrameClientLogic implements ClientLogic {
+        private final FrameClient frameClient;
+
+        private FrameClientLogic(FrameClient frameClient) {
+            this.frameClient = frameClient;
+        }
+
+        @Override
+        public void onInitialize(CommunicatorInitializer initializer) {
+            frameClient.onInitializeClient(initializer);
+        }
+
+        @Override
+        public void onMessage(DataBuffer buffer) {
+            frameClient.onMessage(buffer);
         }
     }
 }

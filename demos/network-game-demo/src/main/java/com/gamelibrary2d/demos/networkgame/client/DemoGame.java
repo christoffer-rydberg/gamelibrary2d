@@ -126,9 +126,9 @@ public class DemoGame extends AbstractGame {
     }
 
     @Override
-    protected void onExit() {
-        stopHostedServer();
-    }
+        protected void onExit() {
+            stopHostedServer();
+        }
 
     public Options getOptions() {
         return options;
