@@ -7,8 +7,6 @@ import com.gamelibrary2d.Window;
 import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.io.ResourceReader;
 import com.gamelibrary2d.lightning.*;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
@@ -67,31 +65,25 @@ class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) throws IOException {
-        Window window = game.getWindow();
-        DefaultParticleSystem particleSystem = createParticleSystem();
-        DefaultDynamicLightMap lightMap = new DefaultDynamicLightMap(new DefaultLightSpreadMatrix(20));
-        Layer<Renderable> frameLayer = new DefaultLayer<>();
-        frameLayer.add(createBackground(window));
-        frameLayer.add(createTorch(particleSystem, lightMap));
-        frameLayer.add(particleSystem);
-        LightRenderer lightRenderer = createLightRenderer(window, lightMap);
-        frameLayer.add(alpha -> {
-            lightRenderer.apply();
-            lightRenderer.render(alpha);
-            lightRenderer.reset();
-        });
-        add(frameLayer);
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-
+    protected void onBegin() {
+        try {
+            Window window = game.getWindow();
+            DefaultParticleSystem particleSystem = createParticleSystem();
+            DefaultDynamicLightMap lightMap = new DefaultDynamicLightMap(new DefaultLightSpreadMatrix(20));
+            Layer<Renderable> frameLayer = new DefaultLayer<>();
+            frameLayer.add(createBackground(window));
+            frameLayer.add(createTorch(particleSystem, lightMap));
+            frameLayer.add(particleSystem);
+            LightRenderer lightRenderer = createLightRenderer(window, lightMap);
+            frameLayer.add(alpha -> {
+                lightRenderer.apply();
+                lightRenderer.render(alpha);
+                lightRenderer.reset();
+            });
+            add(frameLayer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

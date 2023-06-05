@@ -1,8 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.game;
 
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
+import com.gamelibrary2d.components.frames.Pipeline;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
@@ -39,6 +38,17 @@ public final class GameFrame extends AbstractFrame {
     }
 
     @Override
+    protected void onBegin() {
+        startPipeline(this::initializeFrame, (ctx, e) -> frameManager.goToMenu());
+    }
+
+    private void initializeFrame(Pipeline pipeline) {
+        pipeline.addTask(ctx -> frameManager.prepare());
+        connectToServer(frameClient, server, pipeline);
+        pipeline.addTask(ctx -> frameManager.onInitializationSuccessful());
+    }
+
+    @Override
     protected void onEnd() {
         frameManager.onEnd();
         frameClient.disconnect();
@@ -47,22 +57,5 @@ public final class GameFrame extends AbstractFrame {
     @Override
     protected void onDispose() {
         frameManager.onDispose();
-    }
-
-    @Override
-    protected void onInitialize(FrameInitializer initializer) throws IOException {
-        frameManager.prepare();
-        initializer.connectToServer(server::connect, frameClient);
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-        System.err.println(error);
-        frameManager.goToMenu();
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-        frameManager.onInitializationSuccessful();
     }
 }

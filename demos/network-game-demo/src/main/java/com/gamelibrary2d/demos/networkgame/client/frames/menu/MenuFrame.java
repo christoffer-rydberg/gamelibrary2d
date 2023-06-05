@@ -9,8 +9,6 @@ import com.gamelibrary2d.components.containers.*;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.denotations.KeyUpAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.objects.widgets.Button;
@@ -122,24 +120,20 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) throws IOException {
-        prepare();
-    }
+    protected void onBegin() {
+        try {
+            prepare();
 
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-        error.printStackTrace();
-    }
+            hideCredits();
+            add(backgroundLayer);
+            add(menuLayer);
+            add(credits);
+            runIntro();
 
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-        hideCredits();
-        add(backgroundLayer);
-        add(menuLayer);
-        add(credits);
-        runIntro();
-
-        musicPlayer.play(Music.MENU, 1f, false, 10f, false);
+            musicPlayer.play(Music.MENU, 1f, false, 10f, false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void runIntro() {

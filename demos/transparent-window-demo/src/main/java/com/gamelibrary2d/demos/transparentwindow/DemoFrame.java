@@ -6,9 +6,6 @@ import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.Window;
 import com.gamelibrary2d.animations.*;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +39,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) {
+    protected void onBegin() {
         Window window = game.getWindow();
         try {
             Animation animation = createAnimation();
@@ -52,16 +49,6 @@ public class DemoFrame extends AbstractFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-
     }
 
     @Override

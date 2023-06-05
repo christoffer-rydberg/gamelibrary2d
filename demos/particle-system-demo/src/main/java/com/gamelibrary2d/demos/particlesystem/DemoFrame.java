@@ -2,13 +2,10 @@ package com.gamelibrary2d.demos.particlesystem;
 
 import com.gamelibrary2d.Game;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.io.ResourceReader;
 import com.gamelibrary2d.particles.*;
 import com.gamelibrary2d.updates.IdleUpdate;
 import com.gamelibrary2d.updates.SequentialUpdater;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +49,7 @@ public class DemoFrame extends AbstractFrame {
         return updateSettings;
     }
 
-    @Override
-    protected void onInitialize(FrameInitializer initializer) {
+    protected void onBegin() {
         try {
             // Example of particle system settings created from code:
             ParticleEmissionParameters emissionParameters = new ParticleEmissionParameters();
@@ -79,16 +75,6 @@ public class DemoFrame extends AbstractFrame {
             e.printStackTrace();
             game.exit();
         }
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-
     }
 
     @Override

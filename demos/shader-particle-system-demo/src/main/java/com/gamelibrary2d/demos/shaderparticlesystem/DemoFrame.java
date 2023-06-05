@@ -5,9 +5,6 @@ import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.Window;
 import com.gamelibrary2d.components.containers.DefaultLayerGameObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,7 +19,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) {
+    protected void onBegin() {
         try {
             Window window = game.getWindow();
             float windowWidth = window.getWidth();
@@ -46,16 +43,6 @@ public class DemoFrame extends AbstractFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-
     }
 
     @Override

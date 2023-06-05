@@ -8,8 +8,6 @@ import com.gamelibrary2d.components.containers.DefaultLayerGameObject;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.input.Keyboard;
 import com.gamelibrary2d.opengl.buffers.PositionBuffer;
@@ -169,7 +167,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) {
+    protected void onBegin() {
         try {
             spacecraftLayer.add(0, createBackground());
 
@@ -188,16 +186,6 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-
     }
 
     @Override

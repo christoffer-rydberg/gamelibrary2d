@@ -1,38 +1,19 @@
 package com.gamelibrary2d.components.frames;
 
-import com.gamelibrary2d.functional.Factory;
-import com.gamelibrary2d.functional.ParameterizedAction;
-import com.gamelibrary2d.network.Communicator;
-import com.gamelibrary2d.network.client.Client;
-
 import java.util.concurrent.*;
-import java.util.function.Function;
 
-/**
- * Used to configure the frame initialization pipeline by adding {@link FrameInitializationTask initialization tasks}.
- * <br><br>
- * <p>
- * The initialization pipeline works as follows:
- * <br>- Each task runs sequentially in the order it was added.
- * <br>- Each update cycle will run at the most one task.
- * <br>- When a task has completed it will schedule the next task by invoking {@link Frame#invokeLater}
- */
-public class FrameInitializer {
+public class Pipeline {
     private final Frame frame;
     private final ConcurrentLinkedQueue<InitializationTaskWrapper> tasks = new ConcurrentLinkedQueue<>();
-    private final FrameInitializationContext context = new FrameInitializationContext();
+    private final PipelineContext context;
     private final InitializationFuture initializationFuture = new InitializationFuture();
-    private final Function<FrameClient, Client> clientFactory;
-    private final ParameterizedAction<Client> onClientInitialized;
-    private boolean clientTasksAdded;
 
-    FrameInitializer(Frame frame, Function<FrameClient, Client> clientFactory, ParameterizedAction<Client> onClientInitialized) {
+    Pipeline(Frame frame, PipelineContext context) {
         this.frame = frame;
-        this.clientFactory = clientFactory;
-        this.onClientInitialized = onClientInitialized;
+        this.context = context;
     }
 
-    private void performTask(FrameInitializationTask task) {
+    private void performTask(PipelineTask task) {
         if (!initializationFuture.isDone()) {
             try {
                 task.perform(context);
@@ -59,77 +40,52 @@ public class FrameInitializer {
         if (task != null) {
             frame.invokeLater(() -> performTask(task));
         } else {
-            initializationFuture.complete(context);
+            initializationFuture.complete();
         }
     }
 
     /**
-     * Adds an initialization task to the pipeline.
+     * Adds a task to the pipeline.
      * <p>
      * The task will block the update cycle when it runs.
      *
-     * @param task The initialization task
+     * @param task The task
      */
-    public void addTask(FrameInitializationTask task) {
+    public void addTask(PipelineTask task) {
         tasks.add(new InitializationTaskWrapper(task, false));
     }
 
     /**
-     * Adds an initialization task to the pipeline that will run in the background.
+     * Adds a task to the pipeline that will run in the background.
      * <br><br>The task will not block the update cycle when it runs, but since it's not running on the main thread
      * it won't have access to the OpenGL context.
      * <br><br>Background tasks are generally safe to have side effects.
      * The underlying {@link CompletableFuture} assures that the main thread will have visibility of changed fields when
      * the task has completed. Fields that are accessed or modified in parallel with the task must be properly synchronized.
      *
-     * @param task The initialization task
+     * @param task The task
      */
-    public void addBackgroundTask(FrameInitializationTask task) {
+    public void addBackgroundTask(PipelineTask task) {
         tasks.add(new InitializationTaskWrapper(task, true));
     }
 
-    /**
-     * Adds tasks to connect and initialize the client.
-     */
-    public void connectToServer(
-            Factory<Future<Communicator>> connectionFactory,
-            FrameClient frameClient) {
-        if (clientTasksAdded) {
-            return;
-        }
-
-        clientTasksAdded = true;
-
-        final Client client = clientFactory.apply(frameClient);
-
-        addBackgroundTask(ctx -> {
-            Communicator communicator = connectionFactory.create().get();
-            client.initialize(communicator);
-        });
-
-        addTask(ctx -> {
-            onClientInitialized.perform(client);
-            frameClient.onCommunicatorReady(client.getCommunicator());
-        });
-    }
-
-    Future<FrameInitializationContext> run() {
+    Future<Void> run() {
         performNextTask();
         return initializationFuture;
     }
 
     private static class InitializationTaskWrapper {
-        FrameInitializationTask task;
+        PipelineTask task;
         boolean isBackgroundTask;
 
-        InitializationTaskWrapper(FrameInitializationTask task, boolean isBackgroundTask) {
+        InitializationTaskWrapper(PipelineTask task, boolean isBackgroundTask) {
             this.task = task;
             this.isBackgroundTask = isBackgroundTask;
         }
     }
 
-    private static class InitializationFuture implements Future<FrameInitializationContext> {
-        private final CompletableFuture<FrameInitializationContext> completableFuture = new CompletableFuture<>();
+    private static class InitializationFuture implements Future<Void> {
+        private final CompletableFuture<Void> completableFuture = new CompletableFuture<>();
         private CompletableFuture<Void> activeFuture;
 
         @Override
@@ -165,12 +121,12 @@ public class FrameInitializer {
         }
 
         @Override
-        public FrameInitializationContext get() throws InterruptedException, ExecutionException {
+        public Void get() throws InterruptedException, ExecutionException {
             return completableFuture.get();
         }
 
         @Override
-        public FrameInitializationContext get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+        public Void get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
             return completableFuture.get(timeout, unit);
         }
 
@@ -178,8 +134,8 @@ public class FrameInitializer {
             completableFuture.completeExceptionally(e);
         }
 
-        public void complete(FrameInitializationContext context) {
-            completableFuture.complete(context);
+        public void complete() {
+            completableFuture.complete(null);
         }
 
         public void runAsync(Runnable runnable) {

@@ -8,27 +8,26 @@ import com.gamelibrary2d.disposal.Disposable;
 import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.functional.Action;
 import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.Client;
 import com.gamelibrary2d.network.client.ClientLogic;
+import com.gamelibrary2d.network.client.Connectable;
 import com.gamelibrary2d.network.client.DefaultClient;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.updates.Update;
-
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public abstract class AbstractFrame extends AbstractLayer<Renderable> implements Frame {
     private final DelayedActionMonitor delayedActionMonitor = new DelayedActionMonitor();
     private final Deque<Update> updates = new ArrayDeque<>();
+    private final Deque<PipelineManager> pipelines = new ArrayDeque<>();
     private final DefaultDisposer disposer;
     private Color backgroundColor = Color.BLACK;
-    private boolean inInitializeScope;
-    private Future<FrameInitializationContext> initializationContextFuture;
     private Client client;
+    private int pipelinesLeftToRunInUpdate;
 
     protected AbstractFrame(Disposer parentDisposer) {
         this.disposer = new DefaultDisposer(parentDisposer);
@@ -47,7 +46,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     @Override
     public void begin() {
         clearDelayedActions();
-        initialize();
+        onBegin();
     }
 
     /**
@@ -57,57 +56,51 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         delayedActionMonitor.clear();
     }
 
-    /**
-     * Reruns the frame initialization pipeline without any cleanup.
-     */
-    protected void reInitialize() {
-        if (inInitializeScope) {
-            throw new RuntimeException("Cannot call reInitialize from initialize");
-        }
+    protected void startPipeline(PipelineConfiguration configuration, PipelineErrorHandler errorHandler) {
+        PipelineContext context = new PipelineContext();
 
-        abortInitialization();
-        initialize();
+        Pipeline pipeline = new Pipeline(
+                this,
+                context);
+
+        configuration.addTasks(pipeline);
+
+        Future<Void> work = pipeline.run();
+
+        PipelineManager pipelineManager = new PipelineManager(work, context, errorHandler);
+
+        if (!tryFinishPipeline(pipelineManager)) {
+            pipelines.addLast(pipelineManager);
+        }
     }
 
-    private void abortInitialization() {
-        if (initializationContextFuture != null) {
-            initializationContextFuture.cancel(true);
-            initializationContextFuture = null;
-        }
-    }
-
-    private void initialize() {
+    private void runPipelines() {
         try {
-            inInitializeScope = true;
+            pipelinesLeftToRunInUpdate = pipelines.size();
 
-            FrameInitializer frameInitializer = new FrameInitializer(
-                    this,
-                    this::createClient,
-                    client -> this.client = client);
+            while (pipelinesLeftToRunInUpdate > 0) {
+                PipelineManager pipelineManager = pipelines.pollFirst();
+                if (!tryFinishPipeline(pipelineManager)) {
+                    pipelines.addLast(pipelineManager);
+                }
 
-            onInitialize(frameInitializer);
-            initializationContextFuture = frameInitializer.run();
-        } catch (Throwable e) {
-            CompletableFuture<FrameInitializationContext> completedFuture = new CompletableFuture<>();
-            completedFuture.completeExceptionally(e);
-            initializationContextFuture = completedFuture;
+                --pipelinesLeftToRunInUpdate;
+            }
         } finally {
-            inInitializeScope = false;
+            pipelinesLeftToRunInUpdate = 0;
         }
-
-        tryCompleteInitialization();
     }
 
-    private void tryCompleteInitialization() {
-        if (initializationContextFuture.isDone()) {
+    private boolean tryFinishPipeline(PipelineManager pipelineManager) {
+        if (pipelineManager.work.isDone()) {
             try {
-                FrameInitializationContext context = initializationContextFuture.get();
-                initializationContextFuture = null;
-                onInitializationSuccessful(context);
+                pipelineManager.work.get();
             } catch (InterruptedException | ExecutionException e) {
-                initializationContextFuture = null;
-                onInitializationFailed(e);
+                pipelineManager.errorHandler.onError(pipelineManager.context, e);
             }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -117,13 +110,18 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         clearDelayedActions();
     }
 
+    private void cancelPipelines() {
+        pipelinesLeftToRunInUpdate = 0;
+        int size = pipelines.size();
+        for (int i = 0; i < size; ++i) {
+            PipelineManager pipelineManager = pipelines.pollFirst();
+            pipelineManager.work.cancel(true);
+        }
+    }
+
     @Override
     public void dispose() {
-        if (inInitializeScope) {
-            throw new RuntimeException("Cannot call dispose from initialize");
-        }
-
-        abortInitialization();
+        cancelPipelines();
         clear();
         disposer.dispose();
         disposer.clear();
@@ -148,11 +146,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     @Override
     protected final void handleUpdate(float deltaTime) {
         delayedActionMonitor.run();
-
-        if (initializationContextFuture != null) {
-            tryCompleteInitialization();
-        }
-
+        runPipelines();
         onUpdate(deltaTime);
     }
 
@@ -190,30 +184,9 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     }
 
     /**
-     * Invoked when the frame begins or if {@link #reInitialize} is invoked.
-     *
-     * @param initializer Used to configure the frame initialization pipeline.
-     *                    Either {@link #onInitializationSuccessful} or {@link #onInitializationFailed} will be invoked
-     *                    when the pipeline has finished.
-     * @throws IOException Throwing this exception will result in {@link #onInitializationFailed} being invoked.
+     * Invoked when the frame begins.
      */
-    protected abstract void onInitialize(FrameInitializer initializer) throws IOException;
-
-    /**
-     * Invoked if a task of the {@link FrameInitializer} throws an exception.
-     * This method is always invoked from the main thread, even if the task ran as a background task.
-     *
-     * @param error The initialization exception.
-     */
-    protected abstract void onInitializationFailed(Throwable error);
-
-    /**
-     * Invoked when all tasks of the {@link FrameInitializer} has completed successfully,
-     * or directly after {@link #onInitialize} if no {@link FrameInitializationTask initialization tasks} were added.
-     *
-     * @param context The context from the initialization pipeline.
-     */
-    protected abstract void onInitializationSuccessful(FrameInitializationContext context);
+    protected abstract void onBegin();
 
     /**
      * Invoked when the frame ends.
@@ -228,24 +201,52 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     private static class DelayedActionMonitor {
         private final Deque<Action> actions = new ArrayDeque<>();
 
+        private int actionsLeftToRunInUpdate;
+
         synchronized void add(Action action) {
             actions.add(action);
         }
 
         synchronized void run() {
-            int size = actions.size();
-            for (int i = 0; i < size; ++i) {
-                actions.pollFirst().perform();
+            try {
+                actionsLeftToRunInUpdate = actions.size();
+                while (actionsLeftToRunInUpdate > 0) {
+                    actions.pollFirst().perform();
+                    --actionsLeftToRunInUpdate;
+                }
+            } finally {
+                actionsLeftToRunInUpdate = 0;
             }
         }
 
         synchronized void clear() {
             actions.clear();
+            actionsLeftToRunInUpdate = 0;
         }
     }
 
-    private Client createClient(FrameClient frameClient) {
-        return new DefaultClient(new FrameClientLogic(frameClient), this::performUpdate);
+    /**
+     * Starts a pipeline to connect the frame to a server.
+     */
+    protected void connectToServer(FrameClient frameClient, Connectable server, PipelineErrorHandler errorHandler) {
+        startPipeline(pipeline -> connectToServer(frameClient, server, pipeline), errorHandler);
+    }
+
+    /**
+     * Adds tasks to the specified pipeline to connect the frame to a server.
+     */
+    protected void connectToServer(FrameClient frameClient, Connectable server, Pipeline pipeline) {
+        final Client client = new DefaultClient(new FrameClientLogic(frameClient), this::performUpdate);
+
+        pipeline.addBackgroundTask(ctx -> {
+            Communicator communicator = server.connect().get();
+            client.initialize(communicator);
+        });
+
+        pipeline.addTask(ctx -> {
+            this.client = client;
+            frameClient.onCommunicatorReady(client.getCommunicator());
+        });
     }
 
     private static class FrameClientLogic implements ClientLogic {
@@ -263,6 +264,17 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         @Override
         public void onMessage(DataBuffer buffer) {
             frameClient.onMessage(buffer);
+        }
+    }
+
+    private static class PipelineManager {
+        private final Future<Void> work;
+        private final PipelineContext context;
+        private final PipelineErrorHandler errorHandler;
+        public PipelineManager(Future<Void> work, PipelineContext context, PipelineErrorHandler errorHandler) {
+            this.work = work;
+            this.context = context;
+            this.errorHandler = errorHandler;
         }
     }
 }

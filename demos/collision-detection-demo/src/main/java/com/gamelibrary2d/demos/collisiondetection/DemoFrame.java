@@ -10,8 +10,6 @@ import com.gamelibrary2d.collision.handlers.UpdatedHandler;
 import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.DefaultTexture;
@@ -37,60 +35,54 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) throws IOException {
-        Texture ballTexture = DefaultTexture.create(Ball.class.getResource("/ball.png"), this);
-        Surface ballSurface = Quad.create(Rectangle.create(32, 32), this);
-        ballRenderer = new SurfaceRenderer<>(ballSurface, ballTexture);
-        ballRenderer.setColor(152f / 255f, 251f / 255f, 152f / 255f);
-        BallTool tool = BallTool.create(this, ballRenderer, this::addBall);
+    protected void onBegin() {
+        try {
+            Texture ballTexture = DefaultTexture.create(Ball.class.getResource("/ball.png"), this);
+            Surface ballSurface = Quad.create(Rectangle.create(32, 32), this);
+            ballRenderer = new SurfaceRenderer<>(ballSurface, ballTexture);
+            ballRenderer.setColor(152f / 255f, 251f / 255f, 152f / 255f);
+            BallTool tool = BallTool.create(this, ballRenderer, this::addBall);
 
-        final float ballWidth = ballSurface.getBounds().getWidth();
-        final float ballHeight = ballSurface.getBounds().getHeight();
-        final float pyramidCenterX = gameArea.getWidth() / 2f;
-        final float pyramidBaseY = 2f * gameArea.getHeight() / 3f;
+            final float ballWidth = ballSurface.getBounds().getWidth();
+            final float ballHeight = ballSurface.getBounds().getHeight();
+            final float pyramidCenterX = gameArea.getWidth() / 2f;
+            final float pyramidBaseY = 2f * gameArea.getHeight() / 3f;
 
-        // 1st row
-        addBall(pyramidCenterX - 2 * ballWidth, pyramidBaseY);
-        addBall(pyramidCenterX - ballWidth, pyramidBaseY);
-        addBall(pyramidCenterX, pyramidBaseY);
-        addBall(pyramidCenterX + ballWidth, pyramidBaseY);
-        addBall(pyramidCenterX + 2 * ballWidth, pyramidBaseY);
+            // 1st row
+            addBall(pyramidCenterX - 2 * ballWidth, pyramidBaseY);
+            addBall(pyramidCenterX - ballWidth, pyramidBaseY);
+            addBall(pyramidCenterX, pyramidBaseY);
+            addBall(pyramidCenterX + ballWidth, pyramidBaseY);
+            addBall(pyramidCenterX + 2 * ballWidth, pyramidBaseY);
 
-        // 2nd row
-        addBall(pyramidCenterX - ballWidth * 1.5f, pyramidBaseY - ballHeight * 0.9f);
-        addBall(pyramidCenterX - ballWidth * 0.5f, pyramidBaseY - ballHeight * 0.9f);
-        addBall(pyramidCenterX + ballWidth * 0.5f, pyramidBaseY - ballHeight * 0.9f);
-        addBall(pyramidCenterX + ballWidth * 1.5f, pyramidBaseY - ballHeight * 0.9f);
+            // 2nd row
+            addBall(pyramidCenterX - ballWidth * 1.5f, pyramidBaseY - ballHeight * 0.9f);
+            addBall(pyramidCenterX - ballWidth * 0.5f, pyramidBaseY - ballHeight * 0.9f);
+            addBall(pyramidCenterX + ballWidth * 0.5f, pyramidBaseY - ballHeight * 0.9f);
+            addBall(pyramidCenterX + ballWidth * 1.5f, pyramidBaseY - ballHeight * 0.9f);
 
-        // 3nd row
-        addBall(pyramidCenterX - ballWidth, pyramidBaseY - ballHeight * 0.9f * 2);
-        addBall(pyramidCenterX, pyramidBaseY - ballHeight * 0.9f * 2);
-        addBall(pyramidCenterX + ballWidth, pyramidBaseY - ballHeight * 0.9f * 2);
+            // 3nd row
+            addBall(pyramidCenterX - ballWidth, pyramidBaseY - ballHeight * 0.9f * 2);
+            addBall(pyramidCenterX, pyramidBaseY - ballHeight * 0.9f * 2);
+            addBall(pyramidCenterX + ballWidth, pyramidBaseY - ballHeight * 0.9f * 2);
 
-        // 4th row
-        addBall(pyramidCenterX - ballWidth * 0.5f, pyramidBaseY - ballHeight * 0.9f * 3);
-        addBall(pyramidCenterX + ballWidth * 0.5f, pyramidBaseY - ballHeight * 0.9f * 3);
+            // 4th row
+            addBall(pyramidCenterX - ballWidth * 0.5f, pyramidBaseY - ballHeight * 0.9f * 3);
+            addBall(pyramidCenterX + ballWidth * 0.5f, pyramidBaseY - ballHeight * 0.9f * 3);
 
-        // 5th row
-        addBall(pyramidCenterX, pyramidBaseY - ballHeight * 0.9f * 4);
+            // 5th row
+            addBall(pyramidCenterX, pyramidBaseY - ballHeight * 0.9f * 4);
 
-        add(ballLayer);
-        add(tool);
+            add(ballLayer);
+            add(tool);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void onUpdate(float deltaTime) {
         collisionDetection.update(deltaTime);
         super.onUpdate(deltaTime);
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-
     }
 
     private void addBall(Ball ball) {

@@ -4,8 +4,6 @@ import com.gamelibrary2d.*;
 import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.input.Mouse;
 import com.gamelibrary2d.opengl.buffers.PositionBuffer;
@@ -24,7 +22,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) {
+    protected void onBegin() {
         Window window = game.getWindow();
 
         Rectangle windowBounds = new Rectangle(0, 0, window.getWidth(), window.getHeight());
@@ -57,16 +55,6 @@ public class DemoFrame extends AbstractFrame {
         add(objLayer);
         add(lineTool);
         add(quadTool);
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-
     }
 
     private void randomizeColor(Renderer renderer) {

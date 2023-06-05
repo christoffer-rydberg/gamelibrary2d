@@ -2,8 +2,6 @@ package com.gamelibrary2d.tools.fontgenerator;
 
 import com.gamelibrary2d.Color;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.io.DynamicByteBuffer;
@@ -21,16 +19,20 @@ public class FontFrame extends AbstractFrame {
     }
 
     @Override
-    protected void onInitialize(FrameInitializer initializer) throws IOException {
+    protected void onBegin() {
         DefaultFont defaultFont = createFont(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 48));
         DefaultFont mediumFont = createFont(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 48));
         DefaultFont largeFont = createFont(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 96));
         DefaultFont questionFont = createFont(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 48));
 
-        saveFont(defaultFont, "default");
-        saveFont(mediumFont, "medium");
-        saveFont(largeFont, "large");
-        saveFont(questionFont, "question");
+        try {
+            saveFont(defaultFont, "default");
+            saveFont(mediumFont, "medium");
+            saveFont(largeFont, "large");
+            saveFont(questionFont, "question");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         super.setBackgroundColor(Color.PINK);
     }
@@ -49,16 +51,6 @@ public class FontFrame extends AbstractFrame {
         String path = ".\\Fonts";
         File file = new File(String.format("%s\\%s.font", path, name));
         Write.bytes(buffer, file, true);
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-
     }
 
     @Override

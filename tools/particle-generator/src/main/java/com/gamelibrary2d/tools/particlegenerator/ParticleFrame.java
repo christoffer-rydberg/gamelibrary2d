@@ -7,8 +7,6 @@ import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.components.frames.FrameInitializationContext;
-import com.gamelibrary2d.components.frames.FrameInitializer;
 import com.gamelibrary2d.tools.particlegenerator.models.ParticleSystemModel;
 import com.gamelibrary2d.tools.particlegenerator.panels.EmitterPanel;
 import com.gamelibrary2d.tools.particlegenerator.panels.ParticleSystemSettingsPanel;
@@ -30,7 +28,8 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
         this.game = game;
     }
 
-    protected void onInitialize(FrameInitializer initializer) {
+    @Override
+    protected void onBegin() {
         screenLayer = new DefaultLayer<>();
         Layer<Renderable> particleLayer = new DefaultLayer<>();
 
@@ -68,16 +67,6 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
         screenLayer.add(renderingPanel);
         screenLayer.add(emitterPanel);
         screenLayer.add(saveLoadResetPanel);
-    }
-
-    @Override
-    protected void onInitializationFailed(Throwable error) {
-
-    }
-
-    @Override
-    protected void onInitializationSuccessful(FrameInitializationContext context) {
-
     }
 
     @Override
