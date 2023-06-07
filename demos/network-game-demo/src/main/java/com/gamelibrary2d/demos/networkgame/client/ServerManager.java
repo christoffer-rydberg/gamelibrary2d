@@ -5,7 +5,7 @@ import com.gamelibrary2d.io.Write;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.ClientHandshakeConfiguration;
 import com.gamelibrary2d.network.client.LocalServer;
-import com.gamelibrary2d.network.client.RemoteServer;
+import com.gamelibrary2d.network.client.NetworkServerConnectionFactory;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.network.initialization.UdpConfiguration;
@@ -31,13 +31,13 @@ public class ServerManager {
                 host,
                 new DemoServerLogic(tcpPort, keyPair));
 
-        return new HostedServer(server, connectToServer(host, tcpPort), DemoServerLogic.UPDATES_PER_SECOND);
+        return new HostedServer(server, createConnectionFactory(host, tcpPort), DemoServerLogic.UPDATES_PER_SECOND);
     }
 
-    public RemoteServer connectToServer(String host, int tcpPort) {
-        RemoteServer server = new RemoteServer(host, tcpPort);
-        server.addAuthentication(this::configureAuthentication);
-        return server;
+    public NetworkServerConnectionFactory createConnectionFactory(String host, int tcpPort) {
+        NetworkServerConnectionFactory connectionFactory = new NetworkServerConnectionFactory(host, tcpPort);
+        connectionFactory.addAuthentication(this::configureAuthentication);
+        return connectionFactory;
     }
 
     private void configureAuthentication(CommunicatorInitializer initializer) {

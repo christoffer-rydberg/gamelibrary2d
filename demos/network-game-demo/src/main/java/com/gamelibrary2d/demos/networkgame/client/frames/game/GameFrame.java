@@ -6,7 +6,7 @@ import com.gamelibrary2d.demos.networkgame.client.DemoGame;
 import com.gamelibrary2d.demos.networkgame.client.ResourceManager;
 import com.gamelibrary2d.demos.networkgame.client.input.ControllerFactory;
 import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.SoundMap;
-import com.gamelibrary2d.network.client.Connectable;
+import com.gamelibrary2d.network.client.ConnectionFactory;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundPlayer;
 
@@ -15,7 +15,7 @@ import java.io.IOException;
 public final class GameFrame extends AbstractFrame {
     private final GameFrameManager frameManager;
     private final GameFrameClient frameClient;
-    private Connectable server;
+    private ConnectionFactory connectionFactory;
 
     public GameFrame(
             DemoGame game,
@@ -29,8 +29,8 @@ public final class GameFrame extends AbstractFrame {
         this.frameClient = new GameFrameClient(frameManager, controllerFactory);
     }
 
-    public void setServer(Connectable server) {
-        this.server = server;
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
     }
 
     public void prepare() throws IOException {
@@ -44,7 +44,7 @@ public final class GameFrame extends AbstractFrame {
 
     private void initializeFrame(Pipeline pipeline) {
         pipeline.addTask(ctx -> frameManager.prepare());
-        connectToServer(frameClient, server, pipeline);
+        connectToServer(frameClient, connectionFactory, pipeline);
         pipeline.addTask(ctx -> frameManager.onInitializationSuccessful());
     }
 

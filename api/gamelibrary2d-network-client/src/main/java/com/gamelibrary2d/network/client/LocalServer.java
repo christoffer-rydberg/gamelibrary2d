@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-public final class LocalServer extends AbstractServer implements Connectable {
+public final class LocalServer extends AbstractServer implements ConnectionFactory {
     public static final String LOCAL_CONNECTION_ENDPOINT = "local";
     private final ServerLogic serverLogic;
 
@@ -27,7 +27,7 @@ public final class LocalServer extends AbstractServer implements Connectable {
     }
 
     @Override
-    public Future<Communicator> connect() {
+    public Future<Communicator> createConnection() {
         if (!connectionsEnabled || !serverLogic.acceptConnection(LOCAL_CONNECTION_ENDPOINT)) {
             CompletableFuture<Communicator> future = new CompletableFuture<>();
             future.completeExceptionally(new RuntimeException("Connection refused by server"));

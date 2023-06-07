@@ -12,25 +12,25 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-public class RemoteServer implements Connectable {
+public class NetworkServerConnectionFactory implements ConnectionFactory {
     private final String host;
     private final int port;
     private final ConnectionService connectionService;
     private final boolean ownsConnectionService;
     private final ArrayList<ParameterizedAction<CommunicatorInitializer>> authentication = new ArrayList<>();
 
-    private RemoteServer(String host, int port, ConnectionService connectionService, boolean ownsConnectionService) {
+    private NetworkServerConnectionFactory(String host, int port, ConnectionService connectionService, boolean ownsConnectionService) {
         this.host = host;
         this.port = port;
         this.connectionService = connectionService;
         this.ownsConnectionService = ownsConnectionService;
     }
 
-    public RemoteServer(String host, int port) {
+    public NetworkServerConnectionFactory(String host, int port) {
         this(host, port, new ConnectionService(), true);
     }
 
-    public RemoteServer(String host, int port, ConnectionService connectionService) {
+    public NetworkServerConnectionFactory(String host, int port, ConnectionService connectionService) {
         this(host, port, connectionService, false);
     }
 
@@ -39,7 +39,7 @@ public class RemoteServer implements Connectable {
     }
 
     @Override
-    public Future<Communicator> connect() {
+    public Future<Communicator> createConnection() {
         CompletableFuture<Communicator> future = new CompletableFuture<>();
 
         SocketChannelConnectedHandler onConnected = socketChannel -> {

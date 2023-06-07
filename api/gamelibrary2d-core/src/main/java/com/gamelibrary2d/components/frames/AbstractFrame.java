@@ -11,7 +11,7 @@ import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.Client;
 import com.gamelibrary2d.network.client.ClientLogic;
-import com.gamelibrary2d.network.client.Connectable;
+import com.gamelibrary2d.network.client.ConnectionFactory;
 import com.gamelibrary2d.network.client.DefaultClient;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.updates.Update;
@@ -228,18 +228,18 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
     /**
      * Starts a pipeline to connect the frame to a server.
      */
-    protected void connectToServer(FrameClient frameClient, Connectable server, PipelineErrorHandler errorHandler) {
-        startPipeline(pipeline -> connectToServer(frameClient, server, pipeline), errorHandler);
+    protected void connectToServer(FrameClient frameClient, ConnectionFactory connectionFactory, PipelineErrorHandler errorHandler) {
+        startPipeline(pipeline -> connectToServer(frameClient, connectionFactory, pipeline), errorHandler);
     }
 
     /**
      * Adds tasks to the specified pipeline to connect the frame to a server.
      */
-    protected void connectToServer(FrameClient frameClient, Connectable server, Pipeline pipeline) {
+    protected void connectToServer(FrameClient frameClient, ConnectionFactory connectionFactory, Pipeline pipeline) {
         final Client client = new DefaultClient(new FrameClientLogic(frameClient), this::performUpdate);
 
         pipeline.addBackgroundTask(ctx -> {
-            Communicator communicator = server.connect().get();
+            Communicator communicator = connectionFactory.createConnection().get();
             client.initialize(communicator);
         });
 

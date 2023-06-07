@@ -13,7 +13,7 @@ import com.gamelibrary2d.demos.networkgame.client.resources.Surfaces;
 import com.gamelibrary2d.demos.networkgame.client.resources.Textures;
 import com.gamelibrary2d.demos.networkgame.client.settings.Dimensions;
 import com.gamelibrary2d.demos.networkgame.client.urls.Music;
-import com.gamelibrary2d.network.client.Connectable;
+import com.gamelibrary2d.network.client.ConnectionFactory;
 import com.gamelibrary2d.sound.MusicPlayer;
 import com.gamelibrary2d.sound.SoundManager;
 import com.gamelibrary2d.sound.SoundPlayer;
@@ -47,8 +47,8 @@ public class DemoGame extends AbstractGame {
         setFrame(menuFrame);
     }
 
-    private void startGame(Connectable server) {
-        gameFrame.setServer(server);
+    private void startGame(ConnectionFactory connectionFactory) {
+        gameFrame.setConnectionFactory(connectionFactory);
         setFrame(gameFrame);
     }
 
@@ -82,7 +82,7 @@ public class DemoGame extends AbstractGame {
     }
 
     public void joinNetworkGame(String host, int port) {
-        startGame(serverManager.connectToServer(host, port));
+        startGame(serverManager.createConnectionFactory(host, port));
     }
 
     private void showSplashScreen() {

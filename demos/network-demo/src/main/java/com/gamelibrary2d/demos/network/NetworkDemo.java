@@ -19,7 +19,7 @@ public class NetworkDemo {
                 : createNetworkServer("localhost", 4444);
 
         Thread serverThread = runServer(serverResult.server);
-        Thread clientThread = runClient(new DemoClientLogic(), serverResult.connectable);
+        Thread clientThread = runClient(new DemoClientLogic(), serverResult.connectionFactory);
 
         try {
             clientThread.join();
@@ -35,7 +35,7 @@ public class NetworkDemo {
         System.out.println("Creating network server");
         return new ServerResult(
                 new NetworkServer(host, serverLogic),
-                new RemoteServer(host, port)
+                new NetworkServerConnectionFactory(host, port)
         );
     }
 
@@ -64,11 +64,11 @@ public class NetworkDemo {
         return thread;
     }
 
-    private static Thread runClient(ClientLogic clientLogic, Connectable server) {
+    private static Thread runClient(ClientLogic clientLogic, ConnectionFactory connectionFactory) {
         Thread thread = new Thread(() -> {
             try {
                 Client client = new DefaultClient(clientLogic);
-                client.initialize(server.connect().get());
+                client.initialize(connectionFactory.createConnection().get());
 
                 UpdateLoop loop = new UpdateLoop();
                 loop.run(10, dt -> {
@@ -98,11 +98,11 @@ public class NetworkDemo {
 
     private static class ServerResult {
         final Server server;
-        final Connectable connectable;
+        final ConnectionFactory connectionFactory;
 
-        public ServerResult(Server server, Connectable connectable) {
+        public ServerResult(Server server, ConnectionFactory connectionFactory) {
             this.server = server;
-            this.connectable = connectable;
+            this.connectionFactory = connectionFactory;
         }
     }
 }
