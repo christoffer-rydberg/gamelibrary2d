@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.client;
 
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.initialization.TaskConfiguration;
 import com.gamelibrary2d.network.security.*;
@@ -64,7 +64,7 @@ public class ClientHandshakeConfiguration implements TaskConfiguration {
         initializer.addProducer(this::shareSecretKey);
     }
 
-    private boolean createSecretKeyEncrypter(CommunicatorInitializationContext ctx, Communicator com, DataBuffer inbox) throws IOException {
+    private boolean createSecretKeyEncrypter(ConnectionContext ctx, Communicator com, DataBuffer inbox) throws IOException {
         PublicKey publicKey = new PublicKeyMessage(inbox).getKey();
         ctx.register("secretKeyEncrypter", secretKeyEncrypterFactory.create(publicKey));
         return true;
@@ -76,7 +76,7 @@ public class ClientHandshakeConfiguration implements TaskConfiguration {
         return buffer.array();
     }
 
-    private void shareSecretKey(CommunicatorInitializationContext ctx, Communicator com) throws IOException {
+    private void shareSecretKey(ConnectionContext ctx, Communicator com) throws IOException {
         EncryptionWriter secretKeyEncryptionWriter = new EncryptionWriter(
                 ctx.get(Encrypter.class, "secretKeyEncrypter"));
 

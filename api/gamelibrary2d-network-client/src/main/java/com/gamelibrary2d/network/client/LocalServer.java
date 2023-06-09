@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.client;
 
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.server.AbstractServer;
 import com.gamelibrary2d.network.server.Host;
@@ -54,7 +54,7 @@ public final class LocalServer extends AbstractServer implements ConnectionFacto
     }
 
     @Override
-    protected void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
+    protected void onClientAuthenticated(ConnectionContext context, Communicator communicator) {
         serverLogic.onClientAuthenticated(context, communicator);
     }
 
@@ -76,7 +76,7 @@ public final class LocalServer extends AbstractServer implements ConnectionFacto
     }
 
     @Override
-    protected void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
+    protected void onClientInitialized(ConnectionContext context, Communicator communicator) {
         serverLogic.onClientInitialized(context, communicator);
     }
 

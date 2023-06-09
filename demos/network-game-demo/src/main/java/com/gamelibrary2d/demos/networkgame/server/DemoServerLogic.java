@@ -11,7 +11,7 @@ import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.io.DynamicByteBuffer;
 import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.network.Communicator;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.initialization.UdpConfiguration;
 import com.gamelibrary2d.network.server.Host;
@@ -68,7 +68,7 @@ public class DemoServerLogic implements ServerLogic {
         initializer.addConfig(new UdpConfiguration());
     }
 
-    private boolean validatePassword(CommunicatorInitializationContext context, Communicator communicator, DataBuffer inbox) throws IOException {
+    private boolean validatePassword(ConnectionContext context, Communicator communicator, DataBuffer inbox) throws IOException {
         decryptionBuffer.clear();
         communicator.readEncrypted(inbox, decryptionBuffer);
         decryptionBuffer.flip();
@@ -100,7 +100,7 @@ public class DemoServerLogic implements ServerLogic {
     }
 
     @Override
-    public void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
+    public void onClientAuthenticated(ConnectionContext context, Communicator communicator) {
         log(String.format("%s: Client has authenticated", communicator.getEndpoint()));
     }
 
@@ -110,7 +110,7 @@ public class DemoServerLogic implements ServerLogic {
     }
 
     @Override
-    public void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
+    public void onClientInitialized(ConnectionContext context, Communicator communicator) {
         log(String.format("%s: Client has been initialized", communicator.getEndpoint()));
 
         GameSettings settings = gameLogic.getGameSettings();

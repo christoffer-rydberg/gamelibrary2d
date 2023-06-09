@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.server;
 
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public final class NetworkServer extends InternalAbstractNetworkServer {
     }
 
     @Override
-    protected void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
+    protected void onClientAuthenticated(ConnectionContext context, Communicator communicator) {
         serverLogic.onClientAuthenticated(context, communicator);
     }
 
@@ -54,7 +54,7 @@ public final class NetworkServer extends InternalAbstractNetworkServer {
     }
 
     @Override
-    protected void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
+    protected void onClientInitialized(ConnectionContext context, Communicator communicator) {
         serverLogic.onClientInitialized(context, communicator);
     }
 

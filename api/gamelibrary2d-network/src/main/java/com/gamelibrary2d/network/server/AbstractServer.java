@@ -44,7 +44,7 @@ public abstract class AbstractServer implements Server, Updatable {
 
         pendingCommunicators.add(new PendingCommunicator(
                 communicator,
-                new CommunicatorInitializationContext(),
+                new ConnectionContext(),
                 initializer));
 
         communicator.addDisconnectedListener(disconnectedEventListener);
@@ -64,11 +64,11 @@ public abstract class AbstractServer implements Server, Updatable {
         communicator.getOutgoing().putInt(id);
     }
 
-    private void connectedTask(CommunicatorInitializationContext context, Communicator communicator) {
+    private void connectedTask(ConnectionContext context, Communicator communicator) {
         onConnected(communicator);
     }
 
-    private void authenticatedTask(CommunicatorInitializationContext context, Communicator communicator) {
+    private void authenticatedTask(ConnectionContext context, Communicator communicator) {
         communicator.setAuthenticated();
         onClientAuthenticated(context, communicator);
     }
@@ -81,13 +81,13 @@ public abstract class AbstractServer implements Server, Updatable {
             } finally {
                 pendingCommunicators.add(new PendingCommunicator(
                         communicator,
-                        new CommunicatorInitializationContext(),
+                        new ConnectionContext(),
                         initializer));
             }
         }
     }
 
-    private void initialized(CommunicatorInitializationContext context, Communicator communicator) {
+    private void initialized(ConnectionContext context, Communicator communicator) {
         removePending(communicator);
         communicators.add(communicator);
         communicator.setAuthenticated();
@@ -199,7 +199,7 @@ public abstract class AbstractServer implements Server, Updatable {
     }
 
     private boolean runInitializationTask(
-            CommunicatorInitializationContext context,
+            ConnectionContext context,
             Communicator communicator,
             ConditionalInitializationTask conditionalTask) throws IOException {
 
@@ -324,9 +324,9 @@ public abstract class AbstractServer implements Server, Updatable {
 
     protected abstract void onInitializeClient(ConnectionInitializer initializer);
 
-    protected abstract void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator);
+    protected abstract void onClientAuthenticated(ConnectionContext context, Communicator communicator);
 
-    protected abstract void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator);
+    protected abstract void onClientInitialized(ConnectionContext context, Communicator communicator);
 
     protected abstract void onDisconnected(Communicator communicator, boolean pending, Throwable cause);
 
@@ -348,12 +348,12 @@ public abstract class AbstractServer implements Server, Updatable {
 
     private static class PendingCommunicator {
         final Communicator communicator;
-        final CommunicatorInitializationContext context;
+        final ConnectionContext context;
         final InternalConnectionInitializer initializer;
         public long retryStart;
         public int retryAttempt;
 
-        PendingCommunicator(Communicator communicator, CommunicatorInitializationContext context, InternalConnectionInitializer initializer) {
+        PendingCommunicator(Communicator communicator, ConnectionContext context, InternalConnectionInitializer initializer) {
             this.communicator = communicator;
             this.context = context;
             this.initializer = initializer;

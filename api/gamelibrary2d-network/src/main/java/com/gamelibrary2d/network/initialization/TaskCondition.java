@@ -6,5 +6,5 @@ public interface TaskCondition {
 
     TaskCondition TRUE = (cc, c) -> true;
 
-    boolean evaluate(CommunicatorInitializationContext context, Communicator communicator);
+    boolean evaluate(ConnectionContext context, Communicator communicator);
 }

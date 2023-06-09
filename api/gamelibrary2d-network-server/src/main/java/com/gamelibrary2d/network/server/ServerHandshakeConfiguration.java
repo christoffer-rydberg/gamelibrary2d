@@ -4,7 +4,7 @@ import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.io.DynamicByteBuffer;
 import com.gamelibrary2d.io.Serializable;
 import com.gamelibrary2d.network.Communicator;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.initialization.TaskConfiguration;
 import com.gamelibrary2d.network.security.*;
@@ -57,12 +57,12 @@ public class ServerHandshakeConfiguration implements TaskConfiguration {
         initializer.addConsumer(this::readSecretKey);
     }
 
-    private void sharePublicKey(CommunicatorInitializationContext ctx, Communicator com) {
+    private void sharePublicKey(ConnectionContext ctx, Communicator com) {
         Serializable message = new PublicKeyMessage(keyPair.getPublic());
         message.serialize(com.getOutgoing());
     }
 
-    private boolean readSecretKey(CommunicatorInitializationContext ctx, Communicator com, DataBuffer inbox) throws IOException {
+    private boolean readSecretKey(ConnectionContext ctx, Communicator com, DataBuffer inbox) throws IOException {
         int encryptionHeaderLength = inbox.getInt();
         byte[] encryptionHeader = new byte[encryptionHeaderLength];
         inbox.get(encryptionHeader);

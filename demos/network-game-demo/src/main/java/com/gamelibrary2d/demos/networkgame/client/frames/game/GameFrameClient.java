@@ -8,7 +8,7 @@ import com.gamelibrary2d.io.BitParser;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.events.CommunicatorDisconnectedEvent;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
 import java.util.HashMap;
@@ -46,11 +46,11 @@ public class GameFrameClient implements FrameClient {
         initializer.addConsumer(this::readState);
     }
 
-    private void requestPlayers(CommunicatorInitializationContext context, Communicator communicator) {
+    private void requestPlayers(ConnectionContext context, Communicator communicator) {
         communicator.getOutgoing().putInt(1);
     }
 
-    private boolean readState(CommunicatorInitializationContext context, Communicator communicator, DataBuffer buffer) {
+    private boolean readState(ConnectionContext context, Communicator communicator, DataBuffer buffer) {
         this.state = new State(buffer);
         return true;
     }

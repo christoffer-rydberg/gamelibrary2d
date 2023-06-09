@@ -22,5 +22,5 @@ public interface ConsumerTask extends InitializationTask {
      * @param inbox        The inbox buffer.
      * @return True if the task has completed, false otherwise.
      */
-    boolean run(CommunicatorInitializationContext context, Communicator communicator, DataBuffer inbox) throws IOException;
+    boolean run(ConnectionContext context, Communicator communicator, DataBuffer inbox) throws IOException;
 }

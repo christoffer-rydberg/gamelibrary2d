@@ -13,6 +13,6 @@ public interface InitializationTaskRunner {
      * @param conditionalTask The task to run.
      * @return True if the task runs to completion. False if the communicator must await more data.
      */
-    boolean run(CommunicatorInitializationContext context, Communicator communicator, ConditionalInitializationTask conditionalTask) throws IOException;
+    boolean run(ConnectionContext context, Communicator communicator, ConditionalInitializationTask conditionalTask) throws IOException;
 
 }

@@ -25,7 +25,7 @@ public abstract class AbstractClient implements Client {
 
             clearInbox();
             communicator.clearOutgoing();
-            CommunicatorInitializationContext context = new CommunicatorInitializationContext();
+            ConnectionContext context = new ConnectionContext();
             authenticate(context, communicator);
             initialize(context, communicator);
         } catch (Exception e) {
@@ -40,7 +40,7 @@ public abstract class AbstractClient implements Client {
         inbox.flip();
     }
 
-    private void authenticate(CommunicatorInitializationContext context, Communicator communicator) throws ClientAuthenticationException {
+    private void authenticate(ConnectionContext context, Communicator communicator) throws ClientAuthenticationException {
         if (!communicator.isAuthenticated()) {
             InternalConnectionInitializer initializer = new InternalConnectionInitializer();
             authenticateConnection(communicator, initializer);
@@ -54,7 +54,7 @@ public abstract class AbstractClient implements Client {
         }
     }
 
-    private void initialize(CommunicatorInitializationContext context, Communicator communicator)
+    private void initialize(ConnectionContext context, Communicator communicator)
             throws ClientInitializationException {
         InternalConnectionInitializer initializer = new InternalConnectionInitializer();
         onInitialize(initializer);
@@ -99,7 +99,7 @@ public abstract class AbstractClient implements Client {
         return inbox.remaining() > 0 || communicator.readIncoming(inbox);
     }
 
-    private void runInitializationTasks(CommunicatorInitializationContext context, Communicator communicator, InternalConnectionInitializer initializer)
+    private void runInitializationTasks(ConnectionContext context, Communicator communicator, InternalConnectionInitializer initializer)
             throws IOException, InterruptedException {
         InternalInitializationTaskResult result;
 
@@ -138,7 +138,7 @@ public abstract class AbstractClient implements Client {
         }
     }
 
-    private boolean runInitializationTask(CommunicatorInitializationContext context, Communicator communicator,
+    private boolean runInitializationTask(ConnectionContext context, Communicator communicator,
                                           ConditionalInitializationTask conditionalTask) throws IOException {
         if (!conditionalTask.condition.evaluate(context, communicator)) {
             return true;
@@ -165,7 +165,7 @@ public abstract class AbstractClient implements Client {
         communicator.configureAuthentication(initializer);
     }
 
-    private boolean readCommunicatorId(CommunicatorInitializationContext context, Communicator communicator, DataBuffer inbox) {
+    private boolean readCommunicatorId(ConnectionContext context, Communicator communicator, DataBuffer inbox) {
         int communicatorId = inbox.getInt();
         communicator.setId(communicatorId);
         return true;

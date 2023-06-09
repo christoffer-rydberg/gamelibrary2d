@@ -2,7 +2,7 @@ package com.gamelibrary2d.demos.network;
 
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.server.Host;
 import com.gamelibrary2d.network.server.ServerLogic;
@@ -76,12 +76,12 @@ public class DemoServerLogic implements ServerLogic {
     }
 
     @Override
-    public void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator) {
+    public void onClientAuthenticated(ConnectionContext context, Communicator communicator) {
         log(String.format("Client has been authenticated: %s", communicator.getEndpoint()));
     }
 
     @Override
-    public void onClientInitialized(CommunicatorInitializationContext context, Communicator communicator) {
+    public void onClientInitialized(ConnectionContext context, Communicator communicator) {
 
     }
 

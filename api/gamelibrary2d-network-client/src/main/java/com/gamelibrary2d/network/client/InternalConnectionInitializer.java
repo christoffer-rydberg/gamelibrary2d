@@ -53,7 +53,7 @@ class InternalConnectionInitializer implements ConnectionInitializer {
     }
 
     InternalInitializationTaskResult runTask(
-            CommunicatorInitializationContext context,
+            ConnectionContext context,
             Communicator communicator,
             InitializationTaskRunner runner)
             throws IOException {

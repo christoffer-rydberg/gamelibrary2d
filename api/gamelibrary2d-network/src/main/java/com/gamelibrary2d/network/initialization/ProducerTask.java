@@ -17,6 +17,6 @@ public interface ProducerTask extends InitializationTask {
      * @param context      Accumulated through each task.
      * @param communicator The communicator.
      */
-    void run(CommunicatorInitializationContext context, Communicator communicator) throws IOException;
+    void run(ConnectionContext context, Communicator communicator) throws IOException;
 
 }

@@ -7,7 +7,7 @@ import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.ClientHandshakeConfiguration;
 import com.gamelibrary2d.network.client.LocalServer;
 import com.gamelibrary2d.network.client.NetworkServerConnectionFactory;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
+import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.initialization.UdpConfiguration;
 import com.gamelibrary2d.network.server.NetworkServer;
@@ -49,7 +49,7 @@ public class ServerManager {
         initializer.addConfig(new UdpConfiguration());
     }
 
-    private void sendPassword(CommunicatorInitializationContext ctx, Communicator com) throws IOException {
+    private void sendPassword(ConnectionContext ctx, Communicator com) throws IOException {
         com.writeEncrypted(b -> Write.textWithSizeHeader("serverPassword123", b));
     }
 }
