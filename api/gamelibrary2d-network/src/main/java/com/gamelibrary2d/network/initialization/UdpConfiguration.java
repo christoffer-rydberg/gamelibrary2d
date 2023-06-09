@@ -16,13 +16,13 @@ public class UdpConfiguration implements TaskConfiguration {
         initializer.addConsumer(UdpConfiguration::connectUdp);
     }
 
-    private static void enableUdp(ConnectionInitializationContext ctx, Communicator com) throws IOException {
+    private static void enableUdp(ConnectionContext ctx, Communicator com) throws IOException {
         NetworkCommunicator networkCommunicator = (NetworkCommunicator) com;
         int localPort = networkCommunicator.enableUdp(ConnectionType.READ, 0);
         com.writeEncrypted(b -> b.putInt(localPort));
     }
 
-    private static boolean connectUdp(ConnectionInitializationContext ctx, Communicator com, DataBuffer inbox) throws IOException {
+    private static boolean connectUdp(ConnectionContext ctx, Communicator com, DataBuffer inbox) throws IOException {
         NetworkCommunicator networkCommunicator = (NetworkCommunicator) com;
         DataBuffer decryptionBuffer = new DynamicByteBuffer();
         decryptionBuffer.clear();
