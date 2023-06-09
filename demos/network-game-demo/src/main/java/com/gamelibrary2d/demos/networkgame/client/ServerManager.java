@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
 import com.gamelibrary2d.demos.networkgame.server.DemoServerLogic;
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.io.Write;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.ClientHandshakeConfiguration;
@@ -10,7 +11,6 @@ import com.gamelibrary2d.network.initialization.CommunicatorInitializationContex
 import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
 import com.gamelibrary2d.network.initialization.UdpConfiguration;
 import com.gamelibrary2d.network.server.NetworkServer;
-
 import java.io.IOException;
 import java.security.KeyPair;
 
@@ -23,7 +23,7 @@ public class ServerManager {
 
     public HostedServer hostLocalServer() {
         LocalServer server = new LocalServer(new DemoServerLogic());
-        return new HostedServer(server, server, DemoServerLogic.UPDATES_PER_SECOND);
+        return new HostedServer(server, DemoServerLogic.UPDATES_PER_SECOND, disposer -> server);
     }
 
     public HostedServer hostNetworkServer(String host, int tcpPort) {
@@ -31,11 +31,14 @@ public class ServerManager {
                 host,
                 new DemoServerLogic(tcpPort, keyPair));
 
-        return new HostedServer(server, createConnectionFactory(host, tcpPort), DemoServerLogic.UPDATES_PER_SECOND);
+        return new HostedServer(
+                server,
+                DemoServerLogic.UPDATES_PER_SECOND,
+                disposer -> createConnectionFactory(host, tcpPort, disposer));
     }
 
-    public NetworkServerConnectionFactory createConnectionFactory(String host, int tcpPort) {
-        NetworkServerConnectionFactory connectionFactory = new NetworkServerConnectionFactory(host, tcpPort);
+    public NetworkServerConnectionFactory createConnectionFactory(String host, int tcpPort, Disposer disposer) {
+        NetworkServerConnectionFactory connectionFactory = new NetworkServerConnectionFactory(host, tcpPort, disposer);
         connectionFactory.addAuthentication(this::configureAuthentication);
         return connectionFactory;
     }

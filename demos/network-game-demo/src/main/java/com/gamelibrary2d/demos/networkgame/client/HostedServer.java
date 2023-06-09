@@ -1,24 +1,23 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
-import com.gamelibrary2d.network.Communicator;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.functional.Func;
 import com.gamelibrary2d.network.client.ConnectionFactory;
 import com.gamelibrary2d.network.server.Server;
 import com.gamelibrary2d.updating.UpdateLoop;
-
 import java.io.IOException;
-import java.util.concurrent.Future;
 
-public class HostedServer implements ConnectionFactory {
+public class HostedServer {
     private final Server server;
     private final float ups;
-    private final ConnectionFactory connectionFactory;
+    private final Func<Disposer, ConnectionFactory> createConnectionFactory;
     private final UpdateLoop updateLoop = new UpdateLoop();
     private Thread serverThread;
 
-    public HostedServer(Server server, ConnectionFactory connectionFactory, float ups) {
+    public HostedServer(Server server, float ups, Func<Disposer, ConnectionFactory> createConnectionFactory) {
         this.server = server;
-        this.connectionFactory = connectionFactory;
         this.ups = ups;
+        this.createConnectionFactory = createConnectionFactory;
     }
 
     public void start() {
@@ -52,8 +51,7 @@ public class HostedServer implements ConnectionFactory {
         }
     }
 
-    @Override
-    public Future<Communicator> createConnection() {
-        return connectionFactory.createConnection();
+    public ConnectionFactory createConnectionFactory(Disposer disposer) {
+        return createConnectionFactory.invoke(disposer);
     }
 }

@@ -1,5 +1,8 @@
 package com.gamelibrary2d.demos.network;
 
+import com.gamelibrary2d.disposal.DefaultDisposer;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.functional.Func;
 import com.gamelibrary2d.network.client.*;
 import com.gamelibrary2d.network.exceptions.ClientAuthenticationException;
 import com.gamelibrary2d.network.exceptions.ClientInitializationException;
@@ -13,20 +16,24 @@ import java.util.concurrent.ExecutionException;
 
 public class NetworkDemo {
 
-    public static void main(String[] args) {
-        ServerResult serverResult = (args.length > 0 && args[0].equals("local"))
-                ? createLocalServer()
-                : createNetworkServer("localhost", 4444);
+    public static void main(String[] args)  {
+        try (DefaultDisposer disposer = new DefaultDisposer()) {
+            ServerResult serverResult = (args.length > 0 && args[0].equals("local"))
+                    ? createLocalServer()
+                    : createNetworkServer("localhost", 4444);
 
-        Thread serverThread = runServer(serverResult.server);
-        Thread clientThread = runClient(new DemoClientLogic(), serverResult.connectionFactory);
+            Thread serverThread = runServer(serverResult.server);
+            Thread clientThread = runClient(
+                    new DemoClientLogic(),
+                    serverResult.createConnectionFactory(disposer));
 
-        try {
-            clientThread.join();
-            serverThread.interrupt();
-            serverThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            try {
+                clientThread.join();
+                serverThread.interrupt();
+                serverThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -35,7 +42,7 @@ public class NetworkDemo {
         System.out.println("Creating network server");
         return new ServerResult(
                 new NetworkServer(host, serverLogic),
-                new NetworkServerConnectionFactory(host, port)
+                d -> new NetworkServerConnectionFactory(host, port, d)
         );
     }
 
@@ -43,7 +50,7 @@ public class NetworkDemo {
         ServerLogic logic = new DemoServerLogic();
         System.out.println("Creating local server");
         LocalServer server = new LocalServer(logic);
-        return new ServerResult(server, server);
+        return new ServerResult(server, d -> server);
     }
 
     private static Thread runServer(Server server) {
@@ -98,11 +105,15 @@ public class NetworkDemo {
 
     private static class ServerResult {
         final Server server;
-        final ConnectionFactory connectionFactory;
+        final Func<Disposer, ConnectionFactory> createConnectionFactory;
 
-        public ServerResult(Server server, ConnectionFactory connectionFactory) {
+        public ServerResult(Server server, Func<Disposer, ConnectionFactory> createConnectionFactory) {
             this.server = server;
-            this.connectionFactory = connectionFactory;
+            this.createConnectionFactory = createConnectionFactory;
+        }
+
+        public ConnectionFactory createConnectionFactory(Disposer disposer) {
+            return createConnectionFactory.invoke(disposer);
         }
     }
 }

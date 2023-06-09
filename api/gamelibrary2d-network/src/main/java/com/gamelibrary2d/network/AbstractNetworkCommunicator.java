@@ -10,15 +10,12 @@ import java.nio.channels.SocketChannel;
 
 public abstract class AbstractNetworkCommunicator extends AbstractCommunicator implements NetworkCommunicator {
     private final ConnectionService connectionService;
-    private final boolean ownsConnectionService;
-
     private volatile UdpConnection udpConnection;
     private volatile SocketChannel socketChannel;
 
-    protected AbstractNetworkCommunicator(ConnectionService connectionService, int incomingChannels, boolean ownsConnectionService) {
+    protected AbstractNetworkCommunicator(ConnectionService connectionService, int incomingChannels) {
         super(incomingChannels);
         this.connectionService = connectionService;
-        this.ownsConnectionService = ownsConnectionService;
     }
 
     protected ConnectionService getConnectionService() {
@@ -47,13 +44,6 @@ public abstract class AbstractNetworkCommunicator extends AbstractCommunicator i
     protected void onDisconnected(Throwable cause) {
         disconnectTcp();
         disableUdp();
-        if (ownsConnectionService) {
-            try {
-                connectionService.stop();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override

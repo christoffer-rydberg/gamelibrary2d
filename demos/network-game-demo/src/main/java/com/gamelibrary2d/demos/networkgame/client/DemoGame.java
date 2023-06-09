@@ -69,20 +69,20 @@ public class DemoGame extends AbstractGame {
 
     public void startLocalGame() {
         stopHostedServer();
-        hostedServer = serverManager.hostLocalServer();
-        hostedServer.start();
-        startGame(hostedServer);
+        this.hostedServer = serverManager.hostLocalServer();
+        this.hostedServer.start();
+        startGame(hostedServer.createConnectionFactory(this));
     }
 
     public void hostNetworkGame(String host, int port) {
         stopHostedServer();
-        hostedServer = serverManager.hostNetworkServer(host, port);
-        hostedServer.start();
-        startGame(hostedServer);
+        this.hostedServer = serverManager.hostNetworkServer(host, port);
+        this.hostedServer.start();
+        startGame(hostedServer.createConnectionFactory(this));
     }
 
     public void joinNetworkGame(String host, int port) {
-        startGame(serverManager.createConnectionFactory(host, port));
+        startGame(serverManager.createConnectionFactory(host, port, this));
     }
 
     private void showSplashScreen() {
@@ -126,9 +126,9 @@ public class DemoGame extends AbstractGame {
     }
 
     @Override
-        protected void onExit() {
-            stopHostedServer();
-        }
+    protected void onExit() {
+        stopHostedServer();
+    }
 
     public Options getOptions() {
         return options;

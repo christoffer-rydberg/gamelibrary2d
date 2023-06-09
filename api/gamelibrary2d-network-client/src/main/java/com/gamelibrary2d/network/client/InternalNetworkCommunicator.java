@@ -15,9 +15,8 @@ class InternalNetworkCommunicator extends AbstractNetworkCommunicator {
     InternalNetworkCommunicator(
             String endpoint,
             ConnectionService connectionService,
-            boolean ownsConnectionService,
             ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
-        super(connectionService, 2, ownsConnectionService);
+        super(connectionService, 2);
         this.endpoint = endpoint;
         this.configureAuthentication = configureAuthentication;
     }

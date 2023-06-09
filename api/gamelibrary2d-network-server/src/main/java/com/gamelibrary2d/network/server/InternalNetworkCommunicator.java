@@ -13,7 +13,7 @@ class InternalNetworkCommunicator extends AbstractNetworkCommunicator {
     private final ParameterizedAction<CommunicatorInitializer> configureAuthentication;
 
     public InternalNetworkCommunicator(ConnectionService connectionService, SocketChannel socketChannel, ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
-        super(connectionService, 1, false);
+        super(connectionService, 1);
         setSocketChannel(socketChannel);
         endpoint = socketChannel.socket().getInetAddress().getHostAddress();
         this.configureAuthentication = configureAuthentication;

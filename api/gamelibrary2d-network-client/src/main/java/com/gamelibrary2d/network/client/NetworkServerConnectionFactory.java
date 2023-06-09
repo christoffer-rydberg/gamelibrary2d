@@ -1,5 +1,6 @@
 package com.gamelibrary2d.network.client;
 
+import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.functional.ParameterizedAction;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.SocketChannelConnectedHandler;
@@ -15,23 +16,19 @@ import java.util.concurrent.Future;
 public class NetworkServerConnectionFactory implements ConnectionFactory {
     private final String host;
     private final int port;
-    private final ConnectionService connectionService;
-    private final boolean ownsConnectionService;
+    private final ConnectionService connectionService = new ConnectionService();
     private final ArrayList<ParameterizedAction<CommunicatorInitializer>> authentication = new ArrayList<>();
 
-    private NetworkServerConnectionFactory(String host, int port, ConnectionService connectionService, boolean ownsConnectionService) {
+    public NetworkServerConnectionFactory(String host, int port, Disposer disposer) {
         this.host = host;
         this.port = port;
-        this.connectionService = connectionService;
-        this.ownsConnectionService = ownsConnectionService;
-    }
-
-    public NetworkServerConnectionFactory(String host, int port) {
-        this(host, port, new ConnectionService(), true);
-    }
-
-    public NetworkServerConnectionFactory(String host, int port, ConnectionService connectionService) {
-        this(host, port, connectionService, false);
+        disposer.registerDisposal(() -> {
+            try {
+                this.connectionService.stop();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void addAuthentication(ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
@@ -44,7 +41,7 @@ public class NetworkServerConnectionFactory implements ConnectionFactory {
 
         SocketChannelConnectedHandler onConnected = socketChannel -> {
             InternalNetworkCommunicator communicator = new InternalNetworkCommunicator(
-                    host, connectionService, ownsConnectionService, this::configureAuthentication);
+                    host, connectionService, this::configureAuthentication);
             socketChannel.socket().setTcpNoDelay(true);
             communicator.setSocketChannel(socketChannel);
             connectionService.connect(socketChannel, communicator, communicator::onSocketChannelDisconnected);

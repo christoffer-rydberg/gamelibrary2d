@@ -8,23 +8,12 @@ import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 abstract class InternalAbstractNetworkServer extends AbstractServer {
-    private final ConnectionService connectionService;
-    private final boolean ownsConnectionService;
+    private final ConnectionService connectionService = new ConnectionService();
     private final String hostname;
     private ConnectionListenerRegistration registration;
 
-    private InternalAbstractNetworkServer(String hostname, ConnectionService connectionService, boolean ownsConnectionService) {
-        this.hostname = hostname;
-        this.connectionService = connectionService;
-        this.ownsConnectionService = ownsConnectionService;
-    }
-
     protected InternalAbstractNetworkServer(String hostname) {
-        this(hostname, new ConnectionService(), true);
-    }
-
-    protected InternalAbstractNetworkServer(String hostname, ConnectionService connectionService) {
-        this(hostname, connectionService, false);
+        this.hostname = hostname;
     }
 
     private void onConnected(SocketChannel channel) {
@@ -88,9 +77,7 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
     @Override
     protected void onStop() throws IOException, InterruptedException {
         deregisterConnectionListener();
-        if (ownsConnectionService) {
-            connectionService.stop();
-        }
+        connectionService.stop();
     }
 
     private void deregisterConnectionListener() throws IOException {
