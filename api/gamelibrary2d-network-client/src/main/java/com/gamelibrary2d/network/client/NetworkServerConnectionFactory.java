@@ -6,7 +6,7 @@ import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.SocketChannelConnectedHandler;
 import com.gamelibrary2d.network.SocketChannelFailedConnectionHandler;
 import com.gamelibrary2d.network.connections.ConnectionService;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class NetworkServerConnectionFactory implements ConnectionFactory {
     private final String host;
     private final int port;
     private final ConnectionService connectionService = new ConnectionService();
-    private final ArrayList<ParameterizedAction<CommunicatorInitializer>> authentication = new ArrayList<>();
+    private final ArrayList<ParameterizedAction<ConnectionInitializer>> authentication = new ArrayList<>();
 
     public NetworkServerConnectionFactory(String host, int port, Disposer disposer) {
         this.host = host;
@@ -31,7 +31,7 @@ public class NetworkServerConnectionFactory implements ConnectionFactory {
         });
     }
 
-    public void addAuthentication(ParameterizedAction<CommunicatorInitializer> configureAuthentication) {
+    public void addAuthentication(ParameterizedAction<ConnectionInitializer> configureAuthentication) {
         authentication.add(configureAuthentication);
     }
 
@@ -68,8 +68,8 @@ public class NetworkServerConnectionFactory implements ConnectionFactory {
         return future;
     }
 
-    private void configureAuthentication(CommunicatorInitializer initializer) {
-        for (ParameterizedAction<CommunicatorInitializer> auth : authentication) {
+    private void configureAuthentication(ConnectionInitializer initializer) {
+        for (ParameterizedAction<ConnectionInitializer> auth : authentication) {
             auth.perform(initializer);
         }
     }

@@ -5,6 +5,6 @@ package com.gamelibrary2d.network.initialization;
  */
 public interface TaskConfiguration {
 
-    void addTasks(CommunicatorInitializer initializer);
+    void addTasks(ConnectionInitializer initializer);
 
 }

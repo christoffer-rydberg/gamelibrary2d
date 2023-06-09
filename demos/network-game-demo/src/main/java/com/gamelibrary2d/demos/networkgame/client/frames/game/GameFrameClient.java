@@ -9,7 +9,7 @@ import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.events.CommunicatorDisconnectedEvent;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class GameFrameClient implements FrameClient {
     }
 
     @Override
-    public void onInitializeClient(CommunicatorInitializer initializer) {
+    public void onInitializeClient(ConnectionInitializer initializer) {
         initializer.addConsumer((ctx, com, inbox) -> {
             serverUpdatesPerSecond = inbox.getFloat();
             return true;
@@ -55,7 +55,7 @@ public class GameFrameClient implements FrameClient {
         return true;
     }
 
-    public void onCommunicatorReady(Communicator communicator) {
+    public void onClientInitialized(Communicator communicator) {
         this.communicator = communicator;
         communicator.addDisconnectedListener(this::onDisconnected);
         frameManager.invokeLater(() -> {

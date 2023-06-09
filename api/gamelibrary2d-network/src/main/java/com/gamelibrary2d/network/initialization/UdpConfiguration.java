@@ -11,7 +11,7 @@ import java.io.IOException;
 public class UdpConfiguration implements TaskConfiguration {
 
     @Override
-    public void addTasks(CommunicatorInitializer initializer) {
+    public void addTasks(ConnectionInitializer initializer) {
         initializer.addProducer(UdpConfiguration::enableUdp);
         initializer.addConsumer(UdpConfiguration::connectUdp);
     }

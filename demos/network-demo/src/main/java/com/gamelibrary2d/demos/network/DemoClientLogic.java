@@ -3,13 +3,13 @@ package com.gamelibrary2d.demos.network;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.client.ClientLogic;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
 import java.nio.charset.StandardCharsets;
 
 public class DemoClientLogic implements ClientLogic {
     @Override
-    public void onInitialize(CommunicatorInitializer initializer) {
+    public void onInitialize(ConnectionInitializer initializer) {
         initializer.addProducer((ctx, com) -> sendMessage(com, "What do you call a guy with a rubber toe?"));
         initializer.addConsumer((ctx, com, inbox) -> {
             readAndPrintMessage(inbox);

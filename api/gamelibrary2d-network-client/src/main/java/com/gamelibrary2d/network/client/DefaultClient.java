@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.client;
 
 import com.gamelibrary2d.denotations.Updatable;
 import com.gamelibrary2d.io.DataBuffer;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
 public class DefaultClient extends AbstractClient implements Updatable {
     private final ClientLogic clientLogic;
@@ -27,7 +27,7 @@ public class DefaultClient extends AbstractClient implements Updatable {
     }
 
     @Override
-    protected void onInitialize(CommunicatorInitializer initializer) {
+    protected void onInitialize(ConnectionInitializer initializer) {
         clientLogic.onInitialize(initializer);
     }
 

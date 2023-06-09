@@ -35,7 +35,7 @@ public abstract class AbstractServer implements Server, Updatable {
     }
 
     protected void addPendingCommunicator(Communicator communicator) {
-        InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
+        InternalConnectionInitializer initializer = new InternalConnectionInitializer();
         initializer.addProducer((__, com) -> writeIdentifier(com, communicatorIdFactory));
         initializer.addProducer(this::connectedTask);
         communicator.configureAuthentication(initializer);
@@ -75,7 +75,7 @@ public abstract class AbstractServer implements Server, Updatable {
 
     protected void reinitialize(Communicator communicator) {
         if (communicators.remove(communicator)) {
-            InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
+            InternalConnectionInitializer initializer = new InternalConnectionInitializer();
             try {
                 onInitializeClient(initializer);
             } finally {
@@ -322,7 +322,7 @@ public abstract class AbstractServer implements Server, Updatable {
 
     protected abstract void onConnected(Communicator communicator);
 
-    protected abstract void onInitializeClient(CommunicatorInitializer initializer);
+    protected abstract void onInitializeClient(ConnectionInitializer initializer);
 
     protected abstract void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator);
 
@@ -349,11 +349,11 @@ public abstract class AbstractServer implements Server, Updatable {
     private static class PendingCommunicator {
         final Communicator communicator;
         final CommunicatorInitializationContext context;
-        final InternalCommunicatorInitializer initializer;
+        final InternalConnectionInitializer initializer;
         public long retryStart;
         public int retryAttempt;
 
-        PendingCommunicator(Communicator communicator, CommunicatorInitializationContext context, InternalCommunicatorInitializer initializer) {
+        PendingCommunicator(Communicator communicator, CommunicatorInitializationContext context, InternalConnectionInitializer initializer) {
             this.communicator = communicator;
             this.context = context;
             this.initializer = initializer;

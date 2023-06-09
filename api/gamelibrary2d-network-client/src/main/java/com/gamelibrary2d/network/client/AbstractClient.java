@@ -42,7 +42,7 @@ public abstract class AbstractClient implements Client {
 
     private void authenticate(CommunicatorInitializationContext context, Communicator communicator) throws ClientAuthenticationException {
         if (!communicator.isAuthenticated()) {
-            InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
+            InternalConnectionInitializer initializer = new InternalConnectionInitializer();
             authenticateConnection(communicator, initializer);
             try {
                 runInitializationTasks(context, communicator, initializer);
@@ -56,7 +56,7 @@ public abstract class AbstractClient implements Client {
 
     private void initialize(CommunicatorInitializationContext context, Communicator communicator)
             throws ClientInitializationException {
-        InternalCommunicatorInitializer initializer = new InternalCommunicatorInitializer();
+        InternalConnectionInitializer initializer = new InternalConnectionInitializer();
         onInitialize(initializer);
         try {
             runInitializationTasks(context, communicator, initializer);
@@ -99,7 +99,7 @@ public abstract class AbstractClient implements Client {
         return inbox.remaining() > 0 || communicator.readIncoming(inbox);
     }
 
-    private void runInitializationTasks(CommunicatorInitializationContext context, Communicator communicator, InternalCommunicatorInitializer initializer)
+    private void runInitializationTasks(CommunicatorInitializationContext context, Communicator communicator, InternalConnectionInitializer initializer)
             throws IOException, InterruptedException {
         InternalInitializationTaskResult result;
 
@@ -160,7 +160,7 @@ public abstract class AbstractClient implements Client {
         }
     }
 
-    private void authenticateConnection(Communicator communicator, CommunicatorInitializer initializer) {
+    private void authenticateConnection(Communicator communicator, ConnectionInitializer initializer) {
         initializer.addConsumer(this::readCommunicatorId);
         communicator.configureAuthentication(initializer);
     }
@@ -171,7 +171,7 @@ public abstract class AbstractClient implements Client {
         return true;
     }
 
-    protected abstract void onInitialize(CommunicatorInitializer initializer);
+    protected abstract void onInitialize(ConnectionInitializer initializer);
 
     protected abstract void onMessage(DataBuffer buffer);
 }

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-class InternalCommunicatorInitializer implements CommunicatorInitializer {
+class InternalConnectionInitializer implements ConnectionInitializer {
     private final Deque<ConditionalInitializationTask> tasks = new ArrayDeque<>();
     private int initializationRetries = 100;
     private int initializationRetryDelay = 100;

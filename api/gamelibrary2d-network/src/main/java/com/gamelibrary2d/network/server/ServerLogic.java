@@ -3,7 +3,7 @@ package com.gamelibrary2d.network.server;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
 import java.io.IOException;
 
@@ -23,9 +23,9 @@ public interface ServerLogic {
 
     void onConnected(Communicator communicator);
 
-    void onAuthenticateClient(CommunicatorInitializer initializer);
+    void onAuthenticateClient(ConnectionInitializer initializer);
 
-    void onInitializeClient(CommunicatorInitializer initializer);
+    void onInitializeClient(ConnectionInitializer initializer);
 
     void onClientAuthenticated(CommunicatorInitializationContext context, Communicator communicator);
 

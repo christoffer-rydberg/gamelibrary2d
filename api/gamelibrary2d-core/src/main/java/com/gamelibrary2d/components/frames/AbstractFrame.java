@@ -13,7 +13,7 @@ import com.gamelibrary2d.network.client.Client;
 import com.gamelibrary2d.network.client.ClientLogic;
 import com.gamelibrary2d.network.client.ConnectionFactory;
 import com.gamelibrary2d.network.client.DefaultClient;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.updates.Update;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -245,7 +245,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
 
         pipeline.addTask(ctx -> {
             this.client = client;
-            frameClient.onCommunicatorReady(client.getCommunicator());
+            frameClient.onClientInitialized(client.getCommunicator());
         });
     }
 
@@ -257,7 +257,7 @@ public abstract class AbstractFrame extends AbstractLayer<Renderable> implements
         }
 
         @Override
-        public void onInitialize(CommunicatorInitializer initializer) {
+        public void onInitialize(ConnectionInitializer initializer) {
             frameClient.onInitializeClient(initializer);
         }
 

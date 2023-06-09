@@ -3,7 +3,7 @@ package com.gamelibrary2d.network.client;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.initialization.TaskConfiguration;
 import com.gamelibrary2d.network.security.*;
 import com.gamelibrary2d.random.RandomInstance;
@@ -59,7 +59,7 @@ public class ClientHandshakeConfiguration implements TaskConfiguration {
     }
 
     @Override
-    public void addTasks(CommunicatorInitializer initializer) {
+    public void addTasks(ConnectionInitializer initializer) {
         initializer.addConsumer(this::createSecretKeyEncrypter);
         initializer.addProducer(this::shareSecretKey);
     }

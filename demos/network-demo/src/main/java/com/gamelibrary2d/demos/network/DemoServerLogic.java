@@ -3,7 +3,7 @@ package com.gamelibrary2d.demos.network;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.server.Host;
 import com.gamelibrary2d.network.server.ServerLogic;
 
@@ -42,12 +42,12 @@ public class DemoServerLogic implements ServerLogic {
     }
 
     @Override
-    public void onAuthenticateClient(CommunicatorInitializer initializer) {
+    public void onAuthenticateClient(ConnectionInitializer initializer) {
 
     }
 
     @Override
-    public void onInitializeClient(CommunicatorInitializer initializer) {
+    public void onInitializeClient(ConnectionInitializer initializer) {
         initializer.addConsumer((ctx, com, inbox) -> {
             readAndPrintMessage(inbox);
             return true;

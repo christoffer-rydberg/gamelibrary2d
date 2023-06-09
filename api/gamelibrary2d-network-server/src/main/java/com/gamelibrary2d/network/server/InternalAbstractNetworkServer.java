@@ -2,7 +2,7 @@ package com.gamelibrary2d.network.server;
 
 import com.gamelibrary2d.network.connections.ConnectionListenerRegistration;
 import com.gamelibrary2d.network.connections.ConnectionService;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
@@ -91,7 +91,7 @@ abstract class InternalAbstractNetworkServer extends AbstractServer {
 
     protected abstract void onConnectionsDisabled();
 
-    protected abstract void authenticateClient(CommunicatorInitializer initializer);
+    protected abstract void authenticateClient(ConnectionInitializer initializer);
 
     protected abstract boolean acceptConnection(String endpoint);
 

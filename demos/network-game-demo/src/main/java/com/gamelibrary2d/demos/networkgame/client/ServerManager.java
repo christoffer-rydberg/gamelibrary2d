@@ -8,7 +8,7 @@ import com.gamelibrary2d.network.client.ClientHandshakeConfiguration;
 import com.gamelibrary2d.network.client.LocalServer;
 import com.gamelibrary2d.network.client.NetworkServerConnectionFactory;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.initialization.UdpConfiguration;
 import com.gamelibrary2d.network.server.NetworkServer;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class ServerManager {
         return connectionFactory;
     }
 
-    private void configureAuthentication(CommunicatorInitializer initializer) {
+    private void configureAuthentication(ConnectionInitializer initializer) {
         initializer.addConfig(new ClientHandshakeConfiguration());
         initializer.addProducer(this::sendPassword);
         initializer.addConfig(new UdpConfiguration());

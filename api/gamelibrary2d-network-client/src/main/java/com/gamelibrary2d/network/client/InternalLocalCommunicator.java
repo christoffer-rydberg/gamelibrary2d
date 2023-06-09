@@ -3,7 +3,7 @@ package com.gamelibrary2d.network.client;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.AbstractCommunicator;
 import com.gamelibrary2d.network.Communicator;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ class InternalLocalCommunicator extends AbstractCommunicator {
     }
 
     @Override
-    public void configureAuthentication(CommunicatorInitializer initializer) {
+    public void configureAuthentication(ConnectionInitializer initializer) {
 
     }
 
@@ -53,7 +53,7 @@ class InternalLocalCommunicator extends AbstractCommunicator {
         }
 
         @Override
-        public void configureAuthentication(CommunicatorInitializer initializer) {
+        public void configureAuthentication(ConnectionInitializer initializer) {
 
         }
 

@@ -7,9 +7,9 @@ import com.gamelibrary2d.io.Serializable;
 import java.io.IOException;
 
 /**
- * Used to configure the communicator initialization pipeline by adding {@link ConsumerTask consumer} and {@link ProducerTask producer} tasks.
+ * Used to configure the connection initialization pipeline by adding {@link ConsumerTask consumer} and {@link ProducerTask producer} tasks.
  */
-public interface CommunicatorInitializer {
+public interface ConnectionInitializer {
 
     /**
      * The max number of retries for each task.

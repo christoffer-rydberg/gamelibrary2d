@@ -3,7 +3,7 @@ package com.gamelibrary2d.network;
 import com.gamelibrary2d.functional.ParameterizedAction;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.events.CommunicatorDisconnectedListener;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.security.EncryptionReader;
 import com.gamelibrary2d.network.security.EncryptionWriter;
 
@@ -91,7 +91,7 @@ public interface Communicator {
     /**
      * Configures authentication tasks.
      */
-    void configureAuthentication(CommunicatorInitializer initializer);
+    void configureAuthentication(ConnectionInitializer initializer);
 
     /**
      * @return True if the communicator has been authenticated, false otherwise.

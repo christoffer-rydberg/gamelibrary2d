@@ -12,7 +12,7 @@ import com.gamelibrary2d.io.DynamicByteBuffer;
 import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.initialization.CommunicatorInitializationContext;
-import com.gamelibrary2d.network.initialization.CommunicatorInitializer;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.initialization.UdpConfiguration;
 import com.gamelibrary2d.network.server.Host;
 import com.gamelibrary2d.network.server.ServerHandshakeConfiguration;
@@ -56,7 +56,7 @@ public class DemoServerLogic implements ServerLogic {
     }
 
     @Override
-    public void onAuthenticateClient(CommunicatorInitializer initializer) {
+    public void onAuthenticateClient(ConnectionInitializer initializer) {
         if (keyPair == null) {
             throw new NullPointerException("Key pair has not been set");
         }
@@ -81,7 +81,7 @@ public class DemoServerLogic implements ServerLogic {
     }
 
     @Override
-    public void onInitializeClient(CommunicatorInitializer initializer) {
+    public void onInitializeClient(ConnectionInitializer initializer) {
         initializer.send(buffer -> buffer.putFloat(STREAMS_PER_SECOND));
         initializer.send(gameLogic::getGameSettings);
         initializer.receive("requestedPlayers", DataBuffer::getInt);
