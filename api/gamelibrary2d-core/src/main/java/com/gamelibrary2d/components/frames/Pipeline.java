@@ -82,33 +82,38 @@ public class Pipeline {
     }
 
     private static class PipelineFuture implements Future<Void> {
-        private final ExecutorService executor = Executors.newSingleThreadExecutor();
-        private Future<?> activeFuture;
+        private Thread activeThread;
         private volatile boolean isCancelled;
         private volatile boolean isDone;
         private volatile Throwable error;
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            if (!cancelActiveFuture(mayInterruptIfRunning)) {
+            if (isDone) {
                 return false;
             }
 
-            isDone = true;
-            isCancelled = true;
-            return true;
+            try {
+                cancelActiveThread(mayInterruptIfRunning);
+                return true;
+            } finally {
+                isDone = true;
+                isCancelled = true;
+            }
         }
 
-        private boolean cancelActiveFuture(boolean mayInterruptIfRunning) {
-            if (activeFuture == null) {
-                return true;
-            }
-
-            if (activeFuture.cancel(mayInterruptIfRunning)) {
-                activeFuture = null;
-                return true;
-            } else {
-                return false;
+        private void cancelActiveThread(boolean mayInterruptIfRunning) {
+            if (activeThread != null) {
+                try {
+                    if (mayInterruptIfRunning) {
+                        activeThread.interrupt();
+                    }
+                    activeThread.join();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    activeThread = null;
+                }
             }
         }
 
@@ -129,7 +134,7 @@ public class Pipeline {
             }
 
             try {
-                activeFuture.get();
+                activeThread.join();
             } finally {
                 isDone = true;
             }
@@ -143,7 +148,6 @@ public class Pipeline {
         }
 
         public void completeExceptionally(Throwable e) {
-            activeFuture.cancel(true);
             this.error = e;
             isDone = true;
         }
@@ -153,7 +157,8 @@ public class Pipeline {
         }
 
         public void runAsync(Runnable runnable) {
-            activeFuture = executor.submit(runnable);
+            activeThread = new Thread(runnable);
+            activeThread.start();
         }
     }
 }
