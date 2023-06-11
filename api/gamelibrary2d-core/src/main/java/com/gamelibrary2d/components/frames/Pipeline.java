@@ -4,9 +4,9 @@ import java.util.concurrent.*;
 
 public class Pipeline {
     private final Frame frame;
-    private final ConcurrentLinkedQueue<InitializationTaskWrapper> tasks = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<PipelineTaskWrapper> tasks = new ConcurrentLinkedQueue<>();
     private final PipelineContext context;
-    private final InitializationFuture initializationFuture = new InitializationFuture();
+    private final PipelineFuture pipelineFuture = new PipelineFuture();
 
     Pipeline(Frame frame, PipelineContext context) {
         this.frame = frame;
@@ -14,18 +14,18 @@ public class Pipeline {
     }
 
     private void performTask(PipelineTask task) {
-        if (!initializationFuture.isDone()) {
+        if (!pipelineFuture.isDone()) {
             try {
                 task.perform(context);
             } catch (Throwable e) {
-                initializationFuture.completeExceptionally(e);
+                pipelineFuture.completeExceptionally(e);
             }
         }
     }
 
-    private void performTask(InitializationTaskWrapper task) {
+    private void performTask(PipelineTaskWrapper task) {
         if (task.isBackgroundTask) {
-            initializationFuture.runAsync(() -> {
+            pipelineFuture.runAsync(() -> {
                 performTask(task.task);
                 performNextTask();
             });
@@ -36,11 +36,11 @@ public class Pipeline {
     }
 
     private void performNextTask() {
-        InitializationTaskWrapper task = tasks.poll();
+        PipelineTaskWrapper task = tasks.poll();
         if (task != null) {
             frame.invokeLater(() -> performTask(task));
         } else {
-            initializationFuture.complete();
+            pipelineFuture.complete();
         }
     }
 
@@ -52,41 +52,41 @@ public class Pipeline {
      * @param task The task
      */
     public void addTask(PipelineTask task) {
-        tasks.add(new InitializationTaskWrapper(task, false));
+        tasks.add(new PipelineTaskWrapper(task, false));
     }
 
     /**
      * Adds a task to the pipeline that will run in the background.
      * <br><br>The task will not block the update cycle when it runs, but since it's not running on the main thread
      * it won't have access to the OpenGL context.
-     * <br><br>Background tasks are generally safe to have side effects.
-     * The underlying {@link CompletableFuture} assures that the main thread will have visibility of changed fields when
-     * the task has completed. Fields that are accessed or modified in parallel with the task must be properly synchronized.
      *
      * @param task The task
      */
     public void addBackgroundTask(PipelineTask task) {
-        tasks.add(new InitializationTaskWrapper(task, true));
+        tasks.add(new PipelineTaskWrapper(task, true));
     }
 
     Future<Void> run() {
         performNextTask();
-        return initializationFuture;
+        return pipelineFuture;
     }
 
-    private static class InitializationTaskWrapper {
+    private static class PipelineTaskWrapper {
         PipelineTask task;
         boolean isBackgroundTask;
 
-        InitializationTaskWrapper(PipelineTask task, boolean isBackgroundTask) {
+        PipelineTaskWrapper(PipelineTask task, boolean isBackgroundTask) {
             this.task = task;
             this.isBackgroundTask = isBackgroundTask;
         }
     }
 
-    private static class InitializationFuture implements Future<Void> {
-        private final CompletableFuture<Void> completableFuture = new CompletableFuture<>();
-        private CompletableFuture<Void> activeFuture;
+    private static class PipelineFuture implements Future<Void> {
+        private final ExecutorService executor = Executors.newSingleThreadExecutor();
+        private Future<?> activeFuture;
+        private volatile boolean isCancelled;
+        private volatile boolean isDone;
+        private volatile Throwable error;
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
@@ -94,7 +94,9 @@ public class Pipeline {
                 return false;
             }
 
-            return completableFuture.cancel(mayInterruptIfRunning);
+            isDone = true;
+            isCancelled = true;
+            return true;
         }
 
         private boolean cancelActiveFuture(boolean mayInterruptIfRunning) {
@@ -112,34 +114,46 @@ public class Pipeline {
 
         @Override
         public boolean isCancelled() {
-            return completableFuture.isCancelled();
+            return isCancelled;
         }
 
         @Override
         public boolean isDone() {
-            return completableFuture.isDone();
+            return isDone;
         }
 
         @Override
         public Void get() throws InterruptedException, ExecutionException {
-            return completableFuture.get();
+            if (error != null) {
+                throw new ExecutionException(error);
+            }
+
+            try {
+                activeFuture.get();
+            } finally {
+                isDone = true;
+            }
+
+            return null;
         }
 
         @Override
         public Void get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-            return completableFuture.get(timeout, unit);
+            throw new RuntimeException("Not implemented");
         }
 
         public void completeExceptionally(Throwable e) {
-            completableFuture.completeExceptionally(e);
+            activeFuture.cancel(true);
+            this.error = e;
+            isDone = true;
         }
 
         public void complete() {
-            completableFuture.complete(null);
+            isDone = true;
         }
 
         public void runAsync(Runnable runnable) {
-            activeFuture = CompletableFuture.runAsync(runnable);
+            activeFuture = executor.submit(runnable);
         }
     }
 }
