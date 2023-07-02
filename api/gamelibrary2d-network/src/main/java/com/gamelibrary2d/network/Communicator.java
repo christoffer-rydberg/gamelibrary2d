@@ -17,16 +17,6 @@ public interface Communicator {
     String getEndpoint();
 
     /**
-     * @return The unique ID of the communicator.
-     */
-    int getId();
-
-    /**
-     * Sets the communicator {@link #getId id}.
-     */
-    void setId(int id);
-
-    /**
      * Checks if the communicator is connected.
      *
      * @return True if connected, false otherwise.

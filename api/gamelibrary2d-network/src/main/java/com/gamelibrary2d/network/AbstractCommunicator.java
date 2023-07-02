@@ -15,8 +15,6 @@ public abstract class AbstractCommunicator implements Communicator {
     private final IncomingBufferMonitor[] incomingBufferMonitor;
     private final DataBuffer outgoingBuffer = new DynamicByteBuffer();
     private final EventPublisher<CommunicatorDisconnectedEvent> disconnectedPublisher = new DefaultEventPublisher<>();
-
-    private volatile int id;
     private volatile boolean connected = true;
     private volatile boolean authenticated;
     private volatile Throwable disconnectionCause;
@@ -49,16 +47,6 @@ public abstract class AbstractCommunicator implements Communicator {
     @Override
     public void setEncryptionReader(EncryptionReader encryptionReader) {
         this.encryptionReader = encryptionReader;
-    }
-
-    @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(int id) {
-        this.id = id;
     }
 
     @Override

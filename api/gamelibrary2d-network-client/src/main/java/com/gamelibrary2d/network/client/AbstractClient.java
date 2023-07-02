@@ -161,14 +161,7 @@ public abstract class AbstractClient implements Client {
     }
 
     private void authenticateConnection(Communicator communicator, ConnectionInitializer initializer) {
-        initializer.addConsumer(this::readCommunicatorId);
         communicator.configureAuthentication(initializer);
-    }
-
-    private boolean readCommunicatorId(ConnectionContext context, Communicator communicator, DataBuffer inbox) {
-        int communicatorId = inbox.getInt();
-        communicator.setId(communicatorId);
-        return true;
     }
 
     protected abstract void onInitialize(ConnectionInitializer initializer);

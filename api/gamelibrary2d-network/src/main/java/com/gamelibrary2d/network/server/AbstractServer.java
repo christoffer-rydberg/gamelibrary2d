@@ -1,21 +1,17 @@
 package com.gamelibrary2d.network.server;
 
 import com.gamelibrary2d.denotations.Updatable;
-import com.gamelibrary2d.functional.Factory;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.io.DynamicByteBuffer;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.events.CommunicatorDisconnectedEvent;
 import com.gamelibrary2d.network.events.CommunicatorDisconnectedListener;
 import com.gamelibrary2d.network.initialization.*;
-import com.gamelibrary2d.random.RandomInstance;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractServer implements Server, Updatable {
-    private final Factory<Integer> communicatorIdFactory = RandomInstance.get()::nextInt;
     private final List<PendingCommunicator> pendingCommunicators;
     private final DataBuffer streamBuffer;
     private final DataBuffer incomingBuffer;
@@ -36,7 +32,6 @@ public abstract class AbstractServer implements Server, Updatable {
 
     protected void addPendingCommunicator(Communicator communicator) {
         InternalConnectionInitializer initializer = new InternalConnectionInitializer();
-        initializer.addProducer((__, com) -> writeIdentifier(com, communicatorIdFactory));
         initializer.addProducer(this::connectedTask);
         communicator.configureAuthentication(initializer);
         initializer.addProducer(this::authenticatedTask);
@@ -56,12 +51,6 @@ public abstract class AbstractServer implements Server, Updatable {
 
     protected DataBuffer getStreamBuffer() {
         return streamBuffer;
-    }
-
-    private void writeIdentifier(Communicator communicator, Factory<Integer> idFactory) {
-        int id = idFactory.create();
-        communicator.setId(id);
-        communicator.getOutgoing().putInt(id);
     }
 
     private void connectedTask(ConnectionContext context, Communicator communicator) {
@@ -121,8 +110,7 @@ public abstract class AbstractServer implements Server, Updatable {
                 onDisconnected(communicator, true, cause);
             } else {
                 throw new IllegalStateException(String.format(
-                        "Faulty state! Disconnected communicator '%s' is neither active nor pending. Endpoint: %s.",
-                        communicator.getId(),
+                        "Faulty state! Disconnected communicator is neither active nor pending. Endpoint: %s.",
                         communicator.getEndpoint()));
             }
         }
