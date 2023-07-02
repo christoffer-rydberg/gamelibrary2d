@@ -5,8 +5,7 @@ import com.gamelibrary2d.imaging.Image;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
 
 public class FontMetadataFactory {
 
@@ -33,7 +32,7 @@ public class FontMetadataFactory {
         int height = ascent + descent;
 
         int currentTextureWidth = 0;
-        Map<Character, FontMetadata.CharacterMetadata> quads = new HashMap<>();
+        Hashtable<Character, FontMetadata.CharacterMetadata> quads = new Hashtable<>();
         for (int i = 0; i < charImages.length; ++i) {
             BufferedImage charImage = charImages[i];
             if (charImage == null) {

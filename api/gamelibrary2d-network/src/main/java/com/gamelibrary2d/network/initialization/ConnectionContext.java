@@ -1,11 +1,10 @@
 package com.gamelibrary2d.network.initialization;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
 
 public class ConnectionContext {
 
-    private final Map<Object, Object> register = new HashMap<>();
+    private final Hashtable<Object, Object> register = new Hashtable<>();
 
     /**
      * Registers an object with the specified key.

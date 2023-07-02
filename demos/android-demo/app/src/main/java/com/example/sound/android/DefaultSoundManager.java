@@ -8,11 +8,11 @@ import com.gamelibrary2d.sound.SoundSource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.Hashtable;
 
 public class DefaultSoundManager extends AbstractDisposer implements SoundManager {
-    private final HashMap<Object, DefaultSoundBuffer> soundBuffers = new HashMap<>();
-    private final HashMap<String, AudioDecoder> decoders = new HashMap<>();
+    private final Hashtable<Object, DefaultSoundBuffer> soundBuffers = new Hashtable<>();
+    private final Hashtable<String, AudioDecoder> decoders = new Hashtable<>();
     private final AudioDecoder defaultDecoder = new DefaultAudioDecoder();
 
     public static DefaultSoundManager create(Disposer disposer) {

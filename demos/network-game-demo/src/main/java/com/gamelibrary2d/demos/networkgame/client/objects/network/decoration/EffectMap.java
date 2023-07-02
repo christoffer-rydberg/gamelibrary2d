@@ -20,9 +20,9 @@ import com.gamelibrary2d.sound.SoundPlayer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
+
 
 public class EffectMap {
     private final ResourceManager resourceManager;
@@ -30,8 +30,8 @@ public class EffectMap {
     private final SoundPlayer soundPlayer;
     private final ResourceReader resourceReader = new ResourceReader();
     private final List<ParticleSystemItem> particleSystems = new ArrayList<>();
-    private final Map<Byte, Map<Byte, InstantEffect>> destroyedEffects = new HashMap<>();
-    private final Map<Byte, Map<Byte, Factory<DurationEffect>>> updateEffects = new HashMap<>();
+    private final Hashtable<Byte, Hashtable<Byte, InstantEffect>> destroyedEffects = new Hashtable<>();
+    private final Hashtable<Byte, Hashtable<Byte, Factory<DurationEffect>>> updateEffects = new Hashtable<>();
     private ParticleRenderer defaultRenderer;
 
     public EffectMap(ResourceManager resourceManager, SoundMap sounds, SoundPlayer soundPlayer) {
@@ -85,7 +85,7 @@ public class EffectMap {
                 Scene.FOREGROUND,
                 disposer);
 
-        Map<Byte, Factory<DurationEffect>> updateEffects = new HashMap<>();
+        Hashtable<Byte, Factory<DurationEffect>> updateEffects = new Hashtable<>();
         updateEffects.put((byte) 0, () -> createUpdateEffect(engineSystem));
         this.updateEffects.put(ObjectTypes.PLAYER, updateEffects);
 
@@ -95,7 +95,7 @@ public class EffectMap {
                 Scene.FOREGROUND,
                 disposer);
 
-        Map<Byte, InstantEffect> destroyedEffects = new HashMap<>();
+        Hashtable<Byte, InstantEffect> destroyedEffects = new Hashtable<>();
         destroyedEffects.put((byte) 0, obj -> explosionSystem.emit(obj.getPosition()));
         this.destroyedEffects.put(ObjectTypes.PLAYER, destroyedEffects);
     }
@@ -107,7 +107,7 @@ public class EffectMap {
                 Scene.BACKGROUND,
                 disposer);
 
-        Map<Byte, Factory<DurationEffect>> updateEffects = new HashMap<>();
+        Hashtable<Byte, Factory<DurationEffect>> updateEffects = new Hashtable<>();
         updateEffects.put((byte) 0, () -> createUpdateEffect(portalSystem));
         this.updateEffects.put(ObjectTypes.PORTAL, updateEffects);
     }
@@ -119,7 +119,7 @@ public class EffectMap {
                 Scene.BACKGROUND,
                 disposer);
 
-        Map<Byte, Factory<DurationEffect>> updateEffects = new HashMap<>();
+        Hashtable<Byte, Factory<DurationEffect>> updateEffects = new Hashtable<>();
         for (Byte key : textures.getKeys(ObjectTypes.OBSTACLE)) {
             updateEffects.put(key, () -> createUpdateEffect(updateSystem));
         }
@@ -131,7 +131,7 @@ public class EffectMap {
                 Scene.FOREGROUND,
                 disposer);
 
-        Map<Byte, InstantEffect> destroyedEffects = new HashMap<>();
+        Hashtable<Byte, InstantEffect> destroyedEffects = new Hashtable<>();
         this.destroyedEffects.put(ObjectTypes.OBSTACLE, destroyedEffects);
 
         ParticleSystemParameters destroyParams = loadParameters(Particles.OBSTACLE_EXPLOSION);
@@ -178,7 +178,7 @@ public class EffectMap {
     }
 
     private InstantEffect getDestroyed(ClientObject obj) {
-        Map<Byte, InstantEffect> effects = destroyedEffects.get(obj.getPrimaryType());
+        Hashtable<Byte, InstantEffect> effects = destroyedEffects.get(obj.getPrimaryType());
         if (effects != null) {
             byte secondaryType = obj.getSecondaryType();
             return secondaryType >= effects.size()
@@ -190,7 +190,7 @@ public class EffectMap {
     }
 
     private DurationEffect getUpdate(ClientObject obj) {
-        Map<Byte, Factory<DurationEffect>> effects = updateEffects.get(obj.getPrimaryType());
+        Hashtable<Byte, Factory<DurationEffect>> effects = updateEffects.get(obj.getPrimaryType());
         if (effects != null) {
             byte secondaryType = obj.getSecondaryType();
             Factory<DurationEffect> effectFactory = secondaryType >= effects.size()

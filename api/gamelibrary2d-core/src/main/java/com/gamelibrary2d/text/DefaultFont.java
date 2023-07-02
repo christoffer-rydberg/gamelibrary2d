@@ -16,26 +16,26 @@ import com.gamelibrary2d.opengl.resources.Texture;
 import com.gamelibrary2d.opengl.shaders.ShaderProgram;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
+
 
 public class DefaultFont implements Font, Serializable {
     private final Texture texture;
-    private final Map<Character, Quad> quads;
+    private final Hashtable<Character, Quad> quads;
     private final int ascent;
     private final int descent;
     private final int height;
 
-    public DefaultFont(Texture texture, Map<Character, Quad> quads, int ascent, int descent, int height) {
+    public DefaultFont(Texture texture, Hashtable<Character, Quad> quads, int ascent, int descent, int height) {
         this.texture = texture;
-        this.quads = Collections.unmodifiableMap(quads);
+        this.quads = quads;
         this.ascent = ascent;
         this.descent = descent;
         this.height = height;
     }
 
     public static DefaultFont create(FontMetadata metadata, Disposer disposer) {
-        Map<Character, Quad> quads = new HashMap<>();
+        Hashtable<Character, Quad> quads = new Hashtable<>();
         for (Character c : metadata.getCharacters().keySet()) {
             FontMetadata.CharacterMetadata charBounds = metadata.getCharacters().get(c);
             Quad quad = Quad.create(charBounds.getBounds(), charBounds.getTextureBounds(), disposer);
@@ -55,7 +55,7 @@ public class DefaultFont implements Font, Serializable {
         Disposer disposer = new DefaultDisposer(parentDisposer);
 
         int numberOfQuads = buffer.getInt();
-        Map<Character, Quad> quads = new HashMap<>();
+        Hashtable<Character, Quad> quads = new Hashtable<>();
         for (int i = 0; i < numberOfQuads; ++i) {
             char character = (char) buffer.getInt();
             Rectangle bounds = deserializeRectangle(buffer);
@@ -141,7 +141,7 @@ public class DefaultFont implements Font, Serializable {
         return texture;
     }
 
-    public Map<Character, Quad> getQuads() {
+    public Hashtable<Character, Quad> getQuads() {
         return quads;
     }
 

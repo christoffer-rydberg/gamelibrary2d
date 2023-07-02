@@ -10,12 +10,12 @@ import java.nio.channels.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Map;
+
 
 public class ConnectionService {
-    private final Map<SelectableChannel, InternalConnectionListener> connectionListeners = new Hashtable<>();
-    private final Map<SocketChannel, InternalTcpConnection> tcpConnections = new Hashtable<>();
-    private final Map<DatagramChannel, InternalUdpConnection> udpConnections = new Hashtable<>();
+    private final Hashtable<SelectableChannel, InternalConnectionListener> connectionListeners = new Hashtable<>();
+    private final Hashtable<SocketChannel, InternalTcpConnection> tcpConnections = new Hashtable<>();
+    private final Hashtable<DatagramChannel, InternalUdpConnection> udpConnections = new Hashtable<>();
     private final Thread thread;
     private Selector selector;
 

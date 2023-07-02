@@ -15,15 +15,15 @@ import com.gamelibrary2d.opengl.resources.Quad;
 import com.gamelibrary2d.opengl.resources.Surface;
 import com.gamelibrary2d.opengl.resources.Texture;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
+
 
 public class RendererMap {
-    private final Map<Byte, Map<Byte, Renderable>> renderers = new HashMap<>();
+    private final Hashtable<Byte, Hashtable<Byte, Renderable>> renderers = new Hashtable<>();
     private PlayerRendererFactory playerRendererFactory;
 
     private void initializeRenderers(byte primaryType, TextureMap textures, Rectangle bounds, Disposer disposer) {
-        Map<Byte, Renderable> renderers = new HashMap<>();
+        Hashtable<Byte, Renderable> renderers = new Hashtable<>();
         Surface surface = Quad.create(bounds, disposer);
         for (Byte key : textures.getKeys(primaryType)) {
             ContentRenderer renderer = new SurfaceRenderer<>(surface, textures.getTexture(primaryType, key));
@@ -64,7 +64,7 @@ public class RendererMap {
     }
 
     private Renderable get(byte primaryType, byte secondaryType) {
-        Map<Byte, Renderable> renderers = this.renderers.get(primaryType);
+        Hashtable<Byte, Renderable> renderers = this.renderers.get(primaryType);
         return renderers != null ? renderers.get(secondaryType) : null;
     }
 

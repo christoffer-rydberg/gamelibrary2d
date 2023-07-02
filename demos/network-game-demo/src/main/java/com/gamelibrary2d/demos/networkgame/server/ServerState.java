@@ -5,11 +5,11 @@ import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.io.Serializable;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
+
 
 public class ServerState implements Serializable {
-    private final Map<Integer, ServerObject> objects = new HashMap<>();
+    private final Hashtable<Integer, ServerObject> objects = new Hashtable<>();
     private int lastObjectId = -1;
 
     public void register(ServerObject obj) {

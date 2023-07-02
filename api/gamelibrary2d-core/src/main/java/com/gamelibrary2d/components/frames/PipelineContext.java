@@ -1,9 +1,9 @@
 package com.gamelibrary2d.components.frames;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Hashtable;
 
 public class PipelineContext {
-    private final ConcurrentHashMap<Object, Object> register = new ConcurrentHashMap<>();
+    private final Hashtable<Object, Object> register = new Hashtable<>();
 
     /**
      * Registers an object with the specified key.

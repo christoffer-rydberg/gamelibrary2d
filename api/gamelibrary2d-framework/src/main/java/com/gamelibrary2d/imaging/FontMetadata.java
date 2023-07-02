@@ -2,16 +2,17 @@ package com.gamelibrary2d.imaging;
 
 import com.gamelibrary2d.Rectangle;
 
-import java.util.Map;
+import java.util.Hashtable;
+
 
 public class FontMetadata {
     private final Image image;
-    private final Map<Character, CharacterMetadata> characters;
+    private final Hashtable<Character, CharacterMetadata> characters;
     private final int ascent;
     private final int descent;
     private final int fontHeight;
 
-    public FontMetadata(Image image, Map<Character, CharacterMetadata> characters, int ascent, int descent, int height) {
+    public FontMetadata(Image image, Hashtable<Character, CharacterMetadata> characters, int ascent, int descent, int height) {
         this.image = image;
         this.characters = characters;
         this.ascent = ascent;
@@ -19,7 +20,7 @@ public class FontMetadata {
         this.fontHeight = height;
     }
 
-    public Map<Character, CharacterMetadata> getCharacters() {
+    public Hashtable<Character, CharacterMetadata> getCharacters() {
         return characters;
     }
 

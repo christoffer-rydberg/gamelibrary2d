@@ -8,15 +8,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
+
 import java.util.regex.Pattern;
 
 public class SoundMap {
     private final SoundManager soundManager;
     private final ResourceManager resourceManager;
-    private final Map<Byte, Map<Byte, String>> sound = new HashMap<>();
+    private final Hashtable<Byte, Hashtable<Byte, String>> sound = new Hashtable<>();
 
     public SoundMap(SoundManager soundManager, ResourceManager resourceManager) {
         this.soundManager = soundManager;
@@ -37,8 +37,8 @@ public class SoundMap {
         return pos > 0 ? tryParseByte(name.substring(0, pos)) : null;
     }
 
-    private Map<Byte, String> load(String resourceFolder, String regex) throws IOException {
-        Map<Byte, String> sounds = new HashMap<>();
+    private Hashtable<Byte, String> load(String resourceFolder, String regex) throws IOException {
+        Hashtable<Byte, String> sounds = new Hashtable<>();
         Pattern pattern = regex != null ? Pattern.compile(regex) : null;
         List<String> paths = resourceManager.list(resourceFolder);
         for (String path : paths) {
@@ -57,7 +57,7 @@ public class SoundMap {
     }
 
     private void initializeDestroyedObjects() throws IOException {
-        Map<Byte, String> sounds = load("sounds/obstacles/destroyed/", "^*.ogg$");
+        Hashtable<Byte, String> sounds = load("sounds/obstacles/destroyed/", "^*.ogg$");
         this.sound.put(ObjectTypes.OBSTACLE, sounds);
     }
 
@@ -66,7 +66,7 @@ public class SoundMap {
     }
 
     public String getDestroyedSound(Byte primaryType, Byte secondaryType) {
-        Map<Byte, String> sounds = this.sound.get(primaryType);
+        Hashtable<Byte, String> sounds = this.sound.get(primaryType);
         if (sounds != null) {
             String sound = sounds.get(secondaryType);
             return sound != null ? sound : sounds.get((byte) 0);

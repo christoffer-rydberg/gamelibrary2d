@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.HashMap;
+import java.util.Hashtable;
 
 import static org.lwjgl.openal.AL10.alDistanceModel;
 import static org.lwjgl.openal.ALC10.*;
@@ -22,8 +22,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class DefaultSoundManager extends AbstractDisposer implements SoundManager {
     private final long device;
     private final long context;
-    private final HashMap<Object, DefaultSoundBuffer> soundBuffers = new HashMap<>();
-    private final HashMap<String, AudioDecoder> decoders = new HashMap<>();
+    private final Hashtable<Object, DefaultSoundBuffer> soundBuffers = new Hashtable<>();
+    private final Hashtable<String, AudioDecoder> decoders = new Hashtable<>();
     private SoundListener listener;
 
     private DefaultSoundManager(long device, long context) {

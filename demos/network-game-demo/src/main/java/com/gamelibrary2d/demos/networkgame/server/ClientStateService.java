@@ -4,13 +4,13 @@ import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
 import com.gamelibrary2d.network.Communicator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
+
 
 public class ClientStateService {
 
-    private final Map<Communicator, ClientState> clientStates = new HashMap<>();
+    private final Hashtable<Communicator, ClientState> clientStates = new Hashtable<>();
 
     public void put(ClientState state) {
         clientStates.put(state.getCommunicator(), state);

@@ -8,16 +8,16 @@ import com.gamelibrary2d.opengl.ModelMatrix;
 import com.gamelibrary2d.opengl.OpenGLState;
 
 import java.nio.FloatBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
+
 
 public class DefaultShaderProgram implements ShaderProgram, Disposable {
     private final static String PARAMETERS_ATTRIBUTE = "parameters";
     private final static int LOCATION_NOT_FOUND = Integer.MIN_VALUE;
 
     private final FloatBuffer parameters = BufferUtils.createFloatBuffer(ShaderParameter.MAX_PARAMETERS);
-    private final Map<CharSequence, Integer> uniformLocations = new HashMap<>();
-    private final Map<CharSequence, Integer> attributeLocations = new HashMap<>();
+    private final Hashtable<CharSequence, Integer> uniformLocations = new Hashtable<>();
+    private final Hashtable<CharSequence, Integer> attributeLocations = new Hashtable<>();
     private final int programId;
 
     private boolean initialized;
@@ -132,7 +132,11 @@ public class DefaultShaderProgram implements ShaderProgram, Disposable {
     }
 
     public int getAttributeLocation(CharSequence name) {
-        int location = attributeLocations.getOrDefault(name, LOCATION_NOT_FOUND);
+        int location = LOCATION_NOT_FOUND;
+        if (attributeLocations.containsKey(name)) {
+            location = attributeLocations.get(name);
+        }
+
         if (location == LOCATION_NOT_FOUND) {
             location = OpenGL.instance().glGetAttribLocation(programId, name);
             attributeLocations.put(name, location);
@@ -142,7 +146,11 @@ public class DefaultShaderProgram implements ShaderProgram, Disposable {
     }
 
     public int getUniformLocation(CharSequence name) {
-        int location = uniformLocations.getOrDefault(name, LOCATION_NOT_FOUND);
+        int location = LOCATION_NOT_FOUND;
+        if (attributeLocations.containsKey(name)) {
+            location = attributeLocations.get(name);
+        }
+
         if (location == LOCATION_NOT_FOUND) {
             location = OpenGL.instance().glGetUniformLocation(programId, name);
             uniformLocations.put(name, location);

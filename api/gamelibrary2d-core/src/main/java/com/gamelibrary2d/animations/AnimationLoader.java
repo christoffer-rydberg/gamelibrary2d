@@ -16,10 +16,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class AnimationLoader {
-    private final static Map<String, AnimationReader> animationReaders = initializeAnimationReaders();
+    private final static Hashtable<String, AnimationReader> animationReaders = initializeAnimationReaders();
 
-    private static Map<String, AnimationReader> initializeAnimationReaders() {
-        HashMap<String, AnimationReader> animationLoaders = new HashMap<>();
+    private static Hashtable<String, AnimationReader> initializeAnimationReaders() {
+        Hashtable<String, AnimationReader> animationLoaders = new Hashtable<>();
         animationLoaders.put(StandardAnimationFormats.GIF, new GifAnimationReader());
         return animationLoaders;
     }

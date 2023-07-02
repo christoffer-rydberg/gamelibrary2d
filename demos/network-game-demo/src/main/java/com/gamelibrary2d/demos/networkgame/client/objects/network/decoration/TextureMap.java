@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class TextureMap {
     private final ResourceManager resourceManager;
-    private final Map<Byte, Map<Byte, Texture>> textures = new HashMap<>();
+    private final Hashtable<Byte, Hashtable<Byte, Texture>> textures = new Hashtable<>();
     private final Set<Byte> emptyKeySet = Collections.unmodifiableSet(new HashSet<>(0));
     private Texture playerBackground;
     private Texture playerForeground;
@@ -37,8 +37,8 @@ public class TextureMap {
         return pos > 0 ? tryParseByte(name.substring(0, pos)) : null;
     }
 
-    private Map<Byte, Texture> load(String resourceFolder, String regex, Disposer disposer) throws IOException {
-        Map<Byte, Texture> textures = new HashMap<>();
+    private Hashtable<Byte, Texture> load(String resourceFolder, String regex, Disposer disposer) throws IOException {
+        Hashtable<Byte, Texture> textures = new Hashtable<>();
         Pattern pattern = regex != null ? Pattern.compile(regex) : null;
         List<String> paths = resourceManager.list(resourceFolder);
         for (String path : paths) {
@@ -60,7 +60,7 @@ public class TextureMap {
     }
 
     private void initializeObstacleTextures(Disposer disposer) throws IOException {
-        Map<Byte, Texture> textures = load("images/obstacles/", "^*.png$", disposer);
+        Hashtable<Byte, Texture> textures = load("images/obstacles/", "^*.png$", disposer);
         this.textures.put(ObjectTypes.OBSTACLE, textures);
     }
 
@@ -70,12 +70,12 @@ public class TextureMap {
     }
 
     public Texture getTexture(Byte primaryType, Byte secondaryType) {
-        Map<Byte, Texture> textures = this.textures.get(primaryType);
+        Hashtable<Byte, Texture> textures = this.textures.get(primaryType);
         return textures != null ? textures.get(secondaryType) : null;
     }
 
     public Set<Byte> getKeys(byte primaryType) {
-        Map<Byte, Texture> textures = this.textures.get(primaryType);
+        Hashtable<Byte, Texture> textures = this.textures.get(primaryType);
         return textures != null ? textures.keySet() : emptyKeySet;
     }
 

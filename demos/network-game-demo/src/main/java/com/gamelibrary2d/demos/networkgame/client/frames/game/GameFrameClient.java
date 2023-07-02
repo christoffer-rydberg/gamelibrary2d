@@ -11,8 +11,8 @@ import com.gamelibrary2d.network.events.CommunicatorDisconnectedEvent;
 import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
+
 
 import static com.gamelibrary2d.demos.networkgame.common.ServerMessages.*;
 
@@ -200,18 +200,18 @@ public class GameFrameClient implements FrameClient {
     }
 
     private class State {
-        private final Map<Integer, ClientObject> objects;
+        private final Hashtable<Integer, ClientObject> objects;
 
         State(DataBuffer buffer) {
             int size = buffer.getInt();
-            objects = new HashMap<>(size);
+            objects = new Hashtable<>(size);
             for (int i = 0; i < size; ++i) {
                 ClientObject obj = readObject(buffer.get(), buffer);
                 objects.put(obj.getId(), obj);
             }
         }
 
-        Map<Integer, ClientObject> getObjects() {
+        Hashtable<Integer, ClientObject> getObjects() {
             return objects;
         }
 
