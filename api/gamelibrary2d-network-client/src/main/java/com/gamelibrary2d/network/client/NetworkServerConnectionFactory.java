@@ -1,7 +1,7 @@
 package com.gamelibrary2d.network.client;
 
 import com.gamelibrary2d.disposal.Disposer;
-import com.gamelibrary2d.functional.ParameterizedAction;
+import com.gamelibrary2d.network.Authenticator;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.SocketChannelConnectedHandler;
 import com.gamelibrary2d.network.SocketChannelFailedConnectionHandler;
@@ -16,12 +16,17 @@ import java.util.concurrent.Future;
 public class NetworkServerConnectionFactory implements ConnectionFactory {
     private final String host;
     private final int port;
+    private final Authenticator authenticator;
     private final ConnectionService connectionService = new ConnectionService();
-    private final ArrayList<ParameterizedAction<ConnectionInitializer>> authentication = new ArrayList<>();
 
     public NetworkServerConnectionFactory(String host, int port, Disposer disposer) {
+        this(host, port, null, disposer);
+    }
+
+    public NetworkServerConnectionFactory(String host, int port, Authenticator authenticator, Disposer disposer) {
         this.host = host;
         this.port = port;
+        this.authenticator = authenticator;
         disposer.registerDisposal(() -> {
             try {
                 this.connectionService.stop();
@@ -31,17 +36,13 @@ public class NetworkServerConnectionFactory implements ConnectionFactory {
         });
     }
 
-    public void addAuthentication(ParameterizedAction<ConnectionInitializer> configureAuthentication) {
-        authentication.add(configureAuthentication);
-    }
-
     @Override
     public Future<Communicator> createConnection() {
         CompletableFuture<Communicator> future = new CompletableFuture<>();
 
         SocketChannelConnectedHandler onConnected = socketChannel -> {
             InternalNetworkCommunicator communicator = new InternalNetworkCommunicator(
-                    host, connectionService, this::configureAuthentication);
+                    host, connectionService, authenticator);
             socketChannel.socket().setTcpNoDelay(true);
             communicator.setSocketChannel(socketChannel);
             connectionService.connect(socketChannel, communicator, communicator::onSocketChannelDisconnected);
@@ -66,11 +67,5 @@ public class NetworkServerConnectionFactory implements ConnectionFactory {
         }
 
         return future;
-    }
-
-    private void configureAuthentication(ConnectionInitializer initializer) {
-        for (ParameterizedAction<ConnectionInitializer> auth : authentication) {
-            auth.perform(initializer);
-        }
     }
 }

@@ -2,6 +2,7 @@ package com.gamelibrary2d.network.client;
 
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.network.AbstractCommunicator;
+import com.gamelibrary2d.network.Authenticator;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
@@ -9,10 +10,14 @@ import java.io.IOException;
 
 class InternalLocalCommunicator extends AbstractCommunicator {
     private final LocalServerSideCommunicator serverSideCommunicator;
+    private final Authenticator authenticator;
 
-    InternalLocalCommunicator() {
+    InternalLocalCommunicator(InternalLocalAuthenticator authenticator) {
         super(1);
-        serverSideCommunicator = new LocalServerSideCommunicator(this);
+        this.authenticator = authenticator != null ? authenticator.clientSide : null;
+        serverSideCommunicator = new LocalServerSideCommunicator(
+                this,
+                authenticator != null ? authenticator.serverSide : null);
     }
 
     Communicator getServerSideCommunicator() {
@@ -20,8 +25,10 @@ class InternalLocalCommunicator extends AbstractCommunicator {
     }
 
     @Override
-    public void configureAuthentication(ConnectionInitializer initializer) {
-
+    public void addAuthentication(ConnectionInitializer initializer) {
+        if (authenticator != null) {
+            authenticator.addAuthentication(initializer);
+        }
     }
 
     @Override
@@ -41,10 +48,12 @@ class InternalLocalCommunicator extends AbstractCommunicator {
 
     private static class LocalServerSideCommunicator extends AbstractCommunicator {
         private final Communicator clientSideCommunicator;
+        private final Authenticator authenticator;
 
-        LocalServerSideCommunicator(Communicator clientSideCommunicator) {
+        LocalServerSideCommunicator(Communicator clientSideCommunicator, Authenticator authenticator) {
             super(1);
             this.clientSideCommunicator = clientSideCommunicator;
+            this.authenticator = authenticator;
         }
 
         @Override
@@ -53,8 +62,10 @@ class InternalLocalCommunicator extends AbstractCommunicator {
         }
 
         @Override
-        public void configureAuthentication(ConnectionInitializer initializer) {
-
+        public void addAuthentication(ConnectionInitializer initializer) {
+            if (authenticator != null) {
+                authenticator.addAuthentication(initializer);
+            }
         }
 
         @Override

@@ -42,12 +42,9 @@ public class DemoServerLogic implements ServerLogic {
     }
 
     @Override
-    public void onAuthenticateClient(ConnectionInitializer initializer) {
-
-    }
-
-    @Override
     public void onInitializeClient(ConnectionInitializer initializer) {
+        initializer.addProducer((ctx, com) -> sendMessage(com, String.format("Hello %s", ctx.get(String.class, "clientName"))));
+
         initializer.addConsumer((ctx, com, inbox) -> {
             readAndPrintMessage(inbox);
             return true;

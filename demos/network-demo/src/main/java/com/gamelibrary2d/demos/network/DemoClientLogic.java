@@ -10,6 +10,11 @@ import java.nio.charset.StandardCharsets;
 public class DemoClientLogic implements ClientLogic {
     @Override
     public void onInitialize(ConnectionInitializer initializer) {
+        initializer.addConsumer((ctx, com, inbox) -> {
+            readAndPrintMessage(inbox);
+            return true;
+        });
+
         initializer.addProducer((ctx, com) -> sendMessage(com, "What do you call a guy with a rubber toe?"));
         initializer.addConsumer((ctx, com, inbox) -> {
             readAndPrintMessage(inbox);

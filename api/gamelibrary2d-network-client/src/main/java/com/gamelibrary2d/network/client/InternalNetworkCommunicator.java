@@ -1,7 +1,7 @@
 package com.gamelibrary2d.network.client;
 
-import com.gamelibrary2d.functional.ParameterizedAction;
 import com.gamelibrary2d.network.AbstractNetworkCommunicator;
+import com.gamelibrary2d.network.Authenticator;
 import com.gamelibrary2d.network.connections.ConnectionService;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 
@@ -10,15 +10,15 @@ import java.nio.channels.SocketChannel;
 
 class InternalNetworkCommunicator extends AbstractNetworkCommunicator {
     private final String endpoint;
-    private final ParameterizedAction<ConnectionInitializer> configureAuthentication;
+    private final Authenticator authenticator;
 
     InternalNetworkCommunicator(
             String endpoint,
             ConnectionService connectionService,
-            ParameterizedAction<ConnectionInitializer> configureAuthentication) {
+            Authenticator authenticator) {
         super(connectionService, 2);
         this.endpoint = endpoint;
-        this.configureAuthentication = configureAuthentication;
+        this.authenticator = authenticator;
     }
 
     @Override
@@ -32,9 +32,9 @@ class InternalNetworkCommunicator extends AbstractNetworkCommunicator {
     }
 
     @Override
-    public void configureAuthentication(ConnectionInitializer initializer) {
-        if (configureAuthentication != null) {
-            configureAuthentication.perform(initializer);
+    public void addAuthentication(ConnectionInitializer initializer) {
+        if (authenticator != null) {
+            authenticator.addAuthentication(initializer);
         }
     }
 

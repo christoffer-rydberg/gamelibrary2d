@@ -43,7 +43,7 @@ public abstract class AbstractClient implements Client {
     private void authenticate(ConnectionContext context, Communicator communicator) throws ClientAuthenticationException {
         if (!communicator.isAuthenticated()) {
             InternalConnectionInitializer initializer = new InternalConnectionInitializer();
-            authenticateConnection(communicator, initializer);
+            communicator.addAuthentication(initializer);
             try {
                 runInitializationTasks(context, communicator, initializer);
             } catch (IOException | InterruptedException e) {
@@ -158,10 +158,6 @@ public abstract class AbstractClient implements Client {
         } else {
             throw new IllegalStateException("Unknown task: " + task.getClass().getName());
         }
-    }
-
-    private void authenticateConnection(Communicator communicator, ConnectionInitializer initializer) {
-        communicator.configureAuthentication(initializer);
     }
 
     protected abstract void onInitialize(ConnectionInitializer initializer);

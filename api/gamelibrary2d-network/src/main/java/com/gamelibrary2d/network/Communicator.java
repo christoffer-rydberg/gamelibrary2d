@@ -79,9 +79,9 @@ public interface Communicator {
     void removeDisconnectedListener(CommunicatorDisconnectedListener listener);
 
     /**
-     * Configures authentication tasks.
+     * Adds authentication tasks.
      */
-    void configureAuthentication(ConnectionInitializer initializer);
+    void addAuthentication(ConnectionInitializer initializer);
 
     /**
      * @return True if the communicator has been authenticated, false otherwise.

@@ -33,7 +33,7 @@ public abstract class AbstractServer implements Server, Updatable {
     protected void addPendingCommunicator(Communicator communicator) {
         InternalConnectionInitializer initializer = new InternalConnectionInitializer();
         initializer.addProducer(this::connectedTask);
-        communicator.configureAuthentication(initializer);
+        communicator.addAuthentication(initializer);
         initializer.addProducer(this::authenticatedTask);
         onInitializeClient(initializer);
 

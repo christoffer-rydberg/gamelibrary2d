@@ -1,6 +1,7 @@
 package com.gamelibrary2d.network.server;
 
 import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.Authenticator;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
@@ -9,18 +10,26 @@ import java.io.IOException;
 import java.util.List;
 
 public final class NetworkServer extends InternalAbstractNetworkServer {
-    private final ServerLogic serverLogic;
     private final Host host;
+    private final ServerLogic serverLogic;
+    private final Authenticator authenticator;
 
     public NetworkServer(String hostname, ServerLogic serverLogic) {
+        this(hostname, serverLogic, null);
+    }
+
+    public NetworkServer(String hostname, ServerLogic serverLogic, Authenticator authenticator) {
         super(hostname);
         host = new InternalHost(hostname);
         this.serverLogic = serverLogic;
+        this.authenticator = authenticator;
     }
 
     @Override
     protected void authenticateClient(ConnectionInitializer initializer) {
-        serverLogic.onAuthenticateClient(initializer);
+        if (authenticator != null) {
+            authenticator.addAuthentication(initializer);
+        }
     }
 
     @Override

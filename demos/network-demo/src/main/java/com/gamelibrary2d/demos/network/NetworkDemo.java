@@ -3,9 +3,13 @@ package com.gamelibrary2d.demos.network;
 import com.gamelibrary2d.disposal.DefaultDisposer;
 import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.functional.Func;
+import com.gamelibrary2d.io.Read;
+import com.gamelibrary2d.io.Write;
+import com.gamelibrary2d.network.Authenticator;
 import com.gamelibrary2d.network.client.*;
 import com.gamelibrary2d.network.exceptions.ClientAuthenticationException;
 import com.gamelibrary2d.network.exceptions.ClientInitializationException;
+import com.gamelibrary2d.network.initialization.ConnectionInitializer;
 import com.gamelibrary2d.network.server.NetworkServer;
 import com.gamelibrary2d.network.server.Server;
 import com.gamelibrary2d.network.server.ServerLogic;
@@ -41,15 +45,15 @@ public class NetworkDemo {
         ServerLogic serverLogic = new DemoServerLogic(port);
         System.out.println("Creating network server");
         return new ServerResult(
-                new NetworkServer(host, serverLogic),
-                d -> new NetworkServerConnectionFactory(host, port, d)
+                new NetworkServer(host, serverLogic, new ServerSideAuthenticator()),
+                d -> new NetworkServerConnectionFactory(host, port, new RemoteClientSideAuthenticator(), d)
         );
     }
 
     private static ServerResult createLocalServer() {
         ServerLogic logic = new DemoServerLogic();
         System.out.println("Creating local server");
-        LocalServer server = new LocalServer(logic);
+        LocalServer server = new LocalServer(logic, new LocalClientSideAuthenticator(), new ServerSideAuthenticator());
         return new ServerResult(server, d -> server);
     }
 
@@ -114,6 +118,34 @@ public class NetworkDemo {
 
         public ConnectionFactory createConnectionFactory(Disposer disposer) {
             return createConnectionFactory.invoke(disposer);
+        }
+    }
+
+    private static class LocalClientSideAuthenticator implements Authenticator {
+        @Override
+        public void addAuthentication(ConnectionInitializer initializer) {
+            initializer.addProducer((ctx, com) -> {
+                Write.textWithSizeHeader("Local Bob", com.getOutgoing());
+            });
+        }
+    }
+
+    private static class RemoteClientSideAuthenticator implements Authenticator {
+        @Override
+        public void addAuthentication(ConnectionInitializer initializer) {
+            initializer.addProducer((ctx, com) -> {
+                Write.textWithSizeHeader("Remote Bob", com.getOutgoing());
+            });
+        }
+    }
+
+    private static class ServerSideAuthenticator implements Authenticator {
+        @Override
+        public void addAuthentication(ConnectionInitializer initializer) {
+            initializer.addConsumer((ctx, com, buffer) -> {
+                ctx.register("clientName", Read.textWithSizeHeader(buffer));
+                return true;
+            });
         }
     }
 }

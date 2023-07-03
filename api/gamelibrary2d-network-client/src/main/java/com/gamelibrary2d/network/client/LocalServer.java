@@ -1,6 +1,7 @@
 package com.gamelibrary2d.network.client;
 
 import com.gamelibrary2d.io.DataBuffer;
+import com.gamelibrary2d.network.Authenticator;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
@@ -17,13 +18,19 @@ import java.util.concurrent.Future;
 public final class LocalServer extends AbstractServer implements ConnectionFactory {
     public static final String LOCAL_CONNECTION_ENDPOINT = "local";
     private final ServerLogic serverLogic;
-
     private final Host host = new InternalHost();
     private final ArrayList<Communicator> clientSideCommunicators = new ArrayList<>();
+    private final InternalLocalAuthenticator authentication;
     private boolean connectionsEnabled;
 
     public LocalServer(ServerLogic serverLogic) {
         this.serverLogic = serverLogic;
+        authentication = null;
+    }
+
+    public LocalServer(ServerLogic serverLogic, Authenticator clientSideAuthenticator, Authenticator serverSideAuthenticator) {
+        this.serverLogic = serverLogic;
+        authentication = new InternalLocalAuthenticator(clientSideAuthenticator, serverSideAuthenticator);
     }
 
     @Override
@@ -34,7 +41,7 @@ public final class LocalServer extends AbstractServer implements ConnectionFacto
             return future;
         }
 
-        InternalLocalCommunicator communicator = new InternalLocalCommunicator();
+        InternalLocalCommunicator communicator = new InternalLocalCommunicator(authentication);
         clientSideCommunicators.add(communicator);
         addPendingCommunicator(communicator.getServerSideCommunicator());
         return CompletableFuture.completedFuture(communicator);

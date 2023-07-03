@@ -23,8 +23,6 @@ public interface ServerLogic {
 
     void onConnected(Communicator communicator);
 
-    void onAuthenticateClient(ConnectionInitializer initializer);
-
     void onInitializeClient(ConnectionInitializer initializer);
 
     void onClientAuthenticated(ConnectionContext context, Communicator communicator);

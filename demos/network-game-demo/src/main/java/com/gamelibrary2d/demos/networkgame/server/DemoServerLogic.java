@@ -8,20 +8,14 @@ import com.gamelibrary2d.demos.networkgame.server.objects.ServerObject;
 import com.gamelibrary2d.demos.networkgame.server.objects.ServerPlayer;
 import com.gamelibrary2d.io.BitParser;
 import com.gamelibrary2d.io.DataBuffer;
-import com.gamelibrary2d.io.DynamicByteBuffer;
-import com.gamelibrary2d.io.Read;
 import com.gamelibrary2d.network.Communicator;
 import com.gamelibrary2d.network.initialization.ConnectionContext;
 import com.gamelibrary2d.network.initialization.ConnectionInitializer;
-import com.gamelibrary2d.network.initialization.UdpConfiguration;
 import com.gamelibrary2d.network.server.Host;
-import com.gamelibrary2d.network.server.ServerHandshakeConfiguration;
 import com.gamelibrary2d.network.server.ServerLogic;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -33,8 +27,6 @@ public class DemoServerLogic implements ServerLogic {
     private final ServerState state = new ServerState();
     private final ClientStateService clientStateService = new ClientStateService();
     private final DemoGameLogic gameLogic;
-    private final KeyPair keyPair;
-    private final DataBuffer decryptionBuffer = new DynamicByteBuffer();
 
     private final int connectionTcpPort;
 
@@ -46,38 +38,12 @@ public class DemoServerLogic implements ServerLogic {
     private float timer;
 
     public DemoServerLogic() {
-        this(0, null);
+        this(0);
     }
 
-    public DemoServerLogic(int connectionTcpPort, KeyPair keyPair) {
-        this.keyPair = keyPair;
+    public DemoServerLogic(int connectionTcpPort) {
         this.connectionTcpPort = connectionTcpPort;
         this.gameLogic = new DemoGameLogic(this);
-    }
-
-    @Override
-    public void onAuthenticateClient(ConnectionInitializer initializer) {
-        if (keyPair == null) {
-            throw new NullPointerException("Key pair has not been set");
-        }
-
-        initializer.addProducer((ctx, com) -> log(String.format("%s: Performing client/server handshake", com.getEndpoint())));
-
-        initializer.addConfig(new ServerHandshakeConfiguration(keyPair));
-        initializer.addConsumer(this::validatePassword);
-        initializer.addConfig(new UdpConfiguration());
-    }
-
-    private boolean validatePassword(ConnectionContext context, Communicator communicator, DataBuffer inbox) throws IOException {
-        decryptionBuffer.clear();
-        communicator.readEncrypted(inbox, decryptionBuffer);
-        decryptionBuffer.flip();
-
-        String serverPassword = Read.textWithSizeHeader(decryptionBuffer, StandardCharsets.UTF_8);
-        if (!serverPassword.equals("serverPassword123")) {
-            throw new IOException("Wrong password");
-        }
-        return true;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client;
 
+import com.gamelibrary2d.demos.networkgame.server.ClientAuthenticator;
 import com.gamelibrary2d.demos.networkgame.server.DemoServerLogic;
 import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.io.Write;
@@ -29,7 +30,8 @@ public class ServerManager {
     public HostedServer hostNetworkServer(String host, int tcpPort) {
         NetworkServer server = new NetworkServer(
                 host,
-                new DemoServerLogic(tcpPort, keyPair));
+                new DemoServerLogic(tcpPort),
+                new ClientAuthenticator(keyPair));
 
         return new HostedServer(
                 server,
@@ -38,12 +40,10 @@ public class ServerManager {
     }
 
     public NetworkServerConnectionFactory createConnectionFactory(String host, int tcpPort, Disposer disposer) {
-        NetworkServerConnectionFactory connectionFactory = new NetworkServerConnectionFactory(host, tcpPort, disposer);
-        connectionFactory.addAuthentication(this::configureAuthentication);
-        return connectionFactory;
+        return new NetworkServerConnectionFactory(host, tcpPort, this::addAuthentication, disposer);
     }
 
-    private void configureAuthentication(ConnectionInitializer initializer) {
+    private void addAuthentication(ConnectionInitializer initializer) {
         initializer.addConfig(new ClientHandshakeConfiguration());
         initializer.addProducer(this::sendPassword);
         initializer.addConfig(new UdpConfiguration());
