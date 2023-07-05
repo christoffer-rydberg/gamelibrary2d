@@ -67,6 +67,11 @@ public class GeometryTool implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
+    public void swallowedPointerMove(int id) {
+
+    }
+
+    @Override
     public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (drawButton == button) {
             onCreated.publish(inProgress);

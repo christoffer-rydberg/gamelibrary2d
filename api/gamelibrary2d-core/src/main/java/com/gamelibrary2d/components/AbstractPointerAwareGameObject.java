@@ -1,83 +1,35 @@
 package com.gamelibrary2d.components;
 
-import com.gamelibrary2d.FocusManager;
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.components.denotations.PixelAware;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
-import com.gamelibrary2d.components.denotations.PointerDownWhenFocusedAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
-import com.gamelibrary2d.denotations.Renderable;
-import com.gamelibrary2d.disposal.DefaultDisposer;
-import com.gamelibrary2d.disposal.Disposer;
-import com.gamelibrary2d.opengl.renderers.FrameBufferRenderer;
-import com.gamelibrary2d.opengl.resources.DefaultFrameBuffer;
-import com.gamelibrary2d.opengl.resources.FrameBuffer;
 
 public abstract class AbstractPointerAwareGameObject
         extends AbstractGameObject
-        implements PointerDownAware, PointerMoveAware, PointerUpAware, PointerDownWhenFocusedAware {
-    private final Renderable renderer;
+        implements PointerDownAware, PointerMoveAware, PointerUpAware, PixelAware {
     private final Point transformationPoint = new Point();
     private final PointerInteractionsArray pointerInteractions = new PointerInteractionsArray(10);
-    private FrameBufferRenderer frameBufferRenderer;
-    private DefaultDisposer frameBufferDisposer;
 
     protected AbstractPointerAwareGameObject() {
-        this.renderer = this::onRender;
+
     }
 
     public void setEnabled(boolean enabled) {
         if (isEnabled() != enabled) {
             super.setEnabled(enabled);
-            pointerInteractions.clear();
+            clearPointerState();
         }
     }
 
-    public void disablePixelDetection() {
-        if (this.frameBufferDisposer != null) {
-            this.frameBufferDisposer.dispose();
-            this.frameBufferDisposer = null;
-            frameBufferRenderer = null;
-        }
-    }
-
-    public void enablePixelDetection(Disposer disposer) {
-        if (!pixelDetectionEnabled()) {
-            this.frameBufferDisposer = new DefaultDisposer(disposer);
-        } else if (disposer != this.frameBufferDisposer.getParent()) {
-            disablePixelDetection();
-            this.frameBufferDisposer = new DefaultDisposer(disposer);
-        }
-    }
-
-    public boolean pixelDetectionEnabled() {
-        return frameBufferDisposer != null;
-    }
-
-    private boolean isPixelVisible(float x, float y) {
-        Rectangle bounds = getBounds();
-        if (bounds.contains(x, y)) {
-            if (pixelDetectionEnabled()) {
-                if (frameBufferRenderer == null || !frameBufferRenderer.getArea().equals(bounds)) {
-                    frameBufferDisposer.dispose();
-
-                    FrameBuffer frameBuffer = DefaultFrameBuffer.create(
-                            (int) bounds.getWidth(),
-                            (int) bounds.getHeight(),
-                            frameBufferDisposer);
-
-                    frameBufferRenderer = new FrameBufferRenderer(bounds, frameBuffer);
-                }
-
-                frameBufferRenderer.render(renderer, 1f);
-                return frameBufferRenderer.isVisible(x, y);
-            } else {
-                return true;
-            }
-        }
-
-        return false;
+    /**
+     * The object holds an internal state tracking pointer interactions to know which pointers are active.
+     * For this to be accurate, all pointer events must be forwarded to the object from the parent containers.
+     * This method can be used to clear the internal state.
+     */
+    public void clearPointerState() {
+        pointerInteractions.clear();
     }
 
     @Override
@@ -86,32 +38,10 @@ public abstract class AbstractPointerAwareGameObject
             transformationPoint.set(transformedX, transformedY);
             transformationPoint.transformTo(this);
             if (isPixelVisible(transformationPoint.getX(), transformationPoint.getY()) && pointerInteractions.setActive(id, id)) {
-                onPointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
-                return true;
+                return onPointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
             }
 
             pointerInteractions.setInactive(id, id);
-        }
-
-        return false;
-    }
-
-    @Override
-    public final boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
-        if (isEnabled()) {
-            if (pointerInteractions.hasActiveButtons(id) && isListeningToPointDragEvents()) {
-                transformationPoint.set(transformedX, transformedY);
-                transformationPoint.transformTo(this);
-                onPointerDrag(id, x, y, transformationPoint.getX(), transformationPoint.getY());
-                return true;
-            } else if (isListeningToPointHoverEvents()) {
-                transformationPoint.set(transformedX, transformedY);
-                transformationPoint.transformTo(this);
-                if (isPixelVisible(transformationPoint.getX(), transformationPoint.getY())) {
-                    onPointerHover(id, x, y, transformationPoint.getX(), transformationPoint.getY());
-                    return true;
-                }
-            }
         }
 
         return false;
@@ -128,22 +58,60 @@ public abstract class AbstractPointerAwareGameObject
     }
 
     @Override
-    public void pointerDownWhenFocused(int id, int button) {
-        if (isEnabled() && !pointerInteractions.isActive(id, id)) {
-            FocusManager.unfocus(this, false);
+    public final boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        if (isEnabled() && isTrackingPointerPositions()) {
+            transformationPoint.set(transformedX, transformedY);
+            transformationPoint.transformTo(this);
+            if (isPixelVisible(transformationPoint.getX(), transformationPoint.getY())) {
+                if (pointerInteractions.setOnTarget(id, true)) {
+                    onPointerEntered(id);
+                }
+
+                return onPointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
+            } else if (pointerInteractions.setOnTarget(id, false)) {
+                onPointerLeft(id);
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public final void swallowedPointerMove(int id) {
+        if (isEnabled() && isTrackingPointerPositions()) {
+            if (pointerInteractions.setOnTarget(id, false)) {
+                onPointerLeft(id);
+            }
         }
     }
 
-    protected boolean isListeningToPointHoverEvents() {
-        return false;
-    }
-
-    protected boolean isListeningToPointDragEvents() {
-        return false;
+    /**
+     * Defaults to check if the pointer is within the object's {@link #getBounds bounds}.
+     * Override to perform more granular hit detection.
+     */
+    @Override
+    public boolean isPixelVisible(float x, float y) {
+        return getBounds().contains(x, y);
     }
 
     /**
-     * Override this method to handle pointer-down actions.
+     * Invoked if the pointer is above the object's {@link #isPixelVisible visible area}.
+     *
+     * @param id           The id of the pointer.
+     * @param button       The id of the pointer button.
+     * @param x            The x-coordinate of the pointer.
+     * @param y            The y-coordinate of the pointer.
+     * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
+     * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
+     *
+     * @return True if the event should be swallowed, false otherwise.
+     */
+    protected abstract boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY);
+
+    /**
+     * Invoked if the {@link #clearPointerState pointer state} contains the corresponding {@link #onPointerDown pointer down} event.
+     * Note that this method is only invoked if the pointer event is routed by the parent container. If events are missed,
+     * the object's {@link #clearPointerState pointer state} will not be correctly updated.
      *
      * @param id           The id of the pointer.
      * @param button       The id of the pointer button.
@@ -152,51 +120,36 @@ public abstract class AbstractPointerAwareGameObject
      * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
      * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */
-    protected void onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
-
-    }
+    protected abstract void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY);
 
     /**
-     * Override this method to handle pointer-up actions.
-     *
-     * @param id           The id of the pointer.
-     * @param button       The id of the pointer button.
-     * @param x            The x-coordinate of the pointer.
-     * @param y            The y-coordinate of the pointer.
-     * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
-     * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
+     * Must return true to enable {@link #onPointerEntered}, {@link #onPointerLeft} and {@link #onPointerMove}.
+     * Should be disabled if the events are not needed for performance reasons, since the events are very frequent.
      */
-    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
-
-    }
+    protected abstract boolean isTrackingPointerPositions();
 
     /**
-     * Override this method to handle pointer-hover actions. Note that {@link #isListeningToPointHoverEvents}
-     * must be overridden as well to return true.
-     *
-     * @param id           The id of the pointer.
-     * @param x            The x-coordinate of the pointer.
-     * @param y            The y-coordinate of the pointer.
-     * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
-     * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
+     * Invoked if {@link #isTrackingPointerPositions tracking pointer positions} and the pointer enters the object's {@link #isPixelVisible visible area}.
      */
-    protected void onPointerHover(int id, float x, float y, float transformedX, float transformedY) {
-
-    }
+    protected abstract void onPointerEntered(int id);
 
     /**
-     * Override this method to handle pointer-drag actions. Note that {@link #isListeningToPointDragEvents}
-     * must be overridden as well to return true.
+     * Invoked if {@link #isTrackingPointerPositions tracking pointer positions} and the pointer leaves the object's {@link #isPixelVisible visible area}.
+     */
+    protected abstract void onPointerLeft(int id);
+
+    /**
+     * Invoked if {@link #isTrackingPointerPositions tracking pointer positions} and the pointer is above the object's {@link #isPixelVisible visible area}.
      *
      * @param id           The id of the pointer.
      * @param x            The x-coordinate of the pointer.
      * @param y            The y-coordinate of the pointer.
      * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
      * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
+     *
+     * @return True if the event should be swallowed, false otherwise.
      */
-    protected void onPointerDrag(int id, float x, float y, float transformedX, float transformedY) {
-
-    }
+    protected abstract boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY);
 
     private static class PointerInteractions {
         private int count;
@@ -204,6 +157,8 @@ public abstract class AbstractPointerAwareGameObject
         private boolean[] active;
 
         private int capacity = 0;
+
+        private boolean onTarget;
 
         PointerInteractions(int initialArraySize) {
             this.active = new boolean[initialArraySize];
@@ -214,6 +169,16 @@ public abstract class AbstractPointerAwareGameObject
                 active[i] = false;
             }
             capacity = 0;
+            onTarget = false;
+        }
+
+        boolean setOnTarget(boolean onTarget) {
+            if(this.onTarget != onTarget) {
+                this.onTarget = onTarget;
+                return true;
+            }
+
+            return false;
         }
 
         void setActive(int button, boolean active) {
@@ -248,6 +213,20 @@ public abstract class AbstractPointerAwareGameObject
         boolean isActive(int id, int button) {
             PointerInteractions interactions = pointerInteractions[id];
             return interactions != null && interactions.isActive(button);
+        }
+
+        boolean setOnTarget(int id, boolean onTarget) {
+            if (id > pointerInteractions.length) {
+                return false;
+            }
+
+            PointerInteractions interactions = pointerInteractions[id];
+            if (interactions == null) {
+                interactions = new PointerInteractions(5);
+                pointerInteractions[id] = interactions;
+            }
+
+            return interactions.setOnTarget(onTarget);
         }
 
         boolean setActive(int id, int button) {

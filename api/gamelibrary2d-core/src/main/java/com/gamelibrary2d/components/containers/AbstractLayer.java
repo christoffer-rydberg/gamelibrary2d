@@ -148,6 +148,13 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     @Override
+    public final void swallowedPointerMove(int id) {
+        if (isEnabled()) {
+            onSwallowedPointerMove(id);
+        }
+    }
+
+    @Override
     public final void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (isEnabled()) {
             onPointerUp(id, button, x, y, transformedX, transformedY);
@@ -169,13 +176,27 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        boolean swallowed = false;
+
         iterationList.addAll(pointerMoveAwareObjects);
         for (int i = iterationList.size() - 1; i >= 0; --i) {
             PointerMoveAware obj = (PointerMoveAware) iterationList.get(i);
-            if (obj.pointerMove(id, x, y, transformedX, transformedY)) {
-                iterationList.clear();
-                return true;
+            if (swallowed) {
+                obj.swallowedPointerMove(id);
+            } else {
+                swallowed = obj.pointerMove(id, x, y, transformedX, transformedY);
             }
+        }
+
+        iterationList.clear();
+        return swallowed;
+    }
+
+    protected boolean onSwallowedPointerMove(int id) {
+        iterationList.addAll(pointerMoveAwareObjects);
+        for (int i = iterationList.size() - 1; i >= 0; --i) {
+            PointerMoveAware obj = (PointerMoveAware) iterationList.get(i);
+            obj.swallowedPointerMove(id);
         }
 
         iterationList.clear();

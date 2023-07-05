@@ -4,7 +4,7 @@ import com.gamelibrary2d.Color;
 import com.gamelibrary2d.Game;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.animations.*;
-import com.gamelibrary2d.components.DefaultObservableGameObject;
+import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.disposal.DefaultDisposer;
@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 public class DemoFrame extends AbstractFrame {
     private static final float DEFAULT_FRAME_DURATION = 0.05f;
-
     private final Game game;
     private final Disposer animationDisposer = new DefaultDisposer(this);
     private Future<AnimationMetadata> loadingAnimation;
@@ -33,29 +32,12 @@ public class DemoFrame extends AbstractFrame {
         this.game = game;
     }
 
-    private GameObject createLoadButton() {
-        Font font = DefaultFont.create(
-                FontMetadataFactory.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 48)),
-                this);
-
-        Label label = new Label(font, "Click here to load an animation");
-        label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.CENTER);
-        label.setColor(Color.WHITE);
-
-        DefaultObservableGameObject<Label> loadButton = new DefaultObservableGameObject<>();
-        loadButton.setRenderer(label);
-        loadButton.setBounds(label.calculateBounds());
-        loadButton.addPointerUpListener(this::onLoadButtonClicked);
-
-        return loadButton;
-    }
-
     @Override
     protected void onBegin() {
         final float windowWidth = game.getWindow().getWidth();
         final float windowHeight = game.getWindow().getHeight();
 
-        GameObject loadButton = createLoadButton();
+        GameObject loadButton = new LoadButton();
         loadButton.setPosition(windowWidth / 2, windowHeight - windowHeight / 6);
 
         animatedObject = new AnimatedGameObject(new AnimationRenderer(this));
@@ -153,13 +135,67 @@ public class DemoFrame extends AbstractFrame {
         super.onUpdate(deltaTime);
     }
 
-    private void onLoadButtonClicked(int id, int button, float x, float y, float transformedX, float transformedY) {
-        if (loadingAnimation == null) {
-            try {
-                loadingAnimation = selectAnimation();
-            } catch (IOException e) {
-                onException(e);
+    private class LoadButton extends AbstractPointerAwareGameObject {
+        private final Label label;
+        private final Rectangle bounds;
+
+        public LoadButton() {
+            Font font = DefaultFont.create(
+                    FontMetadataFactory.create(new java.awt.Font("Gabriola", java.awt.Font.BOLD, 48)),
+                    DemoFrame.this);
+
+            Label label = new Label(font, "Click here to load an animation");
+            label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.CENTER);
+            label.setColor(Color.WHITE);
+
+            this.label = label;
+            this.bounds = label.calculateBounds();
+        }
+
+        @Override
+        public Rectangle getBounds() {
+            return bounds;
+        }
+
+        @Override
+        protected void onRender(float alpha) {
+            this.label.render(alpha);
+        }
+
+        @Override
+        protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+            return true;
+        }
+
+        @Override
+        protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+            if (loadingAnimation == null) {
+                try {
+                    loadingAnimation = selectAnimation();
+                } catch (IOException e) {
+                    onException(e);
+                }
             }
+        }
+
+        @Override
+        protected boolean isTrackingPointerPositions() {
+            return false;
+        }
+
+        @Override
+        protected void onPointerEntered(int id) {
+
+        }
+
+        @Override
+        protected void onPointerLeft(int id) {
+
+        }
+
+        @Override
+        protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+            return false;
         }
     }
 }

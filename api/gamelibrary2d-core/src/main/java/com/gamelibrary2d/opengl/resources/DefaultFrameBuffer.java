@@ -78,9 +78,10 @@ public class DefaultFrameBuffer implements FrameBuffer {
     }
 
     @Override
-    public boolean isVisible(int x, int y) {
+    public boolean isVisible(int x, int y, int threshold) {
         int pixel = readPixel(x, y);
-        return (pixel & 0x000000FF) > 0;
+        int alpha = (pixel & 0x000000FF);
+        return alpha > threshold;
     }
 
     @Override

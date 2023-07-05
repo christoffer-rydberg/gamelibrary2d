@@ -90,10 +90,21 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
         return isEnabled() && onPointerMove(id, x, y, transformedX, transformedY);
     }
 
+    @Override
+    public final void swallowedPointerMove(int id) {
+        if (isEnabled()) {
+            onSwallowedPointerMove(id);
+        }
+    }
+
     protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
         transformationPoint.set(transformedX, transformedY);
         transformationPoint.transformTo(this);
         return getLayer().pointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
+    }
+
+    protected void onSwallowedPointerMove(int id) {
+        getLayer().swallowedPointerMove(id);
     }
 
     @Override

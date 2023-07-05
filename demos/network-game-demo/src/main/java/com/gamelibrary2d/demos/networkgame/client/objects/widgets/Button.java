@@ -10,6 +10,8 @@ public class Button extends AbstractPointerAwareGameObject {
     private final Rectangle bounds;
     private final ShadowedLabel label;
     private final Renderable background;
+    private int pointerId = -1;
+    private int pointerButton = -1;
 
     public Button(ShadowedLabel label, Rectangle bounds, ParameterizedAction<Button> onClick) {
         this(label, null, bounds, onClick);
@@ -27,8 +29,39 @@ public class Button extends AbstractPointerAwareGameObject {
     }
 
     @Override
+    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        pointerId = id;
+        pointerButton = button;
+        return true;
+    }
+
+    @Override
     protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
-        onClick.perform(this);
+        if (pointerId == id && pointerButton == button) {
+            pointerId = -1;
+            pointerButton = -1;
+            onClick.perform(this);
+        }
+    }
+
+    @Override
+    protected boolean isTrackingPointerPositions() {
+        return false;
+    }
+
+    @Override
+    protected void onPointerEntered(int id) {
+
+    }
+
+    @Override
+    protected void onPointerLeft(int id) {
+
+    }
+
+    @Override
+    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        return false;
     }
 
     @Override

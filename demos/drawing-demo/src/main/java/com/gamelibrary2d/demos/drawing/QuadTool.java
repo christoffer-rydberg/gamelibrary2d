@@ -63,6 +63,11 @@ public class QuadTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
+    public void swallowedPointerMove(int id) {
+
+    }
+
+    @Override
     public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (drawButton == button) {
             Quad quad = quadFactory.invoke(inProgress.getBounds());

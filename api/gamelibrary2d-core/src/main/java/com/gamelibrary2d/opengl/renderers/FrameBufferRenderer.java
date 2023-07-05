@@ -51,12 +51,13 @@ public class FrameBufferRenderer {
         }
     }
 
-    public boolean isVisible(float x, float y) {
+    public boolean isVisible(float x, float y, int threshold) {
         int previousFbo = frameBuffer.bind();
         try {
             return frameBuffer.isVisible(
                     (int) (x - area.getLowerX()),
-                    (int) (y - area.getLowerY()));
+                    (int) (y - area.getLowerY()),
+                    threshold);
         } finally {
             OpenGLState.bindFrameBuffer(previousFbo);
         }

@@ -33,6 +33,7 @@
         <module>demos/lightning-demo</module>
         <module>demos/split-screen-demo</module>
         <module>demos/collision-detection-demo</module>
+        <module>demos/drag-and-drop-demo</module>
     </modules>
 
 </project>

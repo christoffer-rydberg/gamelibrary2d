@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
 import com.gamelibrary2d.FocusManager;
+import com.gamelibrary2d.components.denotations.PointerDownWhenFocusedAware;
 import com.gamelibrary2d.input.Keyboard;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.denotations.Renderable;
@@ -8,7 +9,9 @@ import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
 import com.gamelibrary2d.components.denotations.InputAware;
 import com.gamelibrary2d.components.denotations.KeyDownAware;
 
-public class InputField extends AbstractPointerAwareGameObject implements KeyDownAware, InputAware {
+public class InputField
+        extends AbstractPointerAwareGameObject
+        implements PointerDownWhenFocusedAware, KeyDownAware, InputAware {
     private final Rectangle bounds;
     private final ShadowedLabel label;
     private final Renderable background;
@@ -33,8 +36,38 @@ public class InputField extends AbstractPointerAwareGameObject implements KeyDow
     }
 
     @Override
+    public void pointerDownWhenFocused(int id, int button) {
+        FocusManager.unfocus(this, false);
+    }
+
+    @Override
+    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        return true;
+    }
+
+    @Override
     protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         FocusManager.focus(this, false);
+    }
+
+    @Override
+    protected boolean isTrackingPointerPositions() {
+        return false;
+    }
+
+    @Override
+    protected void onPointerEntered(int id) {
+
+    }
+
+    @Override
+    protected void onPointerLeft(int id) {
+
+    }
+
+    @Override
+    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        return false;
     }
 
     @Override

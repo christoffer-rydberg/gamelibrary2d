@@ -41,6 +41,11 @@ public class Torch extends AbstractGameObject implements PointerMoveAware, Updat
     }
 
     @Override
+    public void swallowedPointerMove(int id) {
+
+    }
+
+    @Override
     public void update(float deltaTime) {
         lightMap.addInterpolated(getPosition().getX() / 32f, getPosition().getY() / 32f, 20);
         particleSystemTimer = particleSystem.emit(getPosition(), particleSystemTimer + deltaTime);

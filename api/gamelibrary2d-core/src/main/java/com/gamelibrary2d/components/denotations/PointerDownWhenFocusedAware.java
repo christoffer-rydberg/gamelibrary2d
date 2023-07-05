@@ -5,7 +5,7 @@ import com.gamelibrary2d.FocusManager;
 public interface PointerDownWhenFocusedAware {
 
     /**
-     * Invoked by the {@link FocusManager} after a pointer down action,
+     * Invoked by the {@link FocusManager} after a pointer down event,
      * even if the cursor is not over the object.
      *
      * @param id     The id of the pointer.

@@ -114,6 +114,11 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
         return false;
     }
 
+    @Override
+    public void swallowedPointerMove(int id) {
+
+    }
+
     private void reset() {
         pointerId = -1;
         pointerButton = -1;

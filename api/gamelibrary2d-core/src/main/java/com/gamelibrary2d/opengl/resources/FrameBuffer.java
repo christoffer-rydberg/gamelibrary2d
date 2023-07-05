@@ -10,7 +10,7 @@ public interface FrameBuffer extends Disposable {
 
     int readPixel(int x, int y);
 
-    boolean isVisible(int x, int y);
+    boolean isVisible(int x, int y, int threshold);
 
     void clear();
 

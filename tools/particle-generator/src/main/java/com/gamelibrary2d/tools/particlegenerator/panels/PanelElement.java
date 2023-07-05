@@ -142,8 +142,8 @@ public class PanelElement {
                     Textures.propertyBaseLine()
             );
 
-            background.setColor(backgroundColor);
-            background.setShaderParameter(ShaderParameter.ALPHA, 0.5f);
+            float backgroundAlpha = 0.5f;
+            background.setColor(backgroundColor, backgroundAlpha);
 
             FloatPropertyTextField label = new FloatPropertyTextField(Fonts.getDefaultFont(), property);
             label.setAlignment(HorizontalTextAlignment.CENTER, VerticalTextAlignment.BASE_LINE);
@@ -151,7 +151,7 @@ public class PanelElement {
             TextField propertyWidget = new TextField(label);
             propertyWidget.setBackground(background);
             propertyWidget.addFocusChangedListener(focused ->
-                    background.setColor(focused ? Color.GOLD : backgroundColor));
+                    background.setColor(focused ? Color.GOLD : backgroundColor, backgroundAlpha));
             propertyWidget.setBounds(Bounds.PROPERTY_BASE_LINE.pad(0, 0, 0, 15f));
 
             return propertyWidget;

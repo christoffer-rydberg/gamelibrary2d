@@ -2,9 +2,10 @@ package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.Point;
 import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.denotations.Bounded;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractGameObject;
-import com.gamelibrary2d.components.DefaultObservableGameObject;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
 import com.gamelibrary2d.components.denotations.PointerUpAware;
@@ -17,31 +18,22 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     private final List<DragBeginListener> dragBeginListeners = new CopyOnWriteArrayList<>();
     private final List<DragStopListener> dragStopListeners = new CopyOnWriteArrayList<>();
     private final List<ValueChangedListener> valueChangedListeners = new CopyOnWriteArrayList<>();
-    private final DefaultObservableGameObject<Renderable> handle;
+    private final Handle handle;
     private final SliderDirection direction;
     private final float min;
     private final float max;
     private final float step;
-    private int pointerId = -1;
-    private int pointerButton = -1;
+
     private float dragOriginX;
     private float dragOriginY;
     private Rectangle bounds;
 
     public Slider(Renderable handle, SliderDirection direction, float min, float max, float step) {
-        this.handle = createHandle(handle);
+        this.handle = new Handle(handle);
         this.direction = direction;
         this.min = min;
         this.max = max;
         this.step = step;
-    }
-
-    public Slider(Renderable handle, SliderDirection direction) {
-        this(handle, direction, 0, 100, 1);
-    }
-
-    public Slider(Renderable handle) {
-        this(handle, SliderDirection.HORIZONTAL);
     }
 
     public void addDragBeginListener(DragBeginListener listener) {
@@ -99,14 +91,6 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
         }
     }
 
-    private DefaultObservableGameObject<Renderable> createHandle(Renderable content) {
-        DefaultObservableGameObject<Renderable> handleObj = new DefaultObservableGameObject<>(content);
-        handleObj.addPointerDownListener(this::onHandleClicked);
-        handleObj.addPointerDragListener(this::onHandleDragged);
-        handleObj.addPointerUpListener(this::onHandleReleased);
-        return handleObj;
-    }
-
     @Override
     public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (isEnabled()) {
@@ -123,10 +107,20 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
         if (isEnabled()) {
             transformationPoint.set(transformedX, transformedY);
             transformationPoint.transformTo(this);
-            return handle.pointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
+            transformationPoint.transformTo(handle);
+
+            if (id == handle.pointerId) {
+                setValue(getValueFromPosition(transformationPoint.getX(), transformationPoint.getY()));
+                return true;
+            }
         }
 
         return false;
+    }
+
+    @Override
+    public void swallowedPointerMove(int id) {
+
     }
 
     @Override
@@ -135,34 +129,6 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
             transformationPoint.set(transformedX, transformedY);
             transformationPoint.transformTo(this);
             handle.pointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
-        }
-    }
-
-    private void onHandleClicked(int id, int button, float x, float y, float transformedX, float transformedY) {
-        if (pointerId < 0) {
-            pointerId = id;
-            pointerButton = button;
-            dragOriginX = transformedX;
-            dragOriginY = transformedY;
-            for (DragBeginListener listener : dragBeginListeners) {
-                listener.onDragBegin(getValue());
-            }
-        }
-    }
-
-    private void onHandleReleased(int id, int button, float x, float y, float transformedX, float transformedY) {
-        if (pointerId == id && pointerButton == button) {
-            pointerId = -1;
-            pointerButton = -1;
-            for (DragStopListener listener : dragStopListeners) {
-                listener.onDragStop(getValue());
-            }
-        }
-    }
-
-    private void onHandleDragged(int id, float x, float y, float transformedX, float transformedY) {
-        if (pointerId == id) {
-            setValue(getValueFromPosition(transformedX, transformedY));
         }
     }
 
@@ -195,5 +161,78 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
 
     public interface ValueChangedListener {
         void onValueChanged(int value);
+    }
+
+    private class Handle extends AbstractPointerAwareGameObject {
+        private final Renderable renderer;
+        private int pointerId = -1;
+        private int pointerButton = -1;
+
+        public Handle(Renderable renderer) {
+            this.renderer = renderer;
+        }
+
+        @Override
+        public Rectangle getBounds() {
+            if (renderer instanceof Bounded) {
+                return ((Bounded) renderer).getBounds();
+            }
+
+            return Rectangle.EMPTY;
+        }
+
+        @Override
+        protected void onRender(float alpha) {
+            this.renderer.render(alpha);
+        }
+
+        @Override
+        protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+            if (pointerId < 0) {
+                pointerId = id;
+                pointerButton = button;
+                dragOriginX = transformedX;
+                dragOriginY = transformedY;
+                for (DragBeginListener listener : dragBeginListeners) {
+                    listener.onDragBegin(getValue());
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+            if (pointerId == id && pointerButton == button) {
+                pointerId = -1;
+                pointerButton = -1;
+                for (DragStopListener listener : dragStopListeners) {
+                    listener.onDragStop(getValue());
+                }
+            }
+        }
+
+        @Override
+        protected boolean isTrackingPointerPositions() {
+            return false;
+        }
+
+        @Override
+        protected void onPointerEntered(int id) {
+
+        }
+
+        @Override
+        protected void onPointerLeft(int id) {
+
+        }
+
+        @Override
+        protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+            return false;
+        }
+
     }
 }

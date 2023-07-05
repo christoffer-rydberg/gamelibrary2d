@@ -17,6 +17,9 @@ public class ToggleButton extends AbstractPointerAwareGameObject {
     private float defaultA;
     private Rectangle bounds = Rectangle.EMPTY;
 
+    private int pointerId = -1;
+    private int pointerButton = -1;
+
     public ToggleButton(Font font, String text) {
         this.label = new Label(font, text);
     }
@@ -39,10 +42,41 @@ public class ToggleButton extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
-        super.onPointerUp(id, button, x, y, transformedX, transformedY);
-        setToggled(!isToggled());
+    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        pointerId = id;
+        pointerButton = button;
+        return true;
     }
+
+    @Override
+    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+        if (pointerId == id && pointerButton == button) {
+            pointerId = -1;
+            pointerButton = -1;
+            setToggled(!isToggled());
+        }
+    }
+
+    @Override
+    protected boolean isTrackingPointerPositions() {
+        return false;
+    }
+
+    @Override
+    protected void onPointerEntered(int id) {
+
+    }
+
+    @Override
+    protected void onPointerLeft(int id) {
+
+    }
+
+    @Override
+    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        return false;
+    }
+
 
     public Label getLabel() {
         return label;

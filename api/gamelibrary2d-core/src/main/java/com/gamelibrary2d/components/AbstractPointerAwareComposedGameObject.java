@@ -26,6 +26,14 @@ public abstract class AbstractPointerAwareComposedGameObject<T extends GameObjec
     }
 
     @Override
+    public void swallowedPointerMove(int id) {
+        T composition = getComposition();
+        if (composition instanceof PointerMoveAware) {
+            ((PointerMoveAware) composition).swallowedPointerMove(id);
+        }
+    }
+
+    @Override
     public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         T composition = getComposition();
         if (composition instanceof PointerUpAware) {

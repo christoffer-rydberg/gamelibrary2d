@@ -3,7 +3,7 @@ package com.gamelibrary2d.components.denotations;
 public interface PointerUpAware {
 
     /**
-     * Handles pointer up actions.
+     * Handles pointer up events.
      *
      * @param id           The id of the pointer.
      * @param button       The id of the pointer button.

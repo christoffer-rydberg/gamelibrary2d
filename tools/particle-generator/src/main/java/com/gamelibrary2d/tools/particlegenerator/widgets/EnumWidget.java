@@ -38,12 +38,37 @@ public class EnumWidget<T extends Enum<T>> extends AbstractPointerAwareGameObjec
     }
 
     @Override
-    protected void onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
-        super.onPointerDown(id, button, x, y, transformedX, transformedY);
+    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
         currentIndex = (currentIndex + 1) % values.length;
         cachedValue = values[currentIndex];
         property.set(cachedValue);
         label.setText(cachedValue.toString());
+        return true;
+    }
+
+    @Override
+    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+
+    }
+
+    @Override
+    protected boolean isTrackingPointerPositions() {
+        return false;
+    }
+
+    @Override
+    protected void onPointerEntered(int id) {
+
+    }
+
+    @Override
+    protected void onPointerLeft(int id) {
+
+    }
+
+    @Override
+    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+        return false;
     }
 
     @Override

@@ -82,6 +82,11 @@ public class AccelerationArea implements Renderable, PointerDownAware, PointerMo
     }
 
     @Override
+    public void swallowedPointerMove(int id) {
+
+    }
+
+    @Override
     public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;

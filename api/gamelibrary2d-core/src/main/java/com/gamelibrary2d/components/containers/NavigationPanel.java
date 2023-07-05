@@ -2,12 +2,9 @@ package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.Point;
 import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.components.denotations.*;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractGameObject;
-import com.gamelibrary2d.components.denotations.NavigationAware;
-import com.gamelibrary2d.components.denotations.PointerDownAware;
-import com.gamelibrary2d.components.denotations.PointerMoveAware;
-import com.gamelibrary2d.components.denotations.PointerUpAware;
 import com.gamelibrary2d.denotations.Bounded;
 import com.gamelibrary2d.denotations.Clearable;
 
@@ -80,6 +77,13 @@ public class NavigationPanel extends AbstractGameObject
         }
 
         return false;
+    }
+
+    @Override
+    public void swallowedPointerMove(int id) {
+        if (current instanceof PointerMoveAware) {
+            ((PointerMoveAware) current).swallowedPointerMove(id);
+        }
     }
 
     @Override
