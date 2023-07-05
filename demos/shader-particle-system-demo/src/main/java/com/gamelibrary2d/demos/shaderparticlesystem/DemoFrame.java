@@ -36,7 +36,7 @@ public class DemoFrame extends AbstractFrame {
             float scale = Math.min(scaleX, scaleY);
 
             DefaultLayerGameObject<Renderable> layer = new DefaultLayerGameObject<>();
-            layer.setScale(scale, scale);
+            layer.setScale(scale);
             layer.setScaleAndRotationAnchor(windowWidth / 2, windowHeight / 2);
             layer.add(particleSystem);
             add(layer);

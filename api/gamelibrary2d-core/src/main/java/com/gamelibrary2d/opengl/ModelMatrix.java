@@ -45,14 +45,21 @@ public class ModelMatrix {
     }
 
     public void transform(CoordinateSpace coordinateSpace) {
+        float anchorX = coordinateSpace.getScaleAndRotationAnchorX();
+        float anchorY = coordinateSpace.getScaleAndRotationAnchorY();
+
         translatef(
-                coordinateSpace.getPosX() + coordinateSpace.getScaleAndRotationAnchorX(),
-                coordinateSpace.getPosY() + coordinateSpace.getScaleAndRotationAnchorY(),
+                coordinateSpace.getPosX() + anchorX,
+                coordinateSpace.getPosY() + anchorY,
                 0);
 
         rotatef(-coordinateSpace.getRotation(), 0, 0, 1);
 
         scalef(coordinateSpace.getScaleX(), coordinateSpace.getScaleY(), 1.0f);
+
+        if (anchorX != 0 || anchorY != 0) {
+            translatef(-anchorX, -anchorY, 0);
+        }
     }
 
     public void translatef(float x, float y, float z) {
