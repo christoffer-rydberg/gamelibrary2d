@@ -1,24 +1,13 @@
 package com.gamelibrary2d.opengl.resources;
 
 import com.gamelibrary2d.disposal.Disposable;
-import com.gamelibrary2d.opengl.OpenGLState;
 
 public interface FrameBuffer extends Disposable {
-    Texture getTexture();
+    int bind();
 
-    int getId();
-
-    int readPixel(int x, int y);
-
-    boolean isVisible(int x, int y, int threshold);
+    void unbind();
 
     void clear();
 
-    default int bind() {
-        return OpenGLState.bindFrameBuffer(getId());
-    }
-
-    default void unbind() {
-        OpenGLState.unbindFrameBuffer(getId());
-    }
+    int getPixel(int x, int y);
 }

@@ -2,79 +2,39 @@ package com.gamelibrary2d.demos.draganddrop;
 
 import com.gamelibrary2d.Color;
 import com.gamelibrary2d.Rectangle;
-import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.components.AbstractGameObject;
+import com.gamelibrary2d.components.denotations.PixelAware;
 import com.gamelibrary2d.denotations.Updatable;
-import com.gamelibrary2d.opengl.renderers.ContentRenderer;
+import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.opengl.renderers.RenderCache;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
-import com.gamelibrary2d.opengl.resources.Surface;
+import com.gamelibrary2d.opengl.resources.*;
 
-public class DemoGameObject extends AbstractPointerAwareGameObject implements Updatable {
-    private final ContentRenderer renderer;
-    private int pointersAbove = 0;
+public class DemoGameObject extends AbstractGameObject implements Draggable, Hoverable, PixelAware, Updatable {
+    private final RenderCache<SurfaceRenderer<Quad>> renderCache;
+    private int pointersHovering = 0;
     private int pointersDragging = 0;
 
-    public DemoGameObject(Surface surface) {
-        renderer = new SurfaceRenderer<>(surface);
+    public DemoGameObject(Rectangle bounds, Disposer disposer) {
+        renderCache = RenderCache.create(
+                new SurfaceRenderer<>(Quad.create(bounds, QuadShape.RADIAL_GRADIENT, disposer)),
+                bounds,
+                disposer);
     }
 
     @Override
     public Rectangle getBounds() {
-        return renderer.getBounds();
+        return renderCache.getBounds();
     }
 
     @Override
     protected void onRender(float alpha) {
-        renderer.render(alpha);
+        renderCache.render(alpha);
     }
 
     @Override
     public boolean isPixelVisible(float x, float y) {
-        return getBounds().contains(x, y);
-    }
-
-    @Override
-    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
-        return false;
-    }
-
-    @Override
-    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
-
-    }
-
-    @Override
-    protected boolean isTrackingPointerPositions() {
-        return true;
-    }
-
-    @Override
-    protected void onPointerEntered(int id) {
-        ++pointersAbove;
-    }
-
-    @Override
-    protected void onPointerLeft(int id) {
-        pointersAbove = Math.max(0, pointersAbove - 1);
-    }
-
-    @Override
-    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
-        return true;
-    }
-
-    @Override
-    public void clearPointerState() {
-        super.clearPointerState();
-        pointersAbove = 0;
-        pointersDragging = 0;
-    }
-
-    public void onDragStarted() {
-        ++pointersDragging;
-    }
-
-    public void onDragFinished() {
-        pointersDragging = Math.max(0, pointersDragging - 1);
+        return renderCache.isPixelVisible(x, y, 40);
     }
 
     @Override
@@ -84,11 +44,11 @@ public class DemoGameObject extends AbstractPointerAwareGameObject implements Up
 
     private void updateColor() {
         if (isDragged()) {
-            renderer.setColor(Color.BLUE);
+            renderCache.getRenderer().setColor(Color.BLUE);
         } else if (isHovered()) {
-            renderer.setColor(Color.GREEN);
+            renderCache.getRenderer().setColor(Color.GREEN);
         } else {
-            renderer.setColor(Color.WHITE);
+            renderCache.getRenderer().setColor(Color.WHITE);
         }
     }
 
@@ -97,6 +57,39 @@ public class DemoGameObject extends AbstractPointerAwareGameObject implements Up
     }
 
     private boolean isHovered() {
-        return !isDragged() && pointersAbove > 0;
+        return !isDragged() && pointersHovering > 0;
+    }
+
+    @Override
+    public boolean onHoverStarted(int pointerId) {
+        ++pointersHovering;
+        return true;
+    }
+
+    @Override
+    public boolean onHover() {
+        return true;
+    }
+
+    @Override
+    public void onHoverFinished(int pointerId) {
+        pointersHovering = Math.max(0, pointersHovering - 1);
+    }
+
+    @Override
+    public boolean onDragStarted(int pointerId, int button) {
+        ++pointersDragging;
+        return true;
+    }
+
+    @Override
+    public boolean onDrag(float deltaX, float deltaY) {
+        getPosition().add(deltaX, deltaY);
+        return true;
+    }
+
+    @Override
+    public void onDragFinished(int pointerId, int button) {
+        pointersDragging = Math.max(0, pointersDragging - 1);
     }
 }

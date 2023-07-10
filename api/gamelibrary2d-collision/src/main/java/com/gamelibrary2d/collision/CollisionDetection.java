@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Updates {@link Collidable} objects and performs collision detection. A collision is detected when the bounds of two
  * registered {@link Collidable} overlap. {@link CollisionHandler}'s are used to handle collisions and perform more
- * fine grained collision detection.
+ * fine-grained collision detection.
  */
 public class CollisionDetection {
     private final Rectangle bounds;

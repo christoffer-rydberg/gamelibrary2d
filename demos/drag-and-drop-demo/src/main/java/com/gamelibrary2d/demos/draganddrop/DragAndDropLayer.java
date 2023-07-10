@@ -7,33 +7,35 @@ import com.gamelibrary2d.components.containers.AbstractLayer;
 import com.gamelibrary2d.components.denotations.PixelAware;
 import com.gamelibrary2d.denotations.Bounded;
 import com.gamelibrary2d.denotations.Renderable;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DragAndDropLayer<T extends GameObject> extends AbstractLayer<T> {
     private final HitDetection hitDetection = new HitDetection();
-    private final List<DraggedObject<T>> draggedObjects = new ArrayList<>();
+    private final Set<Integer> downPointers = new HashSet<>();
+    private final Map<Integer, T> hoveredObjects = new HashMap<>();
+    private final List<DraggedObject> draggedObjects = new ArrayList<>();
+    private final List<HoverStartedListener<T>> hoverStartedListeners = new CopyOnWriteArrayList<>();
+    private final List<HoverFinishedListener<T>> hoverFinishedListeners = new CopyOnWriteArrayList<>();
     private final List<DragStartedListener<T>> dragStartedListeners = new CopyOnWriteArrayList<>();
     private final List<DragFinishedListener<T>> dragFinishedListeners = new CopyOnWriteArrayList<>();
 
-    public void addDragStartedPublisher(DragStartedListener<T> listener) {
-        dragStartedListeners.add(listener);
-    }
-
-    public void addDragFinishedPublisher(DragFinishedListener<T> listener) {
-        dragFinishedListeners.add(listener);
-    }
-
     @Override
     protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+        downPointers.add(id);
+        T obj = hoveredObjects.remove(id);
+        if (obj != null) {
+            hoverFinished(obj, id);
+        }
+
         return startDrag(id, button, transformedX, transformedY)
                 || super.onPointerDown(id, button, x, y, transformedX, transformedY);
     }
 
     @Override
     public boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
-        if (drag(id, transformedX, transformedY)) {
+        if (drag(id, transformedX, transformedY) || hover(id, transformedX, transformedY)) {
             super.onSwallowedPointerMove(id);
             return true;
         } else {
@@ -43,9 +45,10 @@ public class DragAndDropLayer<T extends GameObject> extends AbstractLayer<T> {
 
     @Override
     public void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
-        if (finishDrag(id, button)) {
-            super.onPointerMove(id, x, y, transformedX, transformedY);
-        } else {
+        downPointers.remove(id);
+        boolean dragFinished = finishDrag(id, button);
+        hover(id, transformedX, transformedY);
+        if (!dragFinished) {
             super.onPointerUp(id, button, x, y, transformedX, transformedY);
         }
     }
@@ -54,8 +57,9 @@ public class DragAndDropLayer<T extends GameObject> extends AbstractLayer<T> {
         List<T> objects = getItems();
         for (int i = objects.size() - 1; i >= 0; --i) {
             T obj = objects.get(i);
-            if (hitDetection.isPixelVisible(obj, transformedX, transformedY)) {
-                draggedObjects.add(new DraggedObject<>(obj, id, button, transformedX, transformedY));
+            if (startDrag(obj, id, button, transformedX, transformedY)) {
+                Draggable draggable = (Draggable) obj;
+                draggedObjects.add(new DraggedObject(draggable, id, button, transformedX, transformedY));
                 publishDragStarted(id, obj);
                 return true;
             }
@@ -64,10 +68,88 @@ public class DragAndDropLayer<T extends GameObject> extends AbstractLayer<T> {
         return false;
     }
 
+    private boolean startDrag(T obj, int pointerId, int button, float transformedX, float transformedY) {
+        return obj.isEnabled()
+                && obj instanceof Draggable
+                && hitDetection.isPixelVisible(obj, transformedX, transformedY)
+                && ((Draggable) obj).onDragStarted(pointerId, button);
+    }
+
+    private boolean hover(int pointerId, float transformedX, float transformedY) {
+        if (downPointers.contains(pointerId)) {
+            return false;
+        }
+
+        T prev = hoveredObjects.get(pointerId);
+        if (prev != null && !prev.isEnabled()) {
+            hoverFinished(prev, pointerId);
+            prev = null;
+        }
+
+        List<T> objects = getItems();
+        for (int i = objects.size() - 1; i >= 0; --i) {
+            T current = objects.get(i);
+            if (current.isEnabled() && hitDetection.isPixelVisible(current, transformedX, transformedY)) {
+                hover(prev, current, pointerId);
+                return true;
+            }
+        }
+
+        if (prev != null) {
+            hoverFinished(prev, pointerId);
+        }
+
+        return false;
+    }
+
+    private void hover(T prev, T current, int pointerId) {
+        if (current == prev) {
+            hoverPreviousTarget(current, pointerId);
+        } else if (prev != null) {
+            hoverUpdatedTarget(prev, current, pointerId);
+        } else {
+            hoverNewTarget(current, pointerId);
+        }
+    }
+
+    private void hoverPreviousTarget(T current, int pointerId) {
+        if (!((Hoverable) current).onHover()) {
+            hoverFinished(current, pointerId);
+        }
+    }
+
+    private void hoverUpdatedTarget(T prev, T current, int pointerId) {
+        hoverFinished(prev, pointerId);
+        hoverStarted(current, pointerId);
+    }
+
+    private void hoverNewTarget(T current, int pointerId) {
+        hoverStarted(current, pointerId);
+    }
+
+    private void hoverStarted(T obj, int pointerId) {
+        if (((Hoverable) obj).onHoverStarted(pointerId)) {
+            publishHoverStarted(pointerId, obj);
+            hoveredObjects.put(pointerId, obj);
+        }
+    }
+
+    private void hoverFinished(T obj, int pointerId) {
+        ((Hoverable) obj).onHoverFinished(pointerId);
+        publishHoverFinished(pointerId, obj);
+        hoveredObjects.remove(pointerId);
+    }
+
     private boolean drag(int pointerId, float transformedX, float transformedY) {
-        for (DraggedObject<T> obj : draggedObjects) {
+        for (int i = 0; i < draggedObjects.size(); ++i) {
+            DraggedObject obj = draggedObjects.get(i);
             if (obj.getPointerId() == pointerId) {
-                obj.drag(transformedX, transformedY);
+                if (!obj.drag(transformedX, transformedY)) {
+                    draggedObjects.remove(i);
+                    //noinspection unchecked
+                    publishDragFinished(pointerId, (T) obj.obj);
+                }
+
                 return true;
             }
         }
@@ -76,16 +158,46 @@ public class DragAndDropLayer<T extends GameObject> extends AbstractLayer<T> {
     }
 
     private boolean finishDrag(int pointerId, int button) {
-        for(int i = 0; i < draggedObjects.size(); ++i) {
-            DraggedObject<T> obj = draggedObjects.get(i);
+        for (int i = 0; i < draggedObjects.size(); ++i) {
+            DraggedObject obj = draggedObjects.get(i);
             if (obj.getPointerId() == pointerId && obj.getPointerButton() == button) {
                 draggedObjects.remove(i);
-                publishDragFinished(pointerId, obj.obj);
+                obj.obj.onDragFinished(pointerId, button);
+                //noinspection unchecked
+                publishDragFinished(pointerId, (T) obj.obj);
                 return true;
             }
         }
 
         return false;
+    }
+
+    public void addHoverStartedPublisher(HoverStartedListener<T> listener) {
+        hoverStartedListeners.add(listener);
+    }
+
+    public void addHoverFinishedPublisher(HoverFinishedListener<T> listener) {
+        hoverFinishedListeners.add(listener);
+    }
+
+    public void addDragStartedPublisher(DragStartedListener<T> listener) {
+        dragStartedListeners.add(listener);
+    }
+
+    public void addDragFinishedPublisher(DragFinishedListener<T> listener) {
+        dragFinishedListeners.add(listener);
+    }
+
+    private void publishHoverStarted(int pointerId, T obj) {
+        for (HoverStartedListener<T> listener : hoverStartedListeners) {
+            listener.onHoverStarted(pointerId, obj);
+        }
+    }
+
+    private void publishHoverFinished(int pointerId, T obj) {
+        for (HoverFinishedListener<T> listener : hoverFinishedListeners) {
+            listener.onHoverFinished(pointerId, obj);
+        }
     }
 
     private void publishDragStarted(int pointerId, T obj) {
@@ -129,14 +241,14 @@ public class DragAndDropLayer<T extends GameObject> extends AbstractLayer<T> {
         }
     }
 
-    private static class DraggedObject<T extends GameObject> {
-        private final T obj;
+    private static class DraggedObject {
+        private final Draggable obj;
         private final int pointerId;
         private final int pointerButton;
         private float prevPointerPosX;
         private float prevPointerPosY;
 
-        public DraggedObject(T obj, int pointerId, int pointerButton, float pointerPosX, float pointerPosY) {
+        public DraggedObject(Draggable obj, int pointerId, int pointerButton, float pointerPosX, float pointerPosY) {
             this.obj = obj;
             this.pointerId = pointerId;
             this.pointerButton = pointerButton;
@@ -152,15 +264,20 @@ public class DragAndDropLayer<T extends GameObject> extends AbstractLayer<T> {
             return pointerButton;
         }
 
-        public void drag(float pointerPosX, float pointerPosY) {
-            obj.getPosition().add(
-                    pointerPosX - prevPointerPosX,
-                    pointerPosY - prevPointerPosY
-            );
-
+        public boolean drag(float pointerPosX, float pointerPosY) {
+            boolean res = obj.onDrag(pointerPosX - prevPointerPosX, pointerPosY - prevPointerPosY);
             prevPointerPosX = pointerPosX;
             prevPointerPosY = pointerPosY;
+            return res;
         }
+    }
+
+    public interface HoverStartedListener<T> {
+        void onHoverStarted(int pointerId, T obj);
+    }
+
+    public interface HoverFinishedListener<T> {
+        void onHoverFinished(int pointerId, T obj);
     }
 
     public interface DragStartedListener<T> {

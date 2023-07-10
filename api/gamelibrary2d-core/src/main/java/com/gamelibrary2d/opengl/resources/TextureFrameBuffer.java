@@ -3,26 +3,27 @@ package com.gamelibrary2d.opengl.resources;
 import com.gamelibrary2d.Color;
 import com.gamelibrary2d.OpenGL;
 import com.gamelibrary2d.disposal.Disposer;
+import com.gamelibrary2d.opengl.OpenGLState;
 
 import java.nio.ByteBuffer;
 
-public class DefaultFrameBuffer implements FrameBuffer {
+public class TextureFrameBuffer implements FrameBuffer {
     private final int id;
     private final Texture texture;
     private final ByteBuffer pixelReadBuffer = ByteBuffer.allocateDirect(4);
     private Color backgroundColor = Color.TRANSPARENT;
 
-    private DefaultFrameBuffer(int id, Texture texture) {
+    private TextureFrameBuffer(int id, Texture texture) {
         this.id = id;
         this.texture = texture;
     }
 
-    public static DefaultFrameBuffer create(int width, int height, Disposer disposer) {
+    public static TextureFrameBuffer create(int width, int height, Disposer disposer) {
         Texture texture = DefaultTexture.create(width, height, disposer);
         return create(texture, disposer);
     }
 
-    public static DefaultFrameBuffer create(Texture texture, Disposer disposer) {
+    public static TextureFrameBuffer create(Texture texture, Disposer disposer) {
         OpenGL openGl = OpenGL.instance();
 
         // Create a frame buffer
@@ -36,7 +37,7 @@ public class DefaultFrameBuffer implements FrameBuffer {
         openGl.glBindRenderbuffer(OpenGL.GL_RENDERBUFFER, 0);
         openGl.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, 0);
 
-        DefaultFrameBuffer frameBuffer = new DefaultFrameBuffer(fbo, texture);
+        TextureFrameBuffer frameBuffer = new TextureFrameBuffer(fbo, texture);
 
         disposer.registerDisposal(frameBuffer);
 
@@ -51,18 +52,12 @@ public class DefaultFrameBuffer implements FrameBuffer {
         this.backgroundColor = backgroundColor;
     }
 
-    @Override
     public Texture getTexture() {
         return texture;
     }
 
     @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public int readPixel(int x, int y) {
+    public int getPixel(int x, int y) {
         pixelReadBuffer.clear();
 
         OpenGL.instance().glReadPixels(
@@ -78,10 +73,13 @@ public class DefaultFrameBuffer implements FrameBuffer {
     }
 
     @Override
-    public boolean isVisible(int x, int y, int threshold) {
-        int pixel = readPixel(x, y);
-        int alpha = (pixel & 0x000000FF);
-        return alpha > threshold;
+    public int bind() {
+        return OpenGLState.bindFrameBuffer(id);
+    }
+
+    @Override
+    public void unbind() {
+        OpenGLState.unbindFrameBuffer(id);
     }
 
     @Override

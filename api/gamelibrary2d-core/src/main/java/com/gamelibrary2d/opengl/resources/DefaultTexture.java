@@ -105,7 +105,7 @@ public class DefaultTexture extends AbstractDisposable implements Texture {
     public static DefaultTexture create(Renderable r, float alpha, Rectangle area, Disposer disposer) {
         Disposer frameBufferDisposer = new DefaultDisposer();
         DefaultTexture texture = DefaultTexture.create((int) area.getWidth(), (int) area.getHeight(), disposer);
-        FrameBuffer frameBuffer = DefaultFrameBuffer.create(texture, frameBufferDisposer);
+        FrameBuffer frameBuffer = TextureFrameBuffer.create(texture, frameBufferDisposer);
         int previousFbo = frameBuffer.bind();
 
         try {

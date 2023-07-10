@@ -4,8 +4,10 @@ import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.denotations.Bounded;
 import com.gamelibrary2d.disposal.Disposer;
-import com.gamelibrary2d.opengl.resources.DefaultFrameBuffer;
+import com.gamelibrary2d.opengl.OpenGLState;
 import com.gamelibrary2d.opengl.resources.FrameBuffer;
+import com.gamelibrary2d.opengl.resources.PixelParser;
+import com.gamelibrary2d.opengl.resources.TextureFrameBuffer;
 import com.gamelibrary2d.opengl.resources.Quad;
 
 public class RenderCache<T extends Renderable> implements Renderable, Bounded {
@@ -20,16 +22,16 @@ public class RenderCache<T extends Renderable> implements Renderable, Bounded {
         this.renderer = renderer;
         this.bounds = bounds;
 
-        FrameBuffer frameBuffer = DefaultFrameBuffer.create(
-                (int) bounds.getWidth(),
-                (int) bounds.getHeight(),
+        TextureFrameBuffer frameBuffer = TextureFrameBuffer.create(
+                (int) Math.ceil(bounds.getWidth()),
+                (int) Math.ceil(bounds.getHeight()),
                 disposer);
 
-        this.frameBufferRenderer = new FrameBufferRenderer(bounds, frameBuffer);
+        this.frameBufferRenderer = new FrameBufferRenderer(frameBuffer);
 
         this.cacheRenderer = new SurfaceRenderer<>(
                 Quad.create(bounds, disposer),
-                frameBufferRenderer.getFrameBuffer().getTexture());
+                frameBuffer.getTexture());
     }
 
     public static <T extends Renderable> RenderCache<T> create(T renderer, Rectangle bounds, Disposer disposer) {
@@ -56,11 +58,27 @@ public class RenderCache<T extends Renderable> implements Renderable, Bounded {
     @Override
     public void render(float alpha) {
         if (!cached) {
-            frameBufferRenderer.render(renderer, 1f);
+            frameBufferRenderer.render(renderer, true, -bounds.getLowerX(), -bounds.getLowerY(), 1f);
             cached = caching;
         }
 
         cacheRenderer.render(alpha);
+    }
+
+    public boolean isPixelVisible(float x, float y, int alphaThreshold) {
+        if (!bounds.contains(x, y)) {
+            return false;
+        }
+
+        FrameBuffer frameBuffer = frameBufferRenderer.getFrameBuffer();
+        int previousFbo = frameBuffer.bind();
+        try {
+            int pixel = frameBuffer.getPixel((int) (x - bounds.getLowerX()), (int) (y - bounds.getLowerY()));
+            int alpha = PixelParser.getA(pixel);
+            return alpha > alphaThreshold;
+        } finally {
+            OpenGLState.bindFrameBuffer(previousFbo);
+        }
     }
 
     public T getRenderer() {

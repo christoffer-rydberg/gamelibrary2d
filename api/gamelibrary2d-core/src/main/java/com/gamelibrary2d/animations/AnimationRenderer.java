@@ -278,7 +278,7 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
             if (frameBuffer == null) {
                 // Create OpenGL resources when rendering for the first time
                 Texture texture = createBackgroundTexture(animation);
-                frameBuffer = DefaultFrameBuffer.create(texture, resourceDisposer);
+                frameBuffer = TextureFrameBuffer.create(texture, resourceDisposer);
                 frameBufferRenderer = new SurfaceRenderer<>(
                         Quad.create(animation.getBounds(), resourceDisposer),
                         texture);
