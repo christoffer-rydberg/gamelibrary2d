@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     private final ArrayList<T> objects = new ArrayList<>();
     private final List<T> readonlyObjects = Collections.unmodifiableList(objects);
-    private final List<Object> iterationList = new ArrayList<>();
+    private final List<Object> reusableIterationList = new ArrayList<>();
     private Comparator<T> renderOrderComparator;
     private boolean autoClearing = true;
     private boolean enabled = true;
@@ -64,12 +64,15 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
 
     @Override
     public void clear() {
+        List<Object> iterationList = prepareIteration(objects);
         try {
-            prepareIteration(objects, Clearable.class);
             objects.clear();
             for (Object obj : iterationList) {
-                if (((Clearable) obj).isAutoClearing()) {
-                    clear((Clearable) obj);
+                if (obj instanceof Clearable) {
+                    Clearable clearable = (Clearable) obj;
+                    if (clearable.isAutoClearing()) {
+                        clear(clearable);
+                    }
                 }
             }
         } finally {
@@ -121,11 +124,10 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     protected boolean onPointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        List<Object> iterationList = prepareReverseIteration(objects);
         try {
-            prepareReverseIteration(objects, PointerDownAware.class);
             for (int i = 0; i < iterationList.size(); ++i) {
-                PointerDownAware obj = (PointerDownAware) iterationList.get(i);
-                if (onPointerDown(obj, pointerState, id, button, transformedX, transformedY)) {
+                if (onPointerDown((T) iterationList.get(i), pointerState, id, button, transformedX, transformedY)) {
                     return true;
                 }
             }
@@ -135,21 +137,24 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         }
     }
 
-    protected boolean onPointerDown(PointerDownAware obj, PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        return obj.pointerDown(pointerState, id, button, transformedX, transformedY);
+    protected boolean onPointerDown(T obj, PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        if (obj instanceof PointerDownAware) {
+            return ((PointerDownAware) obj).pointerDown(pointerState, id, button, transformedX, transformedY);
+        }
+
+        return false;
     }
 
     protected boolean onPointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
         boolean swallowed = false;
 
+        List<Object> iterationList = prepareReverseIteration(objects);
         try {
-            prepareReverseIteration(objects, PointerMoveAware.class);
             for (int i = 0; i < iterationList.size(); ++i) {
-                PointerMoveAware obj = (PointerMoveAware) iterationList.get(i);
                 if (swallowed) {
-                    onSwallowedPointerMove(obj, pointerState, id);
+                    onSwallowedPointerMove((T) iterationList.get(i), pointerState, id);
                 } else {
-                    swallowed = onPointerMove(obj, pointerState, id, transformedX, transformedY);
+                    swallowed = onPointerMove((T) iterationList.get(i), pointerState, id, transformedX, transformedY);
                 }
             }
 
@@ -159,40 +164,46 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         }
     }
 
-    protected boolean onPointerMove(PointerMoveAware obj, PointerState pointerState, int id, float transformedX, float transformedY) {
-        return obj.pointerMove(pointerState, id, transformedX, transformedY);
+    protected boolean onPointerMove(T obj, PointerState pointerState, int id, float transformedX, float transformedY) {
+        if (obj instanceof PointerMoveAware) {
+            return ((PointerMoveAware) obj).pointerMove(pointerState, id, transformedX, transformedY);
+        }
+
+        return false;
     }
 
     protected void onSwallowedPointerMove(PointerState pointerState, int id) {
+        List<Object> iterationList = prepareReverseIteration(objects);
         try {
-            prepareReverseIteration(objects, PointerMoveAware.class);
             for (int i = 0; i < iterationList.size(); ++i) {
-                PointerMoveAware obj = (PointerMoveAware) iterationList.get(i);
-                onSwallowedPointerMove(obj, pointerState, id);
+                onSwallowedPointerMove((T) iterationList.get(i), pointerState, id);
             }
         } finally {
             iterationList.clear();
         }
     }
 
-    protected void onSwallowedPointerMove(PointerMoveAware obj, PointerState pointerState, int id) {
-        obj.swallowedPointerMove(pointerState, id);
+    protected void onSwallowedPointerMove(T obj, PointerState pointerState, int id) {
+        if (obj instanceof PointerMoveAware) {
+            ((PointerMoveAware) obj).swallowedPointerMove(pointerState, id);
+        }
     }
 
     protected void onPointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        List<Object> iterationList = prepareReverseIteration(objects);
         try {
-            prepareReverseIteration(objects, PointerUpAware.class);
             for (int i = 0; i < iterationList.size(); ++i) {
-                PointerUpAware obj = (PointerUpAware) iterationList.get(i);
-                onPointerUp(obj, pointerState, id, button, transformedX, transformedY);
+                onPointerUp((T) iterationList.get(i), pointerState, id, button, transformedX, transformedY);
             }
         } finally {
             iterationList.clear();
         }
     }
 
-    protected void onPointerUp(PointerUpAware obj, PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        obj.pointerUp(pointerState,id, button, transformedX, transformedY);
+    protected void onPointerUp(T obj, PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        if (obj instanceof PointerUpAware) {
+            ((PointerUpAware) obj).pointerUp(pointerState,id, button, transformedX, transformedY);
+        }
     }
 
     @Override
@@ -225,10 +236,13 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     protected void handleUpdate(float deltaTime) {
+        List<Object> iterationList = prepareIteration(objects);
         try {
-            prepareReverseIteration(objects, Updatable.class);
             for (int i = 0; i < iterationList.size(); ++i) {
-                onUpdate((Updatable) iterationList.get(i), deltaTime);
+                Object obj = iterationList.get(i);
+                if (obj instanceof Updatable) {
+                    onUpdate((Updatable) iterationList.get(i), deltaTime);
+                }
             }
         } finally {
             iterationList.clear();
@@ -269,21 +283,21 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         this.opacity = opacity;
     }
 
-    private void prepareIteration(ArrayList<T> objects, Class<?> type) {
+    private List<Object> prepareIteration(ArrayList<T> objects) {
+        List<Object> iterationList = reusableIterationList.isEmpty() ? reusableIterationList : new ArrayList<>();
         for (int i = 0; i < objects.size(); ++i) {
-            T obj = objects.get(i);
-            if (type.isAssignableFrom(obj.getClass())) {
-                iterationList.add(obj);
-            }
+            iterationList.add(objects.get(i));
         }
+
+        return iterationList;
     }
 
-    private void prepareReverseIteration(ArrayList<T> objects, Class<?> type) {
+    private List<Object> prepareReverseIteration(ArrayList<T> objects) {
+        List<Object> iterationList = reusableIterationList.isEmpty() ? reusableIterationList : new ArrayList<>();
         for (int i = objects.size() - 1; i >= 0; --i) {
-            T obj = objects.get(i);
-            if (type.isAssignableFrom(obj.getClass())) {
-                iterationList.add(obj);
-            }
+            iterationList.add(objects.get(i));
         }
+
+        return iterationList;
     }
 }
