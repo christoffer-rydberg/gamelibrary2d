@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.drawing;
 
 import com.gamelibrary2d.Point;
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
@@ -42,7 +43,7 @@ public class GeometryTool implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (drawButton == button) {
             inProgress = geometryFactory.create();
             inProgress.nodes().add(transformedX, transformedY);
@@ -54,7 +55,7 @@ public class GeometryTool implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
         if (isDrawing()) {
             if (prevNode.getDistance(transformedX, transformedY) > minNodeInterval) {
                 inProgress.nodes().add(transformedX, transformedY);
@@ -67,12 +68,12 @@ public class GeometryTool implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public void swallowedPointerMove(int id) {
+    public void swallowedPointerMove(PointerState pointerState, int id) {
 
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (drawButton == button) {
             onCreated.publish(inProgress);
             inProgress = null;

@@ -1,21 +1,24 @@
 package com.gamelibrary2d.demos.draganddrop;
 
 import com.gamelibrary2d.Color;
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.PixelAware;
+import com.gamelibrary2d.components.denotations.PointerAware;
 import com.gamelibrary2d.denotations.Updatable;
 import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.renderers.RenderCache;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.*;
 
-public class DemoGameObject extends AbstractGameObject implements Draggable, Hoverable, PixelAware, Updatable {
+public class DemoGameObject extends AbstractGameObject implements PointerAware, PixelAware, Updatable {
     private final RenderCache<SurfaceRenderer<Quad>> renderCache;
-    private int pointersHovering = 0;
-    private int pointersDragging = 0;
+    private final DragAndDropBehavior dragAndDrop;
 
     public DemoGameObject(Rectangle bounds, Disposer disposer) {
+        dragAndDrop = new DragAndDropBehavior(this);
+
         renderCache = RenderCache.create(
                 new SurfaceRenderer<>(Quad.create(bounds, QuadShape.RADIAL_GRADIENT, disposer)),
                 bounds,
@@ -28,68 +31,44 @@ public class DemoGameObject extends AbstractGameObject implements Draggable, Hov
     }
 
     @Override
-    protected void onRender(float alpha) {
-        renderCache.render(alpha);
-    }
-
-    @Override
     public boolean isPixelVisible(float x, float y) {
         return renderCache.isPixelVisible(x, y, 40);
     }
 
     @Override
-    public void update(float deltaTime) {
-        updateColor();
+    protected void onRender(float alpha) {
+        renderCache.render(alpha);
     }
 
-    private void updateColor() {
-        if (isDragged()) {
+    @Override
+    public void update(float deltaTime) {
+        if (dragAndDrop.isDragged()) {
             renderCache.getRenderer().setColor(Color.BLUE);
-        } else if (isHovered()) {
+        } else if (dragAndDrop.isHovered()) {
             renderCache.getRenderer().setColor(Color.GREEN);
         } else {
             renderCache.getRenderer().setColor(Color.WHITE);
         }
     }
 
-    private boolean isDragged() {
-        return pointersDragging > 0;
-    }
-
-    private boolean isHovered() {
-        return !isDragged() && pointersHovering > 0;
+    @Override
+    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        return dragAndDrop.pointerDown(pointerState, id, button, transformedX, transformedY);
     }
 
     @Override
-    public boolean onHoverStarted(int pointerId) {
-        ++pointersHovering;
-        return true;
+    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+        return dragAndDrop.pointerMove(pointerState, id, transformedX, transformedY);
     }
 
     @Override
-    public boolean onHover() {
-        return true;
+    public void swallowedPointerMove(PointerState pointerState, int id) {
+        dragAndDrop.swallowedPointerMove(pointerState, id);
+
     }
 
     @Override
-    public void onHoverFinished(int pointerId) {
-        pointersHovering = Math.max(0, pointersHovering - 1);
-    }
-
-    @Override
-    public boolean onDragStarted(int pointerId, int button) {
-        ++pointersDragging;
-        return true;
-    }
-
-    @Override
-    public boolean onDrag(float deltaX, float deltaY) {
-        getPosition().add(deltaX, deltaY);
-        return true;
-    }
-
-    @Override
-    public void onDragFinished(int pointerId, int button) {
-        pointersDragging = Math.max(0, pointersDragging - 1);
+    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        dragAndDrop.pointerUp(pointerState, id, button, transformedX, transformedY);
     }
 }

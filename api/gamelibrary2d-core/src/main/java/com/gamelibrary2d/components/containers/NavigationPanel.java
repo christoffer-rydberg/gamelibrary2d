@@ -1,6 +1,7 @@
 package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.Point;
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.components.denotations.*;
 import com.gamelibrary2d.denotations.Renderable;
@@ -58,40 +59,40 @@ public class NavigationPanel extends AbstractGameObject
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (current instanceof PointerDownAware) {
             transformationPoint.set(transformedX, transformedY);
             transformationPoint.transformTo(this);
-            return ((PointerDownAware) current).pointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
+            return ((PointerDownAware) current).pointerDown(pointerState, id, button, transformationPoint.getX(), transformationPoint.getY());
         }
 
         return false;
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
         if (current instanceof PointerMoveAware) {
             transformationPoint.set(transformedX, transformedY);
             transformationPoint.transformTo(this);
-            return ((PointerMoveAware) current).pointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
+            return ((PointerMoveAware) current).pointerMove(pointerState, id, transformationPoint.getX(), transformationPoint.getY());
         }
 
         return false;
     }
 
     @Override
-    public void swallowedPointerMove(int id) {
+    public void swallowedPointerMove(PointerState pointerState, int id) {
         if (current instanceof PointerMoveAware) {
-            ((PointerMoveAware) current).swallowedPointerMove(id);
+            ((PointerMoveAware) current).swallowedPointerMove(pointerState, id);
         }
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (current instanceof PointerUpAware) {
             transformationPoint.set(transformedX, transformedY);
             transformationPoint.transformTo(this);
-            ((PointerUpAware) current).pointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
+            ((PointerUpAware) current).pointerUp(pointerState, id, button, transformationPoint.getX(), transformationPoint.getY());
         }
     }
 

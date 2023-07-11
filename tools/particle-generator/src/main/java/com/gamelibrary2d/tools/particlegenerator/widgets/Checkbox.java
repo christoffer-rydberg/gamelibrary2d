@@ -60,13 +60,13 @@ public class Checkbox extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    protected boolean onPointerDown(int id, int button, float transformedX, float transformedY) {
         toggle();
         return true;
     }
 
     @Override
-    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    protected void onPointerUp(int id, int button, float transformedX, float transformedY) {
 
     }
 
@@ -86,7 +86,7 @@ public class Checkbox extends AbstractPointerAwareGameObject {
     }
 
     @Override
-    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+    protected boolean onPointerMove(int id, float transformedX, float transformedY) {
         return false;
     }
 

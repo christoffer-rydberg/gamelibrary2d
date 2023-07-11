@@ -1,5 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.input.Keyboard;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.denotations.Renderable;
@@ -214,7 +215,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    protected boolean onPointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (credits.isEnabled()) {
             hideCredits();
             return true;
@@ -222,7 +223,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
             showMenu();
             return true;
         } else {
-            return super.onPointerDown(id, button, x, y, transformedX, transformedY);
+            return super.onPointerDown(pointerState, id, button, transformedX, transformedY);
         }
     }
 

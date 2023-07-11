@@ -1,6 +1,7 @@
 package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.Point;
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.AbstractGameObject;
@@ -75,49 +76,49 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
     }
 
     @Override
-    public final boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
-        return isEnabled() && onPointerDown(id, button, x, y, transformedX, transformedY);
+    public final boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        return isEnabled() && onPointerDown(pointerState, id, button, transformedX, transformedY);
     }
 
-    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    protected boolean onPointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         transformationPoint.set(transformedX, transformedY);
         transformationPoint.transformTo(this);
-        return getLayer().pointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
+        return getLayer().pointerDown(pointerState, id, button, transformationPoint.getX(), transformationPoint.getY());
     }
 
     @Override
-    public final boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
-        return isEnabled() && onPointerMove(id, x, y, transformedX, transformedY);
+    public final boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+        return isEnabled() && onPointerMove(pointerState, id, transformedX, transformedY);
     }
 
     @Override
-    public final void swallowedPointerMove(int id) {
+    public final void swallowedPointerMove(PointerState pointerState, int id) {
         if (isEnabled()) {
-            onSwallowedPointerMove(id);
+            onSwallowedPointerMove(pointerState, id);
         }
     }
 
-    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+    protected boolean onPointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
         transformationPoint.set(transformedX, transformedY);
         transformationPoint.transformTo(this);
-        return getLayer().pointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
+        return getLayer().pointerMove(pointerState, id, transformationPoint.getX(), transformationPoint.getY());
     }
 
-    protected void onSwallowedPointerMove(int id) {
-        getLayer().swallowedPointerMove(id);
+    protected void onSwallowedPointerMove(PointerState pointerState, int id) {
+        getLayer().swallowedPointerMove(pointerState, id);
     }
 
     @Override
-    public final void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public final void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (isEnabled()) {
-            onPointerUp(id, button, x, y, transformedX, transformedY);
+            onPointerUp(pointerState, id, button, transformedX, transformedY);
         }
     }
 
-    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    protected void onPointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         transformationPoint.set(transformedX, transformedY);
         transformationPoint.transformTo(this);
-        getLayer().pointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
+        getLayer().pointerUp(pointerState, id, button, transformationPoint.getX(), transformationPoint.getY());
     }
 
     @Override

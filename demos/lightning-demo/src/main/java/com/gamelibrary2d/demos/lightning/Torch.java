@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.lightning;
 
 import com.gamelibrary2d.Game;
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
@@ -32,7 +33,7 @@ public class Torch extends AbstractGameObject implements PointerMoveAware, Updat
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
         if (id == pointerId) {
             setPosition(transformedX, transformedY);
         }
@@ -41,7 +42,7 @@ public class Torch extends AbstractGameObject implements PointerMoveAware, Updat
     }
 
     @Override
-    public void swallowedPointerMove(int id) {
+    public void swallowedPointerMove(PointerState pointerState, int id) {
 
     }
 

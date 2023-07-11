@@ -19,14 +19,14 @@ import com.gamelibrary2d.opengl.shaders.ShaderType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.*;
 
 /**
  * An abstract implementation of the Game interface. This is a general
  * implementation and can be used as base class for all games.
  */
 public abstract class AbstractGame extends AbstractDisposer implements Game {
+    private final GamePointerState pointerState = new GamePointerState();
 
     private final EventPublisher<Frame> frameChangedPublisher = new DefaultEventPublisher<>();
     private final DelayedActionMonitor delayedActionMonitor = new DelayedActionMonitor();
@@ -82,7 +82,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         window.setEventListener(new InternalWindowEventListener());
         initializeOpenGLSettings();
         createDefaultShaderPrograms();
-        gameLoop.initialize(this::update, this::dispose, window);
+        gameLoop.initialize(this, this::dispose, window);
         onStart();
         window.show();
         gameLoop.start(this::onExit);
@@ -90,8 +90,6 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
 
     private void initializeOpenGLSettings() {
         OpenGL.instance().glDisable(OpenGL.GL_DEPTH_TEST);
-        // OpenGL.instance().glEnable(OpenGL.GL_CULL_FACE);
-        // OpenGL.instance().glCullFace(OpenGL.GL_BACK);
     }
 
     private DefaultShader loadShader(String path, ShaderType shaderType) {
@@ -357,7 +355,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
                 FocusManager.onPointerActive();
                 Frame frame = getFrame();
                 if (frame != null) {
-                    frame.pointerMove(id, posX, posY, posX, posY);
+                    frame.pointerMove(pointerState, id, posX, posY);
                 }
             } finally {
                 FocusManager.onPointerInactive();
@@ -386,12 +384,17 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
                     FocusManager.onPointerActive();
                     switch (action) {
                         case DOWN:
-                            frame.pointerDown(id, button, posX, posY, posX, posY);
-                            FocusManager.pointerDownFinished(id, button);
+                            pointerState.setDown(id, button);
+                            frame.pointerDown(pointerState, id, button, posX, posY);
+                            FocusManager.pointerDownFinished(pointerState, id, button);
                             break;
                         case UP:
-                            frame.pointerUp(id, button, posX, posY, posX, posY);
-                            FocusManager.pointerUpFinished(id, button);
+                            pointerState.setUp(id, button);
+                            frame.pointerUp(pointerState, id, button, posX, posY);
+                            FocusManager.pointerUpFinished(pointerState, id, button);
+
+                            // Faking a pointer move after a pointer up is useful to restore e.g. hovering state.
+                            onPointerMove(id, posX, posY);
                             break;
                     }
                 } finally {
@@ -403,6 +406,63 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         @Override
         public void onScroll(int id, float xOffset, float yOffset) {
 
+        }
+    }
+
+    private static class GamePointerState implements PointerState {
+        private final Map<Integer, ButtonState> state = new HashMap<>();
+
+        void clear() {
+            state.clear();
+        }
+
+        public boolean isDown(int pointerId) {
+            ButtonState buttonState = state.get(pointerId);
+            return buttonState != null && buttonState.isDown();
+        }
+
+        public boolean isDown(int pointerId, int button) {
+            ButtonState buttonState = state.get(pointerId);
+            return buttonState != null && buttonState.isDown(button);
+        }
+
+        boolean setDown(int pointerId, int button) {
+            ButtonState buttonState = state.get(pointerId);
+            if (buttonState == null) {
+                buttonState = new ButtonState();
+                state.put(pointerId, buttonState);
+            }
+
+            return buttonState.setDown(button);
+        }
+
+        boolean setUp(int pointerId, int button) {
+            ButtonState buttonState = state.get(pointerId);
+            if (buttonState != null) {
+                return buttonState.setUp(button);
+            } else {
+                return false;
+            }
+        }
+
+        private class ButtonState {
+            private final Set<Integer> state = new HashSet<>();
+
+            public boolean isDown() {
+                return !state.isEmpty();
+            }
+
+            public boolean isDown(int button) {
+                return state.contains(button);
+            }
+
+            public boolean setDown(int button) {
+                return state.add(button);
+            }
+
+            public boolean setUp(int button) {
+                return state.remove(button);
+            }
         }
     }
 }

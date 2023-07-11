@@ -1,5 +1,6 @@
 package com.gamelibrary2d.tools.particlegenerator;
 
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.input.Keyboard;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.Window;
@@ -88,8 +89,8 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
-        if (!super.onPointerDown(id, button, x, y, transformedX, transformedY)) {
+    protected boolean onPointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        if (!super.onPointerDown(pointerState, id, button, transformedX, transformedY)) {
             if (dragging == -1) {
                 dragging = id;
                 particleSystem.setPosition(transformedX, transformedY);
@@ -103,8 +104,8 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
-        if (!super.onPointerMove(id, x, y, transformedX, transformedY)) {
+    protected boolean onPointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+        if (!super.onPointerMove(pointerState, id, transformedX, transformedY)) {
             if (dragging != -1) {
                 particleSystem.setPosition(transformedX, transformedY);
                 return true;
@@ -117,11 +118,11 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    protected void onPointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (id == dragging) {
             dragging = -1;
         }
-        super.onPointerUp(id, button, x, y, transformedX, transformedY);
+        super.onPointerUp(pointerState, id, button, transformedX, transformedY);
     }
 
     @Override

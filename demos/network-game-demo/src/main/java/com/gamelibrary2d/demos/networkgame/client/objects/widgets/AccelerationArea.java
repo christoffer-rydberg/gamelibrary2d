@@ -1,5 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
@@ -58,7 +59,7 @@ public class AccelerationArea implements Renderable, PointerDownAware, PointerMo
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerDown(PointerState pointerState,  int id, int button, float transformedX, float transformedY) {
         if (bounds.contains(transformedX, transformedY)) {
             if (pointerId < 0) {
                 pointerId = id;
@@ -73,21 +74,17 @@ public class AccelerationArea implements Renderable, PointerDownAware, PointerMo
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
-        if (pointerId == id) {
-            return true;
-        }
-
-        return false;
+    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+        return pointerId == id;
     }
 
     @Override
-    public void swallowedPointerMove(int id) {
+    public void swallowedPointerMove(PointerState pointerState, int id) {
 
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;

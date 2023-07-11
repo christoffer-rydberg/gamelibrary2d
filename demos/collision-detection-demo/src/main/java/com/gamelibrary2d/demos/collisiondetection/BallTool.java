@@ -1,5 +1,6 @@
 package com.gamelibrary2d.demos.collisiondetection;
 
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
@@ -44,7 +45,7 @@ public class BallTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (!isDrawing()) {
             pointerId = id;
             pointerButton = button;
@@ -58,7 +59,7 @@ public class BallTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
         if (isDrawing()) {
             line.getEnd().set(transformedX, transformedY);
             line.refresh();
@@ -69,12 +70,12 @@ public class BallTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public void swallowedPointerMove(int id) {
+    public void swallowedPointerMove(PointerState pointerState, int id) {
 
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;

@@ -1,6 +1,7 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.FocusManager;
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
 import com.gamelibrary2d.components.denotations.FocusAware;
 import com.gamelibrary2d.components.denotations.InputAware;
@@ -29,19 +30,19 @@ public class TextField
     }
 
     @Override
-    public void pointerDownWhenFocused(int id, int button) {
+    public void pointerDownWhenFocused(PointerState pointerState, int id, int button) {
         FocusManager.unfocus(this, false);
     }
 
     @Override
-    protected boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    protected boolean onPointerDown(int id, int button, float transformedX, float transformedY) {
         pointerId = id;
         pointerButton = button;
         return true;
     }
 
     @Override
-    protected void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    protected void onPointerUp(int id, int button, float transformedX, float transformedY) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;
@@ -65,7 +66,7 @@ public class TextField
     }
 
     @Override
-    protected boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY) {
+    protected boolean onPointerMove(int id, float transformedX, float transformedY) {
         return false;
     }
 

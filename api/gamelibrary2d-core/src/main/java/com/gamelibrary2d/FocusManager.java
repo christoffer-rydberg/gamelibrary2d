@@ -134,14 +134,14 @@ public class FocusManager {
         }
     }
 
-    private static void onPointerActionFinished(int id, int button, boolean released) {
+    private static void onPointerActionFinished(PointerState pointerState, int id, int button, boolean released) {
         if (!released) {
             try {
                 iterationList.addAll(focused);
                 for (int i = 0; i < iterationList.size(); ++i) {
                     Object obj = iterationList.get(i);
                     if (obj instanceof PointerDownWhenFocusedAware) {
-                        ((PointerDownWhenFocusedAware) obj).pointerDownWhenFocused(id, button);
+                        ((PointerDownWhenFocusedAware) obj).pointerDownWhenFocused(pointerState, id, button);
                     }
                 }
             } finally {
@@ -150,11 +150,11 @@ public class FocusManager {
         }
     }
 
-    static void pointerDownFinished(int id, int button) {
-        onPointerActionFinished(id, button, false);
+    static void pointerDownFinished(PointerState pointerState, int id, int button) {
+        onPointerActionFinished(pointerState, id, button, false);
     }
 
-    static void pointerUpFinished(int id, int button) {
-        onPointerActionFinished(id, button, true);
+    static void pointerUpFinished(PointerState pointerState, int id, int button) {
+        onPointerActionFinished(pointerState, id, button, true);
     }
 }

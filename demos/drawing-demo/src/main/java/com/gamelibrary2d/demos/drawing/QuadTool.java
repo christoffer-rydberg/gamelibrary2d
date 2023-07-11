@@ -1,5 +1,6 @@
 package com.gamelibrary2d.demos.drawing;
 
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
@@ -43,9 +44,9 @@ public class QuadTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (drawButton == button) {
-            inProgress = new QuadInProgress(x, y);
+            inProgress = new QuadInProgress(transformedX, transformedY);
             return true;
         }
 
@@ -53,9 +54,9 @@ public class QuadTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
         if (isDrawing()) {
-            inProgress.update(x, y);
+            inProgress.update(transformedX, transformedY);
             return true;
         }
 
@@ -63,12 +64,12 @@ public class QuadTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public void swallowedPointerMove(int id) {
+    public void swallowedPointerMove(PointerState pointerState, int id) {
 
     }
 
     @Override
-    public void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (drawButton == button) {
             Quad quad = quadFactory.invoke(inProgress.getBounds());
             onCreated.publish(quad);

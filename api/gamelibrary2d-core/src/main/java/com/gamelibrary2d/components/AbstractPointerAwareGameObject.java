@@ -1,6 +1,7 @@
 package com.gamelibrary2d.components;
 
 import com.gamelibrary2d.Point;
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.components.denotations.PixelAware;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
@@ -33,12 +34,12 @@ public abstract class AbstractPointerAwareGameObject
     }
 
     @Override
-    public final boolean pointerDown(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public final boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (isEnabled()) {
             transformationPoint.set(transformedX, transformedY);
             transformationPoint.transformTo(this);
             if (isPixelVisible(transformationPoint.getX(), transformationPoint.getY()) && pointerInteractions.setActive(id, id)) {
-                return onPointerDown(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
+                return onPointerDown(id, button, transformationPoint.getX(), transformationPoint.getY());
             }
 
             pointerInteractions.setInactive(id, id);
@@ -48,17 +49,17 @@ public abstract class AbstractPointerAwareGameObject
     }
 
     @Override
-    public final void pointerUp(int id, int button, float x, float y, float transformedX, float transformedY) {
+    public final void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (isEnabled() && pointerInteractions.isActive(id, id)) {
             pointerInteractions.setInactive(id, id);
             transformationPoint.set(transformedX, transformedY);
             transformationPoint.transformTo(this);
-            onPointerUp(id, button, x, y, transformationPoint.getX(), transformationPoint.getY());
+            onPointerUp(id, button, transformationPoint.getX(), transformationPoint.getY());
         }
     }
 
     @Override
-    public final boolean pointerMove(int id, float x, float y, float transformedX, float transformedY) {
+    public final boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
         if (isEnabled() && isTrackingPointerPositions()) {
             transformationPoint.set(transformedX, transformedY);
             transformationPoint.transformTo(this);
@@ -67,7 +68,7 @@ public abstract class AbstractPointerAwareGameObject
                     onPointerEntered(id);
                 }
 
-                return onPointerMove(id, x, y, transformationPoint.getX(), transformationPoint.getY());
+                return onPointerMove(id, transformationPoint.getX(), transformationPoint.getY());
             } else if (pointerInteractions.setOnTarget(id, false)) {
                 onPointerLeft(id);
             }
@@ -77,7 +78,7 @@ public abstract class AbstractPointerAwareGameObject
     }
 
     @Override
-    public final void swallowedPointerMove(int id) {
+    public final void swallowedPointerMove(PointerState pointerState, int id) {
         if (isEnabled() && isTrackingPointerPositions()) {
             if (pointerInteractions.setOnTarget(id, false)) {
                 onPointerLeft(id);
@@ -99,14 +100,12 @@ public abstract class AbstractPointerAwareGameObject
      *
      * @param id           The id of the pointer.
      * @param button       The id of the pointer button.
-     * @param x            The x-coordinate of the pointer.
-     * @param y            The y-coordinate of the pointer.
      * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
      * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      *
      * @return True if the event should be swallowed, false otherwise.
      */
-    protected abstract boolean onPointerDown(int id, int button, float x, float y, float transformedX, float transformedY);
+    protected abstract boolean onPointerDown(int id, int button, float transformedX, float transformedY);
 
     /**
      * Invoked if the {@link #clearPointerState pointer state} contains the corresponding {@link #onPointerDown pointer down} event.
@@ -115,12 +114,10 @@ public abstract class AbstractPointerAwareGameObject
      *
      * @param id           The id of the pointer.
      * @param button       The id of the pointer button.
-     * @param x            The x-coordinate of the pointer.
-     * @param y            The y-coordinate of the pointer.
      * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
      * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      */
-    protected abstract void onPointerUp(int id, int button, float x, float y, float transformedX, float transformedY);
+    protected abstract void onPointerUp(int id, int button, float transformedX, float transformedY);
 
     /**
      * Must return true to enable {@link #onPointerEntered}, {@link #onPointerLeft} and {@link #onPointerMove}.
@@ -142,14 +139,12 @@ public abstract class AbstractPointerAwareGameObject
      * Invoked if {@link #isTrackingPointerPositions tracking pointer positions} and the pointer is above the object's {@link #isPixelVisible visible area}.
      *
      * @param id           The id of the pointer.
-     * @param x            The x-coordinate of the pointer.
-     * @param y            The y-coordinate of the pointer.
      * @param transformedX The x-coordinate of the pointer transformed to the coordinate space represented by this object.
      * @param transformedY The y-coordinate of the pointer transformed to the coordinate space represented by this object.
      *
      * @return True if the event should be swallowed, false otherwise.
      */
-    protected abstract boolean onPointerMove(int id, float x, float y, float transformedX, float transformedY);
+    protected abstract boolean onPointerMove(int id, float transformedX, float transformedY);
 
     private static class PointerInteractions {
         private int count;
