@@ -26,7 +26,7 @@ import java.util.*;
  * implementation and can be used as base class for all games.
  */
 public abstract class AbstractGame extends AbstractDisposer implements Game {
-    private final GamePointerState pointerState = new GamePointerState();
+    private final GameInputState inputState = new GameInputState();
 
     private final EventPublisher<Frame> frameChangedPublisher = new DefaultEventPublisher<>();
     private final DelayedActionMonitor delayedActionMonitor = new DelayedActionMonitor();
@@ -322,22 +322,24 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
             Frame frame = getFrame();
             switch (action) {
                 case DOWN:
+                    inputState.setKeyDown(key);
                     if (frame instanceof KeyDownAware) {
-                        ((KeyDownAware) frame).keyDown(key, false);
+                        ((KeyDownAware) frame).keyDown(inputState, key, false);
                     }
-                    FocusManager.keyDownEvent(key, false);
+                    FocusManager.keyDownEvent(inputState, key, false);
                     break;
                 case DOWN_REPEAT:
                     if (frame instanceof KeyDownAware) {
-                        ((KeyDownAware) frame).keyDown(key, true);
+                        ((KeyDownAware) frame).keyDown(inputState, key, true);
                     }
-                    FocusManager.keyDownEvent(key, true);
+                    FocusManager.keyDownEvent(inputState, key, true);
                     break;
                 case UP:
+                    inputState.setKeyUp(key);
                     if (frame instanceof KeyUpAware) {
-                        ((KeyUpAware) frame).keyUp(key);
+                        ((KeyUpAware) frame).keyUp(inputState, key);
                     }
-                    FocusManager.keyUpEvent(key);
+                    FocusManager.keyUpEvent(inputState, key);
                     break;
             }
         }
@@ -355,7 +357,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
                 FocusManager.onPointerActive();
                 Frame frame = getFrame();
                 if (frame != null) {
-                    frame.pointerMove(pointerState, id, posX, posY);
+                    frame.pointerMove(inputState, id, posX, posY);
                 }
             } finally {
                 FocusManager.onPointerInactive();
@@ -384,14 +386,14 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
                     FocusManager.onPointerActive();
                     switch (action) {
                         case DOWN:
-                            pointerState.setDown(id, button);
-                            frame.pointerDown(pointerState, id, button, posX, posY);
-                            FocusManager.pointerDownFinished(pointerState, id, button);
+                            inputState.setPointerDown(id, button);
+                            frame.pointerDown(inputState, id, button, posX, posY);
+                            FocusManager.pointerDownFinished(inputState, id, button);
                             break;
                         case UP:
-                            pointerState.setUp(id, button);
-                            frame.pointerUp(pointerState, id, button, posX, posY);
-                            FocusManager.pointerUpFinished(pointerState, id, button);
+                            inputState.setPointerUp(id, button);
+                            frame.pointerUp(inputState, id, button, posX, posY);
+                            FocusManager.pointerUpFinished(inputState, id, button);
 
                             // Faking a pointer move after a pointer up is useful to restore e.g. hovering state.
                             onPointerMove(id, posX, posY);
@@ -409,43 +411,51 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         }
     }
 
-    private static class GamePointerState implements PointerState {
-        private final Map<Integer, ButtonState> state = new HashMap<>();
+    private static class GameInputState implements InputState {
+        private final ButtonState keyState = new ButtonState();
+        private final Map<Integer, ButtonState> pointerState = new HashMap<>();
 
-        void clear() {
-            state.clear();
-        }
-
-        public boolean isDown(int pointerId) {
-            ButtonState buttonState = state.get(pointerId);
+        public boolean isPointerDown(int pointerId) {
+            ButtonState buttonState = pointerState.get(pointerId);
             return buttonState != null && buttonState.isDown();
         }
 
-        public boolean isDown(int pointerId, int button) {
-            ButtonState buttonState = state.get(pointerId);
+        public boolean isPointerDown(int pointerId, int button) {
+            ButtonState buttonState = pointerState.get(pointerId);
             return buttonState != null && buttonState.isDown(button);
         }
 
-        boolean setDown(int pointerId, int button) {
-            ButtonState buttonState = state.get(pointerId);
+        @Override
+        public boolean isKeyDown(int key) {
+            return keyState.isDown(key);
+        }
+
+        void setKeyDown(int key) {
+            keyState.setDown(key);
+        }
+
+        void setKeyUp(int key) {
+            keyState.setUp(key);
+        }
+
+        void setPointerDown(int pointerId, int button) {
+            ButtonState buttonState = pointerState.get(pointerId);
             if (buttonState == null) {
                 buttonState = new ButtonState();
-                state.put(pointerId, buttonState);
+                pointerState.put(pointerId, buttonState);
             }
 
-            return buttonState.setDown(button);
+            buttonState.setDown(button);
         }
 
-        boolean setUp(int pointerId, int button) {
-            ButtonState buttonState = state.get(pointerId);
+        void setPointerUp(int pointerId, int button) {
+            ButtonState buttonState = pointerState.get(pointerId);
             if (buttonState != null) {
-                return buttonState.setUp(button);
-            } else {
-                return false;
+                buttonState.setUp(button);
             }
         }
 
-        private class ButtonState {
+        private static class ButtonState {
             private final Set<Integer> state = new HashSet<>();
 
             public boolean isDown() {
@@ -456,12 +466,12 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
                 return state.contains(button);
             }
 
-            public boolean setDown(int button) {
-                return state.add(button);
+            public void setDown(int button) {
+                state.add(button);
             }
 
-            public boolean setUp(int button) {
-                return state.remove(button);
+            public void setUp(int button) {
+                state.remove(button);
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.PointerState;
+import com.gamelibrary2d.InputState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.components.denotations.*;
 import com.gamelibrary2d.denotations.Renderable;
@@ -59,37 +59,37 @@ public class NavigationPanel extends AbstractGameObject
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
         if (current instanceof PointerDownAware) {
             pointerPosition.set(x, y, this);
-            return ((PointerDownAware) current).pointerDown(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
+            return ((PointerDownAware) current).pointerDown(inputState, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
 
         return false;
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
+    public boolean pointerMove(InputState inputState, int id, float x, float y) {
         if (current instanceof PointerMoveAware) {
             pointerPosition.set(x, y, this);
-            return ((PointerMoveAware) current).pointerMove(pointerState, id, pointerPosition.getX(), pointerPosition.getY());
+            return ((PointerMoveAware) current).pointerMove(inputState, id, pointerPosition.getX(), pointerPosition.getY());
         }
 
         return false;
     }
 
     @Override
-    public void swallowedPointerMove(PointerState pointerState, int id) {
+    public void swallowedPointerMove(InputState inputState, int id) {
         if (current instanceof PointerMoveAware) {
-            ((PointerMoveAware) current).swallowedPointerMove(pointerState, id);
+            ((PointerMoveAware) current).swallowedPointerMove(inputState, id);
         }
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
+    public void pointerUp(InputState inputState, int id, int button, float x, float y) {
         if (current instanceof PointerUpAware) {
             pointerPosition.set(x, y, this);
-            ((PointerUpAware) current).pointerUp(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
+            ((PointerUpAware) current).pointerUp(inputState, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
     }
 

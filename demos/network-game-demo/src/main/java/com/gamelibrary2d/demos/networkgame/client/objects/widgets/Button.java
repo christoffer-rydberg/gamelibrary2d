@@ -1,7 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.PointerState;
+import com.gamelibrary2d.InputState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
@@ -34,7 +34,7 @@ public class Button extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             pointerId = id;
@@ -46,7 +46,7 @@ public class Button extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
+    public void pointerUp(InputState inputState, int id, int button, float x, float y) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;

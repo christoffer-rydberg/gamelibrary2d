@@ -1,7 +1,7 @@
 package com.gamelibrary2d.demos.particlesystem;
 
 import com.gamelibrary2d.Game;
-import com.gamelibrary2d.PointerState;
+import com.gamelibrary2d.InputState;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.io.ResourceReader;
 import com.gamelibrary2d.particles.*;
@@ -96,7 +96,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected boolean onPointerDown(PointerState pointerState, int id, int button, float x, float y) {
+    protected boolean onPointerDown(InputState inputState, int id, int button, float x, float y) {
         explosionSystem.emit(x, y);
         createFire(x, y, 1f);
         return true;

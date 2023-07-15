@@ -199,7 +199,7 @@ class DemoFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    public void keyDown(int key, boolean repeat) {
+    public void keyDown(InputState inputState, int key, boolean repeat) {
         if (key == Keyboard.instance().keyUp()) {
             addSpaceCraft();
             refreshSplitLayout(spaceCrafts);

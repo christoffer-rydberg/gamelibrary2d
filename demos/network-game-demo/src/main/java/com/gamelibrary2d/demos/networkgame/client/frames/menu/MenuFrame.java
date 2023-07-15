@@ -1,6 +1,6 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
-import com.gamelibrary2d.PointerState;
+import com.gamelibrary2d.InputState;
 import com.gamelibrary2d.input.Keyboard;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.denotations.Renderable;
@@ -191,7 +191,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    public void keyDown(int key, boolean repeat) {
+    public void keyDown(InputState inputState, int key, boolean repeat) {
         if (key == Keyboard.instance().keyEscape()) {
             if (credits.isEnabled()) {
                 hideCredits();
@@ -206,7 +206,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    public void keyUp(int key) {
+    public void keyUp(InputState inputState, int key) {
         if (key == Keyboard.instance().keyEnter()) {
             if (credits.isEnabled()) {
                 credits.setSpeedFactor(1f);
@@ -215,7 +215,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    protected boolean onPointerDown(PointerState pointerState, int id, int button, float x, float y) {
+    protected boolean onPointerDown(InputState inputState, int id, int button, float x, float y) {
         if (credits.isEnabled()) {
             hideCredits();
             return true;
@@ -223,7 +223,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
             showMenu();
             return true;
         } else {
-            return super.onPointerDown(pointerState, id, button, x, y);
+            return super.onPointerDown(inputState, id, button, x, y);
         }
     }
 

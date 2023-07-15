@@ -89,14 +89,14 @@ public class FocusManager {
         }
     }
 
-    static void keyDownEvent(int key, boolean repeat) {
+    static void keyDownEvent(InputState inputState, int key, boolean repeat) {
         try {
             iterationList.addAll(focused);
             iterationList.addAll(focusedByPointer);
             for (int i = 0; i < iterationList.size(); ++i) {
                 Object obj = iterationList.get(i);
                 if (obj instanceof KeyDownAware) {
-                    ((KeyDownAware) obj).keyDown(key, repeat);
+                    ((KeyDownAware) obj).keyDown(inputState, key, repeat);
                 }
             }
         } finally {
@@ -104,14 +104,14 @@ public class FocusManager {
         }
     }
 
-    static void keyUpEvent(int key) {
+    static void keyUpEvent(InputState inputState, int key) {
         try {
             iterationList.addAll(focused);
             iterationList.addAll(focusedByPointer);
             for (int i = 0; i < iterationList.size(); ++i) {
                 Object obj = iterationList.get(i);
                 if (obj instanceof KeyUpAware) {
-                    ((KeyUpAware) obj).keyUp(key);
+                    ((KeyUpAware) obj).keyUp(inputState, key);
                 }
             }
         } finally {
@@ -134,14 +134,14 @@ public class FocusManager {
         }
     }
 
-    private static void onPointerActionFinished(PointerState pointerState, int id, int button, boolean released) {
+    private static void onPointerActionFinished(InputState inputState, int id, int button, boolean released) {
         if (!released) {
             try {
                 iterationList.addAll(focused);
                 for (int i = 0; i < iterationList.size(); ++i) {
                     Object obj = iterationList.get(i);
                     if (obj instanceof PointerDownWhenFocusedAware) {
-                        ((PointerDownWhenFocusedAware) obj).pointerDownWhenFocused(pointerState, id, button);
+                        ((PointerDownWhenFocusedAware) obj).pointerDownWhenFocused(inputState, id, button);
                     }
                 }
             } finally {
@@ -150,11 +150,11 @@ public class FocusManager {
         }
     }
 
-    static void pointerDownFinished(PointerState pointerState, int id, int button) {
-        onPointerActionFinished(pointerState, id, button, false);
+    static void pointerDownFinished(InputState inputState, int id, int button) {
+        onPointerActionFinished(inputState, id, button, false);
     }
 
-    static void pointerUpFinished(PointerState pointerState, int id, int button) {
-        onPointerActionFinished(pointerState, id, button, true);
+    static void pointerUpFinished(InputState inputState, int id, int button) {
+        onPointerActionFinished(inputState, id, button, true);
     }
 }

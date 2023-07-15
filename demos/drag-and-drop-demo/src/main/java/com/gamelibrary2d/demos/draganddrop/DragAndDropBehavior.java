@@ -1,6 +1,6 @@
 package com.gamelibrary2d.demos.draganddrop;
 
-import com.gamelibrary2d.PointerState;
+import com.gamelibrary2d.InputState;
 import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.components.denotations.PointerAware;
 
@@ -28,7 +28,7 @@ public class DragAndDropBehavior implements PointerAware {
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
         if (hitDetection.isPixelVisible(obj, x, y)) {
             DragInteraction interaction = dragInteractions.get(id);
             if (interaction == null) {
@@ -43,14 +43,14 @@ public class DragAndDropBehavior implements PointerAware {
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
+    public boolean pointerMove(InputState inputState, int id, float x, float y) {
         DragInteraction interaction = dragInteractions.get(id);
         if (interaction != null) {
             interaction.update(x, y);
             return true;
         }
 
-        if (!pointerState.isDown(id) && hitDetection.isPixelVisible(obj, x, y)) {
+        if (!inputState.isPointerDown(id) && hitDetection.isPixelVisible(obj, x, y)) {
             hoveringPointers.add(id);
             return true;
         } else {
@@ -60,12 +60,12 @@ public class DragAndDropBehavior implements PointerAware {
     }
 
     @Override
-    public void swallowedPointerMove(PointerState pointerState, int id) {
+    public void swallowedPointerMove(InputState inputState, int id) {
         hoveringPointers.remove(id);
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
+    public void pointerUp(InputState inputState, int id, int button, float x, float y) {
         DragInteraction interaction = dragInteractions.get(id);
         if (interaction != null && interaction.button == button) {
             dragInteractions.remove(id);

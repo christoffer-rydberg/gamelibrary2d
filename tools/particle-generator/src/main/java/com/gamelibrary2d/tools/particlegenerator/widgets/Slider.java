@@ -1,7 +1,7 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.PointerState;
+import com.gamelibrary2d.InputState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.denotations.Bounded;
 import com.gamelibrary2d.denotations.Renderable;
@@ -92,13 +92,13 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
-        return handle.pointerDown(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
+        return handle.pointerDown(inputState, id, button, pointerPosition.getX(), pointerPosition.getY());
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
+    public boolean pointerMove(InputState inputState, int id, float x, float y) {
         pointerPosition.set(x, y, this);
         pointerPosition.transformTo(handle);
 
@@ -111,14 +111,14 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    public void swallowedPointerMove(PointerState pointerState, int id) {
+    public void swallowedPointerMove(InputState inputState, int id) {
 
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
+    public void pointerUp(InputState inputState, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
-        handle.pointerUp(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
+        handle.pointerUp(inputState, id, button, pointerPosition.getX(), pointerPosition.getY());
     }
 
     @Override
@@ -177,7 +177,7 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
         }
 
         @Override
-        public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+        public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
             pointerPosition.set(x, y, this);
             if (getBounds().contains(pointerPosition)) {
                 if (pointerId < 0) {
@@ -197,7 +197,7 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
         }
 
         @Override
-        public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
+        public void pointerUp(InputState inputState, int id, int button, float x, float y) {
             if (pointerId == id && pointerButton == button) {
                 pointerId = -1;
                 pointerButton = -1;

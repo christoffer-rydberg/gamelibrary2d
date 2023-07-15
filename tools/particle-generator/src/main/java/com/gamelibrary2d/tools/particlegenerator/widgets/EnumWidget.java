@@ -1,7 +1,7 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.PointerState;
+import com.gamelibrary2d.InputState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
@@ -56,7 +56,7 @@ public class EnumWidget<T extends Enum<T>> extends AbstractGameObject implements
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             currentIndex = (currentIndex + 1) % values.length;
