@@ -1,11 +1,11 @@
 package com.gamelibrary2d.demos.animation;
 
-import com.gamelibrary2d.Color;
-import com.gamelibrary2d.Game;
-import com.gamelibrary2d.Rectangle;
+import com.gamelibrary2d.*;
 import com.gamelibrary2d.animations.*;
-import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.GameObject;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
 import com.gamelibrary2d.components.frames.AbstractFrame;
 import com.gamelibrary2d.disposal.DefaultDisposer;
 import com.gamelibrary2d.disposal.Disposer;
@@ -135,9 +135,12 @@ public class DemoFrame extends AbstractFrame {
         super.onUpdate(deltaTime);
     }
 
-    private class LoadButton extends AbstractPointerAwareGameObject {
+    private class LoadButton extends AbstractGameObject implements PointerDownAware, PointerUpAware {
         private final Label label;
         private final Rectangle bounds;
+        private final Point pointerPosition = new Point();
+        private int pointerId = -1;
+        private int pointerButton = -1;
 
         public LoadButton() {
             Font font = DefaultFont.create(
@@ -163,39 +166,31 @@ public class DemoFrame extends AbstractFrame {
         }
 
         @Override
-        protected boolean onPointerDown(int id, int button, float transformedX, float transformedY) {
-            return true;
+        public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+            pointerPosition.set(transformedX, transformedY, this);
+            if (getBounds().contains(pointerPosition)) {
+                pointerId = id;
+                pointerButton = button;
+                return true;
+            }
+
+            return false;
         }
 
         @Override
-        protected void onPointerUp(int id, int button, float transformedX, float transformedY) {
-            if (loadingAnimation == null) {
-                try {
-                    loadingAnimation = selectAnimation();
-                } catch (IOException e) {
-                    onException(e);
+        public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+            if (id == pointerId && button == pointerButton) {
+                pointerId = -1;
+                pointerButton = -1;
+
+                if (loadingAnimation == null) {
+                    try {
+                        loadingAnimation = selectAnimation();
+                    } catch (IOException e) {
+                        onException(e);
+                    }
                 }
             }
-        }
-
-        @Override
-        protected boolean isTrackingPointerPositions() {
-            return false;
-        }
-
-        @Override
-        protected void onPointerEntered(int id) {
-
-        }
-
-        @Override
-        protected void onPointerLeft(int id) {
-
-        }
-
-        @Override
-        protected boolean onPointerMove(int id, float transformedX, float transformedY) {
-            return false;
         }
     }
 }

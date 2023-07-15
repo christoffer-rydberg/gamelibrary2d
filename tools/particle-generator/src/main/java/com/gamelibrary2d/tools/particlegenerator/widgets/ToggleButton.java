@@ -1,15 +1,19 @@
 package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.Color;
+import com.gamelibrary2d.Point;
+import com.gamelibrary2d.PointerState;
 import com.gamelibrary2d.Rectangle;
-import com.gamelibrary2d.components.AbstractPointerAwareGameObject;
+import com.gamelibrary2d.components.AbstractGameObject;
+import com.gamelibrary2d.components.denotations.PointerDownAware;
+import com.gamelibrary2d.components.denotations.PointerUpAware;
 import com.gamelibrary2d.opengl.shaders.ShaderParameter;
 import com.gamelibrary2d.text.Font;
 import com.gamelibrary2d.text.Label;
 
-public class ToggleButton extends AbstractPointerAwareGameObject {
+public class ToggleButton extends AbstractGameObject implements PointerDownAware, PointerUpAware {
     private final Label label;
-
+    private final Point pointerPosition = new Point();
     private boolean toggled;
     private float defaultR;
     private float defaultG;
@@ -41,43 +45,6 @@ public class ToggleButton extends AbstractPointerAwareGameObject {
         }
     }
 
-    @Override
-    protected boolean onPointerDown(int id, int button, float transformedX, float transformedY) {
-        pointerId = id;
-        pointerButton = button;
-        return true;
-    }
-
-    @Override
-    protected void onPointerUp(int id, int button, float transformedX, float transformedY) {
-        if (pointerId == id && pointerButton == button) {
-            pointerId = -1;
-            pointerButton = -1;
-            setToggled(!isToggled());
-        }
-    }
-
-    @Override
-    protected boolean isTrackingPointerPositions() {
-        return false;
-    }
-
-    @Override
-    protected void onPointerEntered(int id) {
-
-    }
-
-    @Override
-    protected void onPointerLeft(int id) {
-
-    }
-
-    @Override
-    protected boolean onPointerMove(int id, float transformedX, float transformedY) {
-        return false;
-    }
-
-
     public Label getLabel() {
         return label;
     }
@@ -94,5 +61,26 @@ public class ToggleButton extends AbstractPointerAwareGameObject {
     @Override
     protected void onRender(float alpha) {
         label.render(alpha);
+    }
+
+    @Override
+    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        pointerPosition.set(transformedX, transformedY, this);
+        if (getBounds().contains(pointerPosition)) {
+            pointerId = id;
+            pointerButton = button;
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        if (pointerId == id && pointerButton == button) {
+            pointerId = -1;
+            pointerButton = -1;
+            setToggled(!isToggled());
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.gamelibrary2d.demos.draganddrop;
 
 import com.gamelibrary2d.CoordinateSpace;
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.components.denotations.PixelAware;
 import com.gamelibrary2d.denotations.Bounded;
 
 public class HitDetection {

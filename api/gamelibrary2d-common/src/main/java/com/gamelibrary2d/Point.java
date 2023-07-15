@@ -56,6 +56,11 @@ public class Point {
         this.y = y;
     }
 
+    public void set(float x, float y, CoordinateSpace transformation) {
+        set(x, y);
+        transformTo(transformation);
+    }
+
     /**
      * Moves the point the along the specified angle.
      *

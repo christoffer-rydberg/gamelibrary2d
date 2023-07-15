@@ -14,7 +14,7 @@ import java.util.Deque;
 
 public class NavigationPanel extends AbstractGameObject
         implements Clearable, PointerDownAware, PointerMoveAware, PointerUpAware {
-    private final Point transformationPoint = new Point();
+    private final Point pointerPosition = new Point();
     private final Deque<Renderable> previous = new ArrayDeque<>();
     private Renderable current;
     private Rectangle bounds;
@@ -61,9 +61,8 @@ public class NavigationPanel extends AbstractGameObject
     @Override
     public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (current instanceof PointerDownAware) {
-            transformationPoint.set(transformedX, transformedY);
-            transformationPoint.transformTo(this);
-            return ((PointerDownAware) current).pointerDown(pointerState, id, button, transformationPoint.getX(), transformationPoint.getY());
+            pointerPosition.set(transformedX, transformedY, this);
+            return ((PointerDownAware) current).pointerDown(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
 
         return false;
@@ -72,9 +71,8 @@ public class NavigationPanel extends AbstractGameObject
     @Override
     public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
         if (current instanceof PointerMoveAware) {
-            transformationPoint.set(transformedX, transformedY);
-            transformationPoint.transformTo(this);
-            return ((PointerMoveAware) current).pointerMove(pointerState, id, transformationPoint.getX(), transformationPoint.getY());
+            pointerPosition.set(transformedX, transformedY, this);
+            return ((PointerMoveAware) current).pointerMove(pointerState, id, pointerPosition.getX(), pointerPosition.getY());
         }
 
         return false;
@@ -90,9 +88,8 @@ public class NavigationPanel extends AbstractGameObject
     @Override
     public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
         if (current instanceof PointerUpAware) {
-            transformationPoint.set(transformedX, transformedY);
-            transformationPoint.transformTo(this);
-            ((PointerUpAware) current).pointerUp(pointerState, id, button, transformationPoint.getX(), transformationPoint.getY());
+            pointerPosition.set(transformedX, transformedY, this);
+            ((PointerUpAware) current).pointerUp(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
     }
 

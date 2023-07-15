@@ -11,7 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractLayerGameObject<T extends Renderable> extends AbstractGameObject implements LayerGameObject<T> {
-    private final Point transformationPoint = new Point();
+    private final Point pointerPosition = new Point();
 
     private Rectangle bounds;
     private boolean updatesEnabled = true;
@@ -81,9 +81,8 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
     }
 
     protected boolean onPointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        transformationPoint.set(transformedX, transformedY);
-        transformationPoint.transformTo(this);
-        return getLayer().pointerDown(pointerState, id, button, transformationPoint.getX(), transformationPoint.getY());
+        pointerPosition.set(transformedX, transformedY, this);
+        return getLayer().pointerDown(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
     }
 
     @Override
@@ -99,9 +98,8 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
     }
 
     protected boolean onPointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
-        transformationPoint.set(transformedX, transformedY);
-        transformationPoint.transformTo(this);
-        return getLayer().pointerMove(pointerState, id, transformationPoint.getX(), transformationPoint.getY());
+        pointerPosition.set(transformedX, transformedY, this);
+        return getLayer().pointerMove(pointerState, id, pointerPosition.getX(), pointerPosition.getY());
     }
 
     protected void onSwallowedPointerMove(PointerState pointerState, int id) {
@@ -116,9 +114,8 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
     }
 
     protected void onPointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        transformationPoint.set(transformedX, transformedY);
-        transformationPoint.transformTo(this);
-        getLayer().pointerUp(pointerState, id, button, transformationPoint.getX(), transformationPoint.getY());
+        pointerPosition.set(transformedX, transformedY, this);
+        getLayer().pointerUp(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
     }
 
     @Override
