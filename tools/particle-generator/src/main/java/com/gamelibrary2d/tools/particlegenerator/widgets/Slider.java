@@ -92,9 +92,9 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
         if (isEnabled()) {
-            pointerPosition.set(transformedX, transformedY, this);
+            pointerPosition.set(x, y, this);
             return handle.pointerDown(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
 
@@ -102,9 +102,9 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
         if (isEnabled()) {
-            pointerPosition.set(transformedX, transformedY, this);
+            pointerPosition.set(x, y, this);
             pointerPosition.transformTo(handle);
 
             if (id == handle.pointerId) {
@@ -122,9 +122,9 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
         if (isEnabled()) {
-            pointerPosition.set(transformedX, transformedY, this);
+            pointerPosition.set(x, y, this);
             handle.pointerUp(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
     }
@@ -185,14 +185,14 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
         }
 
         @Override
-        public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-            pointerPosition.set(transformedX, transformedY, this);
+        public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+            pointerPosition.set(x, y, this);
             if (getBounds().contains(pointerPosition)) {
                 if (pointerId < 0) {
                     pointerId = id;
                     pointerButton = button;
-                    dragOriginX = transformedX;
-                    dragOriginY = transformedY;
+                    dragOriginX = x;
+                    dragOriginY = y;
                     for (DragBeginListener listener : dragBeginListeners) {
                         listener.onDragBegin(getValue());
                     }
@@ -205,7 +205,7 @@ public class Slider extends AbstractGameObject implements PointerDownAware, Poin
         }
 
         @Override
-        public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+        public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
             if (pointerId == id && pointerButton == button) {
                 pointerId = -1;
                 pointerButton = -1;

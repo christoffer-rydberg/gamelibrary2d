@@ -43,11 +43,11 @@ public class GeometryTool implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
         if (drawButton == button) {
             inProgress = geometryFactory.create();
-            inProgress.nodes().add(transformedX, transformedY);
-            prevNode.set(transformedX, transformedY);
+            inProgress.nodes().add(x, y);
+            prevNode.set(x, y);
             return true;
         }
 
@@ -55,11 +55,11 @@ public class GeometryTool implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
         if (isDrawing()) {
-            if (prevNode.getDistance(transformedX, transformedY) > minNodeInterval) {
-                inProgress.nodes().add(transformedX, transformedY);
-                prevNode.set(transformedX, transformedY);
+            if (prevNode.getDistance(x, y) > minNodeInterval) {
+                inProgress.nodes().add(x, y);
+                prevNode.set(x, y);
             }
             return true;
         }
@@ -73,7 +73,7 @@ public class GeometryTool implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
         if (drawButton == button) {
             onCreated.publish(inProgress);
             inProgress = null;

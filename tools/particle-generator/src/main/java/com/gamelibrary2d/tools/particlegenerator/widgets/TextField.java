@@ -34,8 +34,8 @@ public class TextField
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        pointerPosition.set(transformedX, transformedY, this);
+    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+        pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             pointerId = id;
             pointerButton = button;
@@ -46,7 +46,7 @@ public class TextField
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;

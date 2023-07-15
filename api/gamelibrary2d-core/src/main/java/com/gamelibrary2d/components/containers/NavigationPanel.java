@@ -59,9 +59,9 @@ public class NavigationPanel extends AbstractGameObject
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
         if (current instanceof PointerDownAware) {
-            pointerPosition.set(transformedX, transformedY, this);
+            pointerPosition.set(x, y, this);
             return ((PointerDownAware) current).pointerDown(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
 
@@ -69,9 +69,9 @@ public class NavigationPanel extends AbstractGameObject
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
         if (current instanceof PointerMoveAware) {
-            pointerPosition.set(transformedX, transformedY, this);
+            pointerPosition.set(x, y, this);
             return ((PointerMoveAware) current).pointerMove(pointerState, id, pointerPosition.getX(), pointerPosition.getY());
         }
 
@@ -86,9 +86,9 @@ public class NavigationPanel extends AbstractGameObject
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
         if (current instanceof PointerUpAware) {
-            pointerPosition.set(transformedX, transformedY, this);
+            pointerPosition.set(x, y, this);
             ((PointerUpAware) current).pointerUp(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
     }

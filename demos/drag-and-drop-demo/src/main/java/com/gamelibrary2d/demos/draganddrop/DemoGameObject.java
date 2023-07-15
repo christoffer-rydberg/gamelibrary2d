@@ -51,13 +51,13 @@ public class DemoGameObject extends AbstractGameObject implements PointerAware, 
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        return dragAndDropBehavior.pointerDown(pointerState, id, button, transformedX, transformedY);
+    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+        return dragAndDropBehavior.pointerDown(pointerState, id, button, x, y);
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
-        return dragAndDropBehavior.pointerMove(pointerState, id, transformedX, transformedY);
+    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
+        return dragAndDropBehavior.pointerMove(pointerState, id, x, y);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class DemoGameObject extends AbstractGameObject implements PointerAware, 
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        dragAndDropBehavior.pointerUp(pointerState, id, button, transformedX, transformedY);
+    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
+        dragAndDropBehavior.pointerUp(pointerState, id, button, x, y);
     }
 }

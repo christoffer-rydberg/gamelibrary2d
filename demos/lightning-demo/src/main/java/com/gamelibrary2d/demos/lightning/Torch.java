@@ -33,9 +33,9 @@ public class Torch extends AbstractGameObject implements PointerMoveAware, Updat
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
         if (id == pointerId) {
-            setPosition(transformedX, transformedY);
+            setPosition(x, y);
         }
 
         return false;

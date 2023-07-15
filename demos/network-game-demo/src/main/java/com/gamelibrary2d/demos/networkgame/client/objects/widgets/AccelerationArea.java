@@ -59,8 +59,8 @@ public class AccelerationArea implements Renderable, PointerDownAware, PointerMo
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState,  int id, int button, float transformedX, float transformedY) {
-        if (bounds.contains(transformedX, transformedY)) {
+    public boolean pointerDown(PointerState pointerState,  int id, int button, float x, float y) {
+        if (bounds.contains(x, y)) {
             if (pointerId < 0) {
                 pointerId = id;
                 pointerButton = button;
@@ -74,7 +74,7 @@ public class AccelerationArea implements Renderable, PointerDownAware, PointerMo
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
         return pointerId == id;
     }
 
@@ -84,7 +84,7 @@ public class AccelerationArea implements Renderable, PointerDownAware, PointerMo
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;

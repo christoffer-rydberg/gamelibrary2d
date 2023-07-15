@@ -28,12 +28,12 @@ public class DragAndDropBehavior implements PointerAware {
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        if (hitDetection.isPixelVisible(obj, transformedX, transformedY)) {
+    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+        if (hitDetection.isPixelVisible(obj, x, y)) {
             DragInteraction interaction = dragInteractions.get(id);
             if (interaction == null) {
                 hoveringPointers.remove(id);
-                dragInteractions.put(id, new DragInteraction(button, transformedX, transformedY));
+                dragInteractions.put(id, new DragInteraction(button, x, y));
             }
 
             return true;
@@ -43,14 +43,14 @@ public class DragAndDropBehavior implements PointerAware {
     }
 
     @Override
-    public boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
+    public boolean pointerMove(PointerState pointerState, int id, float x, float y) {
         DragInteraction interaction = dragInteractions.get(id);
         if (interaction != null) {
-            interaction.update(transformedX, transformedY);
+            interaction.update(x, y);
             return true;
         }
 
-        if (!pointerState.isDown(id) && hitDetection.isPixelVisible(obj, transformedX, transformedY)) {
+        if (!pointerState.isDown(id) && hitDetection.isPixelVisible(obj, x, y)) {
             hoveringPointers.add(id);
             return true;
         } else {
@@ -65,7 +65,7 @@ public class DragAndDropBehavior implements PointerAware {
     }
 
     @Override
-    public void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
         DragInteraction interaction = dragInteractions.get(id);
         if (interaction != null && interaction.button == button) {
             dragInteractions.remove(id);

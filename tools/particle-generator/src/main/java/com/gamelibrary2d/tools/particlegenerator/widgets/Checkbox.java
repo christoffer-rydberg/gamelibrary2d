@@ -64,8 +64,8 @@ public class Checkbox extends AbstractGameObject implements PointerDownAware {
     }
 
     @Override
-    public boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        pointerPosition.set(transformedX, transformedY, this);
+    public boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+        pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             toggle();
             return true;

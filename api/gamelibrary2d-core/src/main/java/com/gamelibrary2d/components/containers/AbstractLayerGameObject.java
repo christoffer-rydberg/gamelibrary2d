@@ -76,18 +76,18 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
     }
 
     @Override
-    public final boolean pointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        return isEnabled() && onPointerDown(pointerState, id, button, transformedX, transformedY);
+    public final boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
+        return isEnabled() && onPointerDown(pointerState, id, button, x, y);
     }
 
-    protected boolean onPointerDown(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        pointerPosition.set(transformedX, transformedY, this);
+    protected boolean onPointerDown(PointerState pointerState, int id, int button, float x, float y) {
+        pointerPosition.set(x, y, this);
         return getLayer().pointerDown(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
     }
 
     @Override
-    public final boolean pointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
-        return isEnabled() && onPointerMove(pointerState, id, transformedX, transformedY);
+    public final boolean pointerMove(PointerState pointerState, int id, float x, float y) {
+        return isEnabled() && onPointerMove(pointerState, id, x, y);
     }
 
     @Override
@@ -97,8 +97,8 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
         }
     }
 
-    protected boolean onPointerMove(PointerState pointerState, int id, float transformedX, float transformedY) {
-        pointerPosition.set(transformedX, transformedY, this);
+    protected boolean onPointerMove(PointerState pointerState, int id, float x, float y) {
+        pointerPosition.set(x, y, this);
         return getLayer().pointerMove(pointerState, id, pointerPosition.getX(), pointerPosition.getY());
     }
 
@@ -107,14 +107,14 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
     }
 
     @Override
-    public final void pointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
+    public final void pointerUp(PointerState pointerState, int id, int button, float x, float y) {
         if (isEnabled()) {
-            onPointerUp(pointerState, id, button, transformedX, transformedY);
+            onPointerUp(pointerState, id, button, x, y);
         }
     }
 
-    protected void onPointerUp(PointerState pointerState, int id, int button, float transformedX, float transformedY) {
-        pointerPosition.set(transformedX, transformedY, this);
+    protected void onPointerUp(PointerState pointerState, int id, int button, float x, float y) {
+        pointerPosition.set(x, y, this);
         getLayer().pointerUp(pointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
     }
 
