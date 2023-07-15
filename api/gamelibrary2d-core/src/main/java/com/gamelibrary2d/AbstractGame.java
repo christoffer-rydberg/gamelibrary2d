@@ -26,7 +26,7 @@ import java.util.*;
  * implementation and can be used as base class for all games.
  */
 public abstract class AbstractGame extends AbstractDisposer implements Game {
-    private final GameInputState inputState = new GameInputState();
+    private final GameKeyAndPointerState inputState = new GameKeyAndPointerState();
 
     private final EventPublisher<Frame> frameChangedPublisher = new DefaultEventPublisher<>();
     private final DelayedActionMonitor delayedActionMonitor = new DelayedActionMonitor();
@@ -411,7 +411,7 @@ public abstract class AbstractGame extends AbstractDisposer implements Game {
         }
     }
 
-    private static class GameInputState implements InputState {
+    private static class GameKeyAndPointerState implements KeyAndPointerState {
         private final ButtonState keyState = new ButtonState();
         private final Map<Integer, ButtonState> pointerState = new HashMap<>();
 

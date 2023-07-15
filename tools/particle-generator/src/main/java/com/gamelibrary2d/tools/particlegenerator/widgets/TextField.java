@@ -2,7 +2,7 @@ package com.gamelibrary2d.tools.particlegenerator.widgets;
 
 import com.gamelibrary2d.FocusManager;
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.InputState;
+import com.gamelibrary2d.KeyAndPointerState;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.*;
 import com.gamelibrary2d.input.Keyboard;
@@ -29,12 +29,12 @@ public class TextField
     }
 
     @Override
-    public void pointerDownWhenFocused(InputState inputState, int id, int button) {
+    public void pointerDownWhenFocused(KeyAndPointerState keyAndPointerState, int id, int button) {
         FocusManager.unfocus(this, false);
     }
 
     @Override
-    public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             pointerId = id;
@@ -46,7 +46,7 @@ public class TextField
     }
 
     @Override
-    public void pointerUp(InputState inputState, int id, int button, float x, float y) {
+    public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;
@@ -60,7 +60,7 @@ public class TextField
     }
 
     @Override
-    public void keyDown(InputState inputState, int key, boolean repeat) {
+    public void keyDown(KeyAndPointerState keyAndPointerState, int key, boolean repeat) {
         if (key == Keyboard.instance().keyBackspace()) {
             removeLast();
         }

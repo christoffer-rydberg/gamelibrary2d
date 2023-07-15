@@ -1,7 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.InputState;
+import com.gamelibrary2d.KeyAndPointerState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
@@ -64,7 +64,7 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         if (lowerBounds.contains(x, y)) {
             switch (getMode()) {
                 case LEFT_OR_RIGHT:
@@ -92,7 +92,7 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public boolean pointerMove(InputState inputState, int id, float x, float y) {
+    public boolean pointerMove(KeyAndPointerState keyAndPointerState, int id, float x, float y) {
         if (pointerId == id) {
             switch (getMode()) {
                 case LEFT_OR_RIGHT:
@@ -116,7 +116,7 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public void swallowedPointerMove(InputState inputState, int id) {
+    public void swallowedPointerMove(KeyAndPointerState keyAndPointerState, int id) {
 
     }
 
@@ -135,7 +135,7 @@ public class RotationArea implements Renderable, PointerDownAware, PointerMoveAw
     }
 
     @Override
-    public void pointerUp(InputState inputState, int id, int button, float x, float y) {
+    public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         if (pointerId == id && pointerButton == button) {
             reset();
         }

@@ -1,6 +1,6 @@
 package com.gamelibrary2d.components.containers;
 
-import com.gamelibrary2d.InputState;
+import com.gamelibrary2d.KeyAndPointerState;
 import com.gamelibrary2d.components.denotations.Disableable;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
@@ -101,34 +101,34 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     @Override
-    public final boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
-        return isEnabled() && onPointerDown(inputState, id, button, x, y);
+    public final boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+        return isEnabled() && onPointerDown(keyAndPointerState, id, button, x, y);
     }
 
     @Override
-    public final boolean pointerMove(InputState inputState, int id, float x, float y) {
-        return isEnabled() && onPointerMove(inputState, id, x, y);
+    public final boolean pointerMove(KeyAndPointerState keyAndPointerState, int id, float x, float y) {
+        return isEnabled() && onPointerMove(keyAndPointerState, id, x, y);
     }
 
     @Override
-    public final void swallowedPointerMove(InputState inputState, int id) {
+    public final void swallowedPointerMove(KeyAndPointerState keyAndPointerState, int id) {
         if (isEnabled()) {
-            onSwallowedPointerMove(inputState, id);
+            onSwallowedPointerMove(keyAndPointerState, id);
         }
     }
 
     @Override
-    public final void pointerUp(InputState inputState, int id, int button, float x, float y) {
+    public final void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         if (isEnabled()) {
-            onPointerUp(inputState, id, button, x, y);
+            onPointerUp(keyAndPointerState, id, button, x, y);
         }
     }
 
-    protected boolean onPointerDown(InputState inputState, int id, int button, float x, float y) {
+    protected boolean onPointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         List<Object> iterationList = prepareReverseIteration(objects);
         try {
             for (int i = 0; i < iterationList.size(); ++i) {
-                if (onPointerDown((T) iterationList.get(i), inputState, id, button, x, y)) {
+                if (onPointerDown((T) iterationList.get(i), keyAndPointerState, id, button, x, y)) {
                     return true;
                 }
             }
@@ -138,24 +138,24 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         }
     }
 
-    protected boolean onPointerDown(T obj, InputState inputState, int id, int button, float x, float y) {
+    protected boolean onPointerDown(T obj, KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         if (obj instanceof PointerDownAware) {
-            return ((PointerDownAware) obj).pointerDown(inputState, id, button, x, y);
+            return ((PointerDownAware) obj).pointerDown(keyAndPointerState, id, button, x, y);
         }
 
         return false;
     }
 
-    protected boolean onPointerMove(InputState inputState, int id, float x, float y) {
+    protected boolean onPointerMove(KeyAndPointerState keyAndPointerState, int id, float x, float y) {
         boolean swallowed = false;
 
         List<Object> iterationList = prepareReverseIteration(objects);
         try {
             for (int i = 0; i < iterationList.size(); ++i) {
                 if (swallowed) {
-                    onSwallowedPointerMove((T) iterationList.get(i), inputState, id);
+                    onSwallowedPointerMove((T) iterationList.get(i), keyAndPointerState, id);
                 } else {
-                    swallowed = onPointerMove((T) iterationList.get(i), inputState, id, x, y);
+                    swallowed = onPointerMove((T) iterationList.get(i), keyAndPointerState, id, x, y);
                 }
             }
 
@@ -165,45 +165,45 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         }
     }
 
-    protected boolean onPointerMove(T obj, InputState inputState, int id, float x, float y) {
+    protected boolean onPointerMove(T obj, KeyAndPointerState keyAndPointerState, int id, float x, float y) {
         if (obj instanceof PointerMoveAware) {
-            return ((PointerMoveAware) obj).pointerMove(inputState, id, x, y);
+            return ((PointerMoveAware) obj).pointerMove(keyAndPointerState, id, x, y);
         }
 
         return false;
     }
 
-    protected void onSwallowedPointerMove(InputState inputState, int id) {
+    protected void onSwallowedPointerMove(KeyAndPointerState keyAndPointerState, int id) {
         List<Object> iterationList = prepareReverseIteration(objects);
         try {
             for (int i = 0; i < iterationList.size(); ++i) {
-                onSwallowedPointerMove((T) iterationList.get(i), inputState, id);
+                onSwallowedPointerMove((T) iterationList.get(i), keyAndPointerState, id);
             }
         } finally {
             iterationList.clear();
         }
     }
 
-    protected void onSwallowedPointerMove(T obj, InputState inputState, int id) {
+    protected void onSwallowedPointerMove(T obj, KeyAndPointerState keyAndPointerState, int id) {
         if (obj instanceof PointerMoveAware) {
-            ((PointerMoveAware) obj).swallowedPointerMove(inputState, id);
+            ((PointerMoveAware) obj).swallowedPointerMove(keyAndPointerState, id);
         }
     }
 
-    protected void onPointerUp(InputState inputState, int id, int button, float x, float y) {
+    protected void onPointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         List<Object> iterationList = prepareReverseIteration(objects);
         try {
             for (int i = 0; i < iterationList.size(); ++i) {
-                onPointerUp((T) iterationList.get(i), inputState, id, button, x, y);
+                onPointerUp((T) iterationList.get(i), keyAndPointerState, id, button, x, y);
             }
         } finally {
             iterationList.clear();
         }
     }
 
-    protected void onPointerUp(T obj, InputState inputState, int id, int button, float x, float y) {
+    protected void onPointerUp(T obj, KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         if (obj instanceof PointerUpAware) {
-            ((PointerUpAware) obj).pointerUp(inputState,id, button, x, y);
+            ((PointerUpAware) obj).pointerUp(keyAndPointerState,id, button, x, y);
         }
     }
 

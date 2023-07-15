@@ -1,15 +1,15 @@
 package com.gamelibrary2d.components.denotations;
 
-import com.gamelibrary2d.InputState;
+import com.gamelibrary2d.KeyAndPointerState;
 
 public interface KeyUpAware {
 
     /**
      * Handles key up events.
      *
-     * @param inputState The global input state.
+     * @param keyAndPointerState The global key and pointer state.
      * @param key The keyboard key that was released.
      */
-    void keyUp(InputState inputState, int key);
+    void keyUp(KeyAndPointerState keyAndPointerState, int key);
 
 }

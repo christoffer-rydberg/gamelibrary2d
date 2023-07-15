@@ -1,6 +1,6 @@
 package com.gamelibrary2d;
 
-public interface InputState {
+public interface KeyAndPointerState {
 
     boolean isKeyDown(int key);
 

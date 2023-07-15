@@ -2,7 +2,7 @@ package com.gamelibrary2d.demos.networkgame.client.objects.widgets;
 
 import com.gamelibrary2d.FocusManager;
 import com.gamelibrary2d.Point;
-import com.gamelibrary2d.InputState;
+import com.gamelibrary2d.KeyAndPointerState;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerDownWhenFocusedAware;
@@ -40,12 +40,12 @@ public class InputField
     }
 
     @Override
-    public void pointerDownWhenFocused(InputState inputState, int id, int button) {
+    public void pointerDownWhenFocused(KeyAndPointerState keyAndPointerState, int id, int button) {
         FocusManager.unfocus(this, false);
     }
 
     @Override
-    public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             FocusManager.focus(this, false);
@@ -61,7 +61,7 @@ public class InputField
     }
 
     @Override
-    public void keyDown(InputState inputState, int key, boolean repeat) {
+    public void keyDown(KeyAndPointerState keyAndPointerState, int key, boolean repeat) {
         if (key == Keyboard.instance().keyBackspace()) {
             removeLast();
         }

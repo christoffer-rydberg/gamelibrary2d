@@ -1,7 +1,7 @@
 package com.gamelibrary2d.demos.draganddrop;
 
 import com.gamelibrary2d.Color;
-import com.gamelibrary2d.InputState;
+import com.gamelibrary2d.KeyAndPointerState;
 import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.components.AbstractGameObject;
 import com.gamelibrary2d.components.denotations.PointerAware;
@@ -51,23 +51,23 @@ public class DemoGameObject extends AbstractGameObject implements PointerAware, 
     }
 
     @Override
-    public boolean pointerDown(InputState inputState, int id, int button, float x, float y) {
-        return dragAndDropBehavior.pointerDown(inputState, id, button, x, y);
+    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+        return dragAndDropBehavior.pointerDown(keyAndPointerState, id, button, x, y);
     }
 
     @Override
-    public boolean pointerMove(InputState inputState, int id, float x, float y) {
-        return dragAndDropBehavior.pointerMove(inputState, id, x, y);
+    public boolean pointerMove(KeyAndPointerState keyAndPointerState, int id, float x, float y) {
+        return dragAndDropBehavior.pointerMove(keyAndPointerState, id, x, y);
     }
 
     @Override
-    public void swallowedPointerMove(InputState inputState, int id) {
-        dragAndDropBehavior.swallowedPointerMove(inputState, id);
+    public void swallowedPointerMove(KeyAndPointerState keyAndPointerState, int id) {
+        dragAndDropBehavior.swallowedPointerMove(keyAndPointerState, id);
 
     }
 
     @Override
-    public void pointerUp(InputState inputState, int id, int button, float x, float y) {
-        dragAndDropBehavior.pointerUp(inputState, id, button, x, y);
+    public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+        dragAndDropBehavior.pointerUp(keyAndPointerState, id, button, x, y);
     }
 }

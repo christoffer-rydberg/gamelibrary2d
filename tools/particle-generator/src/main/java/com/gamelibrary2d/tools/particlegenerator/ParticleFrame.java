@@ -1,6 +1,6 @@
 package com.gamelibrary2d.tools.particlegenerator;
 
-import com.gamelibrary2d.InputState;
+import com.gamelibrary2d.KeyAndPointerState;
 import com.gamelibrary2d.input.Keyboard;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.Window;
@@ -89,8 +89,8 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected boolean onPointerDown(InputState inputState, int id, int button, float x, float y) {
-        if (!super.onPointerDown(inputState, id, button, x, y)) {
+    protected boolean onPointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+        if (!super.onPointerDown(keyAndPointerState, id, button, x, y)) {
             if (dragging == -1) {
                 dragging = id;
                 particleSystem.setPosition(x, y);
@@ -104,8 +104,8 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected boolean onPointerMove(InputState inputState, int id, float x, float y) {
-        if (!super.onPointerMove(inputState, id, x, y)) {
+    protected boolean onPointerMove(KeyAndPointerState keyAndPointerState, int id, float x, float y) {
+        if (!super.onPointerMove(keyAndPointerState, id, x, y)) {
             if (dragging != -1) {
                 particleSystem.setPosition(x, y);
                 return true;
@@ -118,15 +118,15 @@ public class ParticleFrame extends AbstractFrame implements KeyDownAware {
     }
 
     @Override
-    protected void onPointerUp(InputState inputState, int id, int button, float x, float y) {
+    protected void onPointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
         if (id == dragging) {
             dragging = -1;
         }
-        super.onPointerUp(inputState, id, button, x, y);
+        super.onPointerUp(keyAndPointerState, id, button, x, y);
     }
 
     @Override
-    public void keyDown(InputState inputState, int key, boolean repeat) {
+    public void keyDown(KeyAndPointerState keyAndPointerState, int key, boolean repeat) {
         if (!repeat && key == Keyboard.instance().keyEscape()) {
             if (!interfaceHidden) {
                 remove(screenLayer);
