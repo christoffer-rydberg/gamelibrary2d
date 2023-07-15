@@ -12,7 +12,7 @@ import java.util.Comparator;
  * Defines a layer of {@link Renderable} objects.
  */
 public interface Layer<T extends Renderable>
-        extends Container<T>, Renderable, Clearable, Updatable, Opacifiable, PointerDownAware, PointerMoveAware, PointerUpAware {
+        extends Container<T>, Renderable, Clearable, Updatable, Opacifiable, PointerDownAware, PointerMoveAware, PointerUpAware, Disableable {
 
     T get(int index);
 
@@ -27,10 +27,6 @@ public interface Layer<T extends Renderable>
     boolean remove(Object obj);
 
     void setAutoClearing(boolean autoClearing);
-
-    boolean isEnabled();
-
-    void setEnabled(boolean enabled);
 
     boolean isUpdatesEnabled();
 

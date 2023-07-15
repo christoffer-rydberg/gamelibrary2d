@@ -36,12 +36,6 @@ public class AnimatedGameObject extends AbstractGameObject implements Updatable 
 
     @Override
     public final void update(float deltaTime) {
-        if (isEnabled()) {
-            onUpdate(deltaTime);
-        }
-    }
-
-    protected void onUpdate(float deltaTime) {
         setAnimationTime(animationTime + deltaTime);
     }
 

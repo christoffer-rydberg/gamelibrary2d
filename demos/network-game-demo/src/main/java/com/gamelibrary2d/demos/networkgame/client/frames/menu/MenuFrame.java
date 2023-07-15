@@ -175,11 +175,11 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
 
     private void showCredits() {
         menuLayer.setEnabled(false);
-        credits.enable(this::hideCredits);
+        credits.show(this::hideCredits);
     }
 
     private void hideCredits() {
-        credits.disable();
+        credits.setEnabled(false);
         menuLayer.setEnabled(true);
     }
 

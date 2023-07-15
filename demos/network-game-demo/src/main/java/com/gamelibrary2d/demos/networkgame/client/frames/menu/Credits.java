@@ -1,6 +1,7 @@
 package com.gamelibrary2d.demos.networkgame.client.frames.menu;
 
 import com.gamelibrary2d.Color;
+import com.gamelibrary2d.components.denotations.Disableable;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.Window;
 import com.gamelibrary2d.components.DefaultGameObject;
@@ -17,11 +18,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-class Credits implements Renderable, Updatable {
+class Credits implements Renderable, Updatable, Disableable {
     private final Window window;
     private final SequentialUpdater updater = new SequentialUpdater();
     private final DefaultGameObject<Label> credits;
-
     private boolean enabled;
     private float speedFactor;
 
@@ -39,16 +39,18 @@ class Credits implements Renderable, Updatable {
         this.speedFactor = speedFactor;
     }
 
-    boolean isEnabled() {
+    @Override
+    public boolean isEnabled() {
         return enabled;
     }
 
-    void disable() {
-        enabled = false;
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
-    void enable(Action onFinished) {
-        enabled = true;
+    void show(Action onFinished) {
+        setEnabled(true);
         setSpeedFactor(1f);
 
         credits.setPosition(window.getWidth() / 2f, 0);
@@ -62,15 +64,11 @@ class Credits implements Renderable, Updatable {
 
     @Override
     public void update(float deltaTime) {
-        if (enabled) {
-            updater.update(deltaTime * speedFactor);
-        }
+        updater.update(deltaTime * speedFactor);
     }
 
     @Override
     public void render(float alpha) {
-        if (enabled) {
-            credits.render(alpha);
-        }
+        credits.render(alpha);
     }
 }

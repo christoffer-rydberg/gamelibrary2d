@@ -1,6 +1,7 @@
 package com.gamelibrary2d.components.containers;
 
 import com.gamelibrary2d.PointerState;
+import com.gamelibrary2d.components.denotations.Disableable;
 import com.gamelibrary2d.denotations.Renderable;
 import com.gamelibrary2d.components.denotations.PointerDownAware;
 import com.gamelibrary2d.components.denotations.PointerMoveAware;
@@ -64,7 +65,7 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
 
     @Override
     public void clear() {
-        List<Object> iterationList = prepareIteration(objects);
+        List<Object> iterationList = prepareIteration(objects, true);
         try {
             objects.clear();
             for (Object obj : iterationList) {
@@ -220,7 +221,10 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
 
         int size = objects.size();
         for (int i = 0; i < size; ++i) {
-            onRender(objects.get(i), alpha);
+            T obj = objects.get(i);
+            if (isEnabled(obj)) {
+                onRender(obj, alpha);
+            }
         }
     }
 
@@ -236,11 +240,11 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     }
 
     protected void handleUpdate(float deltaTime) {
-        List<Object> iterationList = prepareIteration(objects);
+        List<Object> iterationList = prepareIteration(objects, false);
         try {
             for (int i = 0; i < iterationList.size(); ++i) {
                 Object obj = iterationList.get(i);
-                if (obj instanceof Updatable) {
+                if (obj instanceof Updatable && isEnabled(obj)) {
                     onUpdate((Updatable) iterationList.get(i), deltaTime);
                 }
             }
@@ -283,10 +287,13 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
         this.opacity = opacity;
     }
 
-    private List<Object> prepareIteration(ArrayList<T> objects) {
+    private List<Object> prepareIteration(ArrayList<T> objects, boolean includeDisabled) {
         List<Object> iterationList = reusableIterationList.isEmpty() ? reusableIterationList : new ArrayList<>();
         for (int i = 0; i < objects.size(); ++i) {
-            iterationList.add(objects.get(i));
+            T obj = objects.get(i);
+            if (includeDisabled || isEnabled(obj)) {
+                iterationList.add(obj);
+            }
         }
 
         return iterationList;
@@ -295,9 +302,20 @@ public abstract class AbstractLayer<T extends Renderable> implements Layer<T> {
     private List<Object> prepareReverseIteration(ArrayList<T> objects) {
         List<Object> iterationList = reusableIterationList.isEmpty() ? reusableIterationList : new ArrayList<>();
         for (int i = objects.size() - 1; i >= 0; --i) {
-            iterationList.add(objects.get(i));
+            T obj = objects.get(i);
+            if (isEnabled(obj)) {
+                iterationList.add(obj);
+            }
         }
 
         return iterationList;
+    }
+
+    private boolean isEnabled(Object obj) {
+        if (obj instanceof Disableable) {
+            return ((Disableable) obj).isEnabled();
+        }
+
+        return true;
     }
 }

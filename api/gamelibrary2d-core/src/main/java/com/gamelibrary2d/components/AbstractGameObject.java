@@ -61,13 +61,11 @@ public abstract class AbstractGameObject implements GameObject {
     }
 
     @Override
-    public final void render(float alpha) {
-        if (isEnabled()) {
-            ModelMatrix.instance().pushMatrix();
-            ModelMatrix.instance().transform(this);
-            onRender(alpha * opacity);
-            ModelMatrix.instance().popMatrix();
-        }
+    public void render(float alpha) {
+        ModelMatrix.instance().pushMatrix();
+        ModelMatrix.instance().transform(this);
+        onRender(alpha * opacity);
+        ModelMatrix.instance().popMatrix();
     }
 
     public boolean isEnabled() {

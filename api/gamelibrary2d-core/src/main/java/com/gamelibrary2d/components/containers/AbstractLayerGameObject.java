@@ -75,6 +75,17 @@ public abstract class AbstractLayerGameObject<T extends Renderable> extends Abst
         return getLayer().getItems();
     }
 
+
+    @Override
+    public boolean isEnabled() {
+        return getLayer().isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        getLayer().setEnabled(enabled);
+    }
+
     @Override
     public final boolean pointerDown(PointerState pointerState, int id, int button, float x, float y) {
         return isEnabled() && onPointerDown(pointerState, id, button, x, y);
