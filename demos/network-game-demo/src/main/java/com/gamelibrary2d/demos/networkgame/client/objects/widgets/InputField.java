@@ -40,12 +40,12 @@ public class InputField
     }
 
     @Override
-    public void pointerDownWhenFocused(KeyAndPointerState keyAndPointerState, int id, int button) {
+    public void pointerDownWhenFocused(KeyAndPointerState state, int id, int button) {
         FocusManager.unfocus(this, false);
     }
 
     @Override
-    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             FocusManager.focus(this, false);
@@ -61,7 +61,7 @@ public class InputField
     }
 
     @Override
-    public void keyDown(KeyAndPointerState keyAndPointerState, int key, boolean repeat) {
+    public void keyDown(KeyAndPointerState state, int key, boolean repeat) {
         if (key == Keyboard.instance().keyBackspace()) {
             removeLast();
         }

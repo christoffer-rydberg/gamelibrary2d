@@ -44,7 +44,7 @@ public class QuadTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
         if (drawButton == button) {
             inProgress = new QuadInProgress(x, y);
             return true;
@@ -54,7 +54,7 @@ public class QuadTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public boolean pointerMove(KeyAndPointerState keyAndPointerState, int id, float x, float y) {
+    public boolean pointerMove(KeyAndPointerState state, int id, float x, float y) {
         if (isDrawing()) {
             inProgress.update(x, y);
             return true;
@@ -64,12 +64,12 @@ public class QuadTool implements Renderable, PointerDownAware, PointerMoveAware,
     }
 
     @Override
-    public void swallowedPointerMove(KeyAndPointerState keyAndPointerState, int id) {
+    public void swallowedPointerMove(KeyAndPointerState state, int id) {
 
     }
 
     @Override
-    public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public void pointerUp(KeyAndPointerState state, int id, int button, float x, float y) {
         if (drawButton == button) {
             Quad quad = quadFactory.invoke(inProgress.getBounds());
             onCreated.publish(quad);

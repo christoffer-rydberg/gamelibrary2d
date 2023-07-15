@@ -166,7 +166,7 @@ public class DemoFrame extends AbstractFrame {
         }
 
         @Override
-        public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+        public boolean pointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
             pointerPosition.set(x, y, this);
             if (getBounds().contains(pointerPosition)) {
                 pointerId = id;
@@ -178,7 +178,7 @@ public class DemoFrame extends AbstractFrame {
         }
 
         @Override
-        public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+        public void pointerUp(KeyAndPointerState state, int id, int button, float x, float y) {
             if (id == pointerId && button == pointerButton) {
                 pointerId = -1;
                 pointerButton = -1;

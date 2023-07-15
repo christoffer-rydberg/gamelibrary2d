@@ -51,23 +51,23 @@ public class DemoGameObject extends AbstractGameObject implements PointerAware, 
     }
 
     @Override
-    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
-        return dragAndDropBehavior.pointerDown(keyAndPointerState, id, button, x, y);
+    public boolean pointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
+        return dragAndDropBehavior.pointerDown(state, id, button, x, y);
     }
 
     @Override
-    public boolean pointerMove(KeyAndPointerState keyAndPointerState, int id, float x, float y) {
-        return dragAndDropBehavior.pointerMove(keyAndPointerState, id, x, y);
+    public boolean pointerMove(KeyAndPointerState state, int id, float x, float y) {
+        return dragAndDropBehavior.pointerMove(state, id, x, y);
     }
 
     @Override
-    public void swallowedPointerMove(KeyAndPointerState keyAndPointerState, int id) {
-        dragAndDropBehavior.swallowedPointerMove(keyAndPointerState, id);
+    public void swallowedPointerMove(KeyAndPointerState state, int id) {
+        dragAndDropBehavior.swallowedPointerMove(state, id);
 
     }
 
     @Override
-    public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
-        dragAndDropBehavior.pointerUp(keyAndPointerState, id, button, x, y);
+    public void pointerUp(KeyAndPointerState state, int id, int button, float x, float y) {
+        dragAndDropBehavior.pointerUp(state, id, button, x, y);
     }
 }

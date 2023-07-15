@@ -9,9 +9,9 @@ public interface PointerDownWhenFocusedAware {
      * Invoked by the {@link FocusManager} after a pointer down event,
      * even if the cursor is not over the object.
      *
-     * @param keyAndPointerState The global key and pointer state.
+     * @param state The global key and pointer state.
      * @param id           The id of the pointer.
      * @param button       The id of the pointer button.
      */
-    void pointerDownWhenFocused(KeyAndPointerState keyAndPointerState, int id, int button);
+    void pointerDownWhenFocused(KeyAndPointerState state, int id, int button);
 }

@@ -59,37 +59,37 @@ public class NavigationPanel extends AbstractGameObject
     }
 
     @Override
-    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
         if (current instanceof PointerDownAware) {
             pointerPosition.set(x, y, this);
-            return ((PointerDownAware) current).pointerDown(keyAndPointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
+            return ((PointerDownAware) current).pointerDown(state, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
 
         return false;
     }
 
     @Override
-    public boolean pointerMove(KeyAndPointerState keyAndPointerState, int id, float x, float y) {
+    public boolean pointerMove(KeyAndPointerState state, int id, float x, float y) {
         if (current instanceof PointerMoveAware) {
             pointerPosition.set(x, y, this);
-            return ((PointerMoveAware) current).pointerMove(keyAndPointerState, id, pointerPosition.getX(), pointerPosition.getY());
+            return ((PointerMoveAware) current).pointerMove(state, id, pointerPosition.getX(), pointerPosition.getY());
         }
 
         return false;
     }
 
     @Override
-    public void swallowedPointerMove(KeyAndPointerState keyAndPointerState, int id) {
+    public void swallowedPointerMove(KeyAndPointerState state, int id) {
         if (current instanceof PointerMoveAware) {
-            ((PointerMoveAware) current).swallowedPointerMove(keyAndPointerState, id);
+            ((PointerMoveAware) current).swallowedPointerMove(state, id);
         }
     }
 
     @Override
-    public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public void pointerUp(KeyAndPointerState state, int id, int button, float x, float y) {
         if (current instanceof PointerUpAware) {
             pointerPosition.set(x, y, this);
-            ((PointerUpAware) current).pointerUp(keyAndPointerState, id, button, pointerPosition.getX(), pointerPosition.getY());
+            ((PointerUpAware) current).pointerUp(state, id, button, pointerPosition.getX(), pointerPosition.getY());
         }
     }
 

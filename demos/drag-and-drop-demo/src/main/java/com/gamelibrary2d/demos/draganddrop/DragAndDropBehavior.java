@@ -28,7 +28,7 @@ public class DragAndDropBehavior implements PointerAware {
     }
 
     @Override
-    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
         if (hitDetection.isPixelVisible(obj, x, y)) {
             DragInteraction interaction = dragInteractions.get(id);
             if (interaction == null) {
@@ -43,14 +43,14 @@ public class DragAndDropBehavior implements PointerAware {
     }
 
     @Override
-    public boolean pointerMove(KeyAndPointerState keyAndPointerState, int id, float x, float y) {
+    public boolean pointerMove(KeyAndPointerState state, int id, float x, float y) {
         DragInteraction interaction = dragInteractions.get(id);
         if (interaction != null) {
             interaction.update(x, y);
             return true;
         }
 
-        if (!keyAndPointerState.isPointerDown(id) && hitDetection.isPixelVisible(obj, x, y)) {
+        if (!state.isPointerDown(id) && hitDetection.isPixelVisible(obj, x, y)) {
             hoveringPointers.add(id);
             return true;
         } else {
@@ -60,12 +60,12 @@ public class DragAndDropBehavior implements PointerAware {
     }
 
     @Override
-    public void swallowedPointerMove(KeyAndPointerState keyAndPointerState, int id) {
+    public void swallowedPointerMove(KeyAndPointerState state, int id) {
         hoveringPointers.remove(id);
     }
 
     @Override
-    public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public void pointerUp(KeyAndPointerState state, int id, int button, float x, float y) {
         DragInteraction interaction = dragInteractions.get(id);
         if (interaction != null && interaction.button == button) {
             dragInteractions.remove(id);

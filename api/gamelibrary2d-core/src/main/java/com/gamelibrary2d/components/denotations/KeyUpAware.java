@@ -7,9 +7,9 @@ public interface KeyUpAware {
     /**
      * Handles key up events.
      *
-     * @param keyAndPointerState The global key and pointer state.
+     * @param state The global key and pointer state.
      * @param key The keyboard key that was released.
      */
-    void keyUp(KeyAndPointerState keyAndPointerState, int key);
+    void keyUp(KeyAndPointerState state, int key);
 
 }

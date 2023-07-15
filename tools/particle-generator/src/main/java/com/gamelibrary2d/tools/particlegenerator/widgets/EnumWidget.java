@@ -56,7 +56,7 @@ public class EnumWidget<T extends Enum<T>> extends AbstractGameObject implements
     }
 
     @Override
-    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             currentIndex = (currentIndex + 1) % values.length;

@@ -64,7 +64,7 @@ public class ToggleButton extends AbstractGameObject implements PointerDownAware
     }
 
     @Override
-    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             pointerId = id;
@@ -76,7 +76,7 @@ public class ToggleButton extends AbstractGameObject implements PointerDownAware
     }
 
     @Override
-    public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public void pointerUp(KeyAndPointerState state, int id, int button, float x, float y) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;

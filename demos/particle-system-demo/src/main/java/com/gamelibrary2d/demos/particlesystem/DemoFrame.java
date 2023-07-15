@@ -96,7 +96,7 @@ public class DemoFrame extends AbstractFrame {
     }
 
     @Override
-    protected boolean onPointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    protected boolean onPointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
         explosionSystem.emit(x, y);
         createFire(x, y, 1f);
         return true;

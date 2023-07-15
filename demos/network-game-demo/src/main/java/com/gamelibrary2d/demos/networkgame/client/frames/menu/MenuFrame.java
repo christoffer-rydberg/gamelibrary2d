@@ -191,7 +191,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    public void keyDown(KeyAndPointerState keyAndPointerState, int key, boolean repeat) {
+    public void keyDown(KeyAndPointerState state, int key, boolean repeat) {
         if (key == Keyboard.instance().keyEscape()) {
             if (credits.isEnabled()) {
                 hideCredits();
@@ -206,7 +206,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    public void keyUp(KeyAndPointerState keyAndPointerState, int key) {
+    public void keyUp(KeyAndPointerState state, int key) {
         if (key == Keyboard.instance().keyEnter()) {
             if (credits.isEnabled()) {
                 credits.setSpeedFactor(1f);
@@ -215,7 +215,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
     }
 
     @Override
-    protected boolean onPointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    protected boolean onPointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
         if (credits.isEnabled()) {
             hideCredits();
             return true;
@@ -223,7 +223,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
             showMenu();
             return true;
         } else {
-            return super.onPointerDown(keyAndPointerState, id, button, x, y);
+            return super.onPointerDown(state, id, button, x, y);
         }
     }
 

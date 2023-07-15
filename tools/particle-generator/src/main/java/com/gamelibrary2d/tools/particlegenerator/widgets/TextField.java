@@ -29,12 +29,12 @@ public class TextField
     }
 
     @Override
-    public void pointerDownWhenFocused(KeyAndPointerState keyAndPointerState, int id, int button) {
+    public void pointerDownWhenFocused(KeyAndPointerState state, int id, int button) {
         FocusManager.unfocus(this, false);
     }
 
     @Override
-    public boolean pointerDown(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public boolean pointerDown(KeyAndPointerState state, int id, int button, float x, float y) {
         pointerPosition.set(x, y, this);
         if (getBounds().contains(pointerPosition)) {
             pointerId = id;
@@ -46,7 +46,7 @@ public class TextField
     }
 
     @Override
-    public void pointerUp(KeyAndPointerState keyAndPointerState, int id, int button, float x, float y) {
+    public void pointerUp(KeyAndPointerState state, int id, int button, float x, float y) {
         if (pointerId == id && pointerButton == button) {
             pointerId = -1;
             pointerButton = -1;
@@ -60,7 +60,7 @@ public class TextField
     }
 
     @Override
-    public void keyDown(KeyAndPointerState keyAndPointerState, int key, boolean repeat) {
+    public void keyDown(KeyAndPointerState state, int key, boolean repeat) {
         if (key == Keyboard.instance().keyBackspace()) {
             removeLast();
         }
