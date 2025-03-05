@@ -2,9 +2,8 @@ package com.gamelibrary2d.lightning;
 
 /**
  * Abstract implementation of a {@link GameTileLightMap}. An alpha map is
- * created from the light map, where light <= 0 -> alpha = 255f and light >= 255
- * -> alpha = 0. Light sources stronger than 255 will not show more light for
- * the specified cell, it will however spread more light to surrounding cells.
+ * created from the light map. Light sources stronger than 255 will not show more light for
+ * the specified tile, it will however spread more light to surrounding tiles.
  */
 public abstract class AbstractGameTileLightMap implements GameTileLightMap {
 
