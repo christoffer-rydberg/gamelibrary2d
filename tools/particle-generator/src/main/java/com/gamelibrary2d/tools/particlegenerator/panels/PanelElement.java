@@ -63,7 +63,6 @@ public class PanelElement {
         );
 
         label.setPosition(-10, 0);
-        label.setBounds(new Rectangle(10, 10, 10, 12));
         return label;
     }
 
@@ -108,23 +107,27 @@ public class PanelElement {
                 GameObject varianceWidget = createPropertyWidget(variance, BASE_LINE_COLOR);
                 varianceWidget.setPosition(120, 1f);
 
-                GameObject plusLabel = createLabelObject(
+                DefaultGameObject<Label> plusLabel = createLabelObject(
                         "+",
                         Fonts.getDefaultFont(),
                         Color.SAND,
                         HorizontalTextAlignment.CENTER,
                         VerticalTextAlignment.CENTER);
 
+                plusLabel.setBounds(Rectangle.EMPTY);
+
                 plusLabel.setPosition(
                         varianceWidget.getPosition().getX() + varianceWidget.getBounds().getLowerX() - 8,
                         varianceWidget.getPosition().getY() + 3);
 
-                GameObject minusLabel = createLabelObject(
+                DefaultGameObject<Label> minusLabel = createLabelObject(
                         "-",
                         Fonts.getDefaultFont(),
                         Color.SAND,
                         HorizontalTextAlignment.CENTER,
                         VerticalTextAlignment.CENTER);
+
+                minusLabel.setBounds(Rectangle.EMPTY);
 
                 minusLabel.setPosition(
                         varianceWidget.getPosition().getX() + varianceWidget.getBounds().getLowerX() - 8,
@@ -152,7 +155,7 @@ public class PanelElement {
             propertyWidget.setBackground(background);
             propertyWidget.addFocusChangedListener(focused ->
                     background.setColor(focused ? Color.GOLD : backgroundColor, backgroundAlpha));
-            propertyWidget.setBounds(Bounds.PROPERTY_BASE_LINE.pad(0, 0, 0, 15f));
+            propertyWidget.setBounds(Bounds.PROPERTY_BASE_LINE);
 
             return propertyWidget;
         }

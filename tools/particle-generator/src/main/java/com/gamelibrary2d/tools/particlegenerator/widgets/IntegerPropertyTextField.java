@@ -18,7 +18,6 @@ public class IntegerPropertyTextField extends Label {
         this.property = property;
         cachedValue = property.get();
         setColor(VALID);
-        addTextChangedListener(this::onTextChanged);
     }
 
     public static String toString(float value) {
@@ -35,9 +34,12 @@ public class IntegerPropertyTextField extends Label {
         }
     }
 
-    private void onTextChanged(String before, String after) {
+    @Override
+    public void setText(String text) {
+        super.setText(text);
+
         try {
-            property.set(Integer.parseInt(after));
+            property.set(Integer.parseInt(text));
             setColor(VALID);
         } catch (Exception e) {
             setColor(INVALID);

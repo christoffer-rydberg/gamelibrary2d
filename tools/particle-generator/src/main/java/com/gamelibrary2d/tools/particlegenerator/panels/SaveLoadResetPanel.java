@@ -54,7 +54,7 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
 
         Button button = new Button(label, onClick);
         button.setPosition(posX, posY);
-        button.setBounds(label.calculateBounds());
+        button.setBounds(label.getBounds());
         add(button);
     }
 

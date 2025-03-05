@@ -34,7 +34,7 @@ public abstract class AbstractPanel<T extends GameObject>
 
     @Override
     public void add(T obj) {
-        onAdd(obj, true);
+        onAdd(obj, autoResizing);
     }
 
     protected void onAdd(T obj, boolean increaseBounds) {

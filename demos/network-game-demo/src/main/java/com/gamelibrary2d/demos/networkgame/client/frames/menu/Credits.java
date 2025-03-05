@@ -54,7 +54,7 @@ class Credits implements Renderable, Updatable, Disableable {
         setSpeedFactor(1f);
 
         credits.setPosition(window.getWidth() / 2f, 0);
-        float height = credits.getRenderer().calculateBounds().getHeight();
+        float height = credits.getRenderer().getBounds().getHeight();
         float windowHeight = window.getHeight();
 
         updater.clear();

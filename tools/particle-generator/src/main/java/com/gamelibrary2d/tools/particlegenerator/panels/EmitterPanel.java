@@ -23,7 +23,7 @@ public class EmitterPanel extends AbstractPanel<GameObject> {
         emitButtonLabel.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.TOP);
 
         Button emitButton = new Button(emitButtonLabel, particleSystem::emit);
-        emitButton.setBounds(emitButtonLabel.calculateBounds());
+        emitButton.setBounds(emitButtonLabel.getBounds());
         emitButton.setPosition(0, 0);
 
         emitSequentialButton = new ToggleButton(font, "Emit Sequential");
@@ -31,7 +31,7 @@ public class EmitterPanel extends AbstractPanel<GameObject> {
         emitSequentialLabel.setColor(Color.SOFT_BLUE);
         emitSequentialLabel.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.TOP);
 
-        emitSequentialButton.setBounds(emitSequentialLabel.calculateBounds());
+        emitSequentialButton.setBounds(emitSequentialLabel.getBounds());
         emitSequentialButton.setPosition(0, -50);
 
         Label emitAllContext = new Label(font, "Emit All");
@@ -39,7 +39,7 @@ public class EmitterPanel extends AbstractPanel<GameObject> {
         emitAllContext.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.TOP);
 
         Button emitAllButton = new Button(emitAllContext, particleSystem::emitAll);
-        emitAllButton.setBounds(emitAllContext.calculateBounds());
+        emitAllButton.setBounds(emitAllContext.getBounds());
         emitAllButton.setPosition(0, -100);
 
         add(emitButton);

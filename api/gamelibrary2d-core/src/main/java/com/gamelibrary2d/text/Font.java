@@ -3,7 +3,6 @@ package com.gamelibrary2d.text;
 import com.gamelibrary2d.opengl.shaders.ShaderProgram;
 
 public interface Font {
-
     int getAscent();
 
     int getDescent();

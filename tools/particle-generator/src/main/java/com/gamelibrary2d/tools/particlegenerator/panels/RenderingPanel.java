@@ -155,7 +155,7 @@ public class RenderingPanel extends AbstractPanel<GameObject> {
             textureLabel.setText(fileName == null ? "None" : fileName);
         });
 
-        textureButton.setBounds(textureLabel.calculateBounds());
+        textureButton.setBounds(textureLabel.getBounds());
 
         PanelElement.CustomElement textureElement = new PanelElement.CustomElement("Texture", textureButton);
 

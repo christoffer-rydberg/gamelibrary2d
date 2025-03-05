@@ -187,7 +187,7 @@ public class MenuFrame extends AbstractFrame implements KeyDownAware, KeyUpAware
         Label label = new Label(Fonts.button(), "Credits");
         label.setColor(Colors.CREDITS_FONT);
         label.setAlignment(HorizontalTextAlignment.RIGHT, VerticalTextAlignment.BOTTOM);
-        return new Button(new ShadowedLabel(label, Colors.CREDITS_FONT_SHADOW), label.calculateBounds(), b -> showCredits());
+        return new Button(new ShadowedLabel(label, Colors.CREDITS_FONT_SHADOW), label.getBounds(), b -> showCredits());
     }
 
     @Override

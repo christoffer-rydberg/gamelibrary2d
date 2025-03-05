@@ -18,7 +18,6 @@ public class FloatPropertyTextField extends Label {
         this.property = property;
         cachedValue = property.get();
         setColor(VALID);
-        addTextChangedListener(this::onTextChanged);
     }
 
     public static String toString(float value) {
@@ -35,9 +34,12 @@ public class FloatPropertyTextField extends Label {
         }
     }
 
-    private void onTextChanged(String before, String after) {
+    @Override
+    public void setText(String text) {
+        super.setText(text);
+
         try {
-            property.set(Float.parseFloat(after));
+            property.set(Float.parseFloat(text));
             setColor(VALID);
         } catch (Exception e) {
             setColor(INVALID);

@@ -152,7 +152,7 @@ public class DemoFrame extends AbstractFrame {
             label.setColor(Color.WHITE);
 
             this.label = label;
-            this.bounds = label.calculateBounds();
+            this.bounds = label.getBounds();
         }
 
         @Override
