@@ -13,7 +13,7 @@ import com.gamelibrary2d.demos.networkgame.client.objects.network.decoration.Ren
 import com.gamelibrary2d.denotations.Bounded;
 import com.gamelibrary2d.denotations.Updatable;
 import com.gamelibrary2d.interpolation.InterpolatableAngle;
-import com.gamelibrary2d.interpolation.PositionInterpolator;
+import com.gamelibrary2d.interpolation.PointInterpolator;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.updates.AddScaleUpdate;
 import com.gamelibrary2d.updates.Update;
@@ -25,7 +25,7 @@ public abstract class AbstractClientObject
     private final byte primaryType;
     private final byte secondaryType;
     private final GameFrameClient client;
-    private final PositionInterpolator positionInterpolator = new PositionInterpolator(this);
+    private final PointInterpolator positionInterpolator = new PointInterpolator(getPosition());
     private final InterpolatableAngle direction = new InterpolatableAngle();
 
     private final Point particleHotspot = new Point();
@@ -132,7 +132,7 @@ public abstract class AbstractClientObject
 
     @Override
     public float getDirection() {
-        return direction.getAngle();
+        return direction.getValue();
     }
 
     @Override
@@ -142,7 +142,7 @@ public abstract class AbstractClientObject
 
     @Override
     public void setGoalDirection(float direction) {
-        this.direction.beginInterpolation(direction, 1f / client.getServerUpdatesPerSecond());
+        this.direction.setGoal(direction, 1f / client.getServerUpdatesPerSecond());
     }
 
     @Override

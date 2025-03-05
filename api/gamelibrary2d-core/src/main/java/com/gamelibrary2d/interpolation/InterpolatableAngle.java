@@ -4,54 +4,54 @@ import com.gamelibrary2d.FloatUtils;
 import com.gamelibrary2d.denotations.Updatable;
 
 public class InterpolatableAngle implements Updatable {
-    private float angle;
+    private float value;
     private float angle0;
     private float angle1;
     private float timer;
-    private float endTime = -1f;
+    private float duration = -1f;
 
     public InterpolatableAngle() {
 
     }
 
-    public InterpolatableAngle(float angle) {
-        this.angle = angle;
+    public InterpolatableAngle(float value) {
+        this.value = value;
     }
 
 
-    public float getAngle() {
-        return angle;
+    public float getValue() {
+        return value;
     }
 
-    public void setAngle(float angle) {
-        this.angle = angle;
+    public void setValue(float value) {
+        this.value = value;
         stopInterpolation();
     }
 
-    public void beginInterpolation(float goal, float duration) {
+    public void setGoal(float goal, float duration) {
         timer = 0;
-        endTime = duration;
-        angle0 = angle;
-        angle1 = angle + FloatUtils.normalizeDegrees(goal - angle);
+        this.duration = duration;
+        angle0 = value;
+        angle1 = value + FloatUtils.normalizeDegrees(goal - value);
     }
 
     public void stopInterpolation() {
-        endTime = -1;
+        duration = -1;
     }
 
     public void finishInterpolation() {
-        setAngle(angle1);
+        setValue(angle1);
     }
 
     @Override
     public void update(float deltaTime) {
-        if (endTime >= 0) {
+        if (duration >= 0) {
             timer += deltaTime;
-            if (timer >= endTime) {
+            if (timer >= duration) {
                 finishInterpolation();
             } else {
-                float alpha = timer / endTime;
-                angle = angle0 * (1f - alpha) + angle1 * alpha;
+                float alpha = timer / duration;
+                value = angle0 * (1f - alpha) + angle1 * alpha;
             }
         }
     }
