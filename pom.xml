@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>api</module>
         <module>api/gamelibrary2d-core</module>
         <module>api/gamelibrary2d-common</module>
         <module>api/gamelibrary2d-collision</module>
