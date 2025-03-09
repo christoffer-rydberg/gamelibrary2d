@@ -41,7 +41,7 @@ public class SplitLayer<T extends GameObject> extends AbstractPointerAwareCompos
 
     @Override
     public void update(float deltaTime) {
-        layout.update(getTarget(), renderArea, deltaTime);
+        layout.update(target, renderArea, deltaTime);
         if (target instanceof Updatable) {
             ((Updatable) target).update(deltaTime);
         }

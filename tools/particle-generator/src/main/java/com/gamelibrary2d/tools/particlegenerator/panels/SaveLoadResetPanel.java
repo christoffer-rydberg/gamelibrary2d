@@ -49,7 +49,7 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
 
     private void addButton(String text, float posX, float posY, Action onClick) {
         Label label = new Label(Fonts.getDefaultFont(), text);
-        label.setColor(Color.SOFT_BLUE);
+        label.setColor(Color.LIGHT_BLUE);
         label.setAlignment(HorizontalTextAlignment.LEFT, VerticalTextAlignment.BASE_LINE);
 
         Button button = new Button(label, onClick);

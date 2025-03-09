@@ -6,7 +6,7 @@ import com.gamelibrary2d.components.GameObject;
 import com.gamelibrary2d.disposal.DefaultDisposer;
 import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.opengl.ModelMatrix;
-import com.gamelibrary2d.opengl.renderers.RenderCache;
+import com.gamelibrary2d.opengl.renderers.Canvas;
 
 public class SplitLayoutLeaf<T> implements SplitLayout {
     private final InternalTargetSettings internalTargetSettings;
@@ -15,7 +15,7 @@ public class SplitLayoutLeaf<T> implements SplitLayout {
     private final PrepareRenderAction<T> prepareRender;
 
     private Disposer disposer;
-    private RenderCache<Renderable> renderer;
+    private Canvas<Renderable> canvas;
     private GameObject target;
 
     /**
@@ -75,9 +75,9 @@ public class SplitLayoutLeaf<T> implements SplitLayout {
     @Override
     public void update(GameObject target, Rectangle viewArea, float deltaTime) {
         this.target = target;
-        if (renderer == null || !renderer.getBounds().equals(viewArea)) {
+        if (canvas == null || !canvas.getBounds().equals(viewArea)) {
             disposer.dispose();
-            renderer = RenderCache.create(this::renderAction, viewArea, disposer);
+            canvas = Canvas.create(this::renderAction, viewArea, true, disposer);
         }
 
         updateTargetFromSettings();
@@ -90,15 +90,15 @@ public class SplitLayoutLeaf<T> implements SplitLayout {
     public void render(float alpha) {
         updateTargetFromSettings();
         if (prepareRender != null) {
-            prepareRender.invoke(param, renderer.getBounds());
+            prepareRender.invoke(param, canvas.getBounds());
         }
-        renderer.render(alpha);
+        canvas.render(alpha);
         updateSettingsFromTarget();
     }
 
     private void renderAction(float alpha) {
         ModelMatrix.instance().pushMatrix();
-        Rectangle renderArea = renderer.getBounds();
+        Rectangle renderArea = canvas.getBounds();
         ModelMatrix.instance().translatef(renderArea.getLowerX(), renderArea.getLowerY(), 0);
         target.render(alpha);
         ModelMatrix.instance().popMatrix();

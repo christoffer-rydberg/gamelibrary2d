@@ -30,7 +30,7 @@ class Credits implements Renderable, Updatable, Disableable {
         try (InputStream stream = resourceManager.open("credits.txt")) {
             String text = Read.text(stream, StandardCharsets.UTF_8);
             Label label = new Label(Fonts.button(), text);
-            label.setColor(Color.SOFT_BLUE);
+            label.setColor(Color.LIGHT_BLUE);
             credits = new DefaultGameObject<>(label);
         }
     }

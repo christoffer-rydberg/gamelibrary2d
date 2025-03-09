@@ -27,7 +27,7 @@ public class DemoFrame extends AbstractFrame {
 
         Rectangle windowBounds = new Rectangle(0, 0, window.getWidth(), window.getHeight());
 
-        RenderCache<Layer<Renderable>> objLayer = RenderCache.create(new DefaultLayer<>(), windowBounds, this);
+        Canvas<Layer<Renderable>> canvas = Canvas.create(new DefaultLayer<>(), windowBounds, false,this);
 
         GeometryTool lineTool = new GeometryTool(
                 Mouse.instance().mouseButton1(),
@@ -36,8 +36,8 @@ public class DemoFrame extends AbstractFrame {
 
         lineTool.addGeometryCreatedListener(line -> {
             randomizeColor(line.getArrayRenderer());
-            objLayer.getRenderer().add(line);
-            objLayer.flushCache();
+            canvas.getContent().add(line);
+            canvas.refresh();
         });
 
         QuadTool quadTool = new QuadTool(
@@ -48,11 +48,11 @@ public class DemoFrame extends AbstractFrame {
         quadTool.addQuadCreatedListener(quad -> {
             ContentRenderer renderer = new SurfaceRenderer<>(quad);
             randomizeColor(renderer);
-            objLayer.getRenderer().add(renderer);
-            objLayer.flushCache();
+            canvas.getContent().add(renderer);
+            canvas.refresh();
         });
 
-        add(objLayer);
+        add(canvas);
         add(lineTool);
         add(quadTool);
     }

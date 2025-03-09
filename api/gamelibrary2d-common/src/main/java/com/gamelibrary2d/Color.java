@@ -2,27 +2,55 @@ package com.gamelibrary2d;
 
 public class Color {
 
-    public static final Color EMPTY = new Color(0, 0, 0, 0);
-    public static final Color BLACK = new Color(0, 0, 0);
-    public static final Color WHITE = new Color(1, 1, 1);
-    public static final Color RED = new Color(1, 0, 0);
-    public static final Color LIGHT_CORAL = new Color(240f / 255f, 128f / 255f, 128f / 255f);
-    public static final Color LIGHT_GREEN = new Color(144f / 255f, 238f / 255f, 144f / 255f);
-    public static final Color GREEN = new Color(0, 1, 0);
-    public static final Color BLUE = new Color(0, 0, 1);
-    public static final Color SKY_BLUE = new Color(135 / 255f, 206 / 255f, 235 / 255f);
-    public static final Color LIGHT_BLUE = new Color(173f / 255f, 216f / 255f, 230f / 255f);
-    public static final Color SOFT_BLUE = new Color(171f / 255f, 215f / 255f, 235f / 255f);
-    public static final Color SILVER = new Color(192f / 255f, 192f / 255f, 192f / 255f);
-    public static final Color SAND = new Color(194f / 255f, 178f / 255f, 128f / 255f);
-    public static final Color GOLD = new Color(255f / 255f, 215f / 255f, 0f);
-    public static final Color PINK = new Color(255f / 255f, 192 / 255f, 203 / 255f);
-    public static final Color YELLOW = new Color(255f / 255f, 255f / 255f, 0);
-    public static final Color LIGHT_YELLOW = new Color(255f / 255f, 255f / 255f, 204f / 255f);
-    public static final Color ORANGE = new Color(255f / 255f, 165f / 255f, 0);
-    public static final Color BROWN = new Color(139f / 255f, 69f / 255f, 19f / 255f);
     public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
-    public static final Color LAVENDER = new Color(230f / 255f, 230f / 255f, 250f / 255f);
+
+    public static final Color BLACK = fromBytes(0, 0, 0);
+    public static final Color WHITE = fromBytes(255, 255, 255);
+    public static final Color RED = fromBytes(255, 0, 0);
+    public static final Color LIGHT_RED = fromBytes(255, 102, 102);
+    public static final Color DARK_RED = fromBytes(139, 0, 0);
+    public static final Color GREEN = fromBytes(0, 255, 0);
+    public static final Color LIGHT_GREEN = fromBytes(144, 238, 144);
+    public static final Color DARK_GREEN = fromBytes(0, 100, 0);
+    public static final Color BLUE = fromBytes(0, 0, 255);
+    public static final Color LIGHT_BLUE = fromBytes(173, 216, 230);
+    public static final Color DARK_BLUE = fromBytes(0, 0, 139);
+    public static final Color YELLOW = fromBytes(255, 255, 0);
+    public static final Color LIGHT_YELLOW = fromBytes(255, 255, 153);
+    public static final Color DARK_YELLOW = fromBytes(204, 204, 0);
+    public static final Color CYAN = fromBytes(0, 255, 255);
+    public static final Color LIGHT_CYAN = fromBytes(224, 255, 255);
+    public static final Color DARK_CYAN = fromBytes(0, 139, 139);
+    public static final Color MAGENTA = fromBytes(255, 0, 255);
+    public static final Color LIGHT_MAGENTA = fromBytes(255, 153, 255);
+    public static final Color DARK_MAGENTA = fromBytes(139, 0, 139);
+    public static final Color ORANGE = fromBytes(255, 165, 0);
+    public static final Color LIGHT_ORANGE = fromBytes(255, 200, 102);
+    public static final Color DARK_ORANGE = fromBytes(204, 102, 0);
+    public static final Color PURPLE = fromBytes(128, 0, 128);
+    public static final Color LIGHT_PURPLE = fromBytes(216, 191, 216);
+    public static final Color DARK_PURPLE = fromBytes(75, 0, 130);
+    public static final Color PINK = fromBytes(255, 192, 203);
+    public static final Color LIGHT_PINK = fromBytes(255, 222, 233);
+    public static final Color DARK_PINK = fromBytes(231, 84, 128);
+    public static final Color BROWN = fromBytes(165, 42, 42);
+    public static final Color LIGHT_BROWN = fromBytes(205, 133, 63);
+    public static final Color DARK_BROWN = fromBytes(101, 67, 33);
+    public static final Color GRAY = fromBytes(128, 128, 128);
+    public static final Color LIGHT_GRAY = fromBytes(211, 211, 211);
+    public static final Color DARK_GRAY = fromBytes(64, 64, 64);
+
+    public static final Color GOLD = fromBytes(255, 215, 0);
+    public static final Color SILVER = fromBytes(192, 192, 192);
+    public static final Color CRIMSON = fromBytes(220, 20, 60);
+    public static final Color EMERALD = fromBytes(80, 200, 120);
+    public static final Color TEAL = fromBytes(0, 128, 128);
+    public static final Color VIOLET = fromBytes(138, 43, 226);
+    public static final Color NAVY = fromBytes(0, 0, 128);
+    public static final Color INDIGO = fromBytes(75, 0, 130);
+    public static final Color AMBER = fromBytes(255, 191, 0);
+    public static final Color LAVENDER = fromBytes(230, 230, 250);
+    public static final Color SAND = fromBytes(194, 178, 128);
 
     private final float r;
     private final float g;
@@ -44,19 +72,11 @@ public class Color {
         this.a = a;
     }
 
-    /**
-     * A {@link Color} is represented by float values, where 0 is the least intense and 1 is the most intense (range is not enforced as more intense values could make sense in certain shaders).
-     * This factory function helps create a {@link Color} by specifying the corresponding int values in the range 0 to 255.
-     */
-    public static Color create256(int r, int g, int b) {
-        return Color.create256(r, g, b, 0);
+    public static Color fromBytes(int r, int g, int b) {
+        return Color.fromBytes(r, g, b, 0);
     }
 
-    /**
-     * A {@link Color} is represented by float values, where 0 is the least intense and 1 is the most intense (range is not enforced as more intense values could make sense in certain shaders).
-     * This factory function helps create a {@link Color} by specifying the corresponding int values in the range 0 to 255.
-     */
-    public static Color create256(int r, int g, int b, int a) {
+    public static Color fromBytes(int r, int g, int b, int a) {
         return new Color(r/255f, g/255f, b/255f, a/255f);
     }
 
@@ -92,24 +112,10 @@ public class Color {
     }
 
     /**
-     * @return The approximate R-channel value, typically ranging between 0 and 255 (it's not restricted as more intense values could make sense in certain shaders).
-     */
-    public int getR256() {
-        return Math.round(r * 255f);
-    }
-
-    /**
      * @return The G-channel value, typically ranging between 0 and 1 (it's not restricted as more intense values could make sense in certain shaders).
      */
     public float getG() {
         return g;
-    }
-
-    /**
-     * @return The approximate G-channel value, typically ranging between 0 and 255 (it's not restricted as more intense values could make sense in certain shaders).
-     */
-    public int getG256() {
-        return Math.round(g * 255f);
     }
 
     /**
@@ -120,23 +126,9 @@ public class Color {
     }
 
     /**
-     * @return The approximate B-channel value, typically ranging between 0 and 255 (it's not restricted as more intense values could make sense in certain shaders).
-     */
-    public int getB256() {
-        return Math.round(b * 255f);
-    }
-
-    /**
      * @return The A-channel value, typically ranging between 0 and 1 (it's not restricted as more intense values could make sense in certain shaders).
      */
     public float getA() {
         return a;
-    }
-
-    /**
-     * @return The approximate A-channel value, typically ranging between 0 and 255 (it's not restricted as more intense values could make sense in certain shaders).
-     */
-    public int getA256() {
-        return Math.round(a * 255f);
     }
 }

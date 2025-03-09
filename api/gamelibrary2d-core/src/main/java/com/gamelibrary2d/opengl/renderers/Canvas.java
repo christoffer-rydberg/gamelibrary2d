@@ -10,17 +10,18 @@ import com.gamelibrary2d.opengl.resources.PixelParser;
 import com.gamelibrary2d.opengl.resources.TextureFrameBuffer;
 import com.gamelibrary2d.opengl.resources.Quad;
 
-public class RenderCache<T extends Renderable> implements Renderable, Bounded {
-    private final T renderer;
+public class Canvas<T extends Renderable> implements Renderable, Bounded {
+    private final T content;
     private final Rectangle bounds;
-    private final SurfaceRenderer<Quad> cacheRenderer;
+    private final SurfaceRenderer<Quad> canvasRenderer;
     private final FrameBufferRenderer frameBufferRenderer;
-    private boolean caching;
-    private boolean cached;
+    private boolean refreshOnRender;
+    private boolean refreshRequested = true;
 
-    private RenderCache(T renderer, Rectangle bounds, Disposer disposer) {
-        this.renderer = renderer;
+    private Canvas(T content, Rectangle bounds, boolean refreshOnRender, Disposer disposer) {
+        this.content = content;
         this.bounds = bounds;
+        this.refreshOnRender = refreshOnRender;
 
         TextureFrameBuffer frameBuffer = TextureFrameBuffer.create(
                 (int) Math.ceil(bounds.getWidth()),
@@ -29,13 +30,13 @@ public class RenderCache<T extends Renderable> implements Renderable, Bounded {
 
         this.frameBufferRenderer = new FrameBufferRenderer(frameBuffer);
 
-        this.cacheRenderer = new SurfaceRenderer<>(
+        this.canvasRenderer = new SurfaceRenderer<>(
                 Quad.create(bounds, disposer),
                 frameBuffer.getTexture());
     }
 
-    public static <T extends Renderable> RenderCache<T> create(T renderer, Rectangle bounds, Disposer disposer) {
-        return new RenderCache<>(renderer, bounds, disposer);
+    public static <T extends Renderable> Canvas<T> create(T renderer, Rectangle bounds, boolean refreshOnRender, Disposer disposer) {
+        return new Canvas<>(renderer, bounds, refreshOnRender, disposer);
     }
 
     @Override
@@ -43,26 +44,26 @@ public class RenderCache<T extends Renderable> implements Renderable, Bounded {
         return bounds;
     }
 
-    public void flushCache() {
-        cached = false;
+    public boolean isRefreshingOnRender() {
+        return refreshOnRender;
     }
 
-    public boolean isCaching() {
-        return caching;
+    public void setRefreshOnRender(boolean refreshOnRender) {
+        this.refreshOnRender = refreshOnRender;
     }
 
-    public void setCaching(boolean caching) {
-        this.caching = caching;
+    public void refresh() {
+        refreshRequested = true;
     }
 
     @Override
     public void render(float alpha) {
-        if (!cached) {
-            frameBufferRenderer.render(renderer, true, -bounds.getLowerX(), -bounds.getLowerY(), 1f);
-            cached = caching;
+        if (refreshOnRender || refreshRequested) {
+            refreshRequested = false;
+            frameBufferRenderer.render(content, true, -bounds.getLowerX(), -bounds.getLowerY(), 1f);
         }
 
-        cacheRenderer.render(alpha);
+        canvasRenderer.render(alpha);
     }
 
     public boolean isPixelVisible(float x, float y, int alphaThreshold) {
@@ -81,7 +82,7 @@ public class RenderCache<T extends Renderable> implements Renderable, Bounded {
         }
     }
 
-    public T getRenderer() {
-        return renderer;
+    public T getContent() {
+        return content;
     }
 }

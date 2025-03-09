@@ -39,7 +39,7 @@ public class RenderingPanel extends AbstractPanel<GameObject> {
         fileChooser = new FileChooser(TEMP_PATH);
 
         textureLabel = new Label(Fonts.getDefaultFont(), "None");
-        textureLabel.setColor(Color.SOFT_BLUE);
+        textureLabel.setColor(Color.LIGHT_BLUE);
         textureLabel.setAlignment(HorizontalTextAlignment.LEFT, VerticalTextAlignment.BASE_LINE);
 
         this.particleSystem = particleSystem;

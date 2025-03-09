@@ -26,9 +26,9 @@ import com.gamelibrary2d.tools.particlegenerator.resources.Textures;
 import com.gamelibrary2d.tools.particlegenerator.widgets.*;
 
 public class PanelElement {
-    private static final Color BASE_LINE_COLOR = Color.SOFT_BLUE;
+    private static final Color BASE_LINE_COLOR = Color.LIGHT_BLUE;
     private static final Color ENUM_BASE_LINE_COLOR = Color.LAVENDER;
-    private static final Color ENUM_FONT_COLOR = Color.SOFT_BLUE;
+    private static final Color ENUM_FONT_COLOR = Color.LIGHT_BLUE;
 
     private static Label createLabel(
             String text,
