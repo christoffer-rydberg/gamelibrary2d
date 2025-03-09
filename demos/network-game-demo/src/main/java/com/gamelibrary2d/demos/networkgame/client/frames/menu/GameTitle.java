@@ -13,7 +13,7 @@ import com.gamelibrary2d.demos.networkgame.client.urls.Images;
 import com.gamelibrary2d.demos.networkgame.client.urls.Particles;
 import com.gamelibrary2d.denotations.Updatable;
 import com.gamelibrary2d.disposal.Disposer;
-import com.gamelibrary2d.io.ResourceReader;
+import com.gamelibrary2d.io.Serializer;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
 import com.gamelibrary2d.opengl.resources.DefaultTexture;
@@ -65,7 +65,7 @@ public class GameTitle extends AbstractGameObject implements Updatable {
 
         ParticleSystemParameters params = resourceManager.load(
                 Particles.PORTAL,
-                s -> new ResourceReader().read(s, ParticleSystemParameters::new));
+                s -> new Serializer().deserialize(s, ParticleSystemParameters::new));
 
         DefaultParticleSystem portalSystem = DefaultParticleSystem.create(params, ParticleRendererFactory.create(disposer), disposer);
         portalSystem.getParameters().getSpawnParameters().scale(0.0005f * window.getWidth());

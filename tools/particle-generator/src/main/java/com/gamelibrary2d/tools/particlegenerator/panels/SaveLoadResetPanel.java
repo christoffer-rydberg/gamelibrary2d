@@ -7,8 +7,7 @@ import com.gamelibrary2d.components.containers.AbstractPanel;
 import com.gamelibrary2d.functional.Action;
 import com.gamelibrary2d.io.DataBuffer;
 import com.gamelibrary2d.io.DynamicByteBuffer;
-import com.gamelibrary2d.io.ResourceReader;
-import com.gamelibrary2d.io.ResourceWriter;
+import com.gamelibrary2d.io.Serializer;
 import com.gamelibrary2d.particles.ParticleEmissionParameters;
 import com.gamelibrary2d.particles.ParticleSpawnParameters;
 import com.gamelibrary2d.particles.ParticleSystemParameters;
@@ -27,11 +26,8 @@ import java.io.IOException;
 
 public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
     private final ParticleSystemModel particleSystem;
-
     private final DataBuffer ioBuffer = new DynamicByteBuffer();
-    private final ResourceReader resourceReader = new ResourceReader(ioBuffer);
-    private final ResourceWriter resourceWriter = new ResourceWriter(ioBuffer);
-
+    private final Serializer serializer = new Serializer(ioBuffer);
     private final Game game;
     private final FileChooser fileChooser;
 
@@ -62,7 +58,7 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
         try {
             File file = fileChooser.browse(FileSelectionMode.FILES_ONLY);
             if (file != null) {
-                resourceWriter.write(particleSystem.getSettings(), file, true);
+                serializer.serialize(particleSystem.getSettings(), file, true);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,7 +71,7 @@ public class SaveLoadResetPanel extends AbstractPanel<GameObject> {
             File file = fileChooser.browse(FileSelectionMode.FILES_ONLY);
 
             if (file != null) {
-                settings = resourceReader.read(file, ParticleSystemParameters::new);
+                settings = serializer.deserialize(file, ParticleSystemParameters::new);
             } else {
                 settings = new ParticleSystemParameters(
                         new ParticleEmissionParameters(),

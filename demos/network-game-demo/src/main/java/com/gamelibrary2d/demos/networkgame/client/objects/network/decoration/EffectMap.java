@@ -11,7 +11,7 @@ import com.gamelibrary2d.demos.networkgame.client.urls.Particles;
 import com.gamelibrary2d.demos.networkgame.common.ObjectTypes;
 import com.gamelibrary2d.disposal.Disposer;
 import com.gamelibrary2d.functional.Factory;
-import com.gamelibrary2d.io.ResourceReader;
+import com.gamelibrary2d.io.Serializer;
 import com.gamelibrary2d.opengl.renderers.BlendMode;
 import com.gamelibrary2d.particles.DefaultParticleSystem;
 import com.gamelibrary2d.particles.ParticleRenderer;
@@ -28,7 +28,7 @@ public class EffectMap {
     private final ResourceManager resourceManager;
     private final SoundMap sounds;
     private final SoundPlayer soundPlayer;
-    private final ResourceReader resourceReader = new ResourceReader();
+    private final Serializer deserializer = new Serializer();
     private final List<ParticleSystemItem> particleSystems = new ArrayList<>();
     private final Map<Byte, Map<Byte, InstantEffect>> destroyedEffects = new HashMap<>();
     private final Map<Byte, Map<Byte, Factory<DurationEffect>>> updateEffects = new HashMap<>();
@@ -75,7 +75,7 @@ public class EffectMap {
     }
 
     private ParticleSystemParameters loadParameters(String resource) throws IOException {
-        return resourceManager.load(resource, s -> resourceReader.read(s, ParticleSystemParameters::new));
+        return resourceManager.load(resource, s -> deserializer.deserialize(s, ParticleSystemParameters::new));
     }
 
     private void initializePlayerEffects(Disposer disposer) throws IOException {

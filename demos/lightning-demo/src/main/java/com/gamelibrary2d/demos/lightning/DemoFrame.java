@@ -7,7 +7,7 @@ import com.gamelibrary2d.Window;
 import com.gamelibrary2d.components.containers.DefaultLayer;
 import com.gamelibrary2d.components.containers.Layer;
 import com.gamelibrary2d.components.frames.AbstractFrame;
-import com.gamelibrary2d.io.ResourceReader;
+import com.gamelibrary2d.io.Serializer;
 import com.gamelibrary2d.lightning.*;
 import com.gamelibrary2d.opengl.renderers.ContentRenderer;
 import com.gamelibrary2d.opengl.renderers.SurfaceRenderer;
@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.URL;
 
 class DemoFrame extends AbstractFrame {
-
     private final Game game;
 
     DemoFrame(Game game) {
@@ -60,7 +59,7 @@ class DemoFrame extends AbstractFrame {
     }
 
     private DefaultParticleSystem createParticleSystem() throws IOException {
-        ParticleSystemParameters params = new ResourceReader().read(getUrl("fire.particle"), ParticleSystemParameters::new);
+        ParticleSystemParameters params = new Serializer().deserialize(getUrl("fire.particle"), ParticleSystemParameters::new);
         return DefaultParticleSystem.create(params, this);
     }
 
