@@ -73,7 +73,7 @@ public class Color {
     }
 
     public static Color fromBytes(int r, int g, int b) {
-        return Color.fromBytes(r, g, b, 0);
+        return new Color(r/255f, g/255f, b/255f, 1f);
     }
 
     public static Color fromBytes(int r, int g, int b, int a) {
