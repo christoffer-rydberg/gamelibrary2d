@@ -9,19 +9,21 @@ out vec4 fragColor;
 uniform sampler2D texImage;
 
 float getAlpha(float u0, float v0) {
-	
-	float colWidth = 1.0 / alphaMapCols;
-	float rowHeight = 1.0 / alphaMapRows;
+    float cols = float(alphaMapCols);
+    float rows = float(alphaMapRows);
 
-	float u1 = u0 * alphaMapCols - int(u0 * alphaMapCols);
-	float v1 = v0 * alphaMapRows - int(v0 * alphaMapRows);
+	float colWidth = 1.0 / cols;
+	float rowHeight = 1.0 / rows;
+
+	float u1 = u0 * cols - float(int(u0 * cols));
+	float v1 = v0 * rows - float(int(v0 * rows));
 
 	// Interpolate alpha between the four corners of current cell 
-	float alphaUL = texture(texImage, vec2(u0, v0))[0] * (1-u1) * (1-v1);
-	float alphaUR = texture(texImage, vec2(u0+colWidth, v0))[0] * u1 * (1-v1);
+	float alphaUL = texture(texImage, vec2(u0, v0))[0] * (1.0-u1) * (1.0-v1);
+	float alphaUR = texture(texImage, vec2(u0+colWidth, v0))[0] * u1 * (1.0-v1);
 	float alphaLR = texture(texImage, vec2(u0+colWidth, v0+rowHeight))[0] * u1 * v1;
-	float alphaLL = texture(texImage, vec2(u0, v0+rowHeight))[0] * (1-u1) * v1;
-	return 1 - (alphaUL + alphaUR + alphaLR + alphaLL);
+	float alphaLL = texture(texImage, vec2(u0, v0+rowHeight))[0] * (1.0-u1) * v1;
+	return 1.0 - (alphaUL + alphaUR + alphaLR + alphaLL);
 }
 
 void main() {
