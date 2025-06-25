@@ -32,8 +32,9 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
 
     private static boolean requiresBackgroundBuffering(Animation animation) {
         for (AnimationFrame frame : animation.getFrames()) {
-            if (frame.getRenderToBackgroundHint())
+            if (frame.getBufferHint() != AnimationFrameBufferHint.CLEAR_BUFFER) {
                 return true;
+            }
         }
         return false;
     }
@@ -197,16 +198,11 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
 
             int frameIndex = getFrameIndex(animation, looping);
 
-            AnimationFrame activeFrame = animation.getFrame(frameIndex);
             if (backgroundBuffer != null) {
                 backgroundBuffer.render(shaderProgram, frameIndex);
-
-                if (!activeFrame.getRenderToBackgroundHint()) {
-                    render(shaderProgram, activeFrame);
-                }
-            } else {
-                render(shaderProgram, activeFrame);
             }
+
+            render(shaderProgram, animation.getFrame(frameIndex));
         }
     }
 
@@ -309,30 +305,36 @@ public class AnimationRenderer extends AbstractContentRenderer implements Bounde
         }
 
         private void renderToFrameBuffer(ShaderProgram shaderProgram, int currentFrame) {
+            if (previousFrame == currentFrame) {
+                return;
+            }
+
             int previousFbo = frameBuffer.bind();
             try {
-                if (currentFrame < previousFrame) {
+                if (previousFrame > currentFrame) {
                     frameBuffer.clear();
                     previousFrame = 0;
                 }
 
-                for (int i = previousFrame; i <= currentFrame; ++i) {
-                    AnimationFrame frame = animation.getFrame(i);
+                for(;previousFrame < currentFrame; ++previousFrame) {
+                    AnimationFrame frame = animation.getFrame(previousFrame);
 
-                    if (frame.getRestoreBackgroundHint()) {
-                        frameBuffer.clear();
-                    }
+                    switch (frame.getBufferHint()) {
+                        case IGNORE:
+                            break;
+                        case WRITE_TO_BUFFER:
+                            if (shaderProgram.setParameter(ShaderParameter.ALPHA, 1f)) {
+                                shaderProgram.applyParameters();
+                            }
 
-                    if (frame.getRenderToBackgroundHint()) {
-                        if (shaderProgram.setParameter(ShaderParameter.ALPHA, 1f)) {
-                            shaderProgram.applyParameters();
-                        }
-
-                        frame.getTexture().bind();
-                        frameRenderers[i].render(shaderProgram);
+                            frame.getTexture().bind();
+                            frameRenderers[previousFrame].render(shaderProgram);
+                            break;
+                        case CLEAR_BUFFER:
+                            frameBuffer.clear();
+                            break;
                     }
                 }
-                previousFrame = currentFrame;
             } finally {
                 OpenGLState.bindFrameBuffer(previousFbo);
             }

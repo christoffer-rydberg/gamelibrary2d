@@ -9,8 +9,7 @@ public class AnimationFrameMetadata implements Bounded {
     private final Rectangle bounds;
     private final Rectangle imageCoordinates;
     private final float durationHint;
-    private final boolean restoreBackgroundHint;
-    private final boolean renderToBackgroundHint;
+    private final AnimationFrameBufferHint bufferHint;
 
     /**
      * Creates a new instance of {@link AnimationFrameMetadata}.
@@ -20,8 +19,7 @@ public class AnimationFrameMetadata implements Bounded {
      * @param offsetX            The offset along the X axis.
      * @param offsetY            The offset along the Y axis.
      * @param duration           Sets the {@link AnimationFrameMetadata#getDurationHint} field.
-     * @param restoreBackground  Sets the {@link AnimationFrameMetadata#restoreBackgroundHint} field.
-     * @param renderToBackground Sets the {@link AnimationFrameMetadata#getRenderToBackgroundHint} field.
+     * @param bufferHint         Sets the {@link AnimationFrameMetadata#bufferHint} field.
      */
     public AnimationFrameMetadata(
             Image img,
@@ -29,13 +27,11 @@ public class AnimationFrameMetadata implements Bounded {
             float offsetX,
             float offsetY,
             float duration,
-            boolean restoreBackground,
-            boolean renderToBackground) {
+            AnimationFrameBufferHint bufferHint) {
         this.img = img;
         this.imageCoordinates = imageCoordinates;
         this.durationHint = duration;
-        this.restoreBackgroundHint = restoreBackground;
-        this.renderToBackgroundHint = renderToBackground;
+        this.bufferHint = bufferHint;
         this.bounds = new Rectangle(
                 offsetX,
                 offsetY,
@@ -52,17 +48,10 @@ public class AnimationFrameMetadata implements Bounded {
     }
 
     /**
-     * Indicates if the animation background should be restored before rendering this frame.
+     * Indicates what to do with the rendering buffer after rendering this frame.
      */
-    public boolean getRestoreBackgroundHint() {
-        return restoreBackgroundHint;
-    }
-
-    /**
-     * Indicates if the animation frame should be rendered to the animation background.
-     */
-    public boolean getRenderToBackgroundHint() {
-        return renderToBackgroundHint;
+    public AnimationFrameBufferHint getBufferHint() {
+        return bufferHint;
     }
 
     /**

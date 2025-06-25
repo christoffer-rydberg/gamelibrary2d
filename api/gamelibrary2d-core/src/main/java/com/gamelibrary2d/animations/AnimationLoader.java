@@ -104,8 +104,7 @@ public class AnimationLoader {
                         -image.getWidth() / 2f,
                         -image.getHeight() / 2f,
                         frameDuration,
-                        false,
-                        false));
+                        AnimationFrameBufferHint.CLEAR_BUFFER));
             }
 
         }

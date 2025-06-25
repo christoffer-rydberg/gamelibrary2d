@@ -4,6 +4,7 @@ import com.gamelibrary2d.Rectangle;
 import com.gamelibrary2d.animations.AnimationFrameMetadata;
 import com.gamelibrary2d.animations.AnimationMetadata;
 import com.gamelibrary2d.animations.AnimationReader;
+import com.gamelibrary2d.animations.AnimationFrameBufferHint;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +17,7 @@ public class GifAnimationReader implements AnimationReader {
     private static final int NO_DISPOSAL_SPECIFIED = 0;
     private static final int DO_NOT_DISPOSE = 1;
     private static final int RESTORE_TO_BACKGROUND = 2;
+    private static final int RESTORE_TO_PREVIOUS = 3;
 
     private static AnimationFrameMetadata createAnimationFrame(
             InternalLogicalScreenDescriptor logicalScreenDescriptor,
@@ -25,7 +27,7 @@ public class GifAnimationReader implements AnimationReader {
         InternalGraphicControlExtension gce = gifFrame.graphicControlExtension;
 
         float duration;
-        boolean restoreBackground, renderToBackground;
+        AnimationFrameBufferHint bufferHint;
         int transparentColorIndex;
         if (gce != null) {
             duration = gce.delayTime / 100f;
@@ -35,12 +37,23 @@ public class GifAnimationReader implements AnimationReader {
                     : -1;
 
             int disposalMethod = gifFrame.graphicControlExtension.disposalMethod;
-            restoreBackground = disposalMethod == RESTORE_TO_BACKGROUND;
-            renderToBackground = disposalMethod == NO_DISPOSAL_SPECIFIED || disposalMethod == DO_NOT_DISPOSE;
+            switch (disposalMethod) {
+                case NO_DISPOSAL_SPECIFIED:
+                case DO_NOT_DISPOSE:
+                    bufferHint = AnimationFrameBufferHint.WRITE_TO_BUFFER;
+                    break;
+                case RESTORE_TO_BACKGROUND:
+                    bufferHint = AnimationFrameBufferHint.CLEAR_BUFFER;
+                    break;
+                case RESTORE_TO_PREVIOUS:
+                    bufferHint = AnimationFrameBufferHint.IGNORE;
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + disposalMethod);
+            }
         } else {
             duration = 0f;
-            restoreBackground = false;
-            renderToBackground = false;
+            bufferHint = AnimationFrameBufferHint.CLEAR_BUFFER;
             transparentColorIndex = -1;
         }
 
@@ -68,7 +81,7 @@ public class GifAnimationReader implements AnimationReader {
         int offsetX = gifFrame.imageDescriptor.imageLeftPosition;
         int offsetY = logicalScreenDescriptor.logicalScreenHeight - image.getHeight() - gifFrame.imageDescriptor.imageTopPosition;
 
-        return new AnimationFrameMetadata(image, IMAGE_COORDINATES, offsetX, offsetY, duration, restoreBackground, renderToBackground);
+        return new AnimationFrameMetadata(image, IMAGE_COORDINATES, offsetX, offsetY, duration, bufferHint);
     }
 
     public AnimationMetadata read(InputStream stream) throws IOException {

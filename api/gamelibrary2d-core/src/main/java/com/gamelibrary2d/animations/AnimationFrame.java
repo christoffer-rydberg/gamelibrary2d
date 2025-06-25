@@ -11,8 +11,7 @@ import com.gamelibrary2d.opengl.resources.Texture;
 public class AnimationFrame implements Bounded {
     private final Surface surface;
     private final Texture texture;
-    private final boolean restoreBackgroundHint;
-    private final boolean renderToBackgroundHint;
+    private final AnimationFrameBufferHint bufferHint;
     private final float durationHint;
 
     /**
@@ -23,7 +22,7 @@ public class AnimationFrame implements Bounded {
      * @param duration Sets the {@link AnimationFrame#getDurationHint} field.
      */
     public AnimationFrame(Surface surface, Texture texture, float duration) {
-        this(surface, texture, duration, false, false);
+        this(surface, texture, duration, AnimationFrameBufferHint.CLEAR_BUFFER);
     }
 
     /**
@@ -32,15 +31,13 @@ public class AnimationFrame implements Bounded {
      * @param surface            The frame surface.
      * @param texture            The frame texture.
      * @param duration           Sets the {@link AnimationFrame#getDurationHint} field.
-     * @param restoreBackground  Sets the {@link AnimationFrame#restoreBackgroundHint} field.
-     * @param renderToBackground Sets the {@link AnimationFrame#getRenderToBackgroundHint} field.
+     * @param bufferHint         Sets the {@link AnimationFrame#bufferHint} field.
      */
-    public AnimationFrame(Surface surface, Texture texture, float duration, boolean restoreBackground, boolean renderToBackground) {
+    public AnimationFrame(Surface surface, Texture texture, float duration, AnimationFrameBufferHint bufferHint) {
         this.surface = surface;
         this.texture = texture;
         this.durationHint = duration;
-        this.restoreBackgroundHint = restoreBackground;
-        this.renderToBackgroundHint = renderToBackground;
+        this.bufferHint = bufferHint;
     }
 
     public static AnimationFrame create(AnimationFrameMetadata metadata, Rectangle bounds, Disposer disposer) {
@@ -50,8 +47,7 @@ public class AnimationFrame implements Bounded {
                 surface,
                 texture,
                 metadata.getDurationHint(),
-                metadata.getRestoreBackgroundHint(),
-                metadata.getRenderToBackgroundHint());
+                metadata.getBufferHint());
     }
 
     /**
@@ -69,17 +65,10 @@ public class AnimationFrame implements Bounded {
     }
 
     /**
-     * Indicates if the animation background should be restored before rendering this frame.
+     * Indicates what to do with the rendering buffer after rendering this frame.
      */
-    public boolean getRestoreBackgroundHint() {
-        return restoreBackgroundHint;
-    }
-
-    /**
-     * Indicates if the animation frame should be rendered to the animation background.
-     */
-    public boolean getRenderToBackgroundHint() {
-        return renderToBackgroundHint;
+    public AnimationFrameBufferHint getBufferHint() {
+        return bufferHint;
     }
 
     /**
