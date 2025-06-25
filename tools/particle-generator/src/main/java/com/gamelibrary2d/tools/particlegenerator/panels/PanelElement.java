@@ -155,7 +155,7 @@ public class PanelElement {
             propertyWidget.setBackground(background);
             propertyWidget.addFocusChangedListener(focused ->
                     background.setColor(focused ? Color.GOLD : backgroundColor, backgroundAlpha));
-            propertyWidget.setBounds(Bounds.PROPERTY_BASE_LINE);
+            propertyWidget.setBounds(Bounds.TEXT_FIELD);
 
             return propertyWidget;
         }
