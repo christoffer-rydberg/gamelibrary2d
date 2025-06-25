@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.gamelibrary2d</groupId>
         <artifactId>gamelibrary2d-api</artifactId>
-        <version>0.24.0</version>
+        <version>0.25.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>gamelibrary2d-sound</artifactId>
-    <version>0.24.0</version>
+    <version>0.25.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>com.gamelibrary2d</groupId>
             <artifactId>gamelibrary2d-common</artifactId>
-            <version>0.24.0</version>
+            <version>0.25.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
